@@ -3,13 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/language_package.dart';
+import '../../../data/models/category.dart';
 import '../../../data/repositories/language_package_repository.dart';
 import '../../../data/repositories/category_repository.dart';
+import '../../../data/repositories/item_repository.dart';
 import '../../widgets/package_icon.dart';
 import '../../providers/package_order_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 import 'package_form_page.dart';
+// import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 /// Package list page displaying all language packages as cards
 class PackageListPage extends ConsumerStatefulWidget {
@@ -23,7 +26,6 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
   List<LanguagePackage> _packages = [];
   bool _isLoading = true;
   final _packageRepo = LanguagePackageRepository();
-  final _categoryRepo = CategoryRepository();
 
   @override
   void initState() {
@@ -308,7 +310,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
 }
 
 /// Card widget displaying a language package
-class PackageCard extends StatelessWidget {
+class PackageCard extends StatefulWidget {
   final LanguagePackage package;
   final int index;
   final bool isCompact;
@@ -329,14 +331,78 @@ class PackageCard extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<PackageCard> createState() => _PackageCardState();
+}
+
+
+class _PackageCardState extends State<PackageCard> {
+  final _itemRepo = ItemRepository();
+  final _categoryRepo = CategoryRepository();
+  int _itemCount = 0;
+  List<Category> _categories = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    if (!widget.isCompact) {
+      _loadPackageData();
+    }
+  }
+
+  @override
+  void didUpdateWidget(PackageCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Reload data if expanded state changed
+    if (widget.isCompact != oldWidget.isCompact) {
+      if (!widget.isCompact) {
+        _loadPackageData();
+      }
+    }
+  }
+
+  Future<void> _loadPackageData() async {
+    try {
+      // Get all items for this package
+      final items = await _itemRepo.getItemsForPackage(widget.package.id);
+
+      // Get unique category IDs from all items
+      final categoryIds = <String>{};
+      for (final item in items) {
+        categoryIds.addAll(item.categoryIds);
+      }
+
+      // Get category details
+      final categories = categoryIds.isNotEmpty
+          ? await _categoryRepo.getCategoriesByIds(categoryIds.toList())
+          : <Category>[];
+
+      if (mounted) {
+        setState(() {
+          _itemCount = items.length;
+          _categories = categories;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading package data: $e');
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
 
     return Card(
-      margin: isInGrid ? EdgeInsets.zero : EdgeInsets.only(bottom: AppTheme.spacing16),
+      margin: widget.isInGrid ? EdgeInsets.zero : EdgeInsets.only(bottom: AppTheme.spacing16),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: onTap,
-        child: isCompact ? _buildCompactCard(context) : _buildExpandedCard(context),
+        onTap: widget.onTap,
+        child: widget.isCompact ? _buildCompactCard(context) : _buildExpandedCard(context),
       ),
     );
   }
@@ -349,7 +415,7 @@ class PackageCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildCompactHeader(context),
-          if (package.description != null && package.description!.isNotEmpty)
+          if (widget.package.description != null && widget.package.description!.isNotEmpty)
             _buildCompactDescription(context),
         ],
       ),
@@ -359,13 +425,13 @@ class PackageCard extends StatelessWidget {
   Widget _buildCompactHeader(BuildContext context) {
     return Row(
       children: [
-        if (!isInGrid) _buildDragHandle(context, size: 20),
-        if (!isInGrid) SizedBox(width: AppTheme.spacing8),
+        if (!widget.isInGrid) _buildDragHandle(context, size: 20),
+        if (!widget.isInGrid) SizedBox(width: AppTheme.spacing8),
         _buildPackageIcon(size: 32),
         SizedBox(width: AppTheme.spacing8),
         _buildLanguageInfo(context, isCompact: true),
-        if (package.isPurchased) _buildCompactPurchasedBadge(context),
-        if (showToggleButton) _buildToggleButton(context, isExpanded: false),
+        if (widget.package.isPurchased) _buildCompactPurchasedBadge(context),
+        if (widget.showToggleButton) _buildToggleButton(context, isExpanded: false),
       ],
     );
   }
@@ -377,10 +443,10 @@ class PackageCard extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(
         top: AppTheme.spacing8,
-        left: !isInGrid ? 48.0 : 0,
+        left: !widget.isInGrid ? 48.0 : 0,
       ),
       child: Text(
-        package.description!,
+        widget.package.description!,
         style: theme.textTheme.labelLarge?.copyWith(
           color: colorScheme.onSurfaceVariant,
         ),
@@ -408,14 +474,16 @@ class PackageCard extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildExpandedHeader(context),
-        if (package.description != null && package.description!.isNotEmpty)
+        if (widget.package.description != null && widget.package.description!.isNotEmpty)
           _buildExpandedDescription(context),
         if (_hasAuthorInfo()) _buildExpandedAuthorSection(context),
         _buildExpandedVersion(context),
+        if (!_isLoading && _categories.isNotEmpty)
+          _buildCategoryChips(context),
       ],
     );
 
-    return isInGrid
+    return widget.isInGrid
         ? SingleChildScrollView(
             padding: EdgeInsets.all(AppTheme.spacing16),
             child: content,
@@ -429,14 +497,14 @@ class PackageCard extends StatelessWidget {
   Widget _buildExpandedHeader(BuildContext context) {
     return Row(
       children: [
-        if (!isInGrid) _buildDragHandle(context, size: 24),
-        if (!isInGrid) SizedBox(width: AppTheme.spacing12),
+        if (!widget.isInGrid) _buildDragHandle(context, size: 24),
+        if (!widget.isInGrid) SizedBox(width: AppTheme.spacing12),
         _buildPackageIcon(size: 48),
         SizedBox(width: AppTheme.spacing12),
         _buildLanguageInfo(context, isCompact: false),
-        if (package.isPurchased) _buildExpandedPurchasedBadge(context),
-        if (showToggleButton) SizedBox(width: AppTheme.spacing8),
-        if (showToggleButton) _buildToggleButton(context, isExpanded: true),
+        if (widget.package.isPurchased) _buildExpandedPurchasedBadge(context),
+        if (widget.showToggleButton) SizedBox(width: AppTheme.spacing8),
+        if (widget.showToggleButton) _buildToggleButton(context, isExpanded: true),
       ],
     );
   }
@@ -446,7 +514,7 @@ class PackageCard extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.only(top: AppTheme.spacing12),
       child: Text(
-        package.description!,
+        widget.package.description!,
         style: theme.textTheme.bodySmall,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
@@ -457,13 +525,14 @@ class PackageCard extends StatelessWidget {
   Widget _buildExpandedAuthorSection(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(top: AppTheme.spacing12),
-      child: _buildAuthorInfo(context, package),
+      child: _buildAuthorInfo(context, widget.package),
     );
   }
 
   Widget _buildExpandedVersion(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    // final l10n = AppLocalizations.of(context)!;
 
     return Padding(
       padding: EdgeInsets.only(top: AppTheme.spacing12),
@@ -476,11 +545,64 @@ class PackageCard extends StatelessWidget {
           ),
           SizedBox(width: AppTheme.spacing4),
           Text(
-            'Version ${package.version}',
+            'Version ${widget.package.version}',
             style: theme.textTheme.labelSmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
           ),
+          if (!_isLoading && _itemCount > 0) ...[
+            SizedBox(width: AppTheme.spacing12),
+            Icon(
+              Icons.format_list_numbered,
+              size: 14,
+              color: colorScheme.primary,
+            ),
+            SizedBox(width: AppTheme.spacing4),
+            Text(
+              '$_itemCount items',
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: colorScheme.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryChips(BuildContext context) {
+    final theme = Theme.of(context);
+    final displayCategories = _categories.take(6).toList();
+    final hasMore = _categories.length > 6;
+
+    return Padding(
+      padding: EdgeInsets.only(top: AppTheme.spacing8),
+      child: Wrap(
+        spacing: AppTheme.spacing8,
+        runSpacing: AppTheme.spacing8,
+        children: [
+          ...displayCategories.map((category) => Chip(
+            label: Text(
+              category.name,
+              style: theme.textTheme.bodySmall,
+            ),
+            backgroundColor: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+            side: BorderSide.none,
+            padding: EdgeInsets.symmetric(horizontal: AppTheme.spacing8),
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          )),
+          if (hasMore)
+            Chip(
+              label: Text(
+                '...',
+                style: theme.textTheme.bodySmall,
+              ),
+              backgroundColor: theme.colorScheme.surfaceContainerHighest,
+              side: BorderSide.none,
+              padding: EdgeInsets.symmetric(horizontal: AppTheme.spacing8),
+              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
         ],
       ),
     );
@@ -522,16 +644,16 @@ class PackageCard extends StatelessWidget {
   }
 
   bool _hasAuthorInfo() {
-    return package.authorName != null ||
-        package.authorEmail != null ||
-        package.authorWebpage != null;
+    return widget.package.authorName != null ||
+        widget.package.authorEmail != null ||
+        widget.package.authorWebpage != null;
   }
 
   // Shared UI Components
   Widget _buildDragHandle(BuildContext context, {required double size}) {
     final colorScheme = Theme.of(context).colorScheme;
     return ReorderableDragStartListener(
-      index: index,
+      index: widget.index,
       child: Container(
         padding: EdgeInsets.all(AppTheme.spacing8),
         decoration: BoxDecoration(
@@ -549,7 +671,7 @@ class PackageCard extends StatelessWidget {
 
   Widget _buildPackageIcon({required double size}) {
     return PackageIcon(
-      iconPath: package.icon,
+      iconPath: widget.package.icon,
       size: size,
     );
   }
@@ -564,7 +686,7 @@ class PackageCard extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            '${package.languageCode1.toUpperCase()} → ${package.languageCode2.toUpperCase()}',
+            '${widget.package.languageCode1.toUpperCase()} → ${widget.package.languageCode2.toUpperCase()}',
             style: (isCompact
                     ? theme.textTheme.titleSmall
                     : theme.textTheme.titleMedium)
@@ -577,7 +699,7 @@ class PackageCard extends StatelessWidget {
           ),
           if (!isCompact) SizedBox(height: AppTheme.spacing4),
           Text(
-            '${package.languageName1} → ${package.languageName2}',
+            '${widget.package.languageName1} → ${widget.package.languageName2}',
             style: (isCompact
                     ? theme.textTheme.labelLarge
                     : theme.textTheme.bodySmall)
@@ -598,7 +720,7 @@ class PackageCard extends StatelessWidget {
         isExpanded ? Icons.unfold_less : Icons.unfold_more,
         size: 20,
       ),
-      onPressed: onToggleCompact,
+      onPressed: widget.onToggleCompact,
       tooltip: isExpanded ? 'Compact view' : 'Expand',
       visualDensity: VisualDensity.compact,
       padding: EdgeInsets.zero,

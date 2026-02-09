@@ -16,6 +16,7 @@
   "authorEmail": "Szerző e-mail címe",
   "authorWebpage": "Szerző weboldala",
   "version": "Verzió",
+  "items": "elem",
   "packageIcon": "Csomag ikon",
   "selectIcon": "Ikon kiválasztása",
   "defaultIcon": "Alapértelmezett ikon",

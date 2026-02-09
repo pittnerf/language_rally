@@ -57,6 +57,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get version => 'Verzió';
 
   @override
+  String get items => 'elem';
+
+  @override
   String get packageIcon => 'Csomag ikon';
 
   @override
@@ -102,7 +105,8 @@ class AppLocalizationsHu extends AppLocalizations {
   String get invalidUrl => 'Érvénytelen URL';
 
   @override
-  String get readOnlyPackage => 'Ez a csomag csak olvasható és nem szerkeszthető';
+  String get readOnlyPackage =>
+      'Ez a csomag csak olvasható és nem szerkeszthető';
 
   @override
   String get purchasedPackage => 'A megvásárolt csomagok nem szerkeszthetők';
@@ -120,7 +124,8 @@ class AppLocalizationsHu extends AppLocalizations {
   String get clearCounters => 'Számlálók törlése';
 
   @override
-  String get confirmClearCounters => 'Biztosan törölni szeretné az összes edzési számlálót ebből a csomagból? Ez visszaállítja a \'nem tudom\' számlálókat és az edzési statisztikákat.';
+  String get confirmClearCounters =>
+      'Biztosan törölni szeretné az összes edzési számlálót ebből a csomagból? Ez visszaállítja a \'nem tudom\' számlálókat és az edzési statisztikákat.';
 
   @override
   String get clear => 'Törlés';
@@ -135,7 +140,8 @@ class AppLocalizationsHu extends AppLocalizations {
   String get deleteAll => 'Minden adat törlése';
 
   @override
-  String get confirmDeleteAllData => 'Biztosan törölni szeretné ezt a csomagot az ÖSSZES adatával? Ez véglegesen törli az összes kategóriát, elemet és edzési statisztikát. Ez a művelet nem vonható vissza!';
+  String get confirmDeleteAllData =>
+      'Biztosan törölni szeretné ezt a csomagot az ÖSSZES adatával? Ez véglegesen törli az összes kategóriát, elemet és edzési statisztikát. Ez a művelet nem vonható vissza!';
 
   @override
   String get allDataDeleted => 'Csomag és minden adat sikeresen törölve';
@@ -162,7 +168,8 @@ class AppLocalizationsHu extends AppLocalizations {
   String get importFormat => 'Importálási formátum';
 
   @override
-  String get importFormatDescription => 'Elemek importálása szöveges fájlból. Minden sor egy elemet tartalmaz a következő formátumban:';
+  String get importFormatDescription =>
+      'Elemek importálása szöveges fájlból. Minden sor egy elemet tartalmaz a következő formátumban:';
 
   @override
   String get importResults => 'Importálási eredmények';

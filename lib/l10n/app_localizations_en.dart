@@ -57,6 +57,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get version => 'Version';
 
   @override
+  String get items => 'items';
+
+  @override
   String get packageIcon => 'Package Icon';
 
   @override
@@ -102,7 +105,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invalidUrl => 'Invalid URL';
 
   @override
-  String get readOnlyPackage => 'This package is read-only and cannot be edited';
+  String get readOnlyPackage =>
+      'This package is read-only and cannot be edited';
 
   @override
   String get purchasedPackage => 'Purchased packages cannot be edited';
@@ -120,7 +124,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get clearCounters => 'Clear Counters';
 
   @override
-  String get confirmClearCounters => 'Are you sure you want to clear all training counters for this package? This will reset the \'don\'t know\' counters and training statistics.';
+  String get confirmClearCounters =>
+      'Are you sure you want to clear all training counters for this package? This will reset the \'don\'t know\' counters and training statistics.';
 
   @override
   String get clear => 'Clear';
@@ -135,7 +140,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deleteAll => 'Delete All Data';
 
   @override
-  String get confirmDeleteAllData => 'Are you sure you want to delete this package with ALL its data? This will permanently delete all categories, items, and training statistics. This action cannot be undone!';
+  String get confirmDeleteAllData =>
+      'Are you sure you want to delete this package with ALL its data? This will permanently delete all categories, items, and training statistics. This action cannot be undone!';
 
   @override
   String get allDataDeleted => 'Package and all data deleted successfully';
@@ -162,7 +168,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importFormat => 'Import Format';
 
   @override
-  String get importFormatDescription => 'Import items from a text file. Each line should contain an item in the following format:';
+  String get importFormatDescription =>
+      'Import items from a text file. Each line should contain an item in the following format:';
 
   @override
   String get importResults => 'Import Results';

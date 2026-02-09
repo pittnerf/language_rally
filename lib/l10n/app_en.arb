@@ -16,6 +16,7 @@
   "authorEmail": "Author Email",
   "authorWebpage": "Author Webpage",
   "version": "Version",
+  "items": "items",
   "packageIcon": "Package Icon",
   "selectIcon": "Select Icon",
   "defaultIcon": "Default Icon",

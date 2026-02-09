@@ -56,6 +56,16 @@ class ItemRepository {
   }
 
   // Read
+  Future<List<Item>> getItemsForPackage(String packageId) async {
+    final db = await _dbHelper.database;
+    final maps = await db.query(
+      'items',
+      where: 'package_id = ?',
+      whereArgs: [packageId],
+    );
+    return Future.wait(maps.map((map) => _mapToItem(map)));
+  }
+
   Future<List<Item>> getItemsForCategories(List<String> categoryIds) async {
     if (categoryIds.isEmpty) return [];
     final db = await _dbHelper.database;
