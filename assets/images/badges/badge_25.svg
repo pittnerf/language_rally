@@ -1,0 +1,25 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- 25% Badge - Bronze -->
+  <defs>
+    <radialGradient id="bronze-gradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#CD7F32;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B4513;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+
+  <!-- Badge circle -->
+  <circle cx="64" cy="64" r="56" fill="url(#bronze-gradient)" stroke="#5D3A1A" stroke-width="3"/>
+  <circle cx="64" cy="64" r="50" fill="none" stroke="#FFD700" stroke-width="2" opacity="0.3"/>
+
+  <!-- Ribbon/Banner -->
+  <path d="M 30 95 L 30 120 L 40 110 L 50 120 L 50 95 Z" fill="#8B4513" stroke="#5D3A1A" stroke-width="2"/>
+  <path d="M 78 95 L 78 120 L 88 110 L 98 120 L 98 95 Z" fill="#8B4513" stroke="#5D3A1A" stroke-width="2"/>
+
+  <!-- Star (single, representing beginner level) -->
+  <path d="M 64 25 L 68 38 L 82 38 L 71 46 L 75 59 L 64 51 L 53 59 L 57 46 L 46 38 L 60 38 Z" fill="#FFD700" stroke="#B8860B" stroke-width="1.5"/>
+
+  <!-- Text -->
+  <text x="64" y="72" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700" text-anchor="middle" fill="#FFFFFF" stroke="#5D3A1A" stroke-width="0.5">25%</text>
+  <text x="64" y="88" font-family="Inter, Arial, sans-serif" font-size="10" font-weight="600" text-anchor="middle" fill="#FFE4B5">BEGINNER</text>
+</svg>
+

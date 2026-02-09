@@ -1,0 +1,50 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- 95% Badge - Platinum Master -->
+  <defs>
+    <radialGradient id="platinum-gradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#E5E4E2;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#C0C0C0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#A9A9A9;stop-opacity:1" />
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#FFD700;stop-opacity:0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Outer glow effect -->
+  <circle cx="64" cy="64" r="60" fill="url(#glow)" opacity="0.4"/>
+
+  <!-- Badge circle with platinum finish -->
+  <circle cx="64" cy="64" r="56" fill="url(#platinum-gradient)" stroke="#696969" stroke-width="3"/>
+  <circle cx="64" cy="64" r="50" fill="none" stroke="#FFFFFF" stroke-width="2.5" opacity="0.7"/>
+  <circle cx="64" cy="64" r="44" fill="none" stroke="#E5E4E2" stroke-width="2"/>
+  <circle cx="64" cy="64" r="38" fill="none" stroke="#FFFFFF" stroke-width="1.5" opacity="0.5"/>
+
+  <!-- Diamond/Gem at top -->
+  <path d="M 64 14 L 70 20 L 64 26 L 58 20 Z" fill="#B0E0E6" stroke="#4682B4" stroke-width="1.5"/>
+  <path d="M 64 14 L 64 26" stroke="#E0FFFF" stroke-width="1" opacity="0.8"/>
+  <path d="M 58 20 L 70 20" stroke="#E0FFFF" stroke-width="1" opacity="0.8"/>
+
+  <!-- Laurel wreath -->
+  <path d="M 30 64 Q 25 50 35 40 L 38 43 Q 30 50 32 60" fill="#228B22" stroke="#006400" stroke-width="1"/>
+  <path d="M 98 64 Q 103 50 93 40 L 90 43 Q 98 50 96 60" fill="#228B22" stroke="#006400" stroke-width="1"/>
+  <path d="M 32 70 Q 28 80 36 88 L 39 85 Q 33 78 35 70" fill="#228B22" stroke="#006400" stroke-width="1"/>
+  <path d="M 96 70 Q 100 80 92 88 L 89 85 Q 95 78 93 70" fill="#228B22" stroke="#006400" stroke-width="1"/>
+
+  <!-- Ribbon/Banner with premium look -->
+  <path d="M 30 95 L 30 120 L 40 110 L 50 120 L 50 95 Z" fill="#C0C0C0" stroke="#696969" stroke-width="2"/>
+  <path d="M 78 95 L 78 120 L 88 110 L 98 120 L 98 95 Z" fill="#C0C0C0" stroke="#696969" stroke-width="2"/>
+
+  <!-- Stars (five premium stars) -->
+  <path d="M 28 35 L 31 43 L 39 43 L 33 48 L 36 56 L 28 51 L 20 56 L 23 48 L 17 43 L 25 43 Z" fill="#FFD700" stroke="#B8860B" stroke-width="1.5" filter="drop-shadow(0 0 2px #FFD700)"/>
+  <path d="M 46 30 L 50 40 L 60 40 L 52 46 L 56 56 L 46 50 L 36 56 L 40 46 L 32 40 L 42 40 Z" fill="#FFD700" stroke="#B8860B" stroke-width="1.5" filter="drop-shadow(0 0 2px #FFD700)"/>
+  <path d="M 64 28 L 68 40 L 81 40 L 71 47 L 75 59 L 64 52 L 53 59 L 57 47 L 47 40 L 60 40 Z" fill="#FFD700" stroke="#B8860B" stroke-width="2" filter="drop-shadow(0 0 3px #FFD700)"/>
+  <path d="M 82 30 L 86 40 L 96 40 L 88 46 L 92 56 L 82 50 L 72 56 L 76 46 L 68 40 L 78 40 Z" fill="#FFD700" stroke="#B8860B" stroke-width="1.5" filter="drop-shadow(0 0 2px #FFD700)"/>
+  <path d="M 100 35 L 103 43 L 111 43 L 105 48 L 108 56 L 100 51 L 92 56 L 95 48 L 89 43 L 97 43 Z" fill="#FFD700" stroke="#B8860B" stroke-width="1.5" filter="drop-shadow(0 0 2px #FFD700)"/>
+
+  <!-- Text with premium styling -->
+  <text x="64" y="76" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="900" text-anchor="middle" fill="#2F4F4F" stroke="#FFFFFF" stroke-width="1">95%</text>
+  <text x="64" y="90" font-family="Inter, Arial, sans-serif" font-size="9" font-weight="700" text-anchor="middle" fill="#696969" letter-spacing="1">MASTER</text>
+</svg>
+
