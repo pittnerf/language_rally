@@ -7,11 +7,17 @@ import 'package:path_provider/path_provider.dart';
 import '../../../data/repositories/language_package_repository.dart';
 import '../../../data/repositories/item_repository.dart';
 import '../../../data/repositories/category_repository.dart';
+import '../../../data/repositories/training_settings_repository.dart';
+import '../../../data/repositories/training_statistics_repository.dart';
 import '../../../data/models/language_package.dart';
 import '../../../data/models/item.dart';
 import '../../../data/models/item_language_data.dart';
 import '../../../data/models/category.dart';
 import '../../../data/models/example_sentence.dart';
+import '../../../data/models/training_settings.dart';
+import '../../../data/models/training_session.dart';
+import '../../../data/models/training_statistics.dart';
+import '../../../data/models/badge_event.dart';
 
 class TestDataPage extends StatefulWidget {
   const TestDataPage({super.key});
@@ -27,6 +33,8 @@ class _TestDataPageState extends State<TestDataPage> {
   late final LanguagePackageRepository _packageRepo;
   late final ItemRepository _itemRepo;
   late final CategoryRepository _categoryRepo;
+  late final TrainingSettingsRepository _settingsRepo;
+  late final TrainingStatisticsRepository _statsRepo;
 
   @override
   void initState() {
@@ -34,6 +42,8 @@ class _TestDataPageState extends State<TestDataPage> {
     _packageRepo = LanguagePackageRepository();
     _itemRepo = ItemRepository();
     _categoryRepo = CategoryRepository();
+    _settingsRepo = TrainingSettingsRepository();
+    _statsRepo = TrainingStatisticsRepository();
   }
 
   void _log(String message) {
@@ -200,6 +210,9 @@ class _TestDataPageState extends State<TestDataPage> {
         await _itemRepo.insertItem(item);
       }
       _log('  ✓ Created ${items.length} items');
+
+      // Create training data
+      await _createTrainingData(packageId, items);
     } catch (e) {
       _log('  ❌ Error creating EN-DE package: $e');
       rethrow;
@@ -302,6 +315,9 @@ class _TestDataPageState extends State<TestDataPage> {
         await _itemRepo.insertItem(item);
       }
       _log('  ✓ Created ${items.length} items');
+
+      // Create training data
+      await _createTrainingData(packageId, items);
     } catch (e) {
       _log('  ❌ Error creating EN-ES package: $e');
       rethrow;
@@ -388,8 +404,164 @@ class _TestDataPageState extends State<TestDataPage> {
         await _itemRepo.insertItem(item);
       }
       _log('  ✓ Created ${items.length} items');
+
+      // Create training data
+      await _createTrainingData(packageId, items);
     } catch (e) {
       _log('  ❌ Error creating FR-EN package: $e');
+      rethrow;
+    }
+  }
+
+  Future<void> _createTrainingData(String packageId, List<Item> items) async {
+    _log('  📊 Creating training data...');
+
+    try {
+      // Create two different training settings
+      final settings1 = TrainingSettings(
+        packageId: packageId,
+        itemScope: ItemScope.all,
+        itemOrder: ItemOrder.random,
+        displayLanguage: DisplayLanguage.random,
+        selectedCategoryIds: [],
+        dontKnowThreshold: 3,
+      );
+
+      final settings2 = TrainingSettings(
+        packageId: packageId,
+        itemScope: ItemScope.lastN,
+        lastNItems: 5,
+        itemOrder: ItemOrder.sequential,
+        displayLanguage: DisplayLanguage.motherTongue,
+        selectedCategoryIds: items.isNotEmpty ? [items.first.categoryIds.first] : [],
+        dontKnowThreshold: 5,
+      );
+
+      await _settingsRepo.saveSettings(settings1);
+      await _settingsRepo.saveSettings(settings2);
+      _log('    ✓ Training settings created');
+
+      // Create first training session (completed with good accuracy)
+      final session1ItemIds = items.take(3).map((i) => i.id).toList();
+      final session1Outcomes = [true, true, false]; // 2 correct, 1 wrong
+      final session1StartTime = DateTime.now().subtract(const Duration(days: 2));
+
+      final session1 = TrainingSession(
+        id: _uuid.v4(),
+        packageId: packageId,
+        settings: settings1,
+        itemIds: session1ItemIds,
+        itemOutcomes: session1Outcomes,
+        historicalAccuracyRatios: [100.0, 100.0, 66.67], // Accuracy after each answer
+        badgeEvents: [
+          BadgeEvent.earned(
+            badgeId: 'badge_50', // 50% Learner badge
+            totalAnswers: 2,
+            accuracy: 100.0,
+          ),
+          BadgeEvent.lost(
+            badgeId: 'badge_50', // Lost when accuracy dropped
+            totalAnswers: 3,
+            accuracy: 66.67,
+          ),
+          BadgeEvent.earned(
+            badgeId: 'badge_25', // 25% Beginner badge at 66.67%
+            totalAnswers: 3,
+            accuracy: 66.67,
+          ),
+        ],
+        currentItemIndex: session1ItemIds.length,
+        correctAnswers: 2,
+        totalAnswers: 3,
+        startedAt: session1StartTime,
+        completedAt: session1StartTime.add(const Duration(minutes: 5)),
+        status: SessionStatus.completed,
+      );
+
+      await _statsRepo.saveSession(session1);
+      _log('    ✓ Training session 1 created (completed, 66% accuracy)');
+
+      // Create second training session (completed with high accuracy)
+      final session2ItemIds = items.take(4).map((i) => i.id).toList();
+      final session2Outcomes = [true, true, true, true]; // All correct
+      final session2StartTime = DateTime.now().subtract(const Duration(days: 1));
+
+      final session2 = TrainingSession(
+        id: _uuid.v4(),
+        packageId: packageId,
+        settings: settings2,
+        itemIds: session2ItemIds,
+        itemOutcomes: session2Outcomes,
+        historicalAccuracyRatios: [100.0, 100.0, 100.0, 100.0],
+        badgeEvents: [
+          BadgeEvent.earned(
+            badgeId: 'badge_25', // 25% Beginner
+            totalAnswers: 1,
+            accuracy: 100.0,
+          ),
+          BadgeEvent.earned(
+            badgeId: 'badge_50', // 50% Learner
+            totalAnswers: 2,
+            accuracy: 100.0,
+          ),
+          BadgeEvent.earned(
+            badgeId: 'badge_75', // 75% Skilled
+            totalAnswers: 3,
+            accuracy: 100.0,
+          ),
+          BadgeEvent.earned(
+            badgeId: 'badge_80', // 80% Advanced
+            totalAnswers: 4,
+            accuracy: 100.0,
+          ),
+          BadgeEvent.earned(
+            badgeId: 'badge_85', // 85% Proficient
+            totalAnswers: 4,
+            accuracy: 100.0,
+          ),
+          BadgeEvent.earned(
+            badgeId: 'badge_90', // 90% Excellent
+            totalAnswers: 4,
+            accuracy: 100.0,
+          ),
+          BadgeEvent.earned(
+            badgeId: 'badge_95', // 95% Master
+            totalAnswers: 4,
+            accuracy: 100.0,
+          ),
+          BadgeEvent.earned(
+            badgeId: 'badge_100', // 100% Wizard
+            totalAnswers: 4,
+            accuracy: 100.0,
+          ),
+        ],
+        currentItemIndex: session2ItemIds.length,
+        correctAnswers: 4,
+        totalAnswers: 4,
+        startedAt: session2StartTime,
+        completedAt: session2StartTime.add(const Duration(minutes: 8)),
+        status: SessionStatus.completed,
+      );
+
+      await _statsRepo.saveSession(session2);
+      _log('    ✓ Training session 2 created (completed, 100% accuracy)');
+
+      // Create training statistics
+      final statistics = TrainingStatistics(
+        packageId: packageId,
+        totalItemsLearned: items.where((i) => i.isKnown).length,
+        totalItemsReviewed: 7, // Total from both sessions
+        currentStreak: 2,
+        longestStreak: 2,
+        lastTrainedAt: session2StartTime.add(const Duration(minutes: 8)),
+        averageAccuracy: 85.71, // Average of 66.67% and 100%
+      );
+
+      await _statsRepo.saveStatistics(statistics);
+      _log('    ✓ Training statistics created');
+      _log('  ✅ Training data complete');
+    } catch (e) {
+      _log('  ❌ Error creating training data: $e');
       rethrow;
     }
   }

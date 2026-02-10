@@ -4,6 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image/image.dart' as img;
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/language_codes.dart';
 import '../../../data/models/language_package.dart';
@@ -51,12 +55,17 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
   bool get _isReadOnly => widget.package?.isReadonly ?? false;
   bool get _isPurchased => widget.package?.isPurchased ?? false;
 
-  // Available icons
-  final List<String?> _availableIcons = [
+  // Available icons from assets
+  List<String?> _availableIcons = [
     null, // Default icon
-    'assets/images/package_icon_v1.svg',
-    'assets/images/package_icon_v2.png',
+    'assets/images/package_icons/default_package_icon.svg',
+    'assets/images/package_icons/package_icon_v1.svg',
+    'assets/images/package_icons/package_icon_v2.png',
+    'assets/images/package_icons/package_icon_v3.png',
   ];
+
+  // Custom uploaded icons will be stored separately
+  bool _isCustomIcon = false;
 
   @override
   void initState() {
@@ -67,6 +76,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
       itemRepo: _itemRepo,
     );
     _initializeControllers();
+    _loadCustomIcons();
   }
 
   void _initializeControllers() {
@@ -81,6 +91,54 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     _authorWebpageController = TextEditingController(text: pkg?.authorWebpage ?? '');
     _versionController = TextEditingController(text: pkg?.version ?? '1.0');
     _selectedIcon = pkg?.icon;
+
+    // Check if the icon is a custom uploaded icon (not in assets)
+    if (_selectedIcon != null && !_selectedIcon!.startsWith('assets/')) {
+      _isCustomIcon = true;
+    }
+  }
+
+  Future<void> _loadCustomIcons() async {
+    try {
+      final appDir = await getApplicationDocumentsDirectory();
+      final customIconsDir = Directory(path.join(appDir.path, 'custom_package_icons'));
+
+      // Start with asset icons only
+      final assetIcons = [
+        null, // Default icon
+        'assets/images/package_icons/default_package_icon.svg',
+        'assets/images/package_icons/package_icon_v1.svg',
+        'assets/images/package_icons/package_icon_v2.png',
+        'assets/images/package_icons/package_icon_v3.png',
+      ];
+
+      // Use a Set to collect custom icons (prevents duplicates)
+      final customIconsSet = <String>{};
+
+      if (await customIconsDir.exists()) {
+        final files = await customIconsDir.list().toList();
+        for (final entity in files) {
+          if (entity is File) {
+            final ext = path.extension(entity.path).toLowerCase();
+            if (ext == '.png' || ext == '.jpg' || ext == '.jpeg' || ext == '.svg') {
+              customIconsSet.add(entity.path);
+            }
+          }
+        }
+      }
+
+      // If current selected icon is custom, ensure it's in the set
+      if (_selectedIcon != null && !_selectedIcon!.startsWith('assets/')) {
+        customIconsSet.add(_selectedIcon!);
+      }
+
+      setState(() {
+        // Rebuild the entire list: asset icons + custom icons
+        _availableIcons = [...assetIcons, ...customIconsSet.toList()];
+      });
+    } catch (e) {
+      // Silently fail - custom icons directory might not exist yet
+    }
   }
 
   @override
@@ -193,7 +251,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         children: [
           _buildResponsiveLanguageFields(context, l10n),
           SizedBox(height: AppTheme.spacing16),
-          _buildTextField(context, l10n, _descriptionController, l10n.description, maxLines: 3, hint: l10n.descriptionHint),
+          _buildTextField(context, l10n, _descriptionController, l10n.description, maxLines: 2, hint: l10n.descriptionHint),
         ],
       ),
     );
@@ -410,7 +468,16 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
       children: [
         _buildIconSelectorTitle(theme, colorScheme, l10n),
         SizedBox(height: AppTheme.spacing12),
-        _buildIconGrid(colorScheme),
+        Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: _buildIconDropdown(context, colorScheme, l10n),
+            ),
+            SizedBox(width: AppTheme.spacing12),
+            _buildUploadIconButton(context, colorScheme, l10n),
+          ],
+        ),
         SizedBox(height: AppTheme.spacing8),
         _buildIconDescription(theme, colorScheme, l10n),
       ],
@@ -427,50 +494,225 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     );
   }
 
-  Widget _buildIconGrid(ColorScheme colorScheme) {
-    return Wrap(
-      spacing: AppTheme.spacing16,
-      runSpacing: AppTheme.spacing16,
-      children: _availableIcons.map((icon) => _buildIconItem(icon, colorScheme)).toList(),
+  Widget _buildIconDropdown(BuildContext context, ColorScheme colorScheme, AppLocalizations l10n) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: colorScheme.outline),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+      ),
+      padding: EdgeInsets.symmetric(horizontal: AppTheme.spacing12),
+      child: Row(
+        children: [
+          // Icon preview
+          Container(
+            width: 48,
+            height: 48,
+            margin: EdgeInsets.symmetric(vertical: AppTheme.spacing8),
+            child: PackageIcon(iconPath: _selectedIcon, size: 40),
+          ),
+          SizedBox(width: AppTheme.spacing12),
+          // Dropdown
+          Expanded(
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String?>(
+                // Only use _selectedIcon as value if it's in the available icons list
+                value: _availableIcons.contains(_selectedIcon) ? _selectedIcon : null,
+                isExpanded: true,
+                hint: _selectedIcon != null && !_availableIcons.contains(_selectedIcon)
+                    ? Row(
+                        children: [
+                          Container(
+                            width: 32,
+                            height: 32,
+                            margin: EdgeInsets.only(right: AppTheme.spacing8),
+                            child: PackageIcon(iconPath: _selectedIcon, size: 28),
+                          ),
+                          Expanded(
+                            child: Text(
+                              'Custom Icon (loading...)',
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      )
+                    : Text(l10n.selectIcon),
+                items: _availableIcons.map((iconPath) {
+                  return DropdownMenuItem<String?>(
+                    value: iconPath,
+                    child: Row(
+                      children: [
+                        // Show icon image in dropdown
+                        Container(
+                          width: 32,
+                          height: 32,
+                          margin: EdgeInsets.only(right: AppTheme.spacing8),
+                          child: PackageIcon(iconPath: iconPath, size: 28),
+                        ),
+                        // Show label for clarity
+                        Expanded(
+                          child: Text(
+                            iconPath == null
+                                ? l10n.defaultIcon
+                                : _getIconLabel(iconPath),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }).toList(),
+                onChanged: (newValue) {
+                  setState(() {
+                    _selectedIcon = newValue;
+                    _isCustomIcon = newValue != null && !newValue.startsWith('assets/');
+                  });
+                },
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildIconItem(String? icon, ColorScheme colorScheme) {
-    final isSelected = _selectedIcon == icon;
+  String _getIconLabel(String iconPath) {
+    // Extract a friendly name from the path
+    final fileName = path.basenameWithoutExtension(iconPath);
 
-    return GestureDetector(
-      onTap: () => _onIconSelected(icon),
-      child: Container(
-        width: 80,
-        height: 80,
-        decoration: _buildIconItemDecoration(isSelected, colorScheme),
-        child: Center(
-          child: PackageIcon(iconPath: icon, size: 48),
+    // Handle asset icons
+    if (fileName == 'default_package_icon') return 'Default';
+    if (fileName == 'package_icon_v1') return 'Icon 1';
+    if (fileName == 'package_icon_v2') return 'Icon 2';
+    if (fileName == 'package_icon_v3') return 'Icon 3';
+
+    // Handle custom icons - show "Custom Icon" for uploaded ones
+    if (iconPath.contains('custom_package_icons') || fileName.startsWith('custom_icon_')) {
+      return 'Custom Icon';
+    }
+    if (iconPath.contains('custom_package_icons') || fileName.startsWith('imported_icon_')) {
+      return 'Imported Icon';
+    }
+
+    return fileName;
+  }
+
+  Widget _buildUploadIconButton(BuildContext context, ColorScheme colorScheme, AppLocalizations l10n) {
+    return Tooltip(
+      message: l10n.uploadCustomIcon,
+      child: ElevatedButton.icon(
+        onPressed: _uploadCustomIcon,
+        icon: const Icon(Icons.upload_file, size: 20),
+        label: Text(l10n.upload),
+        style: ElevatedButton.styleFrom(
+          padding: EdgeInsets.symmetric(
+            horizontal: AppTheme.spacing16,
+            vertical: AppTheme.spacing12,
+          ),
         ),
       ),
     );
   }
 
-  BoxDecoration _buildIconItemDecoration(bool isSelected, ColorScheme colorScheme) {
-    return BoxDecoration(
-      border: Border.all(
-        color: isSelected ? colorScheme.primary : colorScheme.outline,
-        width: isSelected ? 3 : 1,
-      ),
-      borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-      color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-    );
-  }
+  Future<void> _uploadCustomIcon() async {
+    try {
+      final ImagePicker picker = ImagePicker();
 
-  void _onIconSelected(String? icon) {
-    setState(() {
-      _selectedIcon = icon;
-    });
+      // Pick image from gallery or camera
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 512,
+        maxHeight: 512,
+        imageQuality: 90,
+      );
+
+      if (image == null) return;
+
+      // Read and validate image dimensions
+      final bytes = await image.readAsBytes();
+      final decodedImage = img.decodeImage(bytes);
+
+      if (decodedImage == null) {
+        if (!mounted) return;
+        _showErrorDialog(
+          AppLocalizations.of(context)!,
+          'Unable to read image file. Please select a valid image.',
+        );
+        return;
+      }
+
+      // Validate dimensions (max 512x512)
+      if (decodedImage.width > 512 || decodedImage.height > 512) {
+        if (!mounted) return;
+        _showErrorDialog(
+          AppLocalizations.of(context)!,
+          'Icon dimensions are too large (${decodedImage.width}x${decodedImage.height}). Maximum allowed is 512x512 pixels.',
+        );
+        return;
+      }
+
+      // Validate file size (max 1MB)
+      final file = File(image.path);
+      final fileSize = await file.length();
+      if (fileSize > 1024 * 1024) {
+        if (!mounted) return;
+        _showErrorDialog(
+          AppLocalizations.of(context)!,
+          'Icon file is too large. Maximum size is 1MB.',
+        );
+        return;
+      }
+
+      // Create custom icons directory
+      final appDir = await getApplicationDocumentsDirectory();
+      final customIconsDir = Directory(path.join(appDir.path, 'custom_package_icons'));
+      if (!await customIconsDir.exists()) {
+        await customIconsDir.create(recursive: true);
+      }
+
+      // Generate unique filename
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final extension = path.extension(image.path);
+      final newFileName = 'custom_icon_$timestamp$extension';
+      final newPath = path.join(customIconsDir.path, newFileName);
+
+      // Copy file to custom icons directory
+      await file.copy(newPath);
+
+      setState(() {
+        _selectedIcon = newPath;
+        _isCustomIcon = true;
+      });
+
+      // Reload custom icons to include the newly uploaded icon in the dropdown
+      await _loadCustomIcons();
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.customIconUploaded),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      _showErrorDialog(
+        AppLocalizations.of(context)!,
+        'Failed to upload icon: $e',
+      );
+    }
   }
 
   Widget _buildIconDescription(ThemeData theme, ColorScheme colorScheme, AppLocalizations l10n) {
+    String description;
+    if (_isCustomIcon) {
+      description = l10n.customIconUploaded;
+    } else {
+      description = _selectedIcon == null ? l10n.defaultIcon : l10n.customIcon;
+    }
+
     return Text(
-      _selectedIcon == null ? l10n.defaultIcon : l10n.customIcon,
+      description,
       style: theme.textTheme.bodySmall?.copyWith(
         color: colorScheme.onSurfaceVariant,
       ),
@@ -1033,6 +1275,22 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     }
   }
 
+  void _showErrorDialog(AppLocalizations l10n, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.error),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l10n.ok),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _exportPackage() async {
     if (widget.package == null) return;
 
@@ -1283,13 +1541,17 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                 ),
                 child: Text(
                   '<${widget.package!.languageName1}>|<${widget.package!.languageName2}>|<category1>;<category2>;',
-                  style: TextStyle(fontFamily: 'monospace', fontSize: 12),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    fontFamily: 'monospace',
+                  ),
                 ),
               ),
               SizedBox(height: AppTheme.spacing16),
               Text(
                 'Examples:',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               SizedBox(height: AppTheme.spacing8),
               Container(
@@ -1300,21 +1562,25 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                 ),
                 child: Text(
                   'hello|hola|greetings;\ncat|gato|animals;pets;\nbook|libro|',
-                  style: TextStyle(fontFamily: 'monospace', fontSize: 12),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    fontFamily: 'monospace',
+                  ),
                 ),
               ),
               SizedBox(height: AppTheme.spacing16),
               Text(
-                'Notes:',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                l10n.importFormatNotes,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               SizedBox(height: AppTheme.spacing8),
-              Text('• Each line represents one item'),
-              Text('• Fields are separated by |'),
-              Text('• Categories are separated by ;'),
-              Text('• The last | is optional'),
-              Text('• Empty lines are ignored'),
-              Text('• Duplicates are skipped'),
+              Text(l10n.importFormatLine1),
+              Text(l10n.importFormatLine2),
+              Text(l10n.importFormatLine3),
+              Text(l10n.importFormatLine4),
+              Text(l10n.importFormatLine5),
+              Text(l10n.importFormatLine6),
             ],
           ),
         ),
@@ -1342,7 +1608,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
               children: [
                 Text(
                   '${l10n.successfullyImported}: ${result.successful.length}',
-                  style: TextStyle(
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.primary,
                   ),
@@ -1351,18 +1617,18 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   SizedBox(height: AppTheme.spacing8),
                   ...result.successful.take(10).map((item) => Padding(
                     padding: EdgeInsets.only(left: AppTheme.spacing8, bottom: 4),
-                    child: Text('✓ $item', style: TextStyle(fontSize: 12)),
+                    child: Text('✓ $item', style: Theme.of(context).textTheme.bodySmall),
                   )),
                   if (result.successful.length > 10)
                     Padding(
                       padding: EdgeInsets.only(left: AppTheme.spacing8),
-                      child: Text('... and ${result.successful.length - 10} more'),
+                      child: Text('... ${l10n.successfullyImported} ${result.successful.length - 10} ${l10n.items}'),
                     ),
                 ],
                 SizedBox(height: AppTheme.spacing16),
                 Text(
                   '${l10n.failedToImport}: ${result.failed.length}',
-                  style: TextStyle(
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(context).colorScheme.error,
                   ),
@@ -1371,12 +1637,12 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   SizedBox(height: AppTheme.spacing8),
                   ...result.failed.take(10).map((item) => Padding(
                     padding: EdgeInsets.only(left: AppTheme.spacing8, bottom: 4),
-                    child: Text('✗ $item', style: TextStyle(fontSize: 12)),
+                    child: Text('✗ $item', style: Theme.of(context).textTheme.bodySmall),
                   )),
                   if (result.failed.length > 10)
                     Padding(
                       padding: EdgeInsets.only(left: AppTheme.spacing8),
-                      child: Text('... and ${result.failed.length - 10} more'),
+                      child: Text('... ${l10n.failedToImport} ${result.failed.length - 10} ${l10n.items}'),
                     ),
                 ],
               ],

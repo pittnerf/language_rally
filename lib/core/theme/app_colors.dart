@@ -35,6 +35,7 @@ class AppColors {
   static const Color onSurfaceLight = Color(0xFF191C1B);
   static const Color surfaceVariantLight = Color(0xFFDFE4E2);
   static const Color onSurfaceVariantLight = Color(0xFF42494A);
+  static const Color dialogBackgroundLight = Color(0xFFF0F4F3); // Slightly tinted dialog background
 
   // Light Theme - Outline
   static const Color outlineLight = Color(0xFF72797A);
@@ -71,6 +72,7 @@ class AppColors {
   static const Color onSurfaceDark = Color(0xFFE0E3E1);
   static const Color surfaceVariantDark = Color(0xFF42494A);
   static const Color onSurfaceVariantDark = Color(0xFFC2C8C6);
+  static const Color dialogBackgroundDark = Color(0xFF2A2E2D); // Slightly lighter dialog background for dark theme
 
   // Dark Theme - Outline
   static const Color outlineDark = Color(0xFF8C9390);

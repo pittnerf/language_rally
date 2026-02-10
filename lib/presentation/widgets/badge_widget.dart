@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/utils/badge_helper.dart';
 import '../../core/constants/app_constants.dart';
+import '../../l10n/app_localizations.dart';
 
 /// Widget to display an achievement badge
 class BadgeWidget extends StatelessWidget {
@@ -22,6 +23,7 @@ class BadgeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final assetPath = BadgeHelper.getBadgeAssetPath(badgeId);
+    final theme = Theme.of(context);
 
     return Stack(
       alignment: Alignment.center,
@@ -34,7 +36,7 @@ class BadgeWidget extends StatelessWidget {
           colorFilter: isEarned
               ? null
               : ColorFilter.mode(
-                  Colors.grey.withValues(alpha: 0.5),
+                  theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
                   BlendMode.saturation,
                 ),
         ),
@@ -44,7 +46,7 @@ class BadgeWidget extends StatelessWidget {
           Icon(
             Icons.lock,
             size: size * 0.4,
-            color: Colors.black.withValues(alpha: 0.5),
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
           ),
       ],
     );
@@ -210,7 +212,11 @@ class NextBadgeProgress extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              const Icon(Icons.emoji_events, color: Colors.amber, size: 32),
+              Icon(
+                Icons.emoji_events,
+                color: Theme.of(context).colorScheme.tertiary,
+                size: 32,
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -290,13 +296,17 @@ class BadgeEarnedDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final level = BadgeHelper.getBadgeLevelById(badgeId);
+    final l10n = AppLocalizations.of(context)!;
 
     return AlertDialog(
-      title: const Row(
+      title: Row(
         children: [
-          Icon(Icons.celebration, color: Colors.amber),
-          SizedBox(width: 8),
-          Text('Badge Earned!'),
+          Icon(
+            Icons.celebration,
+            color: Theme.of(context).colorScheme.tertiary,
+          ),
+          const SizedBox(width: 8),
+          Text(l10n.badgeEarned),
         ],
       ),
       content: Column(
@@ -311,7 +321,7 @@ class BadgeEarnedDialog extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '${level.threshold.toInt()}% Achievement',
+              '${level.threshold.toInt()}% ${l10n.achievement}',
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ],
@@ -320,7 +330,7 @@ class BadgeEarnedDialog extends StatelessWidget {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Awesome!'),
+          child: Text(l10n.awesome),
         ),
       ],
     );

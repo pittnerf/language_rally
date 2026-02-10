@@ -40,7 +40,7 @@ class HomePage extends StatelessWidget {
                   );
                 },
                 icon: const Icon(Icons.font_download),
-                label: const Text('Test Inter Fonts'),
+                label: Text(localizations.testInterFonts),
               ),
               const SizedBox(height: AppTheme.spacing16),
 
@@ -53,7 +53,7 @@ class HomePage extends StatelessWidget {
                   );
                 },
                 icon: const Icon(Icons.library_books),
-                label: const Text('View Packages'),
+                label: Text(localizations.viewPackages),
               ),
               const SizedBox(height: AppTheme.spacing16),
 
@@ -66,7 +66,7 @@ class HomePage extends StatelessWidget {
                   );
                 },
                 icon: const Icon(Icons.add_circle_outline),
-                label: const Text('Create New Package'),
+                label: Text(localizations.createNewPackage),
               ),
               const SizedBox(height: AppTheme.spacing16),
 
@@ -79,10 +79,10 @@ class HomePage extends StatelessWidget {
                   );
                 },
                 icon: const Icon(Icons.science),
-                label: const Text('Generate Test Data'),
+                label: Text(localizations.generateTestData),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange.shade100,
-                  foregroundColor: Colors.orange.shade900,
+                  backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+                  foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
                 ),
               ),
               const SizedBox(height: AppTheme.spacing16),
@@ -96,7 +96,7 @@ class HomePage extends StatelessWidget {
                   );
                 },
                 icon: const Icon(Icons.palette),
-                label: const Text('Design System Showcase'),
+                label: Text(localizations.designSystemShowcase),
               ),
 
               const SizedBox(height: AppTheme.spacing32),

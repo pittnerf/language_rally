@@ -72,6 +72,15 @@ class AppLocalizationsHu extends AppLocalizations {
   String get customIcon => 'Egyéni ikon';
 
   @override
+  String get upload => 'Feltöltés';
+
+  @override
+  String get uploadCustomIcon => 'Egyéni ikon feltöltése (max 512x512, 1MB)';
+
+  @override
+  String get customIconUploaded => 'Egyéni ikon sikeresen feltöltve';
+
+  @override
   String get save => 'Mentés';
 
   @override
@@ -184,5 +193,148 @@ class AppLocalizationsHu extends AppLocalizations {
   String get errorImportingItems => 'Hiba az elemek importálása során';
 
   @override
+  String get error => 'Hiba';
+
+  @override
+  String get ok => 'OK';
+
+  @override
   String get close => 'Bezárás';
+
+  @override
+  String get importPackage => 'Csomag importálása';
+
+  @override
+  String get importPackageTooltip => 'Csomag importálása ZIP fájlból';
+
+  @override
+  String get selectPackageZipFile => 'Válasszon csomag ZIP fájlt';
+
+  @override
+  String get couldNotAccessFile => 'A kiválasztott fájl nem érhető el.';
+
+  @override
+  String get importingPackage => 'Csomag importálása...';
+
+  @override
+  String get packageImportedSuccessfully => 'Csomag sikeresen importálva!';
+
+  @override
+  String packageImportedWithItems(Object count) {
+    return 'Csomag sikeresen importálva! ($count elem)';
+  }
+
+  @override
+  String get importError => 'Importálási hiba';
+
+  @override
+  String get failedToImportPackage => 'Nem sikerült a csomag importálása';
+
+  @override
+  String get packageAlreadyExists => 'A csomag már létezik';
+
+  @override
+  String get packageExistsMessage =>
+      'Már létezik egy csomag ugyanezzel a nyelvpárral, leírással, szerző információval és verzióval. Szeretné mindenképpen új csomagként importálni?';
+
+  @override
+  String get importAsNew => 'Importálás mindenképpen';
+
+  @override
+  String get zipFileNotFound => 'ZIP fájl nem található';
+
+  @override
+  String get invalidPackageZip =>
+      'Érvénytelen csomag ZIP: hiányzik a package_data.json';
+
+  @override
+  String get invalidPackageFormat => 'Érvénytelen csomag fájlformátum';
+
+  @override
+  String get languagePackages => 'Nyelvi csomagok';
+
+  @override
+  String get loadingPackages => 'Csomagok betöltése...';
+
+  @override
+  String get tapAndHoldToReorder =>
+      'Érintse meg és tartsa lenyomva az átrendezéshez';
+
+  @override
+  String get tapAndHoldToReorderList =>
+      'Érintse meg és tartsa ≡ az átrendezéshez • Érintse ⋮ a kompakt nézethez';
+
+  @override
+  String get noPackagesYet => 'Még nincs csomag';
+
+  @override
+  String get createFirstPackage => 'Hozza létre az első nyelvi csomagját';
+
+  @override
+  String get versionLabel => 'Verzió';
+
+  @override
+  String get purchased => 'Megvásárolt';
+
+  @override
+  String get compactView => 'Kompakt nézet';
+
+  @override
+  String get expand => 'Kibontás';
+
+  @override
+  String get allCategories => 'Összes kategória';
+
+  @override
+  String get categoriesInPackage => 'Kategóriák ebben a csomagban';
+
+  @override
+  String get testInterFonts => 'Inter betűtípusok tesztelése';
+
+  @override
+  String get viewPackages => 'Csomagok megtekintése';
+
+  @override
+  String get createNewPackage => 'Új csomag létrehozása';
+
+  @override
+  String get generateTestData => 'Teszt adatok generálása';
+
+  @override
+  String get designSystemShowcase => 'Designrendszer bemutató';
+
+  @override
+  String get badgeEarned => 'Jelvény megszerzése!';
+
+  @override
+  String get achievement => 'Teljesítmény';
+
+  @override
+  String get awesome => 'Remek!';
+
+  @override
+  String get importFormatNotes => 'Megjegyzések:';
+
+  @override
+  String get importFormatLine1 => '• Minden sor egy elemet képvisel';
+
+  @override
+  String get importFormatLine2 => '• A mezőket | karakter választja el';
+
+  @override
+  String get importFormatLine3 => '• A kategóriákat ; karakter választja el';
+
+  @override
+  String get importFormatLine4 => '• Az utolsó | opcionális';
+
+  @override
+  String get importFormatLine5 => '• Az üres sorok figyelmen kívül maradnak';
+
+  @override
+  String get importFormatLine6 => '• A duplikátumok kihagyásra kerülnek';
+
+  @override
+  String andMore(Object count) {
+    return '... és még $count';
+  }
 }

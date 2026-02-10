@@ -72,6 +72,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customIcon => 'Custom Icon';
 
   @override
+  String get upload => 'Upload';
+
+  @override
+  String get uploadCustomIcon => 'Upload Custom Icon (max 512x512, 1MB)';
+
+  @override
+  String get customIconUploaded => 'Custom icon uploaded successfully';
+
+  @override
   String get save => 'Save';
 
   @override
@@ -184,5 +193,147 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorImportingItems => 'Error importing items';
 
   @override
+  String get error => 'Error';
+
+  @override
+  String get ok => 'OK';
+
+  @override
   String get close => 'Close';
+
+  @override
+  String get importPackage => 'Import Package';
+
+  @override
+  String get importPackageTooltip => 'Import package from ZIP file';
+
+  @override
+  String get selectPackageZipFile => 'Select Package ZIP File';
+
+  @override
+  String get couldNotAccessFile => 'Could not access the selected file.';
+
+  @override
+  String get importingPackage => 'Importing package...';
+
+  @override
+  String get packageImportedSuccessfully => 'Package imported successfully!';
+
+  @override
+  String packageImportedWithItems(Object count) {
+    return 'Package imported successfully! ($count items)';
+  }
+
+  @override
+  String get importError => 'Import Error';
+
+  @override
+  String get failedToImportPackage => 'Failed to import package';
+
+  @override
+  String get packageAlreadyExists => 'Package already exists';
+
+  @override
+  String get packageExistsMessage =>
+      'A package with the same language pair, description, author information, and version already exists. Would you like to import it as a new package anyway?';
+
+  @override
+  String get importAsNew => 'Import Anyway';
+
+  @override
+  String get zipFileNotFound => 'ZIP file not found';
+
+  @override
+  String get invalidPackageZip =>
+      'Invalid package ZIP: missing package_data.json';
+
+  @override
+  String get invalidPackageFormat => 'Invalid package file format';
+
+  @override
+  String get languagePackages => 'Language Packages';
+
+  @override
+  String get loadingPackages => 'Loading packages...';
+
+  @override
+  String get tapAndHoldToReorder => 'Tap and hold to reorder cards';
+
+  @override
+  String get tapAndHoldToReorderList =>
+      'Tap and hold ≡ to reorder • Tap ⋮ to toggle compact view';
+
+  @override
+  String get noPackagesYet => 'No packages yet';
+
+  @override
+  String get createFirstPackage => 'Create your first language package';
+
+  @override
+  String get versionLabel => 'Version';
+
+  @override
+  String get purchased => 'Purchased';
+
+  @override
+  String get compactView => 'Compact view';
+
+  @override
+  String get expand => 'Expand';
+
+  @override
+  String get allCategories => 'All Categories';
+
+  @override
+  String get categoriesInPackage => 'Categories in this package';
+
+  @override
+  String get testInterFonts => 'Test Inter Fonts';
+
+  @override
+  String get viewPackages => 'View Packages';
+
+  @override
+  String get createNewPackage => 'Create New Package';
+
+  @override
+  String get generateTestData => 'Generate Test Data';
+
+  @override
+  String get designSystemShowcase => 'Design System Showcase';
+
+  @override
+  String get badgeEarned => 'Badge Earned!';
+
+  @override
+  String get achievement => 'Achievement';
+
+  @override
+  String get awesome => 'Awesome!';
+
+  @override
+  String get importFormatNotes => 'Notes:';
+
+  @override
+  String get importFormatLine1 => '• Each line represents one item';
+
+  @override
+  String get importFormatLine2 => '• Fields are separated by |';
+
+  @override
+  String get importFormatLine3 => '• Categories are separated by ;';
+
+  @override
+  String get importFormatLine4 => '• The last | is optional';
+
+  @override
+  String get importFormatLine5 => '• Empty lines are ignored';
+
+  @override
+  String get importFormatLine6 => '• Duplicates are skipped';
+
+  @override
+  String andMore(Object count) {
+    return '... and $count more';
+  }
 }

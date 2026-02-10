@@ -222,7 +222,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radiusExtraLarge),
         ),
-        backgroundColor: colorScheme.surface,
+        backgroundColor: AppColors.dialogBackgroundLight,
         titleTextStyle: AppFonts.headlineSmall.copyWith(
           color: colorScheme.onSurface,
         ),
@@ -500,7 +500,7 @@ class AppTheme {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(radiusExtraLarge),
         ),
-        backgroundColor: colorScheme.surface,
+        backgroundColor: AppColors.dialogBackgroundDark,
         titleTextStyle: AppFonts.headlineSmall.copyWith(
           color: colorScheme.onSurface,
         ),

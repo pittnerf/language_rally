@@ -224,6 +224,24 @@ abstract class AppLocalizations {
   /// **'Custom Icon'**
   String get customIcon;
 
+  /// No description provided for @upload.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload'**
+  String get upload;
+
+  /// No description provided for @uploadCustomIcon.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Custom Icon (max 512x512, 1MB)'**
+  String get uploadCustomIcon;
+
+  /// No description provided for @customIconUploaded.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom icon uploaded successfully'**
+  String get customIconUploaded;
+
   /// No description provided for @save.
   ///
   /// In en, this message translates to:
@@ -440,11 +458,281 @@ abstract class AppLocalizations {
   /// **'Error importing items'**
   String get errorImportingItems;
 
+  /// No description provided for @error.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
+
   /// No description provided for @close.
   ///
   /// In en, this message translates to:
   /// **'Close'**
   String get close;
+
+  /// No description provided for @importPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Package'**
+  String get importPackage;
+
+  /// No description provided for @importPackageTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Import package from ZIP file'**
+  String get importPackageTooltip;
+
+  /// No description provided for @selectPackageZipFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Package ZIP File'**
+  String get selectPackageZipFile;
+
+  /// No description provided for @couldNotAccessFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not access the selected file.'**
+  String get couldNotAccessFile;
+
+  /// No description provided for @importingPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Importing package...'**
+  String get importingPackage;
+
+  /// No description provided for @packageImportedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Package imported successfully!'**
+  String get packageImportedSuccessfully;
+
+  /// No description provided for @packageImportedWithItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Package imported successfully! ({count} items)'**
+  String packageImportedWithItems(Object count);
+
+  /// No description provided for @importError.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Error'**
+  String get importError;
+
+  /// No description provided for @failedToImportPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to import package'**
+  String get failedToImportPackage;
+
+  /// No description provided for @packageAlreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'Package already exists'**
+  String get packageAlreadyExists;
+
+  /// No description provided for @packageExistsMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'A package with the same language pair, description, author information, and version already exists. Would you like to import it as a new package anyway?'**
+  String get packageExistsMessage;
+
+  /// No description provided for @importAsNew.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Anyway'**
+  String get importAsNew;
+
+  /// No description provided for @zipFileNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'ZIP file not found'**
+  String get zipFileNotFound;
+
+  /// No description provided for @invalidPackageZip.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid package ZIP: missing package_data.json'**
+  String get invalidPackageZip;
+
+  /// No description provided for @invalidPackageFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid package file format'**
+  String get invalidPackageFormat;
+
+  /// No description provided for @languagePackages.
+  ///
+  /// In en, this message translates to:
+  /// **'Language Packages'**
+  String get languagePackages;
+
+  /// No description provided for @loadingPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading packages...'**
+  String get loadingPackages;
+
+  /// No description provided for @tapAndHoldToReorder.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap and hold to reorder cards'**
+  String get tapAndHoldToReorder;
+
+  /// No description provided for @tapAndHoldToReorderList.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap and hold ≡ to reorder • Tap ⋮ to toggle compact view'**
+  String get tapAndHoldToReorderList;
+
+  /// No description provided for @noPackagesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No packages yet'**
+  String get noPackagesYet;
+
+  /// No description provided for @createFirstPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first language package'**
+  String get createFirstPackage;
+
+  /// No description provided for @versionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get versionLabel;
+
+  /// No description provided for @purchased.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchased'**
+  String get purchased;
+
+  /// No description provided for @compactView.
+  ///
+  /// In en, this message translates to:
+  /// **'Compact view'**
+  String get compactView;
+
+  /// No description provided for @expand.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand'**
+  String get expand;
+
+  /// No description provided for @allCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'All Categories'**
+  String get allCategories;
+
+  /// No description provided for @categoriesInPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories in this package'**
+  String get categoriesInPackage;
+
+  /// No description provided for @testInterFonts.
+  ///
+  /// In en, this message translates to:
+  /// **'Test Inter Fonts'**
+  String get testInterFonts;
+
+  /// No description provided for @viewPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'View Packages'**
+  String get viewPackages;
+
+  /// No description provided for @createNewPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Create New Package'**
+  String get createNewPackage;
+
+  /// No description provided for @generateTestData.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate Test Data'**
+  String get generateTestData;
+
+  /// No description provided for @designSystemShowcase.
+  ///
+  /// In en, this message translates to:
+  /// **'Design System Showcase'**
+  String get designSystemShowcase;
+
+  /// No description provided for @badgeEarned.
+  ///
+  /// In en, this message translates to:
+  /// **'Badge Earned!'**
+  String get badgeEarned;
+
+  /// No description provided for @achievement.
+  ///
+  /// In en, this message translates to:
+  /// **'Achievement'**
+  String get achievement;
+
+  /// No description provided for @awesome.
+  ///
+  /// In en, this message translates to:
+  /// **'Awesome!'**
+  String get awesome;
+
+  /// No description provided for @importFormatNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes:'**
+  String get importFormatNotes;
+
+  /// No description provided for @importFormatLine1.
+  ///
+  /// In en, this message translates to:
+  /// **'• Each line represents one item'**
+  String get importFormatLine1;
+
+  /// No description provided for @importFormatLine2.
+  ///
+  /// In en, this message translates to:
+  /// **'• Fields are separated by |'**
+  String get importFormatLine2;
+
+  /// No description provided for @importFormatLine3.
+  ///
+  /// In en, this message translates to:
+  /// **'• Categories are separated by ;'**
+  String get importFormatLine3;
+
+  /// No description provided for @importFormatLine4.
+  ///
+  /// In en, this message translates to:
+  /// **'• The last | is optional'**
+  String get importFormatLine4;
+
+  /// No description provided for @importFormatLine5.
+  ///
+  /// In en, this message translates to:
+  /// **'• Empty lines are ignored'**
+  String get importFormatLine5;
+
+  /// No description provided for @importFormatLine6.
+  ///
+  /// In en, this message translates to:
+  /// **'• Duplicates are skipped'**
+  String get importFormatLine6;
+
+  /// No description provided for @andMore.
+  ///
+  /// In en, this message translates to:
+  /// **'... and {count} more'**
+  String andMore(Object count);
 }
 
 class _AppLocalizationsDelegate

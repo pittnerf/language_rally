@@ -102,7 +102,9 @@ class DesignSystemShowcase extends StatelessWidget {
       child: Text(
         label,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: isLight ? Colors.black : Colors.white,
+              color: isLight
+                ? Theme.of(context).colorScheme.onSurface
+                : Theme.of(context).colorScheme.onSurface,
             ),
         textAlign: TextAlign.center,
       ),
