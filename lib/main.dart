@@ -1,5 +1,6 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:language_rally/l10n/app_localizations.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,6 +14,11 @@ void main() {
   // Ensure Flutter binding is initialized
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Configure system UI overlay style for edge-to-edge
+  SystemChrome.setEnabledSystemUIMode(
+    SystemUiMode.edgeToEdge,
+  );
+
   // Initialize database factory for desktop platforms
   DatabaseHelper.initializeDatabaseFactory();
 
@@ -24,14 +30,41 @@ class LanguageRallyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final themeMode = ref.watch(themeProvider);
+    final themeConfig = ref.watch(themeProvider);
     final locale = ref.watch(localeProvider);
+
+    // Select theme based on configuration
+    ThemeData lightTheme;
+    ThemeData darkTheme;
+
+    switch (themeConfig.themeOption) {
+      case AppThemeOption.calmTeal:
+        lightTheme = AppTheme.lightTheme;
+        darkTheme = AppTheme.darkTheme;
+        break;
+      case AppThemeOption.oceanBlue:
+        lightTheme = AppTheme.oceanLightTheme;
+        darkTheme = AppTheme.oceanDarkTheme;
+        break;
+      case AppThemeOption.forestGreen:
+        lightTheme = AppTheme.forestLightTheme;
+        darkTheme = AppTheme.forestDarkTheme;
+        break;
+      case AppThemeOption.sunsetOrange:
+        lightTheme = AppTheme.sunsetLightTheme;
+        darkTheme = AppTheme.sunsetDarkTheme;
+        break;
+      case AppThemeOption.purpleDreams:
+        lightTheme = AppTheme.purpleLightTheme;
+        darkTheme = AppTheme.purpleDarkTheme;
+        break;
+    }
 
     return MaterialApp(
       title: 'Language Rally',
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
-      themeMode: themeMode,
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      themeMode: themeConfig.isDarkMode ? ThemeMode.dark : ThemeMode.light,
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,

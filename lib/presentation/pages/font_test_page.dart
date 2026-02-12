@@ -12,9 +12,10 @@ class FontTestPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Inter Font Test'),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(AppTheme.spacing16),
-        children: [
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(AppTheme.spacing16),
+          children: [
           _buildFontTest(
             context,
             'Regular (400)',
@@ -82,6 +83,7 @@ class FontTestPage extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

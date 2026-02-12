@@ -6,31 +6,46 @@ import 'package:archive/archive_io.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
 import '../models/language_package.dart';
+import '../models/language_package_group.dart';
 import '../models/category.dart';
 import '../models/item.dart';
 import 'language_package_repository.dart';
+import 'language_package_group_repository.dart';
 import 'category_repository.dart';
 import 'item_repository.dart';
 
 /// Custom exception for duplicate package
 class PackageAlreadyExistsException implements Exception {
   final String packageId;
-  PackageAlreadyExistsException(this.packageId);
+  final String groupName;
+
+  PackageAlreadyExistsException(this.packageId, this.groupName);
 
   @override
-  String toString() => 'Package with ID $packageId already exists';
+  String toString() => 'Package with ID $packageId already exists in group "$groupName"';
+}
+
+/// Result of package import operation
+class ImportResult {
+  final int itemCount;
+  final String groupName;
+
+  ImportResult(this.itemCount, this.groupName);
 }
 
 class ImportExportRepository {
   final LanguagePackageRepository _packageRepo;
+  final LanguagePackageGroupRepository _groupRepo;
   final CategoryRepository _categoryRepo;
   final ItemRepository _itemRepo;
 
   ImportExportRepository({
     required LanguagePackageRepository packageRepo,
+    required LanguagePackageGroupRepository groupRepo,
     required CategoryRepository categoryRepo,
     required ItemRepository itemRepo,
   })  : _packageRepo = packageRepo,
+        _groupRepo = groupRepo,
         _categoryRepo = categoryRepo,
         _itemRepo = itemRepo;
 
@@ -54,12 +69,18 @@ class ImportExportRepository {
     final categoryIds = categories.map((c) => c.id).toList();
     final items = await _itemRepo.getItemsForCategories(categoryIds);
 
+    // Get the group information
+    final group = await _groupRepo.getGroupById(package.groupId);
+    final groupName = group?.name ?? 'Default';
+
     // Build export data structure
     final exportData = {
       'version': '1.0',
       'exported_at': DateTime.now().toIso8601String(),
       'package': {
         'id': package.id,
+        'group_id': package.groupId,
+        'group_name': groupName,
         'language_code1': package.languageCode1,
         'language_name1': package.languageName1,
         'language_code2': package.languageCode2,
@@ -111,19 +132,91 @@ class ImportExportRepository {
     }
 
     final packageData = data['package'] as Map<String, dynamic>;
-    final packageId = packageData['id'] as String;
 
-    // Check if package already exists
-    final existingPackage = await _packageRepo.getPackageById(packageId);
-    if (existingPackage != null) {
-      throw Exception(
-        'Package already exists. Delete existing package first or use importItems() to merge.',
-      );
+    // ALWAYS generate a new package ID to ensure independence
+    final newPackageId = const Uuid().v4();
+    packageData['id'] = newPackageId;
+
+    // Generate new IDs for categories and items
+    final categoriesData = data['categories'] as List<dynamic>;
+    final itemsData = data['items'] as List<dynamic>;
+
+    // Create mapping from old category IDs to new category IDs
+    final categoryIdMap = <String, String>{};
+    for (var catData in categoriesData) {
+      final oldCategoryId = catData['id'] as String;
+      final newCategoryId = const Uuid().v4();
+      categoryIdMap[oldCategoryId] = newCategoryId;
+      catData['id'] = newCategoryId; // Update category ID in place
     }
 
-    // Create package
+    // Generate new IDs for all items and update their category references
+    for (var itemData in itemsData) {
+      // Generate new item ID
+      itemData['id'] = const Uuid().v4();
+
+      // Update category IDs to reference new categories
+      final oldCategoryIds = itemData['categoryIds'] as List<dynamic>;
+      final newCategoryIds = oldCategoryIds.map((oldId) {
+        return categoryIdMap[oldId as String] ?? oldId;
+      }).toList();
+      itemData['categoryIds'] = newCategoryIds;
+    }
+
+    final packageId = newPackageId;
+
+    // Handle group: check if exists, create if not
+    String groupId;
+    final exportedGroupId = packageData['group_id'] as String?;
+    final exportedGroupName = packageData['group_name'] as String?;
+
+    if (exportedGroupId != null && exportedGroupName != null) {
+      // PRIORITIZE NAME: Check if a group with the same name exists (case-insensitive)
+      var group = await _groupRepo.getGroupByName(exportedGroupName);
+
+      if (group == null) {
+        // Group with this name doesn't exist, create new group with exported ID and name
+        // Use a new UUID if the exported ID already exists
+        var newGroupId = exportedGroupId;
+        final existingGroupWithId = await _groupRepo.getGroupById(exportedGroupId);
+        if (existingGroupWithId != null) {
+          // ID exists but with different name, generate new ID
+          newGroupId = const Uuid().v4();
+          // print('  Group ID conflict: using new ID $newGroupId instead of $exportedGroupId');
+        }
+
+        group = LanguagePackageGroup(
+          id: newGroupId,
+          name: exportedGroupName,
+        );
+        await _groupRepo.insertGroup(group);
+        // print('  ✓ Created new group: $newGroupId - ${exportedGroupName}');
+      } else {
+        // print('  ✓ Using existing group: ${group.id} - ${group.name}');
+      }
+
+      groupId = group.id;
+    } else {
+      // Fallback: use or create default group for old exports
+      const defaultGroupId = 'default-group-id';
+      const defaultGroupName = 'Default';
+
+      var defaultGroup = await _groupRepo.getGroupById(defaultGroupId);
+      if (defaultGroup == null) {
+        defaultGroup = LanguagePackageGroup(
+          id: defaultGroupId,
+          name: defaultGroupName,
+        );
+        await _groupRepo.insertGroup(defaultGroup);
+      }
+
+      groupId = defaultGroupId;
+    }
+
+    // Create package with the correct group ID
     final package = LanguagePackage(
       id: packageId,
+      groupId: groupId,
       languageCode1: packageData['language_code1'] as String,
       languageName1: packageData['language_name1'] as String,
       languageCode2: packageData['language_code2'] as String,
@@ -139,9 +232,11 @@ class ImportExportRepository {
     );
 
     await _packageRepo.insertPackage(package);
+    // print('Import: Package created with ID: $packageId, groupId: $groupId');
 
-    // Import categories
-    final categoriesData = data['categories'] as List<dynamic>;
+    // Import categories (IDs already updated above)
+    // print('Import: Found ${categoriesData.length} categories in import data');
+
     for (final catData in categoriesData) {
       final category = Category(
         id: catData['id'] as String,
@@ -150,24 +245,32 @@ class ImportExportRepository {
         description: catData['description'] as String?,
       );
       await _categoryRepo.insertCategory(category);
+      // print('  Imported category: ${category.id} - ${category.name}');
     }
 
     // Import items
-    final itemsData = data['items'] as List<dynamic>;
+    // print('Import: Found ${itemsData.length} items in import data');
+
     int importedCount = 0;
-
     for (final itemData in itemsData) {
-      final item = Item.fromJson(itemData as Map<String, dynamic>);
+      try {
+        final item = Item.fromJson(itemData as Map<String, dynamic>);
 
-      // Check for duplicate
-      final existingItem = await _itemRepo.getItemById(item.id);
-      if (existingItem == null) {
-        await _itemRepo.insertItem(item);
+        // Update item's packageId to match the imported package
+        final updatedItem = item.copyWith(packageId: packageId);
+
+        // Since we generated new IDs, no duplicates are possible
+        await _itemRepo.insertItem(updatedItem);
         importedCount++;
+        // print('  ✓ Item imported: ${updatedItem.id}');
+      } catch (e) {
+        // print('  ❌ Error importing item: $e');
+        // print('  Stack trace: $stackTrace');
+        // Continue with next item instead of failing entire import
       }
     }
 
-
+    // print('Import completed: $importedCount items imported');
     return importedCount;
   }
 
@@ -270,9 +373,18 @@ class ImportExportRepository {
     // Get categories for the package
     final categories = await _categoryRepo.getCategoriesForPackage(packageId);
 
+    // print('Export: Found ${categories.length} categories for package $packageId');
+
+
     // Get all items for each category
     final categoryIds = categories.map((c) => c.id).toList();
     final items = await _itemRepo.getItemsForCategories(categoryIds);
+
+    // print('Export: Found ${items.length} items for ${categoryIds.length} categories');
+
+    // Get the group information
+    final group = await _groupRepo.getGroupById(package.groupId);
+    final groupName = group?.name ?? 'Default';
 
     // Build export data structure
     bool isCustomIcon = false;
@@ -287,6 +399,8 @@ class ImportExportRepository {
       'exported_at': DateTime.now().toIso8601String(),
       'package': {
         'id': package.id,
+        'group_id': package.groupId,
+        'group_name': groupName,
         'language_code1': package.languageCode1,
         'language_name1': package.languageName1,
         'language_code2': package.languageCode2,
@@ -333,9 +447,9 @@ class ImportExportRepository {
               packageMap['icon'] = iconFileName;
               finalIconPath = iconFileName;
 
-              print('Exported custom icon: $iconFileName');
+              // print('Exported custom icon: $iconFileName');
             } else {
-              print('Warning: Custom icon file not found: ${package.icon}');
+              // print('Warning: Custom icon file not found: ${package.icon}');
               // Set icon to null if file doesn't exist
               final packageMap = exportData['package'] as Map<String, dynamic>;
               packageMap['icon'] = null;
@@ -345,7 +459,7 @@ class ImportExportRepository {
           }
           // Asset icons don't need to be copied - they're part of the app
         } catch (e) {
-          print('Error copying icon: $e');
+          // print('Error copying icon: $e');
           // On error, set icon to null to avoid issues on import
           final packageMap = exportData['package'] as Map<String, dynamic>;
           packageMap['icon'] = null;
@@ -360,22 +474,22 @@ class ImportExportRepository {
         const JsonEncoder.withIndent('  ').convert(exportData),
       );
 
-      print('Package data written to: ${jsonFile.path}');
-      print('Icon in export: $finalIconPath');
+      // print('Package data written to: ${jsonFile.path}');
+      // print('Icon in export: $finalIconPath');
 
       // Create ZIP archive
       final archive = Archive();
 
       // Add all files from export directory to archive
       final files = await exportDir.list(recursive: true).toList();
-      print('Files found in export directory:');
+      // print('Files found in export directory:');
       for (final entity in files) {
         if (entity is File) {
           final relativePath = path.relative(entity.path, from: exportDir.path);
           final bytes = await entity.readAsBytes();
           final archiveFile = ArchiveFile(relativePath, bytes.length, bytes);
           archive.addFile(archiveFile);
-          print('  Added to ZIP: $relativePath (${bytes.length} bytes)');
+          // print('  Added to ZIP: $relativePath (${bytes.length} bytes)');
         }
       }
 
@@ -390,8 +504,8 @@ class ImportExportRepository {
       final zipFile = File(zipFilePath);
       await zipFile.writeAsBytes(zipData!);
 
-      print('ZIP file created: $zipFilePath');
-      print('Total files in archive: ${archive.files.length}');
+      // print('ZIP file created: $zipFilePath');
+      // print('Total files in archive: ${archive.files.length}');
 
       return zipFilePath;
     } finally {
@@ -405,8 +519,8 @@ class ImportExportRepository {
   }
 
   /// Import a package from ZIP file including custom icons
-  /// Returns number of items imported
-  Future<int> importPackageFromZip(String zipFilePath) async {
+  /// Returns ImportResult with item count and group name
+  Future<ImportResult> importPackageFromZip(String zipFilePath) async {
     final zipFile = File(zipFilePath);
     if (!await zipFile.exists()) {
       throw Exception('ZIP file not found: $zipFilePath');
@@ -449,10 +563,70 @@ class ImportExportRepository {
 
       final packageData = data['package'] as Map<String, dynamic>;
 
-      // Check if package already exists based on content (not ID)
-      final existingPackage = await _checkForDuplicatePackage(packageData);
+      // Determine which group this package would be imported to
+      final exportedGroupId = packageData['group_id'] as String?;
+      final exportedGroupName = packageData['group_name'] as String?;
+      String targetGroupId;
+      String targetGroupName;
+
+      if (exportedGroupId != null && exportedGroupName != null) {
+        // Check if a group with the same name exists
+        var group = await _groupRepo.getGroupByName(exportedGroupName);
+        if (group != null) {
+          targetGroupId = group.id;
+          targetGroupName = group.name;
+        } else {
+          // New group would be created, check for duplicates based on content
+          targetGroupId = exportedGroupId; // Tentative ID
+          targetGroupName = exportedGroupName;
+        }
+      } else {
+        // Would use default group
+        const defaultGroupId = 'default-group-id';
+        const defaultGroupName = 'Default';
+        var defaultGroup = await _groupRepo.getGroupById(defaultGroupId);
+        if (defaultGroup != null) {
+          targetGroupId = defaultGroup.id;
+          targetGroupName = defaultGroup.name;
+        } else {
+          // Default group doesn't exist yet, check for duplicates in default group
+          targetGroupId = defaultGroupId;
+          targetGroupName = defaultGroupName;
+        }
+      }
+
+      // Check if package already exists in the target group
+      final existingPackage = await _checkForDuplicatePackage(packageData, targetGroupId);
       if (existingPackage != null) {
-        throw PackageAlreadyExistsException(existingPackage.id);
+        throw PackageAlreadyExistsException(existingPackage.id, targetGroupName);
+      }
+
+      // ALWAYS generate new IDs for package, categories, and items
+      final newPackageId = const Uuid().v4();
+      packageData['id'] = newPackageId;
+
+      // Generate new IDs for categories and items
+      final categoriesData = data['categories'] as List<dynamic>;
+      final itemsData = data['items'] as List<dynamic>;
+
+      // Create mapping from old category IDs to new category IDs
+      final categoryIdMap = <String, String>{};
+      for (var catData in categoriesData) {
+        final oldCategoryId = catData['id'] as String;
+        final newCategoryId = const Uuid().v4();
+        categoryIdMap[oldCategoryId] = newCategoryId;
+        catData['id'] = newCategoryId;
+      }
+
+      // Generate new IDs for all items and update their category references
+      for (var itemData in itemsData) {
+        itemData['id'] = const Uuid().v4();
+
+        final oldCategoryIds = itemData['categoryIds'] as List<dynamic>;
+        final newCategoryIds = oldCategoryIds.map((oldId) {
+          return categoryIdMap[oldId as String] ?? oldId;
+        }).toList();
+        itemData['categoryIds'] = newCategoryIds;
       }
 
       return await _importPackageData(packageData, data, extractDir);
@@ -467,7 +641,8 @@ class ImportExportRepository {
   }
 
   /// Import a package from ZIP file with a new ID (for duplicate packages)
-  Future<int> importPackageFromZipWithNewId(String zipFilePath) async {
+  /// Returns ImportResult with item count and group name
+  Future<ImportResult> importPackageFromZipWithNewId(String zipFilePath) async {
     final zipFile = File(zipFilePath);
     if (!await zipFile.exists()) {
       throw Exception('ZIP file not found: $zipFilePath');
@@ -511,7 +686,34 @@ class ImportExportRepository {
       final packageData = data['package'] as Map<String, dynamic>;
 
       // Generate new ID for the package
-      packageData['id'] = const Uuid().v4();
+      final newPackageId = const Uuid().v4();
+      packageData['id'] = newPackageId;
+
+      // Generate new IDs for categories and update items accordingly
+      final categoriesData = data['categories'] as List<dynamic>;
+      final itemsData = data['items'] as List<dynamic>;
+
+      // Create mapping from old category IDs to new category IDs
+      final categoryIdMap = <String, String>{};
+      for (var catData in categoriesData) {
+        final oldCategoryId = catData['id'] as String;
+        final newCategoryId = const Uuid().v4();
+        categoryIdMap[oldCategoryId] = newCategoryId;
+        catData['id'] = newCategoryId; // Update category ID in place
+      }
+
+      // Generate new IDs for all items and update their category references
+      for (var itemData in itemsData) {
+        // Generate new item ID
+        itemData['id'] = const Uuid().v4();
+
+        // Update category IDs to reference new categories
+        final oldCategoryIds = itemData['categoryIds'] as List<dynamic>;
+        final newCategoryIds = oldCategoryIds.map((oldId) {
+          return categoryIdMap[oldId as String] ?? oldId;
+        }).toList();
+        itemData['categoryIds'] = newCategoryIds; // Update category IDs in place
+      }
 
       return await _importPackageData(packageData, data, extractDir);
     } finally {
@@ -524,36 +726,42 @@ class ImportExportRepository {
     }
   }
 
-  /// Check if a package with the same content already exists
-  /// Compares: source/target language codes, description, author name, author email, version
-  Future<LanguagePackage?> _checkForDuplicatePackage(Map<String, dynamic> packageData) async {
+  /// Check if a package with the same content already exists in the same group
+  /// Compares: language names (not codes), description, author info, version within the same group
+  Future<LanguagePackage?> _checkForDuplicatePackage(
+    Map<String, dynamic> packageData,
+    String groupId,
+  ) async {
     final allPackages = await _packageRepo.getAllPackages();
 
     // Extract and normalize fields from import data
-    final langCode1 = (packageData['language_code1'] as String).trim().toLowerCase();
-    final langCode2 = (packageData['language_code2'] as String).trim().toLowerCase();
+    final langName1 = (packageData['language_name1'] as String).trim().toLowerCase();
+    final langName2 = (packageData['language_name2'] as String).trim().toLowerCase();
     final description = (packageData['description'] as String?)?.trim().toLowerCase() ?? '';
     final authorName = (packageData['author_name'] as String?)?.trim().toLowerCase() ?? '';
     final authorEmail = (packageData['author_email'] as String?)?.trim().toLowerCase() ?? '';
     final version = (packageData['version'] as String?)?.trim().toLowerCase() ?? '';
 
-    // Check each existing package
+    // Check each existing package IN THE SAME GROUP
     for (final pkg in allPackages) {
-      final pkgLangCode1 = pkg.languageCode1.trim().toLowerCase();
-      final pkgLangCode2 = pkg.languageCode2.trim().toLowerCase();
+      // Skip packages in different groups
+      if (pkg.groupId != groupId) continue;
+
+      final pkgLangName1 = pkg.languageName1.trim().toLowerCase();
+      final pkgLangName2 = pkg.languageName2.trim().toLowerCase();
       final pkgDescription = (pkg.description ?? '').trim().toLowerCase();
       final pkgAuthorName = (pkg.authorName ?? '').trim().toLowerCase();
       final pkgAuthorEmail = (pkg.authorEmail ?? '').trim().toLowerCase();
       final pkgVersion = pkg.version.trim().toLowerCase();
 
-      // Check if all fields match
-      if (pkgLangCode1 == langCode1 &&
-          pkgLangCode2 == langCode2 &&
+      // Check if all fields match (language names, not codes!)
+      if (pkgLangName1 == langName1 &&
+          pkgLangName2 == langName2 &&
           pkgDescription == description &&
           pkgAuthorName == authorName &&
           pkgAuthorEmail == authorEmail &&
           pkgVersion == version) {
-        return pkg; // Found duplicate
+        return pkg; // Found duplicate in same group
       }
     }
 
@@ -561,7 +769,8 @@ class ImportExportRepository {
   }
 
   /// Common import logic for package data
-  Future<int> _importPackageData(
+  /// Returns ImportResult with item count and group name
+  Future<ImportResult> _importPackageData(
     Map<String, dynamic> packageData,
     Map<String, dynamic> data,
     Directory extractDir,
@@ -595,9 +804,61 @@ class ImportExportRepository {
       }
     }
 
-    // Create package
+    // Handle group: check if exists, create if not
+    String groupId;
+    String groupName;
+    final exportedGroupId = packageData['group_id'] as String?;
+    final exportedGroupName = packageData['group_name'] as String?;
+
+    if (exportedGroupId != null && exportedGroupName != null) {
+      // PRIORITIZE NAME: Check if a group with the same name exists (case-insensitive)
+      var group = await _groupRepo.getGroupByName(exportedGroupName);
+
+      if (group == null) {
+        // Group with this name doesn't exist, create new group with exported ID and name
+        // Use a new UUID if the exported ID already exists
+        var newGroupId = exportedGroupId;
+        final existingGroupWithId = await _groupRepo.getGroupById(exportedGroupId);
+        if (existingGroupWithId != null) {
+          // ID exists but with different name, generate new ID
+          newGroupId = const Uuid().v4();
+          // print('  Group ID conflict: using new ID $newGroupId instead of $exportedGroupId');
+        }
+
+        group = LanguagePackageGroup(
+          id: newGroupId,
+          name: exportedGroupName,
+        );
+        await _groupRepo.insertGroup(group);
+        // print('  ✓ Created new group: $newGroupId - ${exportedGroupName}');
+      } else {
+        // print('  ✓ Using existing group: ${group.id} - ${group.name}');
+      }
+
+      groupId = group.id;
+      groupName = group.name;
+    } else {
+      // Fallback: use or create default group for old exports
+      const defaultGroupId = 'default-group-id';
+      const defaultGroupName = 'Default';
+
+      var defaultGroup = await _groupRepo.getGroupById(defaultGroupId);
+      if (defaultGroup == null) {
+        defaultGroup = LanguagePackageGroup(
+          id: defaultGroupId,
+          name: defaultGroupName,
+        );
+        await _groupRepo.insertGroup(defaultGroup);
+      }
+
+      groupId = defaultGroupId;
+      groupName = defaultGroupName;
+    }
+
+    // Create package with the correct group ID
     final package = LanguagePackage(
       id: packageId,
+      groupId: groupId,
       languageCode1: packageData['language_code1'] as String,
       languageName1: packageData['language_name1'] as String,
       languageCode2: packageData['language_code2'] as String,
@@ -613,9 +874,12 @@ class ImportExportRepository {
     );
 
     await _packageRepo.insertPackage(package);
+    // print('Import ZIP: Package created with ID: $packageId, groupId: $groupId');
 
     // Import categories
     final categoriesData = data['categories'] as List<dynamic>;
+    // print('Import ZIP: Found ${categoriesData.length} categories in import data');
+
     for (final catData in categoriesData) {
       final category = Category(
         id: catData['id'] as String,
@@ -624,24 +888,55 @@ class ImportExportRepository {
         description: catData['description'] as String?,
       );
       await _categoryRepo.insertCategory(category);
+      // print('  Imported category: ${category.id} - ${category.name}');
     }
 
     // Import items
     final itemsData = data['items'] as List<dynamic>;
     int importedCount = 0;
+    int skippedCount = 0;
+
+    // print('Import ZIP: Found ${itemsData.length} items in import data');
 
     for (final itemData in itemsData) {
-      final item = Item.fromJson(itemData as Map<String, dynamic>);
+      try {
+        final item = Item.fromJson(itemData as Map<String, dynamic>);
+        // print('  Processing item: ${item.id}, original packageId: ${item.packageId}');
 
-      // Check for duplicate
-      final existingItem = await _itemRepo.getItemById(item.id);
-      if (existingItem == null) {
-        await _itemRepo.insertItem(item);
-        importedCount++;
+        // Update item's packageId to match the imported package
+        // This is crucial because the exported packageId might be different
+        final updatedItem = item.copyWith(packageId: packageId);
+        // print('    Updated packageId to: ${updatedItem.packageId}');
+
+        // Check for duplicate: item with same ID in ANY package
+        final existingItem = await _itemRepo.getItemById(updatedItem.id);
+        if (existingItem != null) {
+          // Item with this ID already exists (in any package)
+          if (existingItem.packageId == packageId) {
+            // Item exists in THIS package - skip it
+            skippedCount++;
+            // print('    ⚠ Item already exists in this package, skipped');
+          } else {
+            // Item exists in ANOTHER package - this shouldn't happen with proper ID generation
+            // Skip to avoid database constraint violations
+            skippedCount++;
+            // print('    ⚠ Item ID collision with another package, skipped');
+          }
+        } else {
+          // Item doesn't exist anywhere - safe to import
+          await _itemRepo.insertItem(updatedItem);
+          importedCount++;
+          // print('    ✓ Item imported successfully');
+        }
+      } catch (e) {
+        // print('    ❌ Error importing item: $e');
+        // print('    Stack trace: $stackTrace');
+        // Continue with next item instead of failing entire import
       }
     }
 
-    return importedCount;
+    // print('Import ZIP completed: $importedCount items imported, $skippedCount skipped');
+    return ImportResult(importedCount, groupName);
   }
 }
 

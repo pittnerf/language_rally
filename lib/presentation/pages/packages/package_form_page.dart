@@ -11,10 +11,12 @@ import 'package:path_provider/path_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/language_codes.dart';
 import '../../../data/models/language_package.dart';
+import '../../../data/models/language_package_group.dart';
 import '../../../data/models/item.dart';
 import '../../../data/models/item_language_data.dart';
 import '../../../data/models/category.dart';
 import '../../../data/repositories/language_package_repository.dart';
+import '../../../data/repositories/language_package_group_repository.dart';
 import '../../../data/repositories/category_repository.dart';
 import '../../../data/repositories/item_repository.dart';
 import '../../../data/repositories/import_export_repository.dart';
@@ -34,6 +36,7 @@ class PackageFormPage extends ConsumerStatefulWidget {
 class _PackageFormPageState extends ConsumerState<PackageFormPage> {
   final _formKey = GlobalKey<FormState>();
   final _packageRepo = LanguagePackageRepository();
+  final _groupRepo = LanguagePackageGroupRepository();
   final _categoryRepo = CategoryRepository();
   final _itemRepo = ItemRepository();
   late final ImportExportRepository _importExportRepo;
@@ -55,6 +58,10 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
   bool get _isReadOnly => widget.package?.isReadonly ?? false;
   bool get _isPurchased => widget.package?.isPurchased ?? false;
 
+  // Package groups
+  List<LanguagePackageGroup> _groups = [];
+  LanguagePackageGroup? _selectedGroup;
+
   // Available icons from assets
   List<String?> _availableIcons = [
     null, // Default icon
@@ -72,11 +79,34 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     super.initState();
     _importExportRepo = ImportExportRepository(
       packageRepo: _packageRepo,
+      groupRepo: _groupRepo,
       categoryRepo: _categoryRepo,
       itemRepo: _itemRepo,
     );
     _initializeControllers();
     _loadCustomIcons();
+    _loadGroups();
+  }
+
+  Future<void> _loadGroups() async {
+    try {
+      final groups = await _groupRepo.getAllGroups();
+      setState(() {
+        _groups = groups;
+        // If editing, set the current group
+        if (_isEditMode && widget.package != null) {
+          _selectedGroup = groups.firstWhere(
+            (g) => g.id == widget.package!.groupId,
+            orElse: () => groups.first,
+          );
+        } else {
+          // For new packages, select the first group (usually "Default")
+          _selectedGroup = groups.isNotEmpty ? groups.first : null;
+        }
+      });
+    } catch (e) {
+      debugPrint('Error loading groups: $e');
+    }
   }
 
   void _initializeControllers() {
@@ -160,13 +190,15 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final orientation = MediaQuery.of(context).orientation;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth >= 600; // Consider 600dp+ as tablet
 
     if (_isPurchased || _isReadOnly) {
       return _buildReadOnlyWarning(context, l10n, theme);
     }
 
     return Scaffold(
-      appBar: _buildAppBar(context, theme, l10n),
+      appBar: isTablet ? _buildAppBar(context, theme, l10n) : null,
       body: _buildBody(context, l10n),
       floatingActionButton: orientation == Orientation.portrait
           ? _buildFloatingActionButton(l10n)
@@ -186,7 +218,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     return AppBar(
       title: Text(
         _isEditMode ? l10n.editPackage : l10n.createPackage,
-        style: theme.textTheme.headlineSmall,
+        style: theme.textTheme.titleLarge,
       ),
       actions: _isEditMode ? [_buildDeleteButton(l10n)] : null,
     );
@@ -205,31 +237,36 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    return Form(
-      key: _formKey,
-      child: ListView(
-        padding: EdgeInsets.all(AppTheme.spacing16),
-        children: _buildFormFields(context, l10n),
+    return SafeArea(
+      child: Form(
+        key: _formKey,
+        child: ListView(
+          padding: EdgeInsets.all(AppTheme.spacing12),
+          children: _buildFormFields(context, l10n),
+        ),
       ),
     );
   }
 
   List<Widget> _buildFormFields(BuildContext context, AppLocalizations l10n) {
     return [
-      _buildSectionHeader(context, l10n.packageDetails),
-      SizedBox(height: AppTheme.spacing16),
+      // Package Group selector
+      _buildGroupSelector(context, l10n),
+      // SizedBox(height: AppTheme.spacing16),
+      // _buildSectionHeader(context, l10n.packageDetails),
+      SizedBox(height: AppTheme.spacing12),
       _buildIconSelector(context, l10n),
-      SizedBox(height: AppTheme.spacing24),
+      SizedBox(height: AppTheme.spacing12),
       // Package details section with background
       _buildPackageDetailsSection(context, l10n),
-      SizedBox(height: AppTheme.spacing24),
+      SizedBox(height: AppTheme.spacing12),
       // Author fields without section header
       _buildResponsiveAuthorFields(context, l10n),
-      SizedBox(height: AppTheme.spacing16),
+      SizedBox(height: AppTheme.spacing12),
       _buildTextField(context, l10n, _authorWebpageController, l10n.authorWebpage, keyboardType: TextInputType.url, validator: _validateUrl),
-      SizedBox(height: AppTheme.spacing32),
+      SizedBox(height: AppTheme.spacing12),
       _buildActionButtons(context, l10n),
-      SizedBox(height: AppTheme.spacing16),
+      SizedBox(height: AppTheme.spacing12),
     ];
   }
 
@@ -238,7 +275,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     final colorScheme = theme.colorScheme;
 
     return Container(
-      padding: EdgeInsets.all(AppTheme.spacing16),
+      padding: EdgeInsets.all(AppTheme.spacing12),
       decoration: BoxDecoration(
         color: colorScheme.primaryContainer.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
@@ -250,7 +287,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
       child: Column(
         children: [
           _buildResponsiveLanguageFields(context, l10n),
-          SizedBox(height: AppTheme.spacing16),
+          SizedBox(height: AppTheme.spacing12),
           _buildTextField(context, l10n, _descriptionController, l10n.description, maxLines: 2, hint: l10n.descriptionHint),
         ],
       ),
@@ -312,7 +349,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   ),
                 ],
               ),
-              SizedBox(height: AppTheme.spacing16),
+              SizedBox(height: AppTheme.spacing12),
               Row(
                 children: [
                   Expanded(
@@ -335,11 +372,11 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
           return Column(
             children: [
               _buildLanguageCodeField(context, l10n, _languageCode1Controller, l10n.languageCode1, true),
-              SizedBox(height: AppTheme.spacing16),
+              SizedBox(height: AppTheme.spacing12),
               _buildTextField(context, l10n, _languageName1Controller, l10n.languageName1, required: true),
-              SizedBox(height: AppTheme.spacing16),
+              SizedBox(height: AppTheme.spacing12),
               _buildLanguageCodeField(context, l10n, _languageCode2Controller, l10n.languageCode2, false),
-              SizedBox(height: AppTheme.spacing16),
+              SizedBox(height: AppTheme.spacing12),
               _buildTextField(context, l10n, _languageName2Controller, l10n.languageName2, required: true),
             ],
           );
@@ -392,7 +429,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   ),
                 ],
               ),
-              SizedBox(height: AppTheme.spacing16),
+              SizedBox(height: AppTheme.spacing12),
               _buildTextField(context, l10n, _versionController, l10n.version, required: true),
             ],
           );
@@ -403,9 +440,9 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
           return Column(
             children: [
               _buildTextField(context, l10n, _authorNameController, l10n.authorName),
-              SizedBox(height: AppTheme.spacing16),
+              SizedBox(height: AppTheme.spacing12),
               _buildTextField(context, l10n, _authorEmailController, l10n.authorEmail, keyboardType: TextInputType.emailAddress, validator: _validateEmail),
-              SizedBox(height: AppTheme.spacing16),
+              SizedBox(height: AppTheme.spacing12),
               _buildTextField(context, l10n, _versionController, l10n.version, required: true),
             ],
           );
@@ -416,48 +453,116 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
 
   Widget _buildReadOnlyWarning(BuildContext context, AppLocalizations l10n, ThemeData theme) {
     return Scaffold(
-      appBar: AppBar(
+       appBar: AppBar(
         title: Text(l10n.editPackage),
       ),
-      body: Center(
-        child: Padding(
-          padding: EdgeInsets.all(AppTheme.spacing24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.lock_outline,
-                size: 80,
-                color: theme.colorScheme.outline,
-              ),
-              SizedBox(height: AppTheme.spacing24),
-              Text(
-                _isPurchased ? l10n.purchasedPackage : l10n.readOnlyPackage,
-                style: theme.textTheme.titleLarge,
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: AppTheme.spacing24),
-              ElevatedButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: Text(l10n.cancel),
-              ),
-            ],
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.all(AppTheme.spacing12),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.lock_outline,
+                  size: 60,
+                  color: theme.colorScheme.outline,
+                ),
+                SizedBox(height: AppTheme.spacing12),
+                Text(
+                  _isPurchased ? l10n.purchasedPackage : l10n.readOnlyPackage,
+                  style: theme.textTheme.titleMedium,
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: AppTheme.spacing12),
+                ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: Text(l10n.cancel),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildSectionHeader(BuildContext context, String title) {
+  Widget _buildGroupSelector(BuildContext context, AppLocalizations l10n) {
     final theme = Theme.of(context);
-    return Text(
-      title,
-      style: theme.textTheme.titleMedium?.copyWith(
-        fontWeight: FontWeight.bold,
-        color: theme.colorScheme.primary,
+    final colorScheme = theme.colorScheme;
+
+    if (_groups.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      padding: EdgeInsets.all(AppTheme.spacing12),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+        border: Border.all(
+          color: colorScheme.outlineVariant,
+          width: 1,
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.folder_outlined,
+            size: 20,
+            color: colorScheme.primary,
+          ),
+          SizedBox(width: AppTheme.spacing12),
+          Text(
+            'Package Group:',
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: colorScheme.onSurface,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(width: AppTheme.spacing12),
+          Expanded(
+            child: DropdownButtonFormField<LanguagePackageGroup>(
+              initialValue: _selectedGroup,
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.symmetric(
+                  horizontal: AppTheme.spacing12,
+                  vertical: AppTheme.spacing8,
+                ),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                ),
+                filled: true,
+                fillColor: colorScheme.surface,
+              ),
+              items: _groups.map((group) {
+                return DropdownMenuItem<LanguagePackageGroup>(
+                  value: group,
+                  child: Text(
+                    group.name,
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                );
+              }).toList(),
+              onChanged: (newGroup) {
+                setState(() {
+                  _selectedGroup = newGroup;
+                });
+              },
+              validator: (value) {
+                if (value == null) {
+                  return 'Please select a package group';
+                }
+                return null;
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
+
+
 
   Widget _buildIconSelector(BuildContext context, AppLocalizations l10n) {
     final theme = Theme.of(context);
@@ -478,7 +583,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
             _buildUploadIconButton(context, colorScheme, l10n),
           ],
         ),
-        SizedBox(height: AppTheme.spacing8),
+        SizedBox(height: AppTheme.spacing12),
         _buildIconDescription(theme, colorScheme, l10n),
       ],
     );
@@ -501,77 +606,62 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
         color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
       ),
-      padding: EdgeInsets.symmetric(horizontal: AppTheme.spacing12),
-      child: Row(
-        children: [
-          // Icon preview
-          Container(
-            width: 48,
-            height: 48,
-            margin: EdgeInsets.symmetric(vertical: AppTheme.spacing8),
-            child: PackageIcon(iconPath: _selectedIcon, size: 40),
-          ),
-          SizedBox(width: AppTheme.spacing12),
-          // Dropdown
-          Expanded(
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton<String?>(
-                // Only use _selectedIcon as value if it's in the available icons list
-                value: _availableIcons.contains(_selectedIcon) ? _selectedIcon : null,
-                isExpanded: true,
-                hint: _selectedIcon != null && !_availableIcons.contains(_selectedIcon)
-                    ? Row(
-                        children: [
-                          Container(
-                            width: 32,
-                            height: 32,
-                            margin: EdgeInsets.only(right: AppTheme.spacing8),
-                            child: PackageIcon(iconPath: _selectedIcon, size: 28),
-                          ),
-                          Expanded(
-                            child: Text(
-                              'Custom Icon (loading...)',
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      )
-                    : Text(l10n.selectIcon),
-                items: _availableIcons.map((iconPath) {
-                  return DropdownMenuItem<String?>(
-                    value: iconPath,
-                    child: Row(
-                      children: [
-                        // Show icon image in dropdown
-                        Container(
-                          width: 32,
-                          height: 32,
-                          margin: EdgeInsets.only(right: AppTheme.spacing8),
-                          child: PackageIcon(iconPath: iconPath, size: 28),
-                        ),
-                        // Show label for clarity
-                        Expanded(
-                          child: Text(
-                            iconPath == null
-                                ? l10n.defaultIcon
-                                : _getIconLabel(iconPath),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
+      padding: EdgeInsets.symmetric(horizontal: AppTheme.spacing12, vertical: AppTheme.spacing12),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String?>(
+          // Only use _selectedIcon as value if it's in the available icons list
+          value: _availableIcons.contains(_selectedIcon) ? _selectedIcon : null,
+          isExpanded: true,
+          hint: _selectedIcon != null && !_availableIcons.contains(_selectedIcon)
+              ? Row(
+                  children: [
+                    Container(
+                      width: 32,
+                      height: 32,
+                      margin: EdgeInsets.only(right: AppTheme.spacing12),
+                      child: PackageIcon(iconPath: _selectedIcon, size: 28),
                     ),
-                  );
-                }).toList(),
-                onChanged: (newValue) {
-                  setState(() {
-                    _selectedIcon = newValue;
-                    _isCustomIcon = newValue != null && !newValue.startsWith('assets/');
-                  });
-                },
+                    Expanded(
+                      child: Text(
+                        'Custom Icon (loading...)',
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                )
+              : Text(l10n.selectIcon),
+          items: _availableIcons.map((iconPath) {
+            return DropdownMenuItem<String?>(
+              value: iconPath,
+              child: Row(
+                children: [
+                  // Show icon image in dropdown
+                  Container(
+                    width: 32,
+                    height: 32,
+                    margin: EdgeInsets.only(right: AppTheme.spacing12),
+                    child: PackageIcon(iconPath: iconPath, size: 28),
+                  ),
+                  // Show label for clarity
+                  Expanded(
+                    child: Text(
+                      iconPath == null
+                          ? l10n.defaultIcon
+                          : _getIconLabel(iconPath),
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
               ),
-            ),
-          ),
-        ],
+            );
+          }).toList(),
+          onChanged: (newValue) {
+            setState(() {
+              _selectedIcon = newValue;
+              _isCustomIcon = newValue != null && !newValue.startsWith('assets/');
+            });
+          },
+        ),
       ),
     );
   }
@@ -606,7 +696,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         label: Text(l10n.upload),
         style: ElevatedButton.styleFrom(
           padding: EdgeInsets.symmetric(
-            horizontal: AppTheme.spacing16,
+            horizontal: AppTheme.spacing12,
             vertical: AppTheme.spacing12,
           ),
         ),
@@ -742,6 +832,10 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
         ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppTheme.spacing12,
+          vertical: AppTheme.spacing4,
+        ),
       ),
       style: theme.textTheme.bodyLarge,
       textCapitalization: TextCapitalization.none,
@@ -785,6 +879,10 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         hintText: hint,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppTheme.spacing12,
+          vertical: AppTheme.spacing4,
         ),
       ),
       style: theme.textTheme.bodyLarge,
@@ -862,7 +960,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   ),
                 ],
               ),
-              SizedBox(height: AppTheme.spacing16),
+              SizedBox(height: AppTheme.spacing12),
             ],
             // Main action buttons - responsive layout
             if (buttonsCanFitInOneRow)
@@ -890,7 +988,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
               ),
             ),
           ),
-          SizedBox(width: AppTheme.spacing8),
+          SizedBox(width: AppTheme.spacing12),
           // Delete All Data button
           Expanded(
             child: OutlinedButton.icon(
@@ -902,7 +1000,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
               ),
             ),
           ),
-          SizedBox(width: AppTheme.spacing8),
+          SizedBox(width: AppTheme.spacing12),
         ],
         // Cancel button
         Expanded(
@@ -911,7 +1009,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
             child: Text(l10n.cancel),
           ),
         ),
-        SizedBox(width: AppTheme.spacing8),
+        SizedBox(width: AppTheme.spacing12),
         // Save button
         Expanded(
           flex: _isEditMode ? 1 : 2,
@@ -941,7 +1039,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   ),
                 ),
               ),
-              SizedBox(width: AppTheme.spacing8),
+              SizedBox(width: AppTheme.spacing12),
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _confirmDeleteAllData,
@@ -965,7 +1063,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                 child: Text(l10n.cancel),
               ),
             ),
-            SizedBox(width: AppTheme.spacing8),
+            SizedBox(width: AppTheme.spacing12),
             Expanded(
               flex: 2,
               child: ElevatedButton(
@@ -1019,6 +1117,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     try {
       final package = LanguagePackage(
         id: widget.package?.id ?? const Uuid().v4(),
+        groupId: _selectedGroup?.id ?? widget.package?.groupId ?? 'default-group-id',
         languageCode1: _languageCode1Controller.text.trim(),
         languageName1: _languageName1Controller.text.trim(),
         languageCode2: _languageCode2Controller.text.trim(),
@@ -1527,12 +1626,12 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(l10n.importFormatDescription),
-              SizedBox(height: AppTheme.spacing16),
+              SizedBox(height: AppTheme.spacing12),
               Text(
                 'Format:',
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: AppTheme.spacing8),
+              SizedBox(height: AppTheme.spacing12),
               Container(
                 padding: EdgeInsets.all(AppTheme.spacing12),
                 decoration: BoxDecoration(
@@ -1546,14 +1645,14 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   ),
                 ),
               ),
-              SizedBox(height: AppTheme.spacing16),
+              SizedBox(height: AppTheme.spacing12),
               Text(
                 'Examples:',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: AppTheme.spacing8),
+              SizedBox(height: AppTheme.spacing12),
               Container(
                 padding: EdgeInsets.all(AppTheme.spacing12),
                 decoration: BoxDecoration(
@@ -1567,14 +1666,14 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   ),
                 ),
               ),
-              SizedBox(height: AppTheme.spacing16),
+              SizedBox(height: AppTheme.spacing12),
               Text(
                 l10n.importFormatNotes,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: AppTheme.spacing8),
+              SizedBox(height: AppTheme.spacing12),
               Text(l10n.importFormatLine1),
               Text(l10n.importFormatLine2),
               Text(l10n.importFormatLine3),
@@ -1614,18 +1713,18 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   ),
                 ),
                 if (result.successful.isNotEmpty) ...[
-                  SizedBox(height: AppTheme.spacing8),
+                  SizedBox(height: AppTheme.spacing12),
                   ...result.successful.take(10).map((item) => Padding(
-                    padding: EdgeInsets.only(left: AppTheme.spacing8, bottom: 4),
+                    padding: EdgeInsets.only(left: AppTheme.spacing12, bottom: 4),
                     child: Text('✓ $item', style: Theme.of(context).textTheme.bodySmall),
                   )),
                   if (result.successful.length > 10)
                     Padding(
-                      padding: EdgeInsets.only(left: AppTheme.spacing8),
+                      padding: EdgeInsets.only(left: AppTheme.spacing12),
                       child: Text('... ${l10n.successfullyImported} ${result.successful.length - 10} ${l10n.items}'),
                     ),
                 ],
-                SizedBox(height: AppTheme.spacing16),
+                SizedBox(height: AppTheme.spacing12),
                 Text(
                   '${l10n.failedToImport}: ${result.failed.length}',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -1634,14 +1733,14 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   ),
                 ),
                 if (result.failed.isNotEmpty) ...[
-                  SizedBox(height: AppTheme.spacing8),
+                  SizedBox(height: AppTheme.spacing12),
                   ...result.failed.take(10).map((item) => Padding(
-                    padding: EdgeInsets.only(left: AppTheme.spacing8, bottom: 4),
+                    padding: EdgeInsets.only(left: AppTheme.spacing12, bottom: 4),
                     child: Text('✗ $item', style: Theme.of(context).textTheme.bodySmall),
                   )),
                   if (result.failed.length > 10)
                     Padding(
-                      padding: EdgeInsets.only(left: AppTheme.spacing8),
+                      padding: EdgeInsets.only(left: AppTheme.spacing12),
                       child: Text('... ${l10n.failedToImport} ${result.failed.length - 10} ${l10n.items}'),
                     ),
                 ],
@@ -1700,7 +1799,7 @@ class _LanguageCodePickerDialogState extends State<_LanguageCodePickerDialog> {
         child: Column(
           children: [
             _buildSearchField(),
-            SizedBox(height: AppTheme.spacing16),
+            SizedBox(height: AppTheme.spacing12),
             _buildLanguageList(languages, theme),
           ],
         ),
@@ -1721,6 +1820,10 @@ class _LanguageCodePickerDialogState extends State<_LanguageCodePickerDialog> {
         prefixIcon: const Icon(Icons.search),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppTheme.spacing12,
+          vertical: AppTheme.spacing4,
         ),
       ),
       onChanged: (value) {

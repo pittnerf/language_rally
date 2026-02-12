@@ -14,9 +14,10 @@ class DesignSystemShowcase extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Design System Showcase'),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(AppTheme.spacing16),
-        children: [
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.all(AppTheme.spacing16),
+          children: [
           _buildSection(
             context,
             'Colors',
@@ -48,6 +49,7 @@ class DesignSystemShowcase extends StatelessWidget {
             _buildInputs(context),
           ),
         ],
+      ),
       ),
     );
   }

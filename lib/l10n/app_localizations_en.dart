@@ -146,7 +146,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorClearingCounters => 'Error clearing counters';
 
   @override
-  String get deleteAll => 'Delete All Data';
+  String get deleteAll => 'Delete Package';
 
   @override
   String get confirmDeleteAllData =>
@@ -225,6 +225,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String packageImportedWithGroup(Object count, Object groupName) {
+    return 'Package imported to \"$groupName\" group! ($count items)';
+  }
+
+  @override
   String get importError => 'Import Error';
 
   @override
@@ -234,8 +239,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get packageAlreadyExists => 'Package already exists';
 
   @override
-  String get packageExistsMessage =>
-      'A package with the same language pair, description, author information, and version already exists. Would you like to import it as a new package anyway?';
+  String packageExistsMessage(Object groupName) {
+    return 'A package with the same language pair, description, author information, and version already exists in the \"$groupName\" group. Would you like to import it as a new package anyway?';
+  }
 
   @override
   String get importAsNew => 'Import Anyway';
@@ -336,4 +342,90 @@ class AppLocalizationsEn extends AppLocalizations {
   String andMore(Object count) {
     return '... and $count more';
   }
+
+  @override
+  String get browseItems => 'Browse Items';
+
+  @override
+  String get itemDetails => 'Details';
+
+  @override
+  String get filterItems => 'Filter Items';
+
+  @override
+  String searchLanguage1(Object language) {
+    return 'Search in $language';
+  }
+
+  @override
+  String searchLanguage2(Object language) {
+    return 'Search in $language';
+  }
+
+  @override
+  String get caseSensitive => 'Case sensitive';
+
+  @override
+  String get onlyImportant => 'Only important items';
+
+  @override
+  String get knownStatus => 'Known status';
+
+  @override
+  String get allItems => 'All items';
+
+  @override
+  String get itemsIKnew => 'Items I knew';
+
+  @override
+  String get itemsIDidNotKnow => 'Items I did not know';
+
+  @override
+  String get known => 'Known';
+
+  @override
+  String get important => 'Important';
+
+  @override
+  String get favourite => 'Favourite';
+
+  @override
+  String get examples => 'Examples';
+
+  @override
+  String get noExamples => 'No examples available';
+
+  @override
+  String get pronounce => 'Pronounce';
+
+  @override
+  String get ttsError => 'Text-to-speech not available';
+
+  @override
+  String get noItemsFound => 'No items found';
+
+  @override
+  String get noItemsInPackage => 'No items in this package yet';
+
+  @override
+  String get clearFilters => 'Clear Filters';
+
+  @override
+  String itemCount(Object count) {
+    return '$count items';
+  }
+
+  @override
+  String filteredItemCount(Object filtered, Object total) {
+    return '$filtered of $total items';
+  }
+
+  @override
+  String get trainingRally => 'Training Rally';
+
+  @override
+  String get startTraining => 'Start Training';
+
+  @override
+  String get trainingComingSoon => 'Training Rally - Coming Soon!';
 }

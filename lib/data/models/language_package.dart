@@ -8,6 +8,7 @@ enum PackageType { defaultPackage, userCreated, purchased }
 @JsonSerializable()
 class LanguagePackage extends Equatable {
   final String id;
+  final String groupId; // Reference to LanguagePackageGroup
   final String languageCode1;
   final String languageName1;
   final String languageCode2;
@@ -28,6 +29,7 @@ class LanguagePackage extends Equatable {
 
   const LanguagePackage({
     required this.id,
+    required this.groupId,
     required this.languageCode1,
     required this.languageName1,
     required this.languageCode2,
@@ -61,6 +63,7 @@ class LanguagePackage extends Equatable {
   /// Create a copy with modified fields
   LanguagePackage copyWith({
     String? id,
+    String? groupId,
     String? languageCode1,
     String? languageName1,
     String? languageCode2,
@@ -81,6 +84,7 @@ class LanguagePackage extends Equatable {
   }) {
     return LanguagePackage(
       id: id ?? this.id,
+      groupId: groupId ?? this.groupId,
       languageCode1: languageCode1 ?? this.languageCode1,
       languageName1: languageName1 ?? this.languageName1,
       languageCode2: languageCode2 ?? this.languageCode2,
@@ -104,6 +108,7 @@ class LanguagePackage extends Equatable {
   @override
   List<Object?> get props => [
         id,
+        groupId,
         languageCode1,
         languageName1,
         languageCode2,

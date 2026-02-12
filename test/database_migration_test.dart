@@ -102,8 +102,15 @@ void main() {
     );
 
     // Verify the database has the is_compact_view column from the start
+    // First create a default group
+    await db.insert('language_package_groups', {
+      'id': 'default-group-id',
+      'name': 'Default',
+    });
+
     await db.insert('language_packages', {
       'id': 'test-package-2',
+      'group_id': 'default-group-id',
       'language_code1': 'en',
       'language_name1': 'English',
       'language_code2': 'fr',
@@ -119,16 +126,19 @@ void main() {
 
     final result = await db.query('language_packages');
     expect(result.first['is_compact_view'], 1);
+    expect(result.first['group_id'], 'default-group-id');
 
     await db.close();
   });
 
-  test('Verify current version is 2', () {
-    expect(DatabaseMigrations.currentVersion, 2);
+  test('Verify current version is 4', () {
+    expect(DatabaseMigrations.currentVersion, 4);
   });
 
-  test('Migration map contains version 2', () {
+  test('Migration map contains all versions', () {
     expect(DatabaseMigrations.migrations.containsKey(2), true);
+    expect(DatabaseMigrations.migrations.containsKey(3), true);
+    expect(DatabaseMigrations.migrations.containsKey(4), true);
   });
 }
 

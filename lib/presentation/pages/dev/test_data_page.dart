@@ -4,12 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:uuid/uuid.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sqflite/sqflite.dart' show getDatabasesPath, deleteDatabase;
+import '../../../data/database_helper.dart';
 import '../../../data/repositories/language_package_repository.dart';
+import '../../../data/repositories/language_package_group_repository.dart';
 import '../../../data/repositories/item_repository.dart';
 import '../../../data/repositories/category_repository.dart';
 import '../../../data/repositories/training_settings_repository.dart';
 import '../../../data/repositories/training_statistics_repository.dart';
 import '../../../data/models/language_package.dart';
+import '../../../data/models/language_package_group.dart';
 import '../../../data/models/item.dart';
 import '../../../data/models/item_language_data.dart';
 import '../../../data/models/category.dart';
@@ -31,6 +35,7 @@ class _TestDataPageState extends State<TestDataPage> {
   String _statusMessage = '';
   final _uuid = const Uuid();
   late final LanguagePackageRepository _packageRepo;
+  late final LanguagePackageGroupRepository _groupRepo;
   late final ItemRepository _itemRepo;
   late final CategoryRepository _categoryRepo;
   late final TrainingSettingsRepository _settingsRepo;
@@ -40,6 +45,7 @@ class _TestDataPageState extends State<TestDataPage> {
   void initState() {
     super.initState();
     _packageRepo = LanguagePackageRepository();
+    _groupRepo = LanguagePackageGroupRepository();
     _itemRepo = ItemRepository();
     _categoryRepo = CategoryRepository();
     _settingsRepo = TrainingSettingsRepository();
@@ -61,6 +67,23 @@ class _TestDataPageState extends State<TestDataPage> {
 
     try {
       _log('🚀 Starting test data population...');
+
+      // Create or get default package group
+      const defaultGroupId = 'default-group-id';
+      const defaultGroupName = 'Default';
+
+      var defaultGroup = await _groupRepo.getGroupById(defaultGroupId);
+
+      if (defaultGroup == null) {
+        defaultGroup = LanguagePackageGroup(
+          id: defaultGroupId,
+          name: defaultGroupName,
+        );
+        await _groupRepo.insertGroup(defaultGroup);
+        _log('✓ Created default package group: "$defaultGroupName"\n');
+      } else {
+        _log('✓ Using existing default package group: "$defaultGroupName"\n');
+      }
 
       await _createEnglishGermanPackage();
       await _createEnglishSpanishPackage();
@@ -85,6 +108,7 @@ class _TestDataPageState extends State<TestDataPage> {
     try {
       final package = LanguagePackage(
         id: packageId,
+        groupId: 'default-group-id',
         languageCode1: 'en',
         languageName1: 'English',
         languageCode2: 'de',
@@ -226,6 +250,7 @@ class _TestDataPageState extends State<TestDataPage> {
     try {
       final package = LanguagePackage(
         id: packageId,
+        groupId: 'default-group-id',
         languageCode1: 'en',
         languageName1: 'English',
         languageCode2: 'es',
@@ -331,6 +356,7 @@ class _TestDataPageState extends State<TestDataPage> {
     try {
       final package = LanguagePackage(
         id: packageId,
+        groupId: 'default-group-id',
         languageCode1: 'fr',
         languageName1: 'French',
         languageCode2: 'en',
@@ -600,21 +626,48 @@ class _TestDataPageState extends State<TestDataPage> {
     try {
       _log('🔄 Resetting database...');
 
-      // Import required dependencies
+      // Get the database path
       final path = await _getDatabasePath();
       _log('  Database path: $path');
 
-      // Close the database connection
-      await _packageRepo.closeDatabase();
+      // Close the database connection through the singleton
+      final dbHelper = DatabaseHelper.instance;
+      await dbHelper.close();
       _log('  ✓ Database connection closed');
 
-      // Delete the database file
-      final dbFile = File(path);
-      if (await dbFile.exists()) {
-        await dbFile.delete();
-        _log('  ✓ Database file deleted');
+      // Give a small delay to ensure the connection is fully released
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      // Delete the database using sqflite's deleteDatabase (which handles locks properly)
+      if (Platform.isAndroid || Platform.isIOS) {
+        // On Android/iOS, use sqflite's deleteDatabase
+        await deleteDatabase(path);
+        _log('  ✓ Database deleted using sqflite deleteDatabase');
       } else {
-        _log('  ⚠ Database file not found (may be already deleted)');
+        // On desktop, delete the file directly
+        final dbFile = File(path);
+        if (await dbFile.exists()) {
+          await dbFile.delete();
+          _log('  ✓ Database file deleted');
+        } else {
+          _log('  ⚠ Database file not found (may be already deleted)');
+        }
+      }
+
+      // Delete custom icons directory
+      try {
+        final appDir = await getApplicationDocumentsDirectory();
+        final customIconsDir = Directory(join(appDir.path, 'custom_package_icons'));
+
+        if (await customIconsDir.exists()) {
+          await customIconsDir.delete(recursive: true);
+          _log('  ✓ Custom icons directory deleted');
+        } else {
+          _log('  ⚠ Custom icons directory not found');
+        }
+      } catch (e) {
+        _log('  ⚠ Could not delete custom icons directory: $e');
+        // Don't fail the entire reset if custom icons deletion fails
       }
 
       _log('\n✅ Database reset complete!');
@@ -637,11 +690,8 @@ class _TestDataPageState extends State<TestDataPage> {
   Future<String> _getDatabasePath() async {
     String dbPath;
     if (Platform.isAndroid || Platform.isIOS) {
-      // For mobile, use getDatabasesPath - we need to import sqflite for this
-      dbPath = join(
-        (await getApplicationDocumentsDirectory()).path,
-        'databases'
-      );
+      // For mobile, use sqflite's getDatabasesPath
+      dbPath = await getDatabasesPath();
     } else {
       // For desktop platforms, use application documents directory
       final appDocDir = await getApplicationDocumentsDirectory();
@@ -658,11 +708,12 @@ class _TestDataPageState extends State<TestDataPage> {
       appBar: AppBar(
         title: const Text('Test Data Generator'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -779,6 +830,7 @@ class _TestDataPageState extends State<TestDataPage> {
               ),
           ],
         ),
+      ),
       ),
     );
   }

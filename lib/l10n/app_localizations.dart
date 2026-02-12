@@ -371,7 +371,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteAll.
   ///
   /// In en, this message translates to:
-  /// **'Delete All Data'**
+  /// **'Delete Package'**
   String get deleteAll;
 
   /// No description provided for @confirmDeleteAllData.
@@ -518,6 +518,12 @@ abstract class AppLocalizations {
   /// **'Package imported successfully! ({count} items)'**
   String packageImportedWithItems(Object count);
 
+  /// No description provided for @packageImportedWithGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Package imported to \"{groupName}\" group! ({count} items)'**
+  String packageImportedWithGroup(Object count, Object groupName);
+
   /// No description provided for @importError.
   ///
   /// In en, this message translates to:
@@ -539,8 +545,8 @@ abstract class AppLocalizations {
   /// No description provided for @packageExistsMessage.
   ///
   /// In en, this message translates to:
-  /// **'A package with the same language pair, description, author information, and version already exists. Would you like to import it as a new package anyway?'**
-  String get packageExistsMessage;
+  /// **'A package with the same language pair, description, author information, and version already exists in the \"{groupName}\" group. Would you like to import it as a new package anyway?'**
+  String packageExistsMessage(Object groupName);
 
   /// No description provided for @importAsNew.
   ///
@@ -733,6 +739,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'... and {count} more'**
   String andMore(Object count);
+
+  /// No description provided for @browseItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse Items'**
+  String get browseItems;
+
+  /// No description provided for @itemDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get itemDetails;
+
+  /// No description provided for @filterItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Items'**
+  String get filterItems;
+
+  /// No description provided for @searchLanguage1.
+  ///
+  /// In en, this message translates to:
+  /// **'Search in {language}'**
+  String searchLanguage1(Object language);
+
+  /// No description provided for @searchLanguage2.
+  ///
+  /// In en, this message translates to:
+  /// **'Search in {language}'**
+  String searchLanguage2(Object language);
+
+  /// No description provided for @caseSensitive.
+  ///
+  /// In en, this message translates to:
+  /// **'Case sensitive'**
+  String get caseSensitive;
+
+  /// No description provided for @onlyImportant.
+  ///
+  /// In en, this message translates to:
+  /// **'Only important items'**
+  String get onlyImportant;
+
+  /// No description provided for @knownStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Known status'**
+  String get knownStatus;
+
+  /// No description provided for @allItems.
+  ///
+  /// In en, this message translates to:
+  /// **'All items'**
+  String get allItems;
+
+  /// No description provided for @itemsIKnew.
+  ///
+  /// In en, this message translates to:
+  /// **'Items I knew'**
+  String get itemsIKnew;
+
+  /// No description provided for @itemsIDidNotKnow.
+  ///
+  /// In en, this message translates to:
+  /// **'Items I did not know'**
+  String get itemsIDidNotKnow;
+
+  /// No description provided for @known.
+  ///
+  /// In en, this message translates to:
+  /// **'Known'**
+  String get known;
+
+  /// No description provided for @important.
+  ///
+  /// In en, this message translates to:
+  /// **'Important'**
+  String get important;
+
+  /// No description provided for @favourite.
+  ///
+  /// In en, this message translates to:
+  /// **'Favourite'**
+  String get favourite;
+
+  /// No description provided for @examples.
+  ///
+  /// In en, this message translates to:
+  /// **'Examples'**
+  String get examples;
+
+  /// No description provided for @noExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'No examples available'**
+  String get noExamples;
+
+  /// No description provided for @pronounce.
+  ///
+  /// In en, this message translates to:
+  /// **'Pronounce'**
+  String get pronounce;
+
+  /// No description provided for @ttsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Text-to-speech not available'**
+  String get ttsError;
+
+  /// No description provided for @noItemsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No items found'**
+  String get noItemsFound;
+
+  /// No description provided for @noItemsInPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'No items in this package yet'**
+  String get noItemsInPackage;
+
+  /// No description provided for @clearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Filters'**
+  String get clearFilters;
+
+  /// No description provided for @itemCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} items'**
+  String itemCount(Object count);
+
+  /// No description provided for @filteredItemCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{filtered} of {total} items'**
+  String filteredItemCount(Object filtered, Object total);
+
+  /// No description provided for @trainingRally.
+  ///
+  /// In en, this message translates to:
+  /// **'Training Rally'**
+  String get trainingRally;
+
+  /// No description provided for @startTraining.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Training'**
+  String get startTraining;
+
+  /// No description provided for @trainingComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Training Rally - Coming Soon!'**
+  String get trainingComingSoon;
 }
 
 class _AppLocalizationsDelegate

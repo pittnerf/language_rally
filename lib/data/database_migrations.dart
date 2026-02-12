@@ -16,7 +16,7 @@ import 'package:sqflite/sqflite.dart';
 class DatabaseMigrations {
   /// Current database version
   /// Increment this when adding a new migration
-  static const int currentVersion = 3;
+  static const int currentVersion = 4;
 
   /// Type definitions for database types
   static const idType = 'TEXT PRIMARY KEY';
@@ -36,16 +36,28 @@ class DatabaseMigrations {
     // Version 2 -> 3: Add package_id column to items table
     3: _migrateToVersion3,
 
+    // Version 3 -> 4: Add language_package_groups table and group_id to language_packages
+    4: _migrateToVersion4,
+
     // Add future migrations here:
-    // 4: _migrateToVersion4,
+    // 5: _migrateToVersion5,
   };
 
   /// Initial database creation (version 1)
   static Future<void> createDatabase(Database db, int version) async {
+    // Language Package Groups table
+    await db.execute('''
+      CREATE TABLE language_package_groups (
+        id $idType,
+        name $textType
+      )
+    ''');
+
     // Language Packages table
     await db.execute('''
       CREATE TABLE language_packages (
         id $idType,
+        group_id $textType,
         language_code1 $textType,
         language_name1 $textType,
         language_code2 $textType,
@@ -62,7 +74,8 @@ class DatabaseMigrations {
         is_compact_view $boolType DEFAULT 0,
         purchased_at $intNullable,
         created_at $intType,
-        price $realType
+        price $realType,
+        FOREIGN KEY (group_id) REFERENCES language_package_groups (id) ON DELETE RESTRICT
       )
     ''');
 
@@ -273,10 +286,70 @@ class DatabaseMigrations {
 
   // Add future migration functions here:
 
-  // /// Migration to version 4: Example future migration
-  // static Future<void> _migrateToVersion4(Database db) async {
+  /// Migration to version 4: Add language_package_groups table and group_id to language_packages
+  static Future<void> _migrateToVersion4(Database db) async {
+    developer.log('  ℹ️  Adding language_package_groups table and updating language_packages...', name: 'DatabaseMigrations');
+
+    // Step 1: Create language_package_groups table
+    await db.execute('''
+      CREATE TABLE IF NOT EXISTS language_package_groups (
+        id $idType,
+        name $textType
+      )
+    ''');
+    developer.log('  ✓ Created language_package_groups table', name: 'DatabaseMigrations');
+
+    // Step 2: Create default group
+    const defaultGroupId = 'default-group-id';
+    const defaultGroupName = 'Default';
+
+    // Check if default group already exists
+    final existingGroups = await db.query(
+      'language_package_groups',
+      where: 'id = ?',
+      whereArgs: [defaultGroupId],
+    );
+
+    if (existingGroups.isEmpty) {
+      await db.insert('language_package_groups', {
+        'id': defaultGroupId,
+        'name': defaultGroupName,
+      });
+      developer.log('  ✓ Created default package group', name: 'DatabaseMigrations');
+    } else {
+      developer.log('  ⚠️  Default package group already exists', name: 'DatabaseMigrations');
+    }
+
+    // Step 3: Check if group_id column already exists in language_packages
+    final result = await db.rawQuery('PRAGMA table_info(language_packages)');
+    final columnExists = result.any((column) => column['name'] == 'group_id');
+
+    if (!columnExists) {
+      // Step 4: Add group_id column to language_packages
+      await db.execute('''
+        ALTER TABLE language_packages 
+        ADD COLUMN group_id TEXT
+      ''');
+      developer.log('  ✓ Added group_id column to language_packages', name: 'DatabaseMigrations');
+
+      // Step 5: Update all existing packages to use the default group
+      await db.execute('''
+        UPDATE language_packages 
+        SET group_id = ?
+      ''', [defaultGroupId]);
+      developer.log('  ✓ Assigned all existing packages to default group', name: 'DatabaseMigrations');
+    } else {
+      developer.log('  ⚠️  Column group_id already exists in language_packages, skipping', name: 'DatabaseMigrations');
+    }
+  }
+
+  // /// Migration to version 5: Example future migration
+  // static Future<void> _migrateToVersion5(Database db) async {
   //   // Your migration logic here
   //   await db.execute('ALTER TABLE some_table ADD COLUMN new_field TEXT');
   // }
 }
+
+
+
 

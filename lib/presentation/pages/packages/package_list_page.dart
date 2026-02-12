@@ -5,8 +5,10 @@ import 'package:file_picker/file_picker.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/badge_helper.dart';
 import '../../../data/models/language_package.dart';
+import '../../../data/models/language_package_group.dart';
 import '../../../data/models/category.dart';
 import '../../../data/repositories/language_package_repository.dart';
+import '../../../data/repositories/language_package_group_repository.dart';
 import '../../../data/repositories/category_repository.dart';
 import '../../../data/repositories/item_repository.dart';
 import '../../../data/repositories/import_export_repository.dart';
@@ -17,6 +19,8 @@ import '../../providers/package_order_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 import 'package_form_page.dart';
+import 'package_group_admin_page.dart';
+import '../items/item_browser_page.dart';
 import '../../../l10n/app_localizations.dart';
 
 /// Package list page displaying all language packages as cards
@@ -29,8 +33,11 @@ class PackageListPage extends ConsumerStatefulWidget {
 
 class _PackageListPageState extends ConsumerState<PackageListPage> {
   List<LanguagePackage> _packages = [];
+  List<LanguagePackageGroup> _groups = [];
+  LanguagePackageGroup? _selectedGroup;
   bool _isLoading = true;
   final _packageRepo = LanguagePackageRepository();
+  final _groupRepo = LanguagePackageGroupRepository();
   final _categoryRepo = CategoryRepository();
   final _itemRepo = ItemRepository();
   late final ImportExportRepository _importExportRepo;
@@ -40,10 +47,11 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
     super.initState();
     _importExportRepo = ImportExportRepository(
       packageRepo: _packageRepo,
+      groupRepo: _groupRepo,
       categoryRepo: _categoryRepo,
       itemRepo: _itemRepo,
     );
-    _loadPackages();
+    _loadGroupsAndPackages();
   }
 
   Future<void> _toggleCompactMode(LanguagePackage package) async {
@@ -60,14 +68,56 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
     });
   }
 
+  Future<void> _loadGroupsAndPackages() async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Load all groups
+      final groups = await _groupRepo.getAllGroups();
+
+      setState(() {
+        _groups = groups;
+
+        // Validate that the currently selected group still exists
+        if (_selectedGroup != null) {
+          final groupStillExists = _groups.any((g) => g.id == _selectedGroup!.id);
+          if (!groupStillExists) {
+            // Selected group was deleted, reset to first available group
+            _selectedGroup = _groups.isNotEmpty ? _groups.first : null;
+          } else {
+            // Update the selected group object to the one from the new list
+            _selectedGroup = _groups.firstWhere((g) => g.id == _selectedGroup!.id);
+          }
+        } else {
+          // No group selected yet, select first group by default if available
+          if (_groups.isNotEmpty) {
+            _selectedGroup = _groups.first;
+          }
+        }
+      });
+
+      // Load packages for selected group
+      await _loadPackages();
+    } catch (e) {
+      debugPrint('Error loading groups and packages: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   Future<void> _loadPackages() async {
     setState(() {
       _isLoading = true;
     });
 
     try {
-      // Load packages from repository
-      final packages = await _packageRepo.getAllPackages();
+      // Load packages from repository - filtered by selected group
+      final packages = _selectedGroup != null
+          ? await _packageRepo.getPackagesByGroupId(_selectedGroup!.id)
+          : await _packageRepo.getAllPackages();
 
       setState(() {
         _packages = packages;
@@ -81,6 +131,26 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
         _isLoading = false;
       });
     }
+  }
+
+  void _onGroupChanged(LanguagePackageGroup? newGroup) {
+    if (newGroup != null && newGroup.id != _selectedGroup?.id) {
+      setState(() {
+        _selectedGroup = newGroup;
+      });
+      _loadPackages();
+    }
+  }
+
+  Future<void> _openGroupAdminPage() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const PackageGroupAdminPage(),
+      ),
+    );
+
+    // Refresh the entire page when returning from group admin
+    await _loadGroupsAndPackages();
   }
 
   Future<void> _applySavedOrder() async {
@@ -118,56 +188,38 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isTablet = screenWidth >= 600; // Consider 600dp+ as tablet
 
     return Scaffold(
-      appBar: AppBar(
+      appBar: isTablet ? AppBar(
         title: Text(
           l10n.languagePackages,
-          style: Theme.of(context).textTheme.headlineSmall,
+          style: Theme.of(context).textTheme.titleLarge,
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: _loadPackages,
+            onPressed: _loadGroupsAndPackages,
           ),
           IconButton(
             icon: const Icon(Icons.add),
             onPressed: _createNewPackage,
           ),
         ],
+      ) : null,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Group filter dropdown
+            if (_groups.isNotEmpty) _buildGroupFilter(context),
+            // Main content
+            Expanded(
+              child: _buildMainContent(l10n),
+            ),
+          ],
+        ),
       ),
-      body: _isLoading
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: AppTheme.spacing16),
-                  Text(l10n.loadingPackages),
-                ],
-              ),
-            )
-          : _packages.isEmpty
-              ? _buildEmptyState()
-              : LayoutBuilder(
-                  builder: (context, constraints) {
-                    // Determine if we should use multi-column layout (landscape mode)
-                    final bool isLandscape = constraints.maxWidth > 600;
-                    final int crossAxisCount = constraints.maxWidth > 900 ? 3 : 2;
-
-                    return Column(
-                      children: [
-                        Expanded(
-                          child: isLandscape
-                              ? _buildGridView(crossAxisCount)
-                              : _buildListView(),
-                        ),
-                        // Hint for drag and drop
-                        _buildHintBar(context, isLandscape),
-                      ],
-                    );
-                  },
-                ),
       floatingActionButton: Row(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
@@ -177,7 +229,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
             tooltip: l10n.createNewPackage,
             child: const Icon(Icons.add),
           ),
-          SizedBox(width: AppTheme.spacing16),
+          SizedBox(width: AppTheme.spacing8),
           FloatingActionButton.extended(
             heroTag: 'importPackage',
             onPressed: _importPackageFromZip,
@@ -185,6 +237,118 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
             label: Text(l10n.importPackage),
             tooltip: l10n.importPackageTooltip,
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildGroupFilter(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Container(
+      padding: EdgeInsets.all(AppTheme.spacing12),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        border: Border(
+          bottom: BorderSide(
+            color: colorScheme.outlineVariant,
+            width: 1,
+          ),
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.folder_outlined,
+            size: 20,
+            color: colorScheme.onSurfaceVariant,
+          ),
+          SizedBox(width: AppTheme.spacing8),
+          Text(
+            'Group:',
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(width: AppTheme.spacing12),
+          Expanded(
+            child: DropdownButton<LanguagePackageGroup>(
+              value: _selectedGroup,
+              isExpanded: true,
+              isDense: false,
+              underline: Container(
+                height: 1,
+                color: colorScheme.outline,
+              ),
+              items: _groups.map((group) {
+                return DropdownMenuItem<LanguagePackageGroup>(
+                  value: group,
+                  child: Text(
+                    group.name,
+                    style: theme.textTheme.bodyLarge,
+                  ),
+                );
+              }).toList(),
+              onChanged: _onGroupChanged,
+            ),
+          ),
+          SizedBox(width: AppTheme.spacing8),
+          ElevatedButton.icon(
+            onPressed: _openGroupAdminPage,
+            icon: Icon(Icons.settings, size: 18),
+            label: Text('Amend'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: colorScheme.primaryContainer,
+              foregroundColor: colorScheme.onPrimaryContainer,
+              padding: EdgeInsets.symmetric(
+                horizontal: AppTheme.spacing12,
+                vertical: AppTheme.spacing8,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMainContent(AppLocalizations l10n) {
+    if (_isLoading) {
+      return _buildLoadingState(l10n);
+    }
+
+    if (_packages.isEmpty) {
+      return _buildEmptyState();
+    }
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final bool isLandscape = constraints.maxWidth > 600;
+        final int crossAxisCount = constraints.maxWidth > 900 ? 3 : 2;
+
+        return Column(
+          children: [
+            Expanded(
+              child: isLandscape
+                  ? _buildGridView(crossAxisCount, constraints.maxHeight)
+                  : _buildListView(),
+            ),
+            _buildHintBar(context, isLandscape),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildLoadingState(AppLocalizations l10n) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(),
+          SizedBox(height: AppTheme.spacing8),
+          Text(l10n.loadingPackages, style: TextStyle(fontSize: 14)),
         ],
       ),
     );
@@ -206,7 +370,8 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
 
   Widget _buildListView() {
     return ReorderableListView.builder(
-      padding: EdgeInsets.all(AppTheme.spacing16),
+      padding: EdgeInsets.all(AppTheme.spacing8),
+      physics: const AlwaysScrollableScrollPhysics(),
       itemCount: _packages.length,
       onReorder: _onReorder,
       itemBuilder: (context, index) {
@@ -219,19 +384,22 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
           isCompact: package.isCompactView,
           onTap: () => _onPackageTap(package),
           onToggleCompact: () => _toggleCompactMode(package),
+          onDelete: package.isPurchased ? () => _deletePackage(package) : null,
+          onMoveToGroup: () => _movePackageToGroup(package),
           showToggleButton: true, // Show toggle button in portrait/list mode
         );
       },
     );
   }
 
-  Widget _buildGridView(int crossAxisCount) {
+  Widget _buildGridView(int crossAxisCount, double maxHeight) {
     return ReorderableGridView.builder(
-      padding: EdgeInsets.all(AppTheme.spacing16),
+      padding: EdgeInsets.all(AppTheme.spacing8),
+      physics: const AlwaysScrollableScrollPhysics(),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: crossAxisCount,
-        crossAxisSpacing: AppTheme.spacing16,
-        mainAxisSpacing: AppTheme.spacing16,
+        crossAxisSpacing: AppTheme.spacing8,
+        mainAxisSpacing: AppTheme.spacing8,
         childAspectRatio: 1.2, // Adjusted for content that may expand
       ),
       itemCount: _packages.length,
@@ -246,6 +414,8 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
           isCompact: false, // Always expanded in landscape/grid mode
           onTap: () => _onPackageTap(package),
           onToggleCompact: () => _toggleCompactMode(package),
+          onDelete: package.isPurchased ? () => _deletePackage(package) : null,
+          onMoveToGroup: () => _movePackageToGroup(package),
           isInGrid: true,
           showToggleButton: false, // Hide toggle button in landscape/grid mode
         );
@@ -258,8 +428,8 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
 
     return Container(
       padding: EdgeInsets.symmetric(
-        horizontal: AppTheme.spacing16,
-        vertical: AppTheme.spacing8,
+        horizontal: AppTheme.spacing8,
+        vertical: AppTheme.spacing4,
       ),
       color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
       child: Row(
@@ -267,10 +437,10 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
         children: [
           Icon(
             Icons.info_outline,
-            size: 16,
+            size: 14,
             color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
-          SizedBox(width: AppTheme.spacing8),
+          SizedBox(width: AppTheme.spacing4),
           Flexible(
             child: Text(
               isLandscape
@@ -278,6 +448,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
                   : l10n.tapAndHoldToReorderList,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
+                fontSize: 12,
               ),
               textAlign: TextAlign.center,
             ),
@@ -296,20 +467,20 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
         children: [
           Icon(
             Icons.library_books_outlined,
-            size: 80,
+            size: 60,
             color: Theme.of(context).colorScheme.outline,
-          ),
-          SizedBox(height: AppTheme.spacing16),
-          Text(
-            l10n.noPackagesYet,
-            style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
           ),
           SizedBox(height: AppTheme.spacing8),
           Text(
+            l10n.noPackagesYet,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+          ),
+          SizedBox(height: AppTheme.spacing4),
+          Text(
             l10n.createFirstPackage,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
           ),
@@ -336,6 +507,196 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
     }
   }
 
+  Future<void> _deletePackage(LanguagePackage package) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    final confirmed = await _showDeleteConfirmationDialog(package, l10n);
+    if (confirmed != true) return;
+
+    try {
+      await _performPackageDeletion(package);
+      await _showDeleteSuccessMessage();
+      await _loadPackages();
+    } catch (e) {
+      if (!mounted) return;
+      _showErrorDialog('Error', 'Failed to delete package: $e');
+    }
+  }
+
+  Future<bool?> _showDeleteConfirmationDialog(LanguagePackage package, AppLocalizations l10n) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delete Package'),
+        content: Text(
+          'Are you sure you want to delete "${package.languageName1} → ${package.languageName2}"? '
+          'This action cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+              foregroundColor: Theme.of(context).colorScheme.onError,
+            ),
+            child: Text('Delete'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _performPackageDeletion(LanguagePackage package) async {
+    // Delete all items for this package
+    final items = await _itemRepo.getItemsForPackage(package.id);
+    for (final item in items) {
+      await _itemRepo.deleteItem(item.id);
+    }
+
+    // Delete all categories for this package
+    final categories = await _categoryRepo.getCategoriesForPackage(package.id);
+    for (final category in categories) {
+      await _categoryRepo.deleteCategory(category.id);
+    }
+
+    // Delete the package
+    await _packageRepo.deletePackage(package.id);
+  }
+
+  Future<void> _showDeleteSuccessMessage() async {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Package deleted successfully'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+      ),
+    );
+  }
+
+  Future<void> _movePackageToGroup(LanguagePackage package) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    // Get all groups except the current one
+    final otherGroups = _groups.where((g) => g.id != package.groupId).toList();
+
+    if (otherGroups.isEmpty) {
+      _showErrorDialog(l10n.error, 'No other groups available. Please create another group first.');
+      return;
+    }
+
+    // Show dialog with group selector
+    final selectedGroup = await _showMovePackageDialog(package, otherGroups);
+    if (selectedGroup == null) return;
+
+    try {
+      // Update package with new group ID
+      final updatedPackage = package.copyWith(groupId: selectedGroup.id);
+      await _packageRepo.updatePackage(updatedPackage);
+
+      if (!mounted) return;
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Package moved to "${selectedGroup.name}"'),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+        ),
+      );
+
+      // Reload packages to reflect the change
+      await _loadGroupsAndPackages();
+    } catch (e) {
+      if (!mounted) return;
+
+      // Show error message
+      _showErrorDialog(l10n.error, 'Failed to move package: $e');
+    }
+  }
+
+  Future<LanguagePackageGroup?> _showMovePackageDialog(
+    LanguagePackage package,
+    List<LanguagePackageGroup> otherGroups,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+    LanguagePackageGroup? selectedGroup = otherGroups.first;
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) => AlertDialog(
+          title: Text('Move Package to Group'),
+          content: _buildMovePackageDialogContent(
+            package,
+            otherGroups,
+            selectedGroup,
+            (newGroup) {
+              setState(() {
+                selectedGroup = newGroup;
+              });
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(l10n.cancel),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: Text('Move'),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    return (result == true) ? selectedGroup : null;
+  }
+
+  Widget _buildMovePackageDialogContent(
+    LanguagePackage package,
+    List<LanguagePackageGroup> otherGroups,
+    LanguagePackageGroup? selectedGroup,
+    ValueChanged<LanguagePackageGroup?> onChanged,
+  ) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Select destination group for:',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+        SizedBox(height: AppTheme.spacing8),
+        Text(
+          '${package.languageName1} → ${package.languageName2}',
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: AppTheme.spacing16),
+        DropdownButtonFormField<LanguagePackageGroup>(
+          initialValue: selectedGroup,
+          decoration: InputDecoration(
+            labelText: 'Destination Group',
+            border: OutlineInputBorder(),
+          ),
+          items: otherGroups.map((group) {
+            return DropdownMenuItem<LanguagePackageGroup>(
+              value: group,
+              child: Text(group.name),
+            );
+          }).toList(),
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+
   Future<void> _createNewPackage() async {
     await Navigator.of(context).push(
       MaterialPageRoute(
@@ -344,131 +705,152 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
     );
     // Always reload packages after returning from PackageFormPage
     // This ensures any new or edited packages are shown
-    await _loadPackages();
+    await _loadGroupsAndPackages();
   }
 
   Future<void> _importPackageFromZip() async {
     final l10n = AppLocalizations.of(context)!;
 
     try {
-      // Let user select ZIP file
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.custom,
-        allowedExtensions: ['zip'],
-        dialogTitle: l10n.selectPackageZipFile,
-      );
+      final filePath = await _pickZipFile(l10n);
+      if (filePath == null) return;
 
-      if (result == null || result.files.isEmpty) {
-        // User cancelled
-        return;
-      }
-
-      final filePath = result.files.first.path;
-      if (filePath == null) {
-        if (!mounted) return;
-        _showErrorDialog(l10n.error, l10n.couldNotAccessFile);
-        return;
-      }
-
-      // Show loading dialog
-      if (!mounted) return;
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => AlertDialog(
-          content: Row(
-            children: [
-              CircularProgressIndicator(),
-              SizedBox(width: AppTheme.spacing16),
-              Expanded(child: Text(l10n.importingPackage)),
-            ],
-          ),
-        ),
-      );
-
-      // Import the package
-      int itemCount;
-      try {
-        itemCount = await _importExportRepo.importPackageFromZip(filePath);
-      } on PackageAlreadyExistsException {
-        // Close loading dialog
-        if (!mounted) return;
-        Navigator.of(context).pop();
-
-        // Ask user if they want to import as new package
-        final importAsNew = await _showDuplicatePackageDialog(l10n);
-        if (importAsNew != true) {
-          return;
-        }
-
-        // Show loading dialog again
-        if (!mounted) return;
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => AlertDialog(
-            content: Row(
-              children: [
-                CircularProgressIndicator(),
-                SizedBox(width: AppTheme.spacing16),
-                Expanded(child: Text(l10n.importingPackage)),
-              ],
-            ),
-          ),
-        );
-
-        // Import with new ID
-        itemCount = await _importExportRepo.importPackageFromZipWithNewId(filePath);
-      }
-
-      // Close loading dialog
-      if (!mounted) return;
-      Navigator.of(context).pop();
-
-      // Show success message
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('${l10n.packageImportedSuccessfully} ($itemCount ${l10n.items})'),
-          backgroundColor: Theme.of(context).colorScheme.primary,
-          duration: const Duration(seconds: 3),
-        ),
-      );
-
-      // Reload packages
-      await _loadPackages();
+      await _performPackageImport(filePath, l10n);
     } catch (e) {
-      // Close loading dialog if it's showing
-      if (mounted && Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
-      }
-
-      // Show error message
-      if (!mounted) return;
-
-      final l10n = AppLocalizations.of(context)!;
-      String errorMessage = l10n.failedToImportPackage;
-
-      if (e.toString().contains('ZIP file not found')) {
-        errorMessage = l10n.zipFileNotFound;
-      } else if (e.toString().contains('Invalid package ZIP')) {
-        errorMessage = l10n.invalidPackageZip;
-      } else if (e.toString().contains('Invalid package file format')) {
-        errorMessage = l10n.invalidPackageFormat;
-      } else {
-        errorMessage = '${l10n.failedToImportPackage}: $e';
-      }
-
-      _showErrorDialog(l10n.importError, errorMessage);
+      _handleImportError(e, l10n);
     }
   }
 
-  Future<bool?> _showDuplicatePackageDialog(AppLocalizations l10n) {
+  Future<String?> _pickZipFile(AppLocalizations l10n) async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['zip'],
+      dialogTitle: l10n.selectPackageZipFile,
+    );
+
+    if (result == null || result.files.isEmpty) {
+      return null; // User cancelled
+    }
+
+    final filePath = result.files.first.path;
+    if (filePath == null) {
+      if (mounted) {
+        _showErrorDialog(l10n.error, l10n.couldNotAccessFile);
+      }
+      return null;
+    }
+
+    return filePath;
+  }
+
+  Future<void> _performPackageImport(String filePath, AppLocalizations l10n) async {
+    // Show loading dialog
+    _showLoadingDialog(l10n.importingPackage);
+
+    try {
+      final importResult = await _attemptPackageImport(filePath, l10n);
+
+      // Close loading dialog
+      if (mounted) Navigator.of(context).pop();
+
+      await _showImportSuccess(importResult, l10n);
+      await _loadGroupsAndPackages();
+    } catch (e) {
+      // Close loading dialog if showing
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      rethrow;
+    }
+  }
+
+  Future<ImportResult> _attemptPackageImport(String filePath, AppLocalizations l10n) async {
+    try {
+      return await _importExportRepo.importPackageFromZip(filePath);
+    } on PackageAlreadyExistsException catch (e) {
+      // Close loading dialog
+      if (mounted) Navigator.of(context).pop();
+
+      // Ask user if they want to import as new package
+      final importAsNew = await _showDuplicatePackageDialog(l10n, e.groupName);
+      if (importAsNew != true) {
+        throw Exception('Import cancelled by user');
+      }
+
+      // Show loading dialog again
+      _showLoadingDialog(l10n.importingPackage);
+
+      // Import with new ID
+      return await _importExportRepo.importPackageFromZipWithNewId(filePath);
+    }
+  }
+
+  void _showLoadingDialog(String message) {
+    if (!mounted) return;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        content: Row(
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(width: AppTheme.spacing16),
+            Expanded(child: Text(message)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showImportSuccess(ImportResult importResult, AppLocalizations l10n) async {
+    if (!mounted) return;
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.packageImportedWithGroup(
+          importResult.itemCount,
+          importResult.groupName,
+        )),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        duration: const Duration(seconds: 3),
+      ),
+    );
+  }
+
+  void _handleImportError(Object e, AppLocalizations l10n) {
+    // Close loading dialog if it's showing
+    if (mounted && Navigator.of(context).canPop()) {
+      Navigator.of(context).pop();
+    }
+
+    if (!mounted) return;
+    if (e.toString().contains('Import cancelled by user')) return;
+
+    String errorMessage = _getImportErrorMessage(e, l10n);
+    _showErrorDialog(l10n.importError, errorMessage);
+  }
+
+  String _getImportErrorMessage(Object e, AppLocalizations l10n) {
+    final errorString = e.toString();
+
+    if (errorString.contains('ZIP file not found')) {
+      return l10n.zipFileNotFound;
+    } else if (errorString.contains('Invalid package ZIP')) {
+      return l10n.invalidPackageZip;
+    } else if (errorString.contains('Invalid package file format')) {
+      return l10n.invalidPackageFormat;
+    } else {
+      return '${l10n.failedToImportPackage}: $e';
+    }
+  }
+
+  Future<bool?> _showDuplicatePackageDialog(AppLocalizations l10n, String groupName) {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.packageAlreadyExists),
-        content: Text(l10n.packageExistsMessage),
+        content: Text(l10n.packageExistsMessage(groupName)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -507,6 +889,8 @@ class PackageCard extends StatefulWidget {
   final bool isCompact;
   final VoidCallback onTap;
   final VoidCallback onToggleCompact;
+  final VoidCallback? onDelete;
+  final VoidCallback? onMoveToGroup;
   final bool isInGrid;
   final bool showToggleButton;
 
@@ -517,6 +901,8 @@ class PackageCard extends StatefulWidget {
     required this.isCompact,
     required this.onTap,
     required this.onToggleCompact,
+    this.onDelete,
+    this.onMoveToGroup,
     this.isInGrid = false,
     this.showToggleButton = true,
   }) : super(key: key);
@@ -645,7 +1031,7 @@ class _PackageCardState extends State<PackageCard> {
   Widget build(BuildContext context) {
 
     return Card(
-      margin: widget.isInGrid ? EdgeInsets.zero : EdgeInsets.only(bottom: AppTheme.spacing16),
+      margin: widget.isInGrid ? EdgeInsets.zero : EdgeInsets.only(bottom: AppTheme.spacing8),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: widget.onTap,
@@ -656,7 +1042,7 @@ class _PackageCardState extends State<PackageCard> {
 
   Widget _buildCompactCard(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(AppTheme.spacing12),
+      padding: EdgeInsets.all(AppTheme.spacing8),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -672,10 +1058,10 @@ class _PackageCardState extends State<PackageCard> {
   Widget _buildCompactHeader(BuildContext context) {
     return Row(
       children: [
-        if (!widget.isInGrid) _buildDragHandle(context, size: 20),
-        if (!widget.isInGrid) SizedBox(width: AppTheme.spacing8),
-        _buildPackageIcon(size: 32),
-        SizedBox(width: AppTheme.spacing8),
+        if (!widget.isInGrid) _buildDragHandle(context, size: 18),
+        if (!widget.isInGrid) SizedBox(width: AppTheme.spacing4),
+        _buildPackageIcon(size: 28),
+        SizedBox(width: AppTheme.spacing4),
         _buildLanguageInfo(context, isCompact: true),
         if (widget.package.isPurchased) _buildCompactPurchasedBadge(context),
         if (widget.showToggleButton) _buildToggleButton(context, isExpanded: false),
@@ -689,12 +1075,12 @@ class _PackageCardState extends State<PackageCard> {
 
     return Padding(
       padding: EdgeInsets.only(
-        top: AppTheme.spacing8,
-        left: !widget.isInGrid ? 48.0 : 0,
+        top: AppTheme.spacing4,
+        left: !widget.isInGrid ? 40.0 : 0,
       ),
       child: Text(
         widget.package.description!,
-        style: theme.textTheme.labelLarge?.copyWith(
+        style: theme.textTheme.bodySmall?.copyWith(
           color: colorScheme.onSurfaceVariant,
         ),
         maxLines: 1,
@@ -723,38 +1109,169 @@ class _PackageCardState extends State<PackageCard> {
         _buildExpandedHeader(context),
         if (widget.package.description != null && widget.package.description!.isNotEmpty)
           _buildExpandedDescription(context),
-        if (_hasAuthorInfo()) _buildExpandedAuthorSection(context),
-        _buildExpandedVersion(context),
+        if (_hasAuthorInfo())
+          _buildExpandedAuthorSection(context)
+        else if (!_isLoading)
+          // Show version/item count alone in same styled container if no author info
+          Padding(
+            padding: EdgeInsets.only(top: AppTheme.spacing12),
+            child: _buildVersionOnlyCard(context),
+          ),
         if (!_isLoading && _categories.isNotEmpty)
           _buildCategoryChips(context),
       ],
     );
 
-    return widget.isInGrid
+    final mainContent = widget.isInGrid
         ? SingleChildScrollView(
-            padding: EdgeInsets.all(AppTheme.spacing16),
+            padding: EdgeInsets.all(AppTheme.spacing8),
             child: content,
           )
         : Padding(
-            padding: EdgeInsets.all(AppTheme.spacing16),
+            padding: EdgeInsets.all(AppTheme.spacing8),
             child: content,
           );
+
+    return Stack(
+      children: [
+        mainContent,
+        // Left side buttons (Browse Items, Training Rally)
+        _buildLeftFloatingActionButtons(context),
+        // Right side buttons (Move to group, Delete)
+        _buildFloatingActionButtons(context),
+      ],
+    );
+  }
+
+  Widget _buildVersionOnlyCard(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: EdgeInsets.all(AppTheme.spacing12),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          _buildVersionAndItemCount(context),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFloatingActionButtons(BuildContext context) {
+    return Positioned(
+      bottom: AppTheme.spacing8,
+      right: AppTheme.spacing8,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Move to group button (for all packages)
+          if (widget.onMoveToGroup != null)
+            _buildMoveButton(context),
+          // Delete button (only for purchased packages)
+          if (widget.package.isPurchased && widget.onDelete != null) ...[
+            SizedBox(height: AppTheme.spacing8),
+            _buildDeleteButton(context),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLeftFloatingActionButtons(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Positioned(
+      bottom: AppTheme.spacing8,
+      left: AppTheme.spacing8,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Training Rally button (to be implemented)
+          _buildTrainingRallyButton(context, l10n),
+          SizedBox(width: AppTheme.spacing8),
+          // Browse Items button
+          _buildBrowseItemsButton(context, l10n),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBrowseItemsButton(BuildContext context, AppLocalizations l10n) {
+    return FloatingActionButton.small(
+      heroTag: 'browse_${widget.package.id}',
+      onPressed: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => ItemBrowserPage(package: widget.package),
+          ),
+        );
+      },
+      backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+      foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
+      tooltip: l10n.browseItems,
+      child: const Icon(Icons.list_alt, size: 20),
+    );
+  }
+
+  Widget _buildTrainingRallyButton(BuildContext context, AppLocalizations l10n) {
+    return FloatingActionButton.small(
+      heroTag: 'training_${widget.package.id}',
+      onPressed: () {
+        // TODO: Navigate to Training Rally page
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.trainingComingSoon),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      },
+      backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
+      foregroundColor: Theme.of(context).colorScheme.onTertiaryContainer,
+      tooltip: l10n.trainingRally,
+      child: const Icon(Icons.school, size: 20),
+    );
+  }
+
+  Widget _buildMoveButton(BuildContext context) {
+    return FloatingActionButton.small(
+      heroTag: 'move_${widget.package.id}',
+      onPressed: widget.onMoveToGroup,
+      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+      foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
+      tooltip: 'Move to another group',
+      child: const Icon(Icons.drive_file_move_outlined, size: 20),
+    );
+  }
+
+  Widget _buildDeleteButton(BuildContext context) {
+    return FloatingActionButton.small(
+      heroTag: 'delete_${widget.package.id}',
+      onPressed: widget.onDelete,
+      backgroundColor: Theme.of(context).colorScheme.errorContainer,
+      foregroundColor: Theme.of(context).colorScheme.onErrorContainer,
+      tooltip: 'Delete package',
+      child: const Icon(Icons.delete_outline, size: 20),
+    );
   }
 
   Widget _buildExpandedHeader(BuildContext context) {
     return Row(
       children: [
-        if (!widget.isInGrid) _buildDragHandle(context, size: 24),
-        if (!widget.isInGrid) SizedBox(width: AppTheme.spacing12),
-        _buildPackageIcon(size: 48),
-        SizedBox(width: AppTheme.spacing12),
+        if (!widget.isInGrid) _buildDragHandle(context, size: 20),
+        if (!widget.isInGrid) SizedBox(width: AppTheme.spacing8),
+        _buildPackageIcon(size: 40),
+        SizedBox(width: AppTheme.spacing8),
         _buildLanguageInfo(context, isCompact: false),
         if (_highestBadgeId != null) ...[
-          SizedBox(width: AppTheme.spacing8),
+          SizedBox(width: AppTheme.spacing4),
           _buildHighestBadge(context),
         ],
         if (widget.package.isPurchased) _buildExpandedPurchasedBadge(context),
-        if (widget.showToggleButton) SizedBox(width: AppTheme.spacing8),
+        if (widget.showToggleButton) SizedBox(width: AppTheme.spacing4),
         if (widget.showToggleButton) _buildToggleButton(context, isExpanded: true),
       ],
     );
@@ -788,54 +1305,113 @@ class _PackageCardState extends State<PackageCard> {
   Widget _buildExpandedAuthorSection(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(top: AppTheme.spacing12),
-      child: _buildAuthorInfo(context, widget.package),
+      child: _buildAuthorInfoWithVersion(context, widget.package),
     );
   }
 
-  Widget _buildExpandedVersion(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    final l10n = AppLocalizations.of(context)!;
+  Widget _buildAuthorInfoWithVersion(BuildContext context, LanguagePackage package) {
+    final colorScheme = Theme.of(context).colorScheme;
 
-    return Padding(
-      padding: EdgeInsets.only(top: AppTheme.spacing12),
+    return Container(
+      padding: EdgeInsets.all(AppTheme.spacing12),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+      ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(
-            Icons.info_outline,
-            size: 14,
-            color: colorScheme.onSurfaceVariant,
-          ),
-          SizedBox(width: AppTheme.spacing4),
-          Text(
-            '${l10n.versionLabel} ${widget.package.version}',
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
+          // Author info on the left
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (package.authorName != null)
+                  _buildAuthorName(context, package.authorName!),
+                if (package.authorEmail != null)
+                  _buildAuthorEmail(context, package.authorEmail!,
+                      hasNameAbove: package.authorName != null),
+                if (package.authorWebpage != null)
+                  _buildAuthorWebpage(context, package.authorWebpage!,
+                      hasContentAbove: package.authorName != null || package.authorEmail != null),
+              ],
             ),
           ),
-          if (!_isLoading && _itemCount > 0) ...[
-            SizedBox(width: AppTheme.spacing12),
-            Icon(
-              Icons.format_list_numbered,
-              size: 14,
-              color: colorScheme.primary,
+          // Version and item count on the right
+          if (!_isLoading)
+            Padding(
+              padding: EdgeInsets.only(left: AppTheme.spacing8),
+              child: _buildVersionAndItemCount(context),
             ),
-            SizedBox(width: AppTheme.spacing4),
-            Text(
-              '$_itemCount ${l10n.items}',
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: colorScheme.primary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
         ],
       ),
     );
   }
 
-  Widget _buildCategoryChips(BuildContext context) {
+  Widget _buildVersionAndItemCount(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildVersionInfo(context),
+        if (_itemCount > 0) ...[
+          SizedBox(height: AppTheme.spacing8),
+          _buildItemCountInfo(context),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildVersionInfo(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.info_outline,
+          size: 14,
+          color: colorScheme.onSurfaceVariant,
+        ),
+        SizedBox(width: AppTheme.spacing4),
+        Text(
+          '${l10n.versionLabel} ${widget.package.version}',
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildItemCountInfo(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(
+          Icons.format_list_numbered,
+          size: 14,
+          color: colorScheme.primary,
+        ),
+        SizedBox(width: AppTheme.spacing4),
+        Text(
+          '$_itemCount ${l10n.items}',
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: colorScheme.primary,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCategoryChips(BuildContext context) {
     final displayCategories = _categories.take(6).toList();
     final hasMore = _categories.length > 6;
 
@@ -845,77 +1421,86 @@ class _PackageCardState extends State<PackageCard> {
         spacing: AppTheme.spacing8,
         runSpacing: AppTheme.spacing8,
         children: [
-          ...displayCategories.map((category) => Chip(
-            label: Text(
-              category.name,
-              style: theme.textTheme.bodySmall,
-            ),
-            backgroundColor: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
-            side: BorderSide.none,
-            padding: EdgeInsets.symmetric(horizontal: AppTheme.spacing8),
-            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-          )),
-          if (hasMore)
-            InkWell(
-              onTap: () => _showAllCategoriesDialog(context),
-              child: Chip(
-                label: Text(
-                  '...',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                side: BorderSide(
-                  color: theme.colorScheme.outline,
-                  width: 1,
-                ),
-                padding: EdgeInsets.symmetric(horizontal: AppTheme.spacing8),
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              ),
-            ),
+          ...displayCategories.map((category) => _buildCategoryChip(context, category)),
+          if (hasMore) _buildMoreCategoriesChip(context),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryChip(BuildContext context, Category category) {
+    final theme = Theme.of(context);
+
+    return Chip(
+      label: Text(
+        category.name,
+        style: theme.textTheme.bodySmall,
+      ),
+      backgroundColor: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+      side: BorderSide.none,
+      padding: EdgeInsets.symmetric(horizontal: AppTheme.spacing8),
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    );
+  }
+
+  Widget _buildMoreCategoriesChip(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return InkWell(
+      onTap: () => _showAllCategoriesDialog(context),
+      child: Chip(
+        label: Text(
+          '...',
+          style: theme.textTheme.bodySmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: theme.colorScheme.surfaceContainerHighest,
+        side: BorderSide(
+          color: theme.colorScheme.outline,
+          width: 1,
+        ),
+        padding: EdgeInsets.symmetric(horizontal: AppTheme.spacing8),
+        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
     );
   }
 
   void _showAllCategoriesDialog(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-
-    // Sort categories alphabetically (case-insensitive)
-    final sortedCategories = List<Category>.from(_categories)
-      ..sort((a, b) => a.name.toUpperCase().compareTo(b.name.toUpperCase()));
+    final sortedCategories = _getSortedCategories();
 
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.allCategories),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: SingleChildScrollView(
-            child: Wrap(
-              spacing: AppTheme.spacing8,
-              runSpacing: AppTheme.spacing8,
-              children: sortedCategories.map((category) => Chip(
-                label: Text(
-                  category.name,
-                  style: theme.textTheme.bodySmall,
-                ),
-                backgroundColor: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
-                side: BorderSide.none,
-                padding: EdgeInsets.symmetric(horizontal: AppTheme.spacing8),
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              )).toList(),
-            ),
-          ),
-        ),
+        content: _buildAllCategoriesContent(context, sortedCategories),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: Text(l10n.ok),
           ),
         ],
+      ),
+    );
+  }
+
+  List<Category> _getSortedCategories() {
+    return List<Category>.from(_categories)
+      ..sort((a, b) => a.name.toUpperCase().compareTo(b.name.toUpperCase()));
+  }
+
+  Widget _buildAllCategoriesContent(BuildContext context, List<Category> sortedCategories) {
+    return SizedBox(
+      width: double.maxFinite,
+      child: SingleChildScrollView(
+        child: Wrap(
+          spacing: AppTheme.spacing8,
+          runSpacing: AppTheme.spacing8,
+          children: sortedCategories
+              .map((category) => _buildCategoryChip(context, category))
+              .toList(),
+        ),
       ),
     );
   }
@@ -1021,30 +1606,6 @@ class _PackageCardState extends State<PackageCard> {
     );
   }
 
-  Widget _buildAuthorInfo(BuildContext context, LanguagePackage package) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Container(
-      padding: EdgeInsets.all(AppTheme.spacing12),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (package.authorName != null)
-            _buildAuthorName(context, package.authorName!),
-          if (package.authorEmail != null)
-            _buildAuthorEmail(context, package.authorEmail!,
-                hasNameAbove: package.authorName != null),
-          if (package.authorWebpage != null)
-            _buildAuthorWebpage(context, package.authorWebpage!,
-                hasContentAbove: package.authorName != null || package.authorEmail != null),
-        ],
-      ),
-    );
-  }
 
   Widget _buildAuthorName(BuildContext context, String name) {
     final theme = Theme.of(context);
@@ -1061,8 +1622,7 @@ class _PackageCardState extends State<PackageCard> {
         Expanded(
           child: Text(
             name,
-            style: theme.textTheme.labelLarge?.copyWith(
-              fontWeight: FontWeight.w600,
+            style: theme.textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurface,
             ),
           ),
@@ -1091,7 +1651,7 @@ class _PackageCardState extends State<PackageCard> {
               Expanded(
                 child: Text(
                   email,
-                  style: theme.textTheme.labelLarge?.copyWith(
+                  style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.primary,
                     decoration: TextDecoration.underline,
                   ),
@@ -1125,7 +1685,7 @@ class _PackageCardState extends State<PackageCard> {
               Expanded(
                 child: Text(
                   webpage,
-                  style: theme.textTheme.labelLarge?.copyWith(
+                  style: theme.textTheme.bodySmall?.copyWith(
                     color: colorScheme.primary,
                     decoration: TextDecoration.underline,
                   ),

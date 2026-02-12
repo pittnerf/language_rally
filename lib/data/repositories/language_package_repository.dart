@@ -24,6 +24,17 @@ class LanguagePackageRepository {
     return maps.map((map) => _mapToPackage(map)).toList();
   }
 
+  Future<List<LanguagePackage>> getPackagesByGroupId(String groupId) async {
+    final db = await _dbHelper.database;
+    final maps = await db.query(
+      'language_packages',
+      where: 'group_id = ?',
+      whereArgs: [groupId],
+      orderBy: 'created_at DESC',
+    );
+    return maps.map((map) => _mapToPackage(map)).toList();
+  }
+
   Future<LanguagePackage?> getPackageById(String id) async {
     final db = await _dbHelper.database;
     final maps = await db.query(
@@ -141,6 +152,7 @@ class LanguagePackageRepository {
   Map<String, dynamic> _packageToMap(LanguagePackage package) {
     return <String, dynamic>{
       'id': package.id,
+      'group_id': package.groupId,
       'language_code1': package.languageCode1,
       'language_name1': package.languageName1,
       'language_code2': package.languageCode2,
@@ -164,6 +176,7 @@ class LanguagePackageRepository {
   LanguagePackage _mapToPackage(Map<String, dynamic> map) {
     return LanguagePackage(
       id: map['id'] as String,
+      groupId: map['group_id'] as String,
       languageCode1: map['language_code1'] as String,
       languageName1: map['language_name1'] as String,
       languageCode2: map['language_code2'] as String,

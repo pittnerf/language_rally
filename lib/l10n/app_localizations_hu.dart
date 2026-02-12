@@ -146,7 +146,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get errorClearingCounters => 'Hiba a számlálók törlése során';
 
   @override
-  String get deleteAll => 'Minden adat törlése';
+  String get deleteAll => 'Csomag törlése';
 
   @override
   String get confirmDeleteAllData =>
@@ -225,6 +225,11 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
+  String packageImportedWithGroup(Object count, Object groupName) {
+    return 'Csomag importálva a \"$groupName\" csoportba! ($count elem)';
+  }
+
+  @override
   String get importError => 'Importálási hiba';
 
   @override
@@ -234,8 +239,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get packageAlreadyExists => 'A csomag már létezik';
 
   @override
-  String get packageExistsMessage =>
-      'Már létezik egy csomag ugyanezzel a nyelvpárral, leírással, szerző információval és verzióval. Szeretné mindenképpen új csomagként importálni?';
+  String packageExistsMessage(Object groupName) {
+    return 'Már létezik egy csomag ugyanezzel a nyelvpárral, leírással, szerző információval és verzióval. Szeretné mindenképpen új csomagként importálni?';
+  }
 
   @override
   String get importAsNew => 'Importálás mindenképpen';
@@ -337,4 +343,90 @@ class AppLocalizationsHu extends AppLocalizations {
   String andMore(Object count) {
     return '... és még $count';
   }
+
+  @override
+  String get browseItems => 'Elemek böngészése';
+
+  @override
+  String get itemDetails => 'Részletek';
+
+  @override
+  String get filterItems => 'Elemek szűrése';
+
+  @override
+  String searchLanguage1(Object language) {
+    return 'Keresés ebben: $language';
+  }
+
+  @override
+  String searchLanguage2(Object language) {
+    return 'Keresés ebben: $language';
+  }
+
+  @override
+  String get caseSensitive => 'Kis- és nagybetű érzékeny';
+
+  @override
+  String get onlyImportant => 'Csak fontos elemek';
+
+  @override
+  String get knownStatus => 'Tudás állapota';
+
+  @override
+  String get allItems => 'Minden elem';
+
+  @override
+  String get itemsIKnew => 'Elemek, amiket tudtam';
+
+  @override
+  String get itemsIDidNotKnow => 'Elemek, amiket nem tudtam';
+
+  @override
+  String get known => 'Tudom';
+
+  @override
+  String get important => 'Fontos';
+
+  @override
+  String get favourite => 'Kedvenc';
+
+  @override
+  String get examples => 'Példamondatok';
+
+  @override
+  String get noExamples => 'Nincsenek elérhető példamondatok';
+
+  @override
+  String get pronounce => 'Kiejtés';
+
+  @override
+  String get ttsError => 'Szövegfelolvasás nem elérhető';
+
+  @override
+  String get noItemsFound => 'Nem található elem';
+
+  @override
+  String get noItemsInPackage => 'Még nincs elem ebben a csomagban';
+
+  @override
+  String get clearFilters => 'Szűrők törlése';
+
+  @override
+  String itemCount(Object count) {
+    return '$count elem';
+  }
+
+  @override
+  String filteredItemCount(Object filtered, Object total) {
+    return '$filtered / $total elem';
+  }
+
+  @override
+  String get trainingRally => 'Gyakorlás';
+
+  @override
+  String get startTraining => 'Gyakorlás kezdése';
+
+  @override
+  String get trainingComingSoon => 'Gyakorlás - Hamarosan!';
 }

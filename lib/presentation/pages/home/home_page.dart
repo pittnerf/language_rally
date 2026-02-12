@@ -1,29 +1,133 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:language_rally/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../providers/theme_provider.dart';
 import '../font_test_page.dart';
 import '../design_system_showcase.dart';
 import '../packages/package_list_page.dart';
 import '../packages/package_form_page.dart';
 import '../dev/test_data_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends ConsumerWidget {
   const HomePage({super.key});
 
+  void _showThemeSelector(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      builder: (context) => Consumer(
+        builder: (context, ref, child) {
+          // Watch the theme provider to rebuild dialog when theme changes
+          final currentConfig = ref.watch(themeProvider);
+
+          // Use fixed text styles to prevent size changes when theme switches
+          const titleTextStyle = TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            height: 1.5,
+            letterSpacing: 0.5,
+          );
+
+          const subtitleTextStyle = TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 12,
+            fontWeight: FontWeight.w400,
+            height: 1.33,
+            letterSpacing: 0.4,
+          );
+
+          const headerTextStyle = TextStyle(
+            fontFamily: 'Inter',
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            height: 1.5,
+            letterSpacing: 0.15,
+          );
+
+          return AlertDialog(
+            title: const Text('Choose Theme'),
+            content: SizedBox(
+              width: double.maxFinite,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Dark/Light mode toggle
+                    SwitchListTile(
+                      title: const Text('Dark Mode', style: titleTextStyle),
+                      subtitle: const Text('Toggle between light and dark', style: subtitleTextStyle),
+                      value: currentConfig.isDarkMode,
+                      onChanged: (value) {
+                        ref.read(themeProvider.notifier).setDarkMode(value);
+                      },
+                    ),
+                    const Divider(),
+                    const SizedBox(height: 8),
+                    const Text('Color Theme:', style: headerTextStyle),
+                    const SizedBox(height: 8),
+                    // Theme options
+                    ...AppThemeOption.values.map((option) {
+                      return RadioListTile<AppThemeOption>(
+                        title: Text(option.displayName, style: titleTextStyle),
+                        subtitle: Text(option.description, style: subtitleTextStyle),
+                        value: option,
+                        groupValue: currentConfig.themeOption,
+                        onChanged: (value) {
+                          if (value != null) {
+                            ref.read(themeProvider.notifier).setThemeOption(value);
+                          }
+                        },
+                      );
+                    }).toList(),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final localizations = AppLocalizations.of(context)!;
+    final themeConfig = ref.watch(themeProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(localizations.appTitle),
+        actions: [
+          // Theme brightness toggle button
+          IconButton(
+            icon: Icon(themeConfig.isDarkMode ? Icons.light_mode : Icons.dark_mode),
+            tooltip: 'Toggle brightness',
+            onPressed: () {
+              ref.read(themeProvider.notifier).toggleBrightness();
+            },
+          ),
+          // Theme selector button
+          IconButton(
+            icon: const Icon(Icons.palette),
+            tooltip: 'Change theme',
+            onPressed: () => _showThemeSelector(context, ref),
+          ),
+        ],
       ),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(AppTheme.spacing24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(AppTheme.spacing24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
               Text(
                 localizations.welcome,
                 style: Theme.of(context).textTheme.headlineLarge,
@@ -129,6 +233,7 @@ class HomePage extends StatelessWidget {
               ),
             ],
           ),
+        ),
         ),
       ),
     );

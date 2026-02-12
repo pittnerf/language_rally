@@ -1,6 +1,8 @@
 // lib/presentation/widgets/package_icon.dart
 import 'package:flutter/material.dart';
-import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_svg/flutter_svg.dart';
+import 'dart:io' show File;
 
 /// Widget to display a package icon with automatic fallback to default dictionary icon
 class PackageIcon extends StatelessWidget {
@@ -29,24 +31,66 @@ class PackageIcon extends StatelessWidget {
   }
 
   Widget _buildCustomIcon(BuildContext context) {
+    final bool isSvg = iconPath!.toLowerCase().endsWith('.svg');
+
     // Check if it's an asset path or file path
     if (iconPath!.startsWith('assets/')) {
-      // Asset image
-      return Image.asset(
-        iconPath!,
-        width: size,
-        height: size,
-        fit: fit,
-        color: color,
-        errorBuilder: (ctx, error, stackTrace) {
-          // If custom icon fails to load, show default
-          return _buildDefaultIcon(ctx);
-        },
-      );
+      // Asset image - works on all platforms
+      if (isSvg) {
+        return SvgPicture.asset(
+          iconPath!,
+          width: size,
+          height: size,
+          fit: fit,
+          colorFilter: color != null
+              ? ColorFilter.mode(color!, BlendMode.srcIn)
+              : null,
+          placeholderBuilder: (context) => _buildDefaultIcon(context),
+        );
+      } else {
+        return Image.asset(
+          iconPath!,
+          width: size,
+          height: size,
+          fit: fit,
+          color: color,
+          errorBuilder: (ctx, error, stackTrace) {
+            return _buildDefaultIcon(ctx);
+          },
+        );
+      }
     } else {
-      // File path (for user-uploaded icons)
+      // File path (for user-uploaded icons) - only supported on native platforms
+      if (kIsWeb) {
+        // On web, we cannot access local file system, show default icon
+        return _buildDefaultIcon(context);
+      } else {
+        // Native platforms only
+        return _buildFileIcon(context, isSvg);
+      }
+    }
+  }
+
+  Widget _buildFileIcon(BuildContext context, bool isSvg) {
+    // This method is only called on native platforms, not on web
+    try {
       final file = File(iconPath!);
-      if (file.existsSync()) {
+      if (!file.existsSync()) {
+        return _buildDefaultIcon(context);
+      }
+
+      if (isSvg) {
+        return SvgPicture.file(
+          file,
+          width: size,
+          height: size,
+          fit: fit,
+          colorFilter: color != null
+              ? ColorFilter.mode(color!, BlendMode.srcIn)
+              : null,
+          placeholderBuilder: (context) => _buildDefaultIcon(context),
+        );
+      } else {
         return Image.file(
           file,
           width: size,
@@ -57,9 +101,10 @@ class PackageIcon extends StatelessWidget {
             return _buildDefaultIcon(ctx);
           },
         );
-      } else {
-        return _buildDefaultIcon(context);
       }
+    } catch (e) {
+      // If any error occurs (e.g., file access denied), show default
+      return _buildDefaultIcon(context);
     }
   }
 
