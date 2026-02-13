@@ -109,10 +109,10 @@ class _TestDataPageState extends State<TestDataPage> {
       final package = LanguagePackage(
         id: packageId,
         groupId: 'default-group-id',
-        languageCode1: 'en',
-        languageName1: 'English',
-        languageCode2: 'de',
-        languageName2: 'German',
+        languageCode1: 'en-US',
+        languageName1: 'English (United States)',
+        languageCode2: 'de-DE',
+        languageName2: 'German (Germany)',
         description: 'Essential German vocabulary for beginners',
         icon: null,
         authorName: 'Test Author',
@@ -163,11 +163,11 @@ class _TestDataPageState extends State<TestDataPage> {
           packageId: packageId,
           categoryIds: [greetingsCat.id],
           language1Data: const ItemLanguageData(
-            languageCode: 'en',
+            languageCode: 'en-US',
             text: 'Hello',
           ),
           language2Data: const ItemLanguageData(
-            languageCode: 'de',
+            languageCode: 'de-DE',
             text: 'Hallo',
           ),
           examples: [
@@ -185,11 +185,11 @@ class _TestDataPageState extends State<TestDataPage> {
           packageId: packageId,
           categoryIds: [greetingsCat.id],
           language1Data: const ItemLanguageData(
-            languageCode: 'en',
+            languageCode: 'en-US',
             text: 'Good morning',
           ),
           language2Data: const ItemLanguageData(
-            languageCode: 'de',
+            languageCode: 'de-DE',
             text: 'Guten Morgen',
           ),
           examples: [],
@@ -200,11 +200,11 @@ class _TestDataPageState extends State<TestDataPage> {
           packageId: packageId,
           categoryIds: [foodCat.id],
           language1Data: const ItemLanguageData(
-            languageCode: 'en',
+            languageCode: 'en-US',
             text: 'apple',
           ),
           language2Data: const ItemLanguageData(
-            languageCode: 'de',
+            languageCode: 'de-DE',
             text: 'Apfel',
             preItem: 'der',
           ),
@@ -216,11 +216,11 @@ class _TestDataPageState extends State<TestDataPage> {
           packageId: packageId,
           categoryIds: [travelCat.id],
           language1Data: const ItemLanguageData(
-            languageCode: 'en',
+            languageCode: 'en-US',
             text: 'train station',
           ),
           language2Data: const ItemLanguageData(
-            languageCode: 'de',
+            languageCode: 'de-DE',
             text: 'Bahnhof',
             preItem: 'der',
           ),
@@ -251,8 +251,8 @@ class _TestDataPageState extends State<TestDataPage> {
       final package = LanguagePackage(
         id: packageId,
         groupId: 'default-group-id',
-        languageCode1: 'en',
-        languageName1: 'English',
+        languageCode1: 'en-US',
+        languageName1: 'English (United States)',
         languageCode2: 'es',
         languageName2: 'Spanish',
         description: 'Essential Spanish phrases for travelers',
@@ -292,7 +292,7 @@ class _TestDataPageState extends State<TestDataPage> {
           packageId: packageId,
           categoryIds: [greetingsCat.id],
           language1Data: const ItemLanguageData(
-            languageCode: 'en',
+            languageCode: 'en-US',
             text: 'Hello',
           ),
           language2Data: const ItemLanguageData(
@@ -308,7 +308,7 @@ class _TestDataPageState extends State<TestDataPage> {
           packageId: packageId,
           categoryIds: [restaurantCat.id],
           language1Data: const ItemLanguageData(
-            languageCode: 'en',
+            languageCode: 'en-US',
             text: 'I would like',
           ),
           language2Data: const ItemLanguageData(
@@ -324,7 +324,7 @@ class _TestDataPageState extends State<TestDataPage> {
           packageId: packageId,
           categoryIds: [restaurantCat.id],
           language1Data: const ItemLanguageData(
-            languageCode: 'en',
+            languageCode: 'en-US',
             text: 'The bill, please',
           ),
           language2Data: const ItemLanguageData(
@@ -393,12 +393,12 @@ class _TestDataPageState extends State<TestDataPage> {
           packageId: packageId,
           categoryIds: [businessCat.id],
           language1Data: const ItemLanguageData(
-            languageCode: 'fr',
+            languageCode: 'fr-FR',
             text: 'réunion',
             preItem: 'une',
           ),
           language2Data: const ItemLanguageData(
-            languageCode: 'en',
+            languageCode: 'en-US',
             text: 'meeting',
             preItem: 'a',
           ),
@@ -411,12 +411,12 @@ class _TestDataPageState extends State<TestDataPage> {
           packageId: packageId,
           categoryIds: [businessCat.id],
           language1Data: const ItemLanguageData(
-            languageCode: 'fr',
+            languageCode: 'fr-FR',
             text: 'contrat',
             preItem: 'un',
           ),
           language2Data: const ItemLanguageData(
-            languageCode: 'en',
+            languageCode: 'en-US',
             text: 'contract',
             preItem: 'a',
           ),

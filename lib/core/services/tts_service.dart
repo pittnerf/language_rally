@@ -87,61 +87,6 @@ class TtsService {
     }
   }
 
-  /// Normalize language code to full locale format
-  /// Converts 'en' -> 'en-US', 'hu' -> 'hu-HU', etc.
-  String _normalizeLanguageCode(String languageCode) {
-    // If already in full format (e.g., 'en-US'), return as is
-    if (languageCode.contains('-') || languageCode.contains('_')) {
-      return languageCode;
-    }
-
-    // Common language code mappings to default locales
-    final Map<String, String> languageToLocale = {
-      'en': 'en-US',
-      'hu': 'hu-HU',
-      'de': 'de-DE',
-      'es': 'es-ES',
-      'fr': 'fr-FR',
-      'it': 'it-IT',
-      'pt': 'pt-PT',
-      'pl': 'pl-PL',
-      'ru': 'ru-RU',
-      'ja': 'ja-JP',
-      'ko': 'ko-KR',
-      'zh': 'zh-CN',
-      'ar': 'ar-SA',
-      'nl': 'nl-NL',
-      'sv': 'sv-SE',
-      'da': 'da-DK',
-      'fi': 'fi-FI',
-      'no': 'no-NO',
-      'tr': 'tr-TR',
-      'el': 'el-GR',
-      'cs': 'cs-CZ',
-      'ro': 'ro-RO',
-      'sk': 'sk-SK',
-      'uk': 'uk-UA',
-      'bg': 'bg-BG',
-      'hr': 'hr-HR',
-      'sr': 'sr-RS',
-      'sl': 'sl-SI',
-      'lt': 'lt-LT',
-      'lv': 'lv-LV',
-      'et': 'et-EE',
-      'vi': 'vi-VN',
-      'th': 'th-TH',
-      'id': 'id-ID',
-      'ms': 'ms-MY',
-      'hi': 'hi-IN',
-      'bn': 'bn-BD',
-      'ur': 'ur-PK',
-      'fa': 'fa-IR',
-      'he': 'he-IL',
-    };
-
-    return languageToLocale[languageCode.toLowerCase()] ?? '$languageCode-${languageCode.toUpperCase()}';
-  }
-
   /// Speak text using device TTS
   Future<bool> speak(String text, String languageCode) async {
     if (text.isEmpty) return false;
@@ -150,9 +95,7 @@ class TtsService {
       await initialize();
       await stop(); // Stop any ongoing speech
 
-      // Normalize language code to full locale format
-      final normalizedCode = _normalizeLanguageCode(languageCode);
-      // print('Speaking text in language: $languageCode -> $normalizedCode');
+      // print('Speaking text in language: $languageCode');
 
       // On Windows, device TTS (SAPI) often doesn't switch languages correctly
       // even when setLanguage returns success. Web TTS is more reliable.
@@ -160,7 +103,7 @@ class TtsService {
       try {
         final webSuccess = await speakWebTts(text, languageCode);
         if (webSuccess) {
-          // print('Web TTS succeeded for language: $normalizedCode');
+          // print('Web TTS succeeded for language: $languageCode');
           return true;
         }
       } catch (e) {
@@ -168,20 +111,20 @@ class TtsService {
       }
 
       // Fallback to device TTS
-      // print('Attempting device TTS for language: $normalizedCode');
+      // print('Attempting device TTS for language: $languageCode');
 
       // Try to find and set a voice for this language
-      bool voiceSet = await _setVoiceForLanguage(normalizedCode);
+      bool voiceSet = await _setVoiceForLanguage(languageCode);
 
       // Try to set language
-      final result = await _flutterTts.setLanguage(normalizedCode);
+      final result = await _flutterTts.setLanguage(languageCode);
       // print('setLanguage result: $result (1 = success), voice set: $voiceSet');
 
       if (result == 1 || voiceSet) {
         await _flutterTts.speak(text);
         return true;
       } else {
-        // print('Device TTS failed for language: $normalizedCode');
+        // print('Device TTS failed for language: $languageCode');
         return false;
       }
     } catch (e) {
@@ -226,10 +169,9 @@ class TtsService {
   /// This is a free public API that doesn't require authentication
   Future<bool> speakWebTts(String text, String languageCode) async {
     try {
-      // Normalize and extract base language code for Google TTS
-      // Examples: 'en' -> 'en', 'en-US' -> 'en', 'hu-HU' -> 'hu'
-      final normalizedCode = _normalizeLanguageCode(languageCode);
-      final lang = normalizedCode.split('-').first;
+      // Extract base language code for Google TTS
+      // Examples: 'en-US' -> 'en', 'hu-HU' -> 'hu', 'de-DE' -> 'de'
+      final lang = languageCode.split('-').first;
 
       // print('Web TTS: Using language code: $lang for text: ${text.substring(0, text.length > 30 ? 30 : text.length)}...');
 

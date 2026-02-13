@@ -225,19 +225,46 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
       //  title: Text(l10n.browseItems),
       //  backgroundColor: theme.colorScheme.surface,
       //),
-      body: SafeArea(
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
-                children: [
-                  _buildFilterPanel(l10n, theme),
-                  Expanded(
-                    child: isLandscape
-                        ? _buildLandscapeLayout(l10n, theme)
-                        : _buildPortraitLayout(l10n, theme),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: _isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : Column(
+                    children: [
+                      _buildFilterPanel(l10n, theme),
+                      Expanded(
+                        child: isLandscape
+                            ? _buildLandscapeLayout(l10n, theme)
+                            : _buildPortraitLayout(l10n, theme),
+                      ),
+                    ],
                   ),
-                ],
+          ),
+          // Add back button since AppBar is hidden
+          Positioned(
+            top: AppTheme.spacing8,
+            left: AppTheme.spacing8,
+            child: SafeArea(
+              child: Material(
+                elevation: 4,
+                borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                color: theme.colorScheme.surface,
+                child: InkWell(
+                  onTap: () => Navigator.of(context).pop(),
+                  borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppTheme.spacing8),
+                    child: Icon(
+                      Icons.arrow_back,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ),
               ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -58,6 +58,10 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
   bool get _isReadOnly => widget.package?.isReadonly ?? false;
   bool get _isPurchased => widget.package?.isPurchased ?? false;
 
+  // Selected language codes (kept in sync with autocomplete selections)
+  String? _selectedLanguageCode1;
+  String? _selectedLanguageCode2;
+
   // Package groups
   List<LanguagePackageGroup> _groups = [];
   LanguagePackageGroup? _selectedGroup;
@@ -121,6 +125,10 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     _authorWebpageController = TextEditingController(text: pkg?.authorWebpage ?? '');
     _versionController = TextEditingController(text: pkg?.version ?? '1.0');
     _selectedIcon = pkg?.icon;
+
+    // Initialize selected language codes
+    _selectedLanguageCode1 = pkg?.languageCode1;
+    _selectedLanguageCode2 = pkg?.languageCode2;
 
     // Check if the icon is a custom uploaded icon (not in assets)
     if (_selectedIcon != null && !_selectedIcon!.startsWith('assets/')) {
@@ -199,7 +207,35 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
 
     return Scaffold(
       appBar: isTablet ? _buildAppBar(context, theme, l10n) : null,
-      body: _buildBody(context, l10n),
+      body: Stack(
+        children: [
+          _buildBody(context, l10n),
+          // Add back button for non-tablet devices (where AppBar is hidden)
+          if (!isTablet)
+            Positioned(
+              top: AppTheme.spacing8,
+              left: AppTheme.spacing8,
+              child: SafeArea(
+                child: Material(
+                  elevation: 4,
+                  borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                  color: theme.colorScheme.surface,
+                  child: InkWell(
+                    onTap: () => Navigator.of(context).pop(),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppTheme.spacing8),
+                      child: Icon(
+                        Icons.arrow_back,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
       floatingActionButton: orientation == Orientation.portrait
           ? _buildFloatingActionButton(l10n)
           : null,
@@ -299,31 +335,19 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
       builder: (context, constraints) {
         final availableWidth = constraints.maxWidth;
 
-        // Wide layout: All 4 fields in one row (code1, name1, code2, name2)
-        // Threshold: ~900px for comfortable 4-field layout
-        if (availableWidth >= 900) {
+        // Wide layout: Both language name fields in one row
+        // Threshold: ~700px for comfortable 2-field layout
+        if (availableWidth >= 700) {
           return Column(
             children: [
               Row(
                 children: [
                   Expanded(
-                    flex: 2,
-                    child: _buildLanguageCodeField(context, l10n, _languageCode1Controller, l10n.languageCode1, true),
+                    child: _buildLanguageNameAutocomplete(context, l10n, _languageName1Controller, l10n.languageName1, true),
                   ),
                   SizedBox(width: AppTheme.spacing12),
                   Expanded(
-                    flex: 3,
-                    child: _buildTextField(context, l10n, _languageName1Controller, l10n.languageName1, required: true),
-                  ),
-                  SizedBox(width: AppTheme.spacing12),
-                  Expanded(
-                    flex: 2,
-                    child: _buildLanguageCodeField(context, l10n, _languageCode2Controller, l10n.languageCode2, false),
-                  ),
-                  SizedBox(width: AppTheme.spacing12),
-                  Expanded(
-                    flex: 3,
-                    child: _buildTextField(context, l10n, _languageName2Controller, l10n.languageName2, required: true),
+                    child: _buildLanguageNameAutocomplete(context, l10n, _languageName2Controller, l10n.languageName2, false),
                   ),
                 ],
               ),
@@ -331,53 +355,13 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
           );
         }
 
-        // Medium layout: Source language in one row, target in another
-        // Threshold: ~600px for comfortable 2-field layout
-        else if (availableWidth >= 600) {
-          return Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: _buildLanguageCodeField(context, l10n, _languageCode1Controller, l10n.languageCode1, true),
-                  ),
-                  SizedBox(width: AppTheme.spacing12),
-                  Expanded(
-                    flex: 3,
-                    child: _buildTextField(context, l10n, _languageName1Controller, l10n.languageName1, required: true),
-                  ),
-                ],
-              ),
-              SizedBox(height: AppTheme.spacing12),
-              Row(
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: _buildLanguageCodeField(context, l10n, _languageCode2Controller, l10n.languageCode2, false),
-                  ),
-                  SizedBox(width: AppTheme.spacing12),
-                  Expanded(
-                    flex: 3,
-                    child: _buildTextField(context, l10n, _languageName2Controller, l10n.languageName2, required: true),
-                  ),
-                ],
-              ),
-            ],
-          );
-        }
-
-        // Narrow layout: Each field gets its own row
+        // Medium/Narrow layout: Each language name field in its own row
         else {
           return Column(
             children: [
-              _buildLanguageCodeField(context, l10n, _languageCode1Controller, l10n.languageCode1, true),
+              _buildLanguageNameAutocomplete(context, l10n, _languageName1Controller, l10n.languageName1, true),
               SizedBox(height: AppTheme.spacing12),
-              _buildTextField(context, l10n, _languageName1Controller, l10n.languageName1, required: true),
-              SizedBox(height: AppTheme.spacing12),
-              _buildLanguageCodeField(context, l10n, _languageCode2Controller, l10n.languageCode2, false),
-              SizedBox(height: AppTheme.spacing12),
-              _buildTextField(context, l10n, _languageName2Controller, l10n.languageName2, required: true),
+              _buildLanguageNameAutocomplete(context, l10n, _languageName2Controller, l10n.languageName2, false),
             ],
           );
         }
@@ -823,7 +807,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        hintText: 'e.g., en, hu, de',
+        hintText: 'e.g., en-US, hu-HU, de-DE',
         suffixIcon: IconButton(
           icon: Icon(Icons.search, color: colorScheme.primary),
           onPressed: () => _showLanguageCodePicker(context, controller, isSource),
@@ -855,6 +839,133 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
             _languageName2Controller.text = languageName;
           }
         }
+      },
+    );
+  }
+
+  /// Build autocomplete language name dropdown field
+  /// This replaces the language code field and updates the code in the background
+  Widget _buildLanguageNameAutocomplete(
+    BuildContext context,
+    AppLocalizations l10n,
+    TextEditingController controller,
+    String label,
+    bool isSource,
+  ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    // Get all languages sorted by name
+    final allLanguages = LanguageCodes.getSortedLanguages();
+
+    return Autocomplete<MapEntry<String, String>>(
+      initialValue: TextEditingValue(text: controller.text),
+      optionsBuilder: (TextEditingValue textEditingValue) {
+        if (textEditingValue.text.isEmpty) {
+          return allLanguages;
+        }
+        // Filter languages based on user input
+        final query = textEditingValue.text.toLowerCase();
+        return allLanguages.where((entry) {
+          return entry.value.toLowerCase().contains(query) ||
+                 entry.key.toLowerCase().contains(query);
+        });
+      },
+      displayStringForOption: (MapEntry<String, String> option) => option.value,
+      fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
+        // Sync the text controller with our controller
+        if (textEditingController.text != controller.text) {
+          textEditingController.text = controller.text;
+        }
+
+        textEditingController.addListener(() {
+          if (controller.text != textEditingController.text) {
+            controller.text = textEditingController.text;
+          }
+        });
+
+        return TextFormField(
+          controller: textEditingController,
+          focusNode: focusNode,
+          decoration: InputDecoration(
+            labelText: label,
+            hintText: 'Type to search languages...',
+            suffixIcon: Icon(Icons.arrow_drop_down, color: colorScheme.primary),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+            ),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: AppTheme.spacing12,
+              vertical: AppTheme.spacing4,
+            ),
+          ),
+          style: theme.textTheme.bodyLarge,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return l10n.fieldRequired;
+            }
+            // Check if selected language name matches a valid language
+            final matchingLanguage = allLanguages.firstWhere(
+              (entry) => entry.value == value.trim(),
+              orElse: () => const MapEntry('', ''),
+            );
+            if (matchingLanguage.key.isEmpty) {
+              return 'Please select a valid language from the list';
+            }
+            return null;
+          },
+          onFieldSubmitted: (_) => onFieldSubmitted(),
+        );
+      },
+      optionsViewBuilder: (context, onSelected, options) {
+        return Align(
+          alignment: Alignment.topLeft,
+          child: Material(
+            elevation: 4.0,
+            borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 300, maxWidth: 500),
+              child: ListView.builder(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                itemCount: options.length,
+                itemBuilder: (context, index) {
+                  final option = options.elementAt(index);
+                  return ListTile(
+                    title: Text(
+                      option.value,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                    subtitle: Text(
+                      option.key,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    onTap: () {
+                      onSelected(option);
+                    },
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+      },
+      onSelected: (MapEntry<String, String> selection) {
+        // Update the name controller
+        controller.text = selection.value;
+
+        // Update the language code in the background
+        if (isSource) {
+          _selectedLanguageCode1 = selection.key;
+          _languageCode1Controller.text = selection.key;
+        } else {
+          _selectedLanguageCode2 = selection.key;
+          _languageCode2Controller.text = selection.key;
+        }
+
+        // No need to call setState as the form field will update automatically
       },
     );
   }
@@ -1846,7 +1957,7 @@ class _LanguageCodePickerDialogState extends State<_LanguageCodePickerDialog> {
   Widget _buildLanguageListItem(MapEntry<String, String> entry, ThemeData theme) {
     return ListTile(
       title: Text(entry.value, style: theme.textTheme.bodyLarge),
-      subtitle: Text(entry.key.toUpperCase(), style: theme.textTheme.bodySmall),
+      subtitle: Text(entry.key, style: theme.textTheme.bodySmall),
       onTap: () {
         widget.onLanguageSelected(entry.key, entry.value);
         Navigator.of(context).pop();
