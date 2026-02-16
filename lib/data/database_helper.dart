@@ -5,6 +5,8 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'database_migrations.dart';
 
+// Import this to ensure SQLite native libraries are bundled
+
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
   static Database? _database;
@@ -17,6 +19,9 @@ class DatabaseHelper {
     if (_isInitialized) return;
     
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      // The sqlite3_flutter_libs package will automatically handle
+      // finding and loading the correct native library for the platform
+
       // Initialize FFI for desktop platforms
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;

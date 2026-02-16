@@ -295,6 +295,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get categoriesInPackage => 'Kategóriák ebben a csomagban';
 
   @override
+  String get categories => 'Kategóriák';
+
+  @override
   String get testInterFonts => 'Inter betűtípusok tesztelése';
 
   @override
@@ -429,4 +432,249 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get trainingComingSoon => 'Gyakorlás - Hamarosan!';
+
+  @override
+  String get aiServiceNotConfigured =>
+      'AI szolgáltatás nincs konfigurálva. Kérlek, add meg az OpenAI API kulcsot.';
+
+  @override
+  String pleaseEnterTextInLanguageFirst(Object language) {
+    return 'Kérlek, először adj meg szöveget $language nyelven';
+  }
+
+  @override
+  String translationCompletedSuccessfully(Object service) {
+    return 'Fordítás sikeresen elkészült ($service)!';
+  }
+
+  @override
+  String get translationFailed => 'Fordítás sikertelen';
+
+  @override
+  String addedExamplesSuccessfully(Object count) {
+    return '$count példa sikeresen hozzáadva!';
+  }
+
+  @override
+  String get failedToGenerateExamples => 'Példák generálása sikertelen';
+
+  @override
+  String get selectExamplesToAdd => 'Példák kiválasztása';
+
+  @override
+  String get selectWhichExamples =>
+      'Válaszd ki, melyik példákat szeretnéd hozzáadni:';
+
+  @override
+  String get deselectAll => 'Összes kijelölésének törlése';
+
+  @override
+  String get selectAll => 'Összes kijelölése';
+
+  @override
+  String get addSelected => 'Kijelöltek hozzáadása';
+
+  @override
+  String get pleaseSelectAtLeastOne => 'Kérlek, válassz ki legalább egy példát';
+
+  @override
+  String get addNewItem => 'Új elem hozzáadása';
+
+  @override
+  String get editItem => 'Elem szerkesztése';
+
+  @override
+  String get deleteItem => 'Elem törlése';
+
+  @override
+  String get confirmDeleteItem => 'Biztosan törölni szeretnéd ezt az elemet?';
+
+  @override
+  String get thisActionCannotBeUndone => 'Ez a művelet nem vonható vissza.';
+
+  @override
+  String get itemDeleted => 'Elem törölve';
+
+  @override
+  String get errorDeletingItem => 'Hiba az elem törlésekor';
+
+  @override
+  String get errorSavingItem => 'Hiba az elem mentésekor';
+
+  @override
+  String get itemSaved => 'Elem sikeresen frissítve';
+
+  @override
+  String get itemCreated => 'Elem sikeresen létrehozva';
+
+  @override
+  String get preTextOptional => 'Elő-szöveg (opcionális)';
+
+  @override
+  String get mainText => 'Fő szöveg';
+
+  @override
+  String get postTextOptional => 'Utó-szöveg (opcionális)';
+
+  @override
+  String get forExampleToForVerbs => 'pl. \"to\" igéknél angolul';
+
+  @override
+  String get additionalContext => 'További kontextus';
+
+  @override
+  String get translate => 'Fordítás';
+
+  @override
+  String translateFromTo(Object from, Object to) {
+    return 'Fordítás $from → $to';
+  }
+
+  @override
+  String get aiExampleGeneration => 'AI példa generálás';
+
+  @override
+  String get aiExampleSearch => 'AI példa keresés';
+
+  @override
+  String searchExamplesOnInternet(Object text) {
+    return 'Példamondatok keresése az interneten AI segítségével ehhez: \'$text\'';
+  }
+
+  @override
+  String generateExampleSentences(Object language) {
+    return 'Példamondatok generálása a fő szöveg alapján ($language)';
+  }
+
+  @override
+  String get generateExamples => 'Példák generálása';
+
+  @override
+  String get voiceInput => 'Hangbemenet';
+
+  @override
+  String get settings => 'Beállítások';
+
+  @override
+  String get userLanguage => 'Felhasználói nyelv';
+
+  @override
+  String get userLanguageDescription => 'Az általad preferált felület nyelv';
+
+  @override
+  String get apiKeys => 'API kulcsok';
+
+  @override
+  String get deeplApiKey => 'DeepL API kulcs';
+
+  @override
+  String get deeplApiKeyDescription =>
+      'Prémium fordítási minőséghez (opcionális)';
+
+  @override
+  String get openaiApiKey => 'OpenAI API kulcs';
+
+  @override
+  String get openaiApiKeyDescription => 'AI példa generáláshoz';
+
+  @override
+  String get enterApiKey => 'API kulcs megadása';
+
+  @override
+  String get optional => 'opcionális';
+
+  @override
+  String get required => 'kötelező';
+
+  @override
+  String get settingsSaved => 'Beállítások sikeresen mentve';
+
+  @override
+  String get errorSavingSettings => 'Hiba a beállítások mentésekor';
+
+  @override
+  String get usingGoogleTranslate => 'Ingyenes Google Fordító használata';
+
+  @override
+  String get usingDeepL => 'DeepL használata (prémium)';
+
+  @override
+  String get textCannotBeEmpty => 'A szöveg nem lehet üres';
+
+  @override
+  String get noTranslationReceivedFromGoogle =>
+      'Nem érkezett fordítás a Google-től';
+
+  @override
+  String get googleTranslationFailed => 'Google fordítás sikertelen';
+
+  @override
+  String get googleTranslationError => 'Google fordítási hiba';
+
+  @override
+  String get noTranslationReceivedFromDeepL =>
+      'Nem érkezett fordítás a DeepL-től';
+
+  @override
+  String get invalidDeepLApiKey => 'Érvénytelen DeepL API kulcs';
+
+  @override
+  String get deeplTranslationQuotaExceeded => 'DeepL fordítási kvóta túllépve';
+
+  @override
+  String get deeplTranslationFailed => 'DeepL fordítás sikertelen';
+
+  @override
+  String get deeplTranslationError => 'DeepL fordítási hiba';
+
+  @override
+  String get invalidApiKeyConfigureOpenAI =>
+      'Érvénytelen API kulcs. Kérlek, konfiguráld az OpenAI API kulcsot.';
+
+  @override
+  String get apiRateLimitExceeded =>
+      'API sebesség limit túllépve. Kérlek, próbáld újra később.';
+
+  @override
+  String get aiRequestFailed => 'AI kérés sikertelen';
+
+  @override
+  String get failedToParseAiResponse =>
+      'AI válasz feldolgozása sikertelen. Kérlek, próbáld újra.';
+
+  @override
+  String get aiGenerationError => 'AI generálási hiba';
+
+  @override
+  String get voiceInputPlaceholder =>
+      'Hangbemenet a speech_to_text csomag használatával lesz megvalósítva';
+
+  @override
+  String get improveQualityWithApiKeys =>
+      '💡 Tipp: A fordítások és példakeresések minősége jelentősen javítható a DeepL és OpenAI API kulcsok megadásával az alkalmazás beállításokban.';
+
+  @override
+  String get noApiKeyFallbackMessage =>
+      'API kulcsok nélkül alapszintű fordítás és korlátozott példák érhetők el. A legjobb eredményekhez állítsd be az API kulcsokat a Beállításokban.';
+
+  @override
+  String get listeningForSpeech => 'Figyelek... Beszélj most';
+
+  @override
+  String get speechRecognitionNotAvailable =>
+      'Beszédfelismerés nem elérhető ezen az eszközön';
+
+  @override
+  String get speechRecognitionPermissionDenied =>
+      'Beszédfelismerési engedély megtagadva';
+
+  @override
+  String get speechRecognitionError => 'Beszédfelismerési hiba';
+
+  @override
+  String get tapToSpeak => 'Koppints a mikrofonra a beszédhez';
+
+  @override
+  String get speechNotRecognized =>
+      'Nem sikerült felismerni a beszédet. Kérlek, próbáld újra.';
 }

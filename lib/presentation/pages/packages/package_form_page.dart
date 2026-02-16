@@ -172,7 +172,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
 
       setState(() {
         // Rebuild the entire list: asset icons + custom icons
-        _availableIcons = [...assetIcons, ...customIconsSet.toList()];
+        _availableIcons = [...assetIcons, ...customIconsSet];
       });
     } catch (e) {
       // Silently fail - custom icons directory might not exist yet

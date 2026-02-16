@@ -53,7 +53,7 @@ Future<void> main() async {
 
     // print('\n✅ Test data population completed successfully!');
     // print('📊 Total: 4 packages with 120 items created');
-  } catch (e, stackTrace) {
+  } catch (e) {
     // print('❌ Error: $e');
     // print('Stack trace: $stackTrace');
   }

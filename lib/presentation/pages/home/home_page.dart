@@ -8,6 +8,7 @@ import '../design_system_showcase.dart';
 import '../packages/package_list_page.dart';
 import '../packages/package_form_page.dart';
 import '../dev/test_data_page.dart';
+import '../settings/app_settings_page.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});
@@ -79,7 +80,7 @@ class HomePage extends ConsumerWidget {
                           }
                         },
                       );
-                    }).toList(),
+                    }),
                   ],
                 ),
               ),
@@ -105,6 +106,17 @@ class HomePage extends ConsumerWidget {
       appBar: AppBar(
         title: Text(localizations.appTitle),
         actions: [
+          // Settings button
+          IconButton(
+            icon: const Icon(Icons.settings),
+            tooltip: localizations.settings,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AppSettingsPage()),
+              );
+            },
+          ),
           // Theme brightness toggle button
           IconButton(
             icon: Icon(themeConfig.isDarkMode ? Icons.light_mode : Icons.dark_mode),

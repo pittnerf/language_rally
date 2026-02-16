@@ -16,6 +16,8 @@ dependencies:
   json_annotation: ^4.10.0
   sqflite: ^2.3.0
   sqflite_common_ffi: ^2.3.0
+  sqlite3: ^2.4.0
+  sqlite3_flutter_libs: ^0.5.0
   path_provider: ^2.1.1
   path: ^1.8.3
   shared_preferences: ^2.2.2
@@ -40,8 +42,9 @@ dependencies:
   image_picker: ^1.0.7
   image: ^4.0.17
 
-  # Text-to-Speech
+  # Text-to-Speech & Speech-to-Text
   flutter_tts: ^4.2.0
+  speech_to_text: ^7.0.0
   http: ^1.2.0
   audioplayers: ^6.1.0
 

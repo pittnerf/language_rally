@@ -644,6 +644,12 @@ abstract class AppLocalizations {
   /// **'Categories in this package'**
   String get categoriesInPackage;
 
+  /// No description provided for @categories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get categories;
+
   /// No description provided for @testInterFonts.
   ///
   /// In en, this message translates to:
@@ -895,6 +901,444 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Training Rally - Coming Soon!'**
   String get trainingComingSoon;
+
+  /// No description provided for @aiServiceNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'AI service not configured. Please add your OpenAI API key.'**
+  String get aiServiceNotConfigured;
+
+  /// No description provided for @pleaseEnterTextInLanguageFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter text in {language} first'**
+  String pleaseEnterTextInLanguageFirst(Object language);
+
+  /// No description provided for @translationCompletedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Translation completed successfully using {service}!'**
+  String translationCompletedSuccessfully(Object service);
+
+  /// No description provided for @translationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Translation failed'**
+  String get translationFailed;
+
+  /// No description provided for @addedExamplesSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Added {count} example(s) successfully!'**
+  String addedExamplesSuccessfully(Object count);
+
+  /// No description provided for @failedToGenerateExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to generate examples'**
+  String get failedToGenerateExamples;
+
+  /// No description provided for @selectExamplesToAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Examples to Add'**
+  String get selectExamplesToAdd;
+
+  /// No description provided for @selectWhichExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Select which examples you want to add to this item:'**
+  String get selectWhichExamples;
+
+  /// No description provided for @deselectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect All'**
+  String get deselectAll;
+
+  /// No description provided for @selectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Select All'**
+  String get selectAll;
+
+  /// No description provided for @addSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Selected'**
+  String get addSelected;
+
+  /// No description provided for @pleaseSelectAtLeastOne.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select at least one example'**
+  String get pleaseSelectAtLeastOne;
+
+  /// No description provided for @addNewItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Item'**
+  String get addNewItem;
+
+  /// No description provided for @editItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Item'**
+  String get editItem;
+
+  /// No description provided for @deleteItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Item'**
+  String get deleteItem;
+
+  /// No description provided for @confirmDeleteItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this item?'**
+  String get confirmDeleteItem;
+
+  /// No description provided for @thisActionCannotBeUndone.
+  ///
+  /// In en, this message translates to:
+  /// **'This action cannot be undone.'**
+  String get thisActionCannotBeUndone;
+
+  /// No description provided for @itemDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Item deleted'**
+  String get itemDeleted;
+
+  /// No description provided for @errorDeletingItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Error deleting item'**
+  String get errorDeletingItem;
+
+  /// No description provided for @errorSavingItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Error saving item'**
+  String get errorSavingItem;
+
+  /// No description provided for @itemSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Item updated successfully'**
+  String get itemSaved;
+
+  /// No description provided for @itemCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Item created successfully'**
+  String get itemCreated;
+
+  /// No description provided for @preTextOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Pre-text (optional)'**
+  String get preTextOptional;
+
+  /// No description provided for @mainText.
+  ///
+  /// In en, this message translates to:
+  /// **'Main text'**
+  String get mainText;
+
+  /// No description provided for @postTextOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Post-text (optional)'**
+  String get postTextOptional;
+
+  /// No description provided for @forExampleToForVerbs.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., \"to\" for verbs'**
+  String get forExampleToForVerbs;
+
+  /// No description provided for @additionalContext.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional context'**
+  String get additionalContext;
+
+  /// No description provided for @translate.
+  ///
+  /// In en, this message translates to:
+  /// **'Translate'**
+  String get translate;
+
+  /// No description provided for @translateFromTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Translate {from} → {to}'**
+  String translateFromTo(Object from, Object to);
+
+  /// No description provided for @aiExampleGeneration.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Example Generation'**
+  String get aiExampleGeneration;
+
+  /// No description provided for @aiExampleSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Example Search'**
+  String get aiExampleSearch;
+
+  /// No description provided for @searchExamplesOnInternet.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for example sentences on the internet using AI for \'{text}\''**
+  String searchExamplesOnInternet(Object text);
+
+  /// No description provided for @generateExampleSentences.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate example sentences based on the main text in {language}'**
+  String generateExampleSentences(Object language);
+
+  /// No description provided for @generateExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate Examples'**
+  String get generateExamples;
+
+  /// No description provided for @voiceInput.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice input'**
+  String get voiceInput;
+
+  /// No description provided for @settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// No description provided for @userLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'User Language'**
+  String get userLanguage;
+
+  /// No description provided for @userLanguageDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Your preferred UI language'**
+  String get userLanguageDescription;
+
+  /// No description provided for @apiKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'API Keys'**
+  String get apiKeys;
+
+  /// No description provided for @deeplApiKey.
+  ///
+  /// In en, this message translates to:
+  /// **'DeepL API Key'**
+  String get deeplApiKey;
+
+  /// No description provided for @deeplApiKeyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'For premium translation quality (optional)'**
+  String get deeplApiKeyDescription;
+
+  /// No description provided for @openaiApiKey.
+  ///
+  /// In en, this message translates to:
+  /// **'OpenAI API Key'**
+  String get openaiApiKey;
+
+  /// No description provided for @openaiApiKeyDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'For AI example generation'**
+  String get openaiApiKeyDescription;
+
+  /// No description provided for @enterApiKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter API key'**
+  String get enterApiKey;
+
+  /// No description provided for @optional.
+  ///
+  /// In en, this message translates to:
+  /// **'optional'**
+  String get optional;
+
+  /// No description provided for @required.
+  ///
+  /// In en, this message translates to:
+  /// **'required'**
+  String get required;
+
+  /// No description provided for @settingsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings saved successfully'**
+  String get settingsSaved;
+
+  /// No description provided for @errorSavingSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Error saving settings'**
+  String get errorSavingSettings;
+
+  /// No description provided for @usingGoogleTranslate.
+  ///
+  /// In en, this message translates to:
+  /// **'Using free Google Translate'**
+  String get usingGoogleTranslate;
+
+  /// No description provided for @usingDeepL.
+  ///
+  /// In en, this message translates to:
+  /// **'Using DeepL (premium)'**
+  String get usingDeepL;
+
+  /// No description provided for @textCannotBeEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Text cannot be empty'**
+  String get textCannotBeEmpty;
+
+  /// No description provided for @noTranslationReceivedFromGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'No translation received from Google'**
+  String get noTranslationReceivedFromGoogle;
+
+  /// No description provided for @googleTranslationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Google translation failed'**
+  String get googleTranslationFailed;
+
+  /// No description provided for @googleTranslationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Google translation error'**
+  String get googleTranslationError;
+
+  /// No description provided for @noTranslationReceivedFromDeepL.
+  ///
+  /// In en, this message translates to:
+  /// **'No translation received from DeepL'**
+  String get noTranslationReceivedFromDeepL;
+
+  /// No description provided for @invalidDeepLApiKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid DeepL API key'**
+  String get invalidDeepLApiKey;
+
+  /// No description provided for @deeplTranslationQuotaExceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'DeepL translation quota exceeded'**
+  String get deeplTranslationQuotaExceeded;
+
+  /// No description provided for @deeplTranslationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'DeepL translation failed'**
+  String get deeplTranslationFailed;
+
+  /// No description provided for @deeplTranslationError.
+  ///
+  /// In en, this message translates to:
+  /// **'DeepL translation error'**
+  String get deeplTranslationError;
+
+  /// No description provided for @invalidApiKeyConfigureOpenAI.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid API key. Please configure your OpenAI API key.'**
+  String get invalidApiKeyConfigureOpenAI;
+
+  /// No description provided for @apiRateLimitExceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'API rate limit exceeded. Please try again later.'**
+  String get apiRateLimitExceeded;
+
+  /// No description provided for @aiRequestFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'AI request failed'**
+  String get aiRequestFailed;
+
+  /// No description provided for @failedToParseAiResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to parse AI response. Please try again.'**
+  String get failedToParseAiResponse;
+
+  /// No description provided for @aiGenerationError.
+  ///
+  /// In en, this message translates to:
+  /// **'AI generation error'**
+  String get aiGenerationError;
+
+  /// No description provided for @voiceInputPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice input will be implemented using speech_to_text package'**
+  String get voiceInputPlaceholder;
+
+  /// No description provided for @improveQualityWithApiKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'💡 Tip: The quality of translations and example searches can be significantly improved by adding your DeepL and OpenAI API keys in the application settings.'**
+  String get improveQualityWithApiKeys;
+
+  /// No description provided for @noApiKeyFallbackMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Without API keys, basic translation and limited examples are provided. For best results, configure your API keys in Settings.'**
+  String get noApiKeyFallbackMessage;
+
+  /// No description provided for @listeningForSpeech.
+  ///
+  /// In en, this message translates to:
+  /// **'Listening... Speak now'**
+  String get listeningForSpeech;
+
+  /// No description provided for @speechRecognitionNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech recognition is not available on this device'**
+  String get speechRecognitionNotAvailable;
+
+  /// No description provided for @speechRecognitionPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech recognition permission was denied'**
+  String get speechRecognitionPermissionDenied;
+
+  /// No description provided for @speechRecognitionError.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech recognition error'**
+  String get speechRecognitionError;
+
+  /// No description provided for @tapToSpeak.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap microphone to speak'**
+  String get tapToSpeak;
+
+  /// No description provided for @speechNotRecognized.
+  ///
+  /// In en, this message translates to:
+  /// **'No speech was recognized. Please try again.'**
+  String get speechNotRecognized;
 }
 
 class _AppLocalizationsDelegate

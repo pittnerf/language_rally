@@ -294,6 +294,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get categoriesInPackage => 'Categories in this package';
 
   @override
+  String get categories => 'Categories';
+
+  @override
   String get testInterFonts => 'Test Inter Fonts';
 
   @override
@@ -428,4 +431,250 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trainingComingSoon => 'Training Rally - Coming Soon!';
+
+  @override
+  String get aiServiceNotConfigured =>
+      'AI service not configured. Please add your OpenAI API key.';
+
+  @override
+  String pleaseEnterTextInLanguageFirst(Object language) {
+    return 'Please enter text in $language first';
+  }
+
+  @override
+  String translationCompletedSuccessfully(Object service) {
+    return 'Translation completed successfully using $service!';
+  }
+
+  @override
+  String get translationFailed => 'Translation failed';
+
+  @override
+  String addedExamplesSuccessfully(Object count) {
+    return 'Added $count example(s) successfully!';
+  }
+
+  @override
+  String get failedToGenerateExamples => 'Failed to generate examples';
+
+  @override
+  String get selectExamplesToAdd => 'Select Examples to Add';
+
+  @override
+  String get selectWhichExamples =>
+      'Select which examples you want to add to this item:';
+
+  @override
+  String get deselectAll => 'Deselect All';
+
+  @override
+  String get selectAll => 'Select All';
+
+  @override
+  String get addSelected => 'Add Selected';
+
+  @override
+  String get pleaseSelectAtLeastOne => 'Please select at least one example';
+
+  @override
+  String get addNewItem => 'Add New Item';
+
+  @override
+  String get editItem => 'Edit Item';
+
+  @override
+  String get deleteItem => 'Delete Item';
+
+  @override
+  String get confirmDeleteItem => 'Are you sure you want to delete this item?';
+
+  @override
+  String get thisActionCannotBeUndone => 'This action cannot be undone.';
+
+  @override
+  String get itemDeleted => 'Item deleted';
+
+  @override
+  String get errorDeletingItem => 'Error deleting item';
+
+  @override
+  String get errorSavingItem => 'Error saving item';
+
+  @override
+  String get itemSaved => 'Item updated successfully';
+
+  @override
+  String get itemCreated => 'Item created successfully';
+
+  @override
+  String get preTextOptional => 'Pre-text (optional)';
+
+  @override
+  String get mainText => 'Main text';
+
+  @override
+  String get postTextOptional => 'Post-text (optional)';
+
+  @override
+  String get forExampleToForVerbs => 'e.g., \"to\" for verbs';
+
+  @override
+  String get additionalContext => 'Additional context';
+
+  @override
+  String get translate => 'Translate';
+
+  @override
+  String translateFromTo(Object from, Object to) {
+    return 'Translate $from → $to';
+  }
+
+  @override
+  String get aiExampleGeneration => 'AI Example Generation';
+
+  @override
+  String get aiExampleSearch => 'AI Example Search';
+
+  @override
+  String searchExamplesOnInternet(Object text) {
+    return 'Search for example sentences on the internet using AI for \'$text\'';
+  }
+
+  @override
+  String generateExampleSentences(Object language) {
+    return 'Generate example sentences based on the main text in $language';
+  }
+
+  @override
+  String get generateExamples => 'Generate Examples';
+
+  @override
+  String get voiceInput => 'Voice input';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get userLanguage => 'User Language';
+
+  @override
+  String get userLanguageDescription => 'Your preferred UI language';
+
+  @override
+  String get apiKeys => 'API Keys';
+
+  @override
+  String get deeplApiKey => 'DeepL API Key';
+
+  @override
+  String get deeplApiKeyDescription =>
+      'For premium translation quality (optional)';
+
+  @override
+  String get openaiApiKey => 'OpenAI API Key';
+
+  @override
+  String get openaiApiKeyDescription => 'For AI example generation';
+
+  @override
+  String get enterApiKey => 'Enter API key';
+
+  @override
+  String get optional => 'optional';
+
+  @override
+  String get required => 'required';
+
+  @override
+  String get settingsSaved => 'Settings saved successfully';
+
+  @override
+  String get errorSavingSettings => 'Error saving settings';
+
+  @override
+  String get usingGoogleTranslate => 'Using free Google Translate';
+
+  @override
+  String get usingDeepL => 'Using DeepL (premium)';
+
+  @override
+  String get textCannotBeEmpty => 'Text cannot be empty';
+
+  @override
+  String get noTranslationReceivedFromGoogle =>
+      'No translation received from Google';
+
+  @override
+  String get googleTranslationFailed => 'Google translation failed';
+
+  @override
+  String get googleTranslationError => 'Google translation error';
+
+  @override
+  String get noTranslationReceivedFromDeepL =>
+      'No translation received from DeepL';
+
+  @override
+  String get invalidDeepLApiKey => 'Invalid DeepL API key';
+
+  @override
+  String get deeplTranslationQuotaExceeded =>
+      'DeepL translation quota exceeded';
+
+  @override
+  String get deeplTranslationFailed => 'DeepL translation failed';
+
+  @override
+  String get deeplTranslationError => 'DeepL translation error';
+
+  @override
+  String get invalidApiKeyConfigureOpenAI =>
+      'Invalid API key. Please configure your OpenAI API key.';
+
+  @override
+  String get apiRateLimitExceeded =>
+      'API rate limit exceeded. Please try again later.';
+
+  @override
+  String get aiRequestFailed => 'AI request failed';
+
+  @override
+  String get failedToParseAiResponse =>
+      'Failed to parse AI response. Please try again.';
+
+  @override
+  String get aiGenerationError => 'AI generation error';
+
+  @override
+  String get voiceInputPlaceholder =>
+      'Voice input will be implemented using speech_to_text package';
+
+  @override
+  String get improveQualityWithApiKeys =>
+      '💡 Tip: The quality of translations and example searches can be significantly improved by adding your DeepL and OpenAI API keys in the application settings.';
+
+  @override
+  String get noApiKeyFallbackMessage =>
+      'Without API keys, basic translation and limited examples are provided. For best results, configure your API keys in Settings.';
+
+  @override
+  String get listeningForSpeech => 'Listening... Speak now';
+
+  @override
+  String get speechRecognitionNotAvailable =>
+      'Speech recognition is not available on this device';
+
+  @override
+  String get speechRecognitionPermissionDenied =>
+      'Speech recognition permission was denied';
+
+  @override
+  String get speechRecognitionError => 'Speech recognition error';
+
+  @override
+  String get tapToSpeak => 'Tap microphone to speak';
+
+  @override
+  String get speechNotRecognized =>
+      'No speech was recognized. Please try again.';
 }
