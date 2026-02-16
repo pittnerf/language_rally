@@ -109,6 +109,7 @@ class _TestDataPageState extends State<TestDataPage> {
       final package = LanguagePackage(
         id: packageId,
         groupId: 'default-group-id',
+        packageName: 'German Basics',
         languageCode1: 'en-US',
         languageName1: 'English (United States)',
         languageCode2: 'de-DE',
@@ -251,9 +252,10 @@ class _TestDataPageState extends State<TestDataPage> {
       final package = LanguagePackage(
         id: packageId,
         groupId: 'default-group-id',
+        packageName: 'Spanish Essentials',
         languageCode1: 'en-US',
         languageName1: 'English (United States)',
-        languageCode2: 'es',
+        languageCode2: 'es-es',
         languageName2: 'Spanish',
         description: 'Essential Spanish phrases for travelers',
         icon: null,
@@ -357,9 +359,10 @@ class _TestDataPageState extends State<TestDataPage> {
       final package = LanguagePackage(
         id: packageId,
         groupId: 'default-group-id',
-        languageCode1: 'fr',
+        packageName: 'French for Business',
+        languageCode1: 'fr-fr',
         languageName1: 'French',
-        languageCode2: 'en',
+        languageCode2: 'en-en',
         languageName2: 'English',
         description: 'Professional French vocabulary for business',
         icon: null,

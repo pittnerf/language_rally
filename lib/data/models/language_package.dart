@@ -9,6 +9,7 @@ enum PackageType { defaultPackage, userCreated, purchased }
 class LanguagePackage extends Equatable {
   final String id;
   final String groupId; // Reference to LanguagePackageGroup
+  final String? packageName; // User-friendly name for the package
   final String languageCode1;
   final String languageName1;
   final String languageCode2;
@@ -30,6 +31,7 @@ class LanguagePackage extends Equatable {
   const LanguagePackage({
     required this.id,
     required this.groupId,
+    this.packageName,
     required this.languageCode1,
     required this.languageName1,
     required this.languageCode2,
@@ -64,6 +66,7 @@ class LanguagePackage extends Equatable {
   LanguagePackage copyWith({
     String? id,
     String? groupId,
+    String? packageName,
     String? languageCode1,
     String? languageName1,
     String? languageCode2,
@@ -85,6 +88,7 @@ class LanguagePackage extends Equatable {
     return LanguagePackage(
       id: id ?? this.id,
       groupId: groupId ?? this.groupId,
+      packageName: packageName ?? this.packageName,
       languageCode1: languageCode1 ?? this.languageCode1,
       languageName1: languageName1 ?? this.languageName1,
       languageCode2: languageCode2 ?? this.languageCode2,
@@ -109,6 +113,7 @@ class LanguagePackage extends Equatable {
   List<Object?> get props => [
         id,
         groupId,
+        packageName,
         languageCode1,
         languageName1,
         languageCode2,

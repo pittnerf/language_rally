@@ -196,11 +196,6 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
             labelText: l10n.userLanguage,
             hintText: 'e.g., English (United States)',
             prefixIcon: const Icon(Icons.translate),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-            ),
-            filled: true,
-            fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
           ),
         );
       },
@@ -313,11 +308,6 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
                     },
                   )
                 : null,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-            ),
-            filled: true,
-            fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
           ),
           onChanged: (_) => setState(() {}),
         ),

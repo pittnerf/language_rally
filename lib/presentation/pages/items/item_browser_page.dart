@@ -433,9 +433,6 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                                     },
                                   )
                                 : null,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                            ),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: AppTheme.spacing8,
                               vertical: AppTheme.spacing8,
@@ -460,9 +457,6 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                                     },
                                   )
                                 : null,
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                            ),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: AppTheme.spacing8,
                               vertical: AppTheme.spacing8,
@@ -1023,7 +1017,8 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
               onPressed: () async {
                 // Call pronunciation directly without relying on dialog context for errors
                 try {
-                  await _ttsService.speak(text, languageCode);
+                  final fullText = '${preItem.isNotEmpty ? "$preItem " : ""}$text';
+                  await _ttsService.speak(fullText, languageCode);
                 } catch (e) {
                   // Errors are logged in the service
                   // print('Pronunciation error: $e');
@@ -1219,7 +1214,10 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
             IconButton(
               icon: const Icon(Icons.volume_up),
               tooltip: l10n.pronounce,
-              onPressed: () => _pronounce(text, languageCode),
+              onPressed: () {
+                final fullText = '${preItem.isNotEmpty ? "$preItem " : ""}$text';
+                _pronounce(fullText, languageCode);
+              },
             ),
           ],
         ),
@@ -1443,7 +1441,10 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                 minHeight: 28,
               ),
               tooltip: l10n.pronounce,
-              onPressed: () => _pronounce(text, languageCode),
+              onPressed: () {
+                final fullText = '${preItem.isNotEmpty ? "$preItem " : ""}$text';
+                _pronounce(fullText, languageCode);
+              },
             ),
           ],
         ),
@@ -1711,9 +1712,6 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                       decoration: InputDecoration(
                         hintText: 'Type to search or create new...',
                         hintStyle: theme.textTheme.bodySmall,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-                        ),
                         prefixIcon: const Icon(Icons.search, size: 18),
                         contentPadding: const EdgeInsets.symmetric(
                           horizontal: AppTheme.spacing8,

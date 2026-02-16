@@ -76,6 +76,7 @@ Future<void> _createEnglishSpanishPackage(
   final package = LanguagePackage(
     id: packageId,
     groupId: groupId,
+    packageName: 'Spanish Essentials',
     languageCode1: 'en-US',
     languageName1: 'English (United States)',
     languageCode2: 'es-ES',
@@ -175,6 +176,7 @@ Future<void> _createEnglishGermanPackage(
   final package = LanguagePackage(
     id: packageId,
     groupId: groupId,
+    packageName: 'German Basics',
     languageCode1: 'en-US',
     languageName1: 'English (United States)',
     languageCode2: 'de-DE',
@@ -273,9 +275,10 @@ Future<void> _createEnglishFrenchPackage(
   final package = LanguagePackage(
     id: packageId,
     groupId: groupId,
-    languageCode1: 'en',
+    packageName: 'French for Business',
+    languageCode1: 'en-en',
     languageName1: 'English',
-    languageCode2: 'fr',
+    languageCode2: 'fr-fr',
     languageName2: 'French',
     description: 'French vocabulary for business and daily life',
     icon: null,
@@ -371,9 +374,10 @@ Future<void> _createHungarianEnglishPackage(
   final package = LanguagePackage(
     id: packageId,
     groupId: groupId,
-    languageCode1: 'hu',
+    packageName: 'Hungarian for Beginners',
+    languageCode1: 'hu-hu',
     languageName1: 'Hungarian',
-    languageCode2: 'en',
+    languageCode2: 'en-en',
     languageName2: 'English',
     description: 'Essential Hungarian-English vocabulary for beginners',
     icon: null,

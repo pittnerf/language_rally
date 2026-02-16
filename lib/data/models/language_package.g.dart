@@ -10,6 +10,7 @@ LanguagePackage _$LanguagePackageFromJson(Map<String, dynamic> json) =>
     LanguagePackage(
       id: json['id'] as String,
       groupId: json['groupId'] as String,
+      packageName: json['packageName'] as String?,
       languageCode1: json['languageCode1'] as String,
       languageName1: json['languageName1'] as String,
       languageCode2: json['languageCode2'] as String,
@@ -37,6 +38,7 @@ Map<String, dynamic> _$LanguagePackageToJson(LanguagePackage instance) =>
     <String, dynamic>{
       'id': instance.id,
       'groupId': instance.groupId,
+      'packageName': instance.packageName,
       'languageCode1': instance.languageCode1,
       'languageName1': instance.languageName1,
       'languageCode2': instance.languageCode2,

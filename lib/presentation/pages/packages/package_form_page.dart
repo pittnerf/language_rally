@@ -42,6 +42,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
   late final ImportExportRepository _importExportRepo;
 
   // Form controllers
+  late final TextEditingController _packageNameController;
   late final TextEditingController _languageCode1Controller;
   late final TextEditingController _languageName1Controller;
   late final TextEditingController _languageCode2Controller;
@@ -58,9 +59,6 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
   bool get _isReadOnly => widget.package?.isReadonly ?? false;
   bool get _isPurchased => widget.package?.isPurchased ?? false;
 
-  // Selected language codes (kept in sync with autocomplete selections)
-  String? _selectedLanguageCode1;
-  String? _selectedLanguageCode2;
 
   // Package groups
   List<LanguagePackageGroup> _groups = [];
@@ -75,8 +73,6 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     'assets/images/package_icons/package_icon_v3.png',
   ];
 
-  // Custom uploaded icons will be stored separately
-  bool _isCustomIcon = false;
 
   @override
   void initState() {
@@ -115,6 +111,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
 
   void _initializeControllers() {
     final pkg = widget.package;
+    _packageNameController = TextEditingController(text: pkg?.packageName ?? '');
     _languageCode1Controller = TextEditingController(text: pkg?.languageCode1 ?? '');
     _languageName1Controller = TextEditingController(text: pkg?.languageName1 ?? '');
     _languageCode2Controller = TextEditingController(text: pkg?.languageCode2 ?? '');
@@ -125,15 +122,6 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     _authorWebpageController = TextEditingController(text: pkg?.authorWebpage ?? '');
     _versionController = TextEditingController(text: pkg?.version ?? '1.0');
     _selectedIcon = pkg?.icon;
-
-    // Initialize selected language codes
-    _selectedLanguageCode1 = pkg?.languageCode1;
-    _selectedLanguageCode2 = pkg?.languageCode2;
-
-    // Check if the icon is a custom uploaded icon (not in assets)
-    if (_selectedIcon != null && !_selectedIcon!.startsWith('assets/')) {
-      _isCustomIcon = true;
-    }
   }
 
   Future<void> _loadCustomIcons() async {
@@ -181,6 +169,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
 
   @override
   void dispose() {
+    _packageNameController.dispose();
     _languageCode1Controller.dispose();
     _languageName1Controller.dispose();
     _languageCode2Controller.dispose();
@@ -201,7 +190,9 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth >= 600; // Consider 600dp+ as tablet
 
-    if (_isPurchased || _isReadOnly) {
+    // Only block truly readonly packages that are NOT purchased
+    // Purchased packages can open with restrictions
+    if (_isReadOnly && !_isPurchased) {
       return _buildReadOnlyWarning(context, l10n, theme);
     }
 
@@ -286,12 +277,8 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
 
   List<Widget> _buildFormFields(BuildContext context, AppLocalizations l10n) {
     return [
-      // Package Group selector
+      // Package Group selector with icon selector integrated
       _buildGroupSelector(context, l10n),
-      // SizedBox(height: AppTheme.spacing16),
-      // _buildSectionHeader(context, l10n.packageDetails),
-      SizedBox(height: AppTheme.spacing12),
-      _buildIconSelector(context, l10n),
       SizedBox(height: AppTheme.spacing12),
       // Package details section with background
       _buildPackageDetailsSection(context, l10n),
@@ -299,7 +286,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
       // Author fields without section header
       _buildResponsiveAuthorFields(context, l10n),
       SizedBox(height: AppTheme.spacing12),
-      _buildTextField(context, l10n, _authorWebpageController, l10n.authorWebpage, keyboardType: TextInputType.url, validator: _validateUrl),
+      _buildTextField(context, l10n, _authorWebpageController, l10n.authorWebpage, keyboardType: TextInputType.url, validator: _validateUrl, enabled: !_isPurchased),
       SizedBox(height: AppTheme.spacing12),
       _buildActionButtons(context, l10n),
       SizedBox(height: AppTheme.spacing12),
@@ -324,7 +311,9 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         children: [
           _buildResponsiveLanguageFields(context, l10n),
           SizedBox(height: AppTheme.spacing12),
-          _buildTextField(context, l10n, _descriptionController, l10n.description, maxLines: 2, hint: l10n.descriptionHint),
+          _buildTextField(context, l10n, _packageNameController, 'Package Name', hint: 'e.g., Spanish Essentials, German Basics', enabled: !_isPurchased),
+          SizedBox(height: AppTheme.spacing12),
+          _buildTextField(context, l10n, _descriptionController, l10n.description, maxLines: 2, hint: l10n.descriptionHint, enabled: !_isPurchased),
         ],
       ),
     );
@@ -343,11 +332,11 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
               Row(
                 children: [
                   Expanded(
-                    child: _buildLanguageNameAutocomplete(context, l10n, _languageName1Controller, l10n.languageName1, true),
+                    child: _buildLanguageNameAutocomplete(context, l10n, _languageName1Controller, l10n.languageName1, true, enabled: !_isPurchased),
                   ),
                   SizedBox(width: AppTheme.spacing12),
                   Expanded(
-                    child: _buildLanguageNameAutocomplete(context, l10n, _languageName2Controller, l10n.languageName2, false),
+                    child: _buildLanguageNameAutocomplete(context, l10n, _languageName2Controller, l10n.languageName2, false, enabled: !_isPurchased),
                   ),
                 ],
               ),
@@ -359,9 +348,9 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         else {
           return Column(
             children: [
-              _buildLanguageNameAutocomplete(context, l10n, _languageName1Controller, l10n.languageName1, true),
+              _buildLanguageNameAutocomplete(context, l10n, _languageName1Controller, l10n.languageName1, true, enabled: !_isPurchased),
               SizedBox(height: AppTheme.spacing12),
-              _buildLanguageNameAutocomplete(context, l10n, _languageName2Controller, l10n.languageName2, false),
+              _buildLanguageNameAutocomplete(context, l10n, _languageName2Controller, l10n.languageName2, false, enabled: !_isPurchased),
             ],
           );
         }
@@ -381,17 +370,17 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
             children: [
               Expanded(
                 flex: 2,
-                child: _buildTextField(context, l10n, _authorNameController, l10n.authorName),
+                child: _buildTextField(context, l10n, _authorNameController, l10n.authorName, enabled: !_isPurchased),
               ),
               SizedBox(width: AppTheme.spacing12),
               Expanded(
                 flex: 2,
-                child: _buildTextField(context, l10n, _authorEmailController, l10n.authorEmail, keyboardType: TextInputType.emailAddress, validator: _validateEmail),
+                child: _buildTextField(context, l10n, _authorEmailController, l10n.authorEmail, keyboardType: TextInputType.emailAddress, validator: _validateEmail, enabled: !_isPurchased),
               ),
               SizedBox(width: AppTheme.spacing12),
               Expanded(
                 flex: 1,
-                child: _buildTextField(context, l10n, _versionController, l10n.version, required: true),
+                child: _buildTextField(context, l10n, _versionController, l10n.version, required: true, enabled: !_isPurchased),
               ),
             ],
           );
@@ -405,16 +394,16 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
               Row(
                 children: [
                   Expanded(
-                    child: _buildTextField(context, l10n, _authorNameController, l10n.authorName),
+                    child: _buildTextField(context, l10n, _authorNameController, l10n.authorName, enabled: !_isPurchased),
                   ),
                   SizedBox(width: AppTheme.spacing12),
                   Expanded(
-                    child: _buildTextField(context, l10n, _authorEmailController, l10n.authorEmail, keyboardType: TextInputType.emailAddress, validator: _validateEmail),
+                    child: _buildTextField(context, l10n, _authorEmailController, l10n.authorEmail, keyboardType: TextInputType.emailAddress, validator: _validateEmail, enabled: !_isPurchased),
                   ),
                 ],
               ),
               SizedBox(height: AppTheme.spacing12),
-              _buildTextField(context, l10n, _versionController, l10n.version, required: true),
+              _buildTextField(context, l10n, _versionController, l10n.version, required: true, enabled: !_isPurchased),
             ],
           );
         }
@@ -423,11 +412,11 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         else {
           return Column(
             children: [
-              _buildTextField(context, l10n, _authorNameController, l10n.authorName),
+              _buildTextField(context, l10n, _authorNameController, l10n.authorName, enabled: !_isPurchased),
               SizedBox(height: AppTheme.spacing12),
-              _buildTextField(context, l10n, _authorEmailController, l10n.authorEmail, keyboardType: TextInputType.emailAddress, validator: _validateEmail),
+              _buildTextField(context, l10n, _authorEmailController, l10n.authorEmail, keyboardType: TextInputType.emailAddress, validator: _validateEmail, enabled: !_isPurchased),
               SizedBox(height: AppTheme.spacing12),
-              _buildTextField(context, l10n, _versionController, l10n.version, required: true),
+              _buildTextField(context, l10n, _versionController, l10n.version, required: true, enabled: !_isPurchased),
             ],
           );
         }
@@ -489,164 +478,183 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
           width: 1,
         ),
       ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.folder_outlined,
-            size: 20,
-            color: colorScheme.primary,
-          ),
-          SizedBox(width: AppTheme.spacing12),
-          Text(
-            'Package Group:',
-            style: theme.textTheme.titleSmall?.copyWith(
-              color: colorScheme.onSurface,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          SizedBox(width: AppTheme.spacing12),
-          Expanded(
-            child: DropdownButtonFormField<LanguagePackageGroup>(
-              initialValue: _selectedGroup,
-              decoration: InputDecoration(
-                contentPadding: EdgeInsets.symmetric(
-                  horizontal: AppTheme.spacing12,
-                  vertical: AppTheme.spacing8,
-                ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-                ),
-                filled: true,
-                fillColor: colorScheme.surface,
-              ),
-              items: _groups.map((group) {
-                return DropdownMenuItem<LanguagePackageGroup>(
-                  value: group,
-                  child: Text(
-                    group.name,
-                    style: theme.textTheme.bodyLarge,
-                  ),
-                );
-              }).toList(),
-              onChanged: (newGroup) {
-                setState(() {
-                  _selectedGroup = newGroup;
-                });
-              },
-              validator: (value) {
-                if (value == null) {
-                  return 'Please select a package group';
-                }
-                return null;
-              },
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final availableWidth = constraints.maxWidth;
 
-
-
-  Widget _buildIconSelector(BuildContext context, AppLocalizations l10n) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildIconSelectorTitle(theme, colorScheme, l10n),
-        SizedBox(height: AppTheme.spacing12),
-        Row(
-          children: [
-            Expanded(
-              flex: 3,
-              child: _buildIconDropdown(context, colorScheme, l10n),
-            ),
-            SizedBox(width: AppTheme.spacing12),
-            _buildUploadIconButton(context, colorScheme, l10n),
-          ],
-        ),
-        SizedBox(height: AppTheme.spacing12),
-        _buildIconDescription(theme, colorScheme, l10n),
-      ],
-    );
-  }
-
-  Widget _buildIconSelectorTitle(ThemeData theme, ColorScheme colorScheme, AppLocalizations l10n) {
-    return Text(
-      l10n.packageIcon,
-      style: theme.textTheme.titleSmall?.copyWith(
-        fontWeight: FontWeight.w600,
-        color: colorScheme.onSurface,
-      ),
-    );
-  }
-
-  Widget _buildIconDropdown(BuildContext context, ColorScheme colorScheme, AppLocalizations l10n) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: colorScheme.outline),
-        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-      ),
-      padding: EdgeInsets.symmetric(horizontal: AppTheme.spacing12, vertical: AppTheme.spacing12),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String?>(
-          // Only use _selectedIcon as value if it's in the available icons list
-          value: _availableIcons.contains(_selectedIcon) ? _selectedIcon : null,
-          isExpanded: true,
-          hint: _selectedIcon != null && !_availableIcons.contains(_selectedIcon)
-              ? Row(
+          // If width < 900px, split into two rows
+          if (availableWidth < 900) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // First row: Group selector only
+                Row(
                   children: [
-                    Container(
-                      width: 32,
-                      height: 32,
-                      margin: EdgeInsets.only(right: AppTheme.spacing12),
-                      child: PackageIcon(iconPath: _selectedIcon, size: 28),
+                    Icon(
+                      Icons.folder_outlined,
+                      size: 20,
+                      color: colorScheme.primary,
                     ),
+                    SizedBox(width: AppTheme.spacing12),
                     Expanded(
-                      child: Text(
-                        'Custom Icon (loading...)',
-                        overflow: TextOverflow.ellipsis,
+                      child: DropdownButtonFormField<LanguagePackageGroup>(
+                        initialValue: _selectedGroup,
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: AppTheme.spacing12,
+                            vertical: AppTheme.spacing8,
+                          ),
+                        ),
+                        items: _groups.map((group) {
+                          return DropdownMenuItem<LanguagePackageGroup>(
+                            value: group,
+                            child: Text(
+                              group.name,
+                              style: theme.textTheme.bodyLarge,
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (newGroup) {
+                          setState(() {
+                            _selectedGroup = newGroup;
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null) {
+                            return 'Please select a package group';
+                          }
+                          return null;
+                        },
                       ),
                     ),
                   ],
-                )
-              : Text(l10n.selectIcon),
-          items: _availableIcons.map((iconPath) {
-            return DropdownMenuItem<String?>(
-              value: iconPath,
-              child: Row(
-                children: [
-                  // Show icon image in dropdown
-                  Container(
-                    width: 32,
-                    height: 32,
-                    margin: EdgeInsets.only(right: AppTheme.spacing12),
-                    child: PackageIcon(iconPath: iconPath, size: 28),
-                  ),
-                  // Show label for clarity
-                  Expanded(
-                    child: Text(
-                      iconPath == null
-                          ? l10n.defaultIcon
-                          : _getIconLabel(iconPath),
-                      overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: AppTheme.spacing12),
+                // Second row: Icon selector and upload button
+                Row(
+                  children: [
+                    Expanded(
+                      child: _buildIconDropdown(context, colorScheme, l10n),
+                    ),
+                    SizedBox(width: AppTheme.spacing12),
+                    _buildUploadIconButton(context, colorScheme, l10n),
+                  ],
+                ),
+              ],
+            );
+          }
+
+          // Wide screens (>= 900px): All in one row
+          return Row(
+            children: [
+              // Group icon (no label)
+              Icon(
+                Icons.folder_outlined,
+                size: 20,
+                color: colorScheme.primary,
+              ),
+              SizedBox(width: AppTheme.spacing12),
+              // Group dropdown
+              Expanded(
+                flex: 2,
+                child: DropdownButtonFormField<LanguagePackageGroup>(
+                  initialValue: _selectedGroup,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(
+                      horizontal: AppTheme.spacing12,
+                      vertical: AppTheme.spacing8,
                     ),
                   ),
-                ],
+                  items: _groups.map((group) {
+                    return DropdownMenuItem<LanguagePackageGroup>(
+                      value: group,
+                      child: Text(
+                        group.name,
+                        style: theme.textTheme.bodyLarge,
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (newGroup) {
+                    setState(() {
+                      _selectedGroup = newGroup;
+                    });
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return 'Please select a package group';
+                    }
+                    return null;
+                  },
+                ),
               ),
-            );
-          }).toList(),
-          onChanged: (newValue) {
-            setState(() {
-              _selectedIcon = newValue;
-              _isCustomIcon = newValue != null && !newValue.startsWith('assets/');
-            });
-          },
+              SizedBox(width: AppTheme.spacing12),
+              // Package icon dropdown (moved here, no label)
+              Expanded(
+                flex: 2,
+                child: _buildIconDropdown(context, colorScheme, l10n),
+              ),
+              SizedBox(width: AppTheme.spacing12),
+              // Upload icon button (moved here)
+              _buildUploadIconButton(context, colorScheme, l10n),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+
+
+  Widget _buildIconDropdown(BuildContext context, ColorScheme colorScheme, AppLocalizations l10n) {
+    return DropdownButtonFormField<String?>(
+      initialValue: _availableIcons.contains(_selectedIcon) ? _selectedIcon : null,
+      decoration: InputDecoration(
+        contentPadding: EdgeInsets.symmetric(
+          horizontal: AppTheme.spacing12,
+          vertical: AppTheme.spacing8,
         ),
       ),
+      hint: _selectedIcon != null && !_availableIcons.contains(_selectedIcon)
+          ? Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 24,
+                  height: 24,
+                  margin: EdgeInsets.only(right: AppTheme.spacing8),
+                  child: PackageIcon(iconPath: _selectedIcon, size: 20),
+                ),
+                Text('Custom', overflow: TextOverflow.ellipsis),
+              ],
+            )
+          : null,
+      items: _availableIcons.map((iconPath) {
+        return DropdownMenuItem<String?>(
+          value: iconPath,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 24,
+                height: 24,
+                margin: EdgeInsets.only(right: AppTheme.spacing8),
+                child: PackageIcon(iconPath: iconPath, size: 20),
+              ),
+              Flexible(
+                child: Text(
+                  iconPath == null ? 'Default' : _getIconLabel(iconPath),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
+      onChanged: _isPurchased ? null : (newValue) {
+        setState(() {
+          _selectedIcon = newValue;
+        });
+      },
     );
   }
 
@@ -675,7 +683,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     return Tooltip(
       message: l10n.uploadCustomIcon,
       child: ElevatedButton.icon(
-        onPressed: _uploadCustomIcon,
+        onPressed: _isPurchased ? null : _uploadCustomIcon,
         icon: const Icon(Icons.upload_file, size: 20),
         label: Text(l10n.upload),
         style: ElevatedButton.styleFrom(
@@ -755,7 +763,6 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
 
       setState(() {
         _selectedIcon = newPath;
-        _isCustomIcon = true;
       });
 
       // Reload custom icons to include the newly uploaded icon in the dropdown
@@ -777,71 +784,6 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     }
   }
 
-  Widget _buildIconDescription(ThemeData theme, ColorScheme colorScheme, AppLocalizations l10n) {
-    String description;
-    if (_isCustomIcon) {
-      description = l10n.customIconUploaded;
-    } else {
-      description = _selectedIcon == null ? l10n.defaultIcon : l10n.customIcon;
-    }
-
-    return Text(
-      description,
-      style: theme.textTheme.bodySmall?.copyWith(
-        color: colorScheme.onSurfaceVariant,
-      ),
-    );
-  }
-
-  Widget _buildLanguageCodeField(
-    BuildContext context,
-    AppLocalizations l10n,
-    TextEditingController controller,
-    String label,
-    bool isSource,
-  ) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-
-    return TextFormField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: 'e.g., en-US, hu-HU, de-DE',
-        suffixIcon: IconButton(
-          icon: Icon(Icons.search, color: colorScheme.primary),
-          onPressed: () => _showLanguageCodePicker(context, controller, isSource),
-          tooltip: l10n.selectLanguageCode,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-        ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppTheme.spacing12,
-          vertical: AppTheme.spacing4,
-        ),
-      ),
-      style: theme.textTheme.bodyLarge,
-      textCapitalization: TextCapitalization.none,
-      validator: (value) {
-        if (value == null || value.trim().isEmpty) {
-          return l10n.fieldRequired;
-        }
-        return null;
-      },
-      onChanged: (value) {
-        // Auto-fill language name if code is recognized
-        final languageName = LanguageCodes.getLanguageName(value.trim());
-        if (languageName != null) {
-          if (isSource) {
-            _languageName1Controller.text = languageName;
-          } else {
-            _languageName2Controller.text = languageName;
-          }
-        }
-      },
-    );
-  }
 
   /// Build autocomplete language name dropdown field
   /// This replaces the language code field and updates the code in the background
@@ -850,8 +792,9 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     AppLocalizations l10n,
     TextEditingController controller,
     String label,
-    bool isSource,
-  ) {
+    bool isSource, {
+    bool enabled = true,
+  }) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -887,13 +830,11 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         return TextFormField(
           controller: textEditingController,
           focusNode: focusNode,
+          enabled: enabled,
           decoration: InputDecoration(
             labelText: label,
             hintText: 'Type to search languages...',
             suffixIcon: Icon(Icons.arrow_drop_down, color: colorScheme.primary),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-            ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: AppTheme.spacing12,
               vertical: AppTheme.spacing4,
@@ -958,10 +899,8 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
 
         // Update the language code in the background
         if (isSource) {
-          _selectedLanguageCode1 = selection.key;
           _languageCode1Controller.text = selection.key;
         } else {
-          _selectedLanguageCode2 = selection.key;
           _languageCode2Controller.text = selection.key;
         }
 
@@ -980,17 +919,16 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     String? hint,
     TextInputType? keyboardType,
     String? Function(String?)? validator,
+    bool enabled = true,
   }) {
     final theme = Theme.of(context);
 
     return TextFormField(
       controller: controller,
+      enabled: enabled,
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-        ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppTheme.spacing12,
           vertical: AppTheme.spacing4,
@@ -1048,24 +986,28 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                 children: [
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: _exportPackage,
+                      onPressed: _isPurchased ? null : _exportPackage,
                       icon: const Icon(Icons.file_download),
                       label: Text(l10n.exportPackage),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.tertiary,
                         foregroundColor: Theme.of(context).colorScheme.onTertiary,
+                        disabledBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        disabledForegroundColor: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.38),
                       ),
                     ),
                   ),
                   SizedBox(width: AppTheme.spacing12),
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: _importItems,
+                      onPressed: _isPurchased ? null : _importItems,
                       icon: const Icon(Icons.file_upload),
                       label: Text(l10n.importItems),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Theme.of(context).colorScheme.tertiary,
                         foregroundColor: Theme.of(context).colorScheme.onTertiary,
+                        disabledBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        disabledForegroundColor: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.38),
                       ),
                     ),
                   ),
@@ -1188,35 +1130,6 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     );
   }
 
-  Future<void> _showLanguageCodePicker(
-    BuildContext context,
-    TextEditingController controller,
-    bool isSource,
-  ) async {
-    final l10n = AppLocalizations.of(context)!;
-
-    await showDialog(
-      context: context,
-      builder: (context) => _LanguageCodePickerDialog(
-        l10n: l10n,
-        onLanguageSelected: (code, name) => _onLanguageCodeSelected(controller, isSource, code, name),
-      ),
-    );
-  }
-
-  void _onLanguageCodeSelected(
-    TextEditingController controller,
-    bool isSource,
-    String code,
-    String name,
-  ) {
-    controller.text = code;
-    if (isSource) {
-      _languageName1Controller.text = name;
-    } else {
-      _languageName2Controller.text = name;
-    }
-  }
 
   Future<void> _savePackage() async {
     if (!_formKey.currentState!.validate()) return;
@@ -1229,6 +1142,9 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
       final package = LanguagePackage(
         id: widget.package?.id ?? const Uuid().v4(),
         groupId: _selectedGroup?.id ?? widget.package?.groupId ?? 'default-group-id',
+        packageName: _packageNameController.text.trim().isEmpty
+            ? null
+            : _packageNameController.text.trim(),
         languageCode1: _languageCode1Controller.text.trim(),
         languageName1: _languageName1Controller.text.trim(),
         languageCode2: _languageCode2Controller.text.trim(),
@@ -1929,9 +1845,6 @@ class _LanguageCodePickerDialogState extends State<_LanguageCodePickerDialog> {
       decoration: InputDecoration(
         hintText: 'Search...',
         prefixIcon: const Icon(Icons.search),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-        ),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppTheme.spacing12,
           vertical: AppTheme.spacing4,

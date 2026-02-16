@@ -20,6 +20,7 @@ import 'package:uuid/uuid.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/translation_service.dart';
 import '../../../core/services/ai_service.dart';
+import '../../../core/services/tts_service.dart';
 import '../../../core/services/service_error_messages.dart';
 import '../../../data/models/item.dart';
 import '../../../data/models/item_language_data.dart';
@@ -87,6 +88,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
   final _formKey = GlobalKey<FormState>();
   final _itemRepo = ItemRepository();
   final _categoryRepo = CategoryRepository();
+  final _ttsService = TtsService();
   late TranslationService _translationService;
   late AIService _aiService;
 
@@ -123,6 +125,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
   @override
   void initState() {
     super.initState();
+    _ttsService.initialize();
     _initializeControllers();
     _initializeSpeechRecognition();
     _isKnown = widget.item.isKnown;
@@ -181,6 +184,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
 
   @override
   void dispose() {
+    _ttsService.stop();
     _preItem1Controller.dispose();
     _text1Controller.dispose();
     _postItem1Controller.dispose();
@@ -415,6 +419,24 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                const Spacer(),
+                IconButton(
+                  icon: Icon(Icons.volume_up, size: 20, color: theme.colorScheme.primary),
+                  tooltip: 'Speak text',
+                  onPressed: () {
+                    final preText = preItemController.text.trim();
+                    final mainText = textController.text.trim();
+
+                    if (mainText.isEmpty) {
+                      return;
+                    }
+
+                    // Combine preText + mainText (excluding postText)
+                    final fullText = '${preText.isNotEmpty ? "$preText " : ""}$mainText';
+
+                    _ttsService.speak(fullText, languageCode);
+                  },
+                ),
               ],
             ),
             const SizedBox(height: AppTheme.spacing12),
@@ -425,17 +447,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
               style: theme.textTheme.bodySmall,
               decoration: InputDecoration(
                 labelText: l10n.preTextOptional,
-                labelStyle: theme.textTheme.bodySmall,
                 hintText: l10n.forExampleToForVerbs,
-                hintStyle: theme.textTheme.bodySmall,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: AppTheme.spacing8,
-                  vertical: AppTheme.spacing8,
-                ),
-                isDense: true,
               ),
             ),
             const SizedBox(height: AppTheme.spacing8),
@@ -449,15 +461,6 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
               keyboardType: TextInputType.multiline,
               decoration: InputDecoration(
                 labelText: '${l10n.mainText} *',
-                labelStyle: theme.textTheme.bodySmall,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: AppTheme.spacing8,
-                  vertical: AppTheme.spacing12,
-                ),
-                isDense: true,
                 suffixIcon: IconButton(
                   icon: _isListening
                       ? const Icon(Icons.mic, size: 20, color: Colors.red)
@@ -481,17 +484,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
               style: theme.textTheme.bodySmall,
               decoration: InputDecoration(
                 labelText: l10n.postTextOptional,
-                labelStyle: theme.textTheme.bodySmall,
                 hintText: l10n.additionalContext,
-                hintStyle: theme.textTheme.bodySmall,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-                ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: AppTheme.spacing8,
-                  vertical: AppTheme.spacing8,
-                ),
-                isDense: true,
               ),
             ),
           ],
@@ -1090,16 +1083,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
                       style: theme.textTheme.bodySmall,
                       decoration: InputDecoration(
                         hintText: 'Type to search or create new...',
-                        hintStyle: theme.textTheme.bodySmall,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-                        ),
                         prefixIcon: const Icon(Icons.search, size: 18),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: AppTheme.spacing8,
-                          vertical: AppTheme.spacing8,
-                        ),
-                        isDense: true,
                       ),
                     );
                   },

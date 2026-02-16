@@ -350,7 +350,6 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
             decoration: const InputDecoration(
               labelText: 'Group Name',
               hintText: 'Enter group name',
-              border: OutlineInputBorder(),
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {

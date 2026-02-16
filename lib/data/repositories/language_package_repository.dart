@@ -153,6 +153,7 @@ class LanguagePackageRepository {
     return <String, dynamic>{
       'id': package.id,
       'group_id': package.groupId,
+      'package_name': package.packageName,
       'language_code1': package.languageCode1,
       'language_name1': package.languageName1,
       'language_code2': package.languageCode2,
@@ -177,6 +178,7 @@ class LanguagePackageRepository {
     return LanguagePackage(
       id: map['id'] as String,
       groupId: map['group_id'] as String,
+      packageName: map['package_name'] as String?,
       languageCode1: map['language_code1'] as String,
       languageName1: map['language_name1'] as String,
       languageCode2: map['language_code2'] as String,

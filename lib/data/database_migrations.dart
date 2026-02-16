@@ -16,7 +16,7 @@ import 'package:sqflite/sqflite.dart';
 class DatabaseMigrations {
   /// Current database version
   /// Increment this when adding a new migration
-  static const int currentVersion = 4;
+  static const int currentVersion = 5;
 
   /// Type definitions for database types
   static const idType = 'TEXT PRIMARY KEY';
@@ -39,8 +39,11 @@ class DatabaseMigrations {
     // Version 3 -> 4: Add language_package_groups table and group_id to language_packages
     4: _migrateToVersion4,
 
+    // Version 4 -> 5: Add package_name column to language_packages
+    5: _migrateToVersion5,
+
     // Add future migrations here:
-    // 5: _migrateToVersion5,
+    // 6: _migrateToVersion6,
   };
 
   /// Initial database creation (version 1)
@@ -58,6 +61,7 @@ class DatabaseMigrations {
       CREATE TABLE language_packages (
         id $idType,
         group_id $textType,
+        package_name $textNullable,
         language_code1 $textType,
         language_name1 $textType,
         language_code2 $textType,
@@ -343,8 +347,28 @@ class DatabaseMigrations {
     }
   }
 
-  // /// Migration to version 5: Example future migration
-  // static Future<void> _migrateToVersion5(Database db) async {
+  /// Migration to version 5: Add package_name column to language_packages
+  static Future<void> _migrateToVersion5(Database db) async {
+    developer.log('  ℹ️  Adding package_name column to language_packages...', name: 'DatabaseMigrations');
+
+    // Check if package_name column already exists
+    final result = await db.rawQuery('PRAGMA table_info(language_packages)');
+    final columnExists = result.any((column) => column['name'] == 'package_name');
+
+    if (!columnExists) {
+      // Add package_name column to language_packages
+      await db.execute('''
+        ALTER TABLE language_packages 
+        ADD COLUMN package_name TEXT
+      ''');
+      developer.log('  ✓ Added package_name column to language_packages', name: 'DatabaseMigrations');
+    } else {
+      developer.log('  ⚠️  Column package_name already exists in language_packages, skipping', name: 'DatabaseMigrations');
+    }
+  }
+
+  // /// Migration to version 6: Example future migration
+  // static Future<void> _migrateToVersion6(Database db) async {
   //   // Your migration logic here
   //   await db.execute('ALTER TABLE some_table ADD COLUMN new_field TEXT');
   // }

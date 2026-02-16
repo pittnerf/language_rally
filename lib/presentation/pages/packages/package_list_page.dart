@@ -385,7 +385,6 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
           onTap: () => _onPackageTap(package),
           onToggleCompact: () => _toggleCompactMode(package),
           onDelete: package.isPurchased ? () => _deletePackage(package) : null,
-          onMoveToGroup: () => _movePackageToGroup(package),
           showToggleButton: true, // Show toggle button in portrait/list mode
         );
       },
@@ -415,7 +414,6 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
           onTap: () => _onPackageTap(package),
           onToggleCompact: () => _toggleCompactMode(package),
           onDelete: package.isPurchased ? () => _deletePackage(package) : null,
-          onMoveToGroup: () => _movePackageToGroup(package),
           isInGrid: true,
           showToggleButton: false, // Hide toggle button in landscape/grid mode
         );
@@ -490,8 +488,11 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
   }
 
   void _onPackageTap(LanguagePackage package) async {
-    // Only allow editing user-created packages
-    if (package.packageType == PackageType.userCreated && !package.isReadonly && !package.isPurchased) {
+    // Allow opening package form for:
+    // 1. User-created packages (full edit)
+    // 2. Purchased packages (restricted edit - only group, counters, delete)
+    // Block only truly readonly packages
+    if (!package.isReadonly || package.isPurchased) {
       final result = await Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) => PackageFormPage(package: package),
@@ -501,10 +502,8 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
       if (result == true) {
         _loadPackages();
       }
-    } else {
-      // TODO: Navigate to package detail/view for non-editable packages
-
     }
+    // For readonly packages that are NOT purchased, do nothing
   }
 
   Future<void> _deletePackage(LanguagePackage package) async {
@@ -578,124 +577,6 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
     );
   }
 
-  Future<void> _movePackageToGroup(LanguagePackage package) async {
-    final l10n = AppLocalizations.of(context)!;
-
-    // Get all groups except the current one
-    final otherGroups = _groups.where((g) => g.id != package.groupId).toList();
-
-    if (otherGroups.isEmpty) {
-      _showErrorDialog(l10n.error, 'No other groups available. Please create another group first.');
-      return;
-    }
-
-    // Show dialog with group selector
-    final selectedGroup = await _showMovePackageDialog(package, otherGroups);
-    if (selectedGroup == null) return;
-
-    try {
-      // Update package with new group ID
-      final updatedPackage = package.copyWith(groupId: selectedGroup.id);
-      await _packageRepo.updatePackage(updatedPackage);
-
-      if (!mounted) return;
-
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Package moved to "${selectedGroup.name}"'),
-          backgroundColor: Theme.of(context).colorScheme.primary,
-        ),
-      );
-
-      // Reload packages to reflect the change
-      await _loadGroupsAndPackages();
-    } catch (e) {
-      if (!mounted) return;
-
-      // Show error message
-      _showErrorDialog(l10n.error, 'Failed to move package: $e');
-    }
-  }
-
-  Future<LanguagePackageGroup?> _showMovePackageDialog(
-    LanguagePackage package,
-    List<LanguagePackageGroup> otherGroups,
-  ) async {
-    final l10n = AppLocalizations.of(context)!;
-    LanguagePackageGroup? selectedGroup = otherGroups.first;
-
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (context) => StatefulBuilder(
-        builder: (context, setState) => AlertDialog(
-          title: Text('Move Package to Group'),
-          content: _buildMovePackageDialogContent(
-            package,
-            otherGroups,
-            selectedGroup,
-            (newGroup) {
-              setState(() {
-                selectedGroup = newGroup;
-              });
-            },
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: Text(l10n.cancel),
-            ),
-            ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: Text('Move'),
-            ),
-          ],
-        ),
-      ),
-    );
-
-    return (result == true) ? selectedGroup : null;
-  }
-
-  Widget _buildMovePackageDialogContent(
-    LanguagePackage package,
-    List<LanguagePackageGroup> otherGroups,
-    LanguagePackageGroup? selectedGroup,
-    ValueChanged<LanguagePackageGroup?> onChanged,
-  ) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Select destination group for:',
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        SizedBox(height: AppTheme.spacing8),
-        Text(
-          '${package.languageName1} → ${package.languageName2}',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        SizedBox(height: AppTheme.spacing16),
-        DropdownButtonFormField<LanguagePackageGroup>(
-          initialValue: selectedGroup,
-          decoration: InputDecoration(
-            labelText: 'Destination Group',
-            border: OutlineInputBorder(),
-          ),
-          items: otherGroups.map((group) {
-            return DropdownMenuItem<LanguagePackageGroup>(
-              value: group,
-              child: Text(group.name),
-            );
-          }).toList(),
-          onChanged: onChanged,
-        ),
-      ],
-    );
-  }
 
   Future<void> _createNewPackage() async {
     await Navigator.of(context).push(
@@ -890,7 +771,6 @@ class PackageCard extends StatefulWidget {
   final VoidCallback onTap;
   final VoidCallback onToggleCompact;
   final VoidCallback? onDelete;
-  final VoidCallback? onMoveToGroup;
   final bool isInGrid;
   final bool showToggleButton;
 
@@ -902,7 +782,6 @@ class PackageCard extends StatefulWidget {
     required this.onTap,
     required this.onToggleCompact,
     this.onDelete,
-    this.onMoveToGroup,
     this.isInGrid = false,
     this.showToggleButton = true,
   }) : super(key: key);
@@ -1135,9 +1014,7 @@ class _PackageCardState extends State<PackageCard> {
     return Stack(
       children: [
         mainContent,
-        // Left side buttons (Browse Items, Training Rally)
-        _buildLeftFloatingActionButtons(context),
-        // Right side buttons (Move to group, Delete)
+        // Right side buttons (Training Rally, Browse Items, Delete)
         _buildFloatingActionButtons(context),
       ],
     );
@@ -1162,43 +1039,28 @@ class _PackageCardState extends State<PackageCard> {
   }
 
   Widget _buildFloatingActionButtons(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Positioned(
       bottom: AppTheme.spacing8,
       right: AppTheme.spacing8,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Move to group button (for all packages)
-          if (widget.onMoveToGroup != null)
-            _buildMoveButton(context),
-          // Delete button (only for purchased packages)
-          if (widget.package.isPurchased && widget.onDelete != null) ...[
-            SizedBox(height: AppTheme.spacing8),
-            _buildDeleteButton(context),
-          ],
-        ],
-      ),
-    );
-  }
-
-  Widget _buildLeftFloatingActionButtons(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-
-    return Positioned(
-      bottom: AppTheme.spacing8,
-      left: AppTheme.spacing8,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Training Rally button (to be implemented)
+          // Training Rally button (top)
           _buildTrainingRallyButton(context, l10n),
-          SizedBox(width: AppTheme.spacing8),
-          // Browse Items button
+          SizedBox(height: AppTheme.spacing8),
+          // Browse Items button (middle)
           _buildBrowseItemsButton(context, l10n),
+          SizedBox(height: AppTheme.spacing8),
+          // Delete button (bottom - only for purchased packages)
+          if (widget.package.isPurchased && widget.onDelete != null)
+            _buildDeleteButton(context),
         ],
       ),
     );
   }
+
 
   Widget _buildBrowseItemsButton(BuildContext context, AppLocalizations l10n) {
     return FloatingActionButton.small(
@@ -1236,16 +1098,6 @@ class _PackageCardState extends State<PackageCard> {
     );
   }
 
-  Widget _buildMoveButton(BuildContext context) {
-    return FloatingActionButton.small(
-      heroTag: 'move_${widget.package.id}',
-      onPressed: widget.onMoveToGroup,
-      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-      foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
-      tooltip: 'Move to another group',
-      child: const Icon(Icons.drive_file_move_outlined, size: 20),
-    );
-  }
 
   Widget _buildDeleteButton(BuildContext context) {
     return FloatingActionButton.small(
@@ -1556,16 +1408,25 @@ class _PackageCardState extends State<PackageCard> {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
+    // Extract short language codes (only first part before "-")
+    String getShortCode(String fullCode) {
+      return fullCode.split('-').first.toUpperCase();
+    }
+
+    final shortCode1 = getShortCode(widget.package.languageCode1);
+    final shortCode2 = getShortCode(widget.package.languageCode2);
+    final shortCodeDisplay = '$shortCode1-$shortCode2';
+
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            '${widget.package.languageCode1.toUpperCase()} → ${widget.package.languageCode2.toUpperCase()}',
+            shortCodeDisplay,
             style: (isCompact
                     ? theme.textTheme.titleSmall
-                    : theme.textTheme.titleMedium)
+                    : theme.textTheme.titleSmall)
                 ?.copyWith(
               fontWeight: FontWeight.bold,
               color: colorScheme.primary,
@@ -1574,8 +1435,9 @@ class _PackageCardState extends State<PackageCard> {
             overflow: TextOverflow.ellipsis,
           ),
           if (!isCompact) SizedBox(height: AppTheme.spacing4),
+          // Always show package name (fallback to language names if null)
           Text(
-            '${widget.package.languageName1} → ${widget.package.languageName2}',
+            widget.package.packageName ?? '${widget.package.languageName1} → ${widget.package.languageName2}',
             style: (isCompact
                     ? theme.textTheme.labelLarge
                     : theme.textTheme.bodySmall)

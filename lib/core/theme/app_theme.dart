@@ -175,45 +175,67 @@ class AppTheme {
         side: BorderSide.none,
       ),
 
-      // Input Decoration Theme
+      // Input Decoration Theme - Modern filled style without borders
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: colorScheme.surfaceContainerHighest,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: spacing8,
-          vertical: spacing4,
+          horizontal: spacing12,
+          vertical: spacing12,
         ),
+        // Default border - no visible border
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radiusMedium),
+          borderRadius: BorderRadius.circular(radiusSmall),
           borderSide: BorderSide.none,
         ),
+        // Enabled border - no visible border
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radiusMedium),
-          borderSide: BorderSide(
-            color: colorScheme.outline,
-            width: 1,
-          ),
+          borderRadius: BorderRadius.circular(radiusSmall),
+          borderSide: BorderSide.none,
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radiusMedium),
+        // Focused border - subtle bottom indicator only
+        focusedBorder: UnderlineInputBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(radiusSmall),
+            topRight: Radius.circular(radiusSmall),
+          ),
           borderSide: BorderSide(
             color: colorScheme.primary,
             width: 2,
           ),
         ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radiusMedium),
+        // Error border - subtle bottom indicator
+        errorBorder: UnderlineInputBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(radiusSmall),
+            topRight: Radius.circular(radiusSmall),
+          ),
           borderSide: BorderSide(
             color: colorScheme.error,
-            width: 1,
+            width: 2,
           ),
         ),
-        labelStyle: AppFonts.bodyLarge.copyWith(
+        // Focused error border
+        focusedErrorBorder: UnderlineInputBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(radiusSmall),
+            topRight: Radius.circular(radiusSmall),
+          ),
+          borderSide: BorderSide(
+            color: colorScheme.error,
+            width: 2,
+          ),
+        ),
+        labelStyle: AppFonts.bodyMedium.copyWith(
           color: colorScheme.onSurfaceVariant,
         ),
-        hintStyle: AppFonts.bodyLarge.copyWith(
+        floatingLabelStyle: AppFonts.bodySmall.copyWith(
+          color: colorScheme.primary,
+        ),
+        hintStyle: AppFonts.bodyMedium.copyWith(
           color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
         ),
+        isDense: true,
       ),
 
       // Dialog Theme
@@ -453,45 +475,67 @@ class AppTheme {
         side: BorderSide.none,
       ),
 
-      // Input Decoration Theme
+      // Input Decoration Theme - Modern filled style without borders
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: colorScheme.surfaceContainerHighest,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: spacing8,
-          vertical: spacing4,
+          horizontal: spacing12,
+          vertical: spacing12,
         ),
+        // Default border - no visible border
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radiusMedium),
+          borderRadius: BorderRadius.circular(radiusSmall),
           borderSide: BorderSide.none,
         ),
+        // Enabled border - no visible border
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radiusMedium),
-          borderSide: BorderSide(
-            color: colorScheme.outline,
-            width: 1,
-          ),
+          borderRadius: BorderRadius.circular(radiusSmall),
+          borderSide: BorderSide.none,
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radiusMedium),
+        // Focused border - subtle bottom indicator only
+        focusedBorder: UnderlineInputBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(radiusSmall),
+            topRight: Radius.circular(radiusSmall),
+          ),
           borderSide: BorderSide(
             color: colorScheme.primary,
             width: 2,
           ),
         ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radiusMedium),
+        // Error border - subtle bottom indicator
+        errorBorder: UnderlineInputBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(radiusSmall),
+            topRight: Radius.circular(radiusSmall),
+          ),
           borderSide: BorderSide(
             color: colorScheme.error,
-            width: 1,
+            width: 2,
           ),
         ),
-        labelStyle: AppFonts.bodyLarge.copyWith(
+        // Focused error border
+        focusedErrorBorder: UnderlineInputBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(radiusSmall),
+            topRight: Radius.circular(radiusSmall),
+          ),
+          borderSide: BorderSide(
+            color: colorScheme.error,
+            width: 2,
+          ),
+        ),
+        labelStyle: AppFonts.bodyMedium.copyWith(
           color: colorScheme.onSurfaceVariant,
         ),
-        hintStyle: AppFonts.bodyLarge.copyWith(
+        floatingLabelStyle: AppFonts.bodySmall.copyWith(
+          color: colorScheme.primary,
+        ),
+        hintStyle: AppFonts.bodyMedium.copyWith(
           color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
         ),
+        isDense: true,
       ),
 
       // Dialog Theme
@@ -890,27 +934,67 @@ class AppTheme {
         backgroundColor: colorScheme.primaryContainer,
         foregroundColor: colorScheme.onPrimaryContainer,
       ),
+      // Input Decoration Theme - Modern filled style without borders
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: colorScheme.surfaceContainerHighest,
-        contentPadding: const EdgeInsets.symmetric(horizontal: spacing8, vertical: spacing4),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(radiusMedium), borderSide: BorderSide.none),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: spacing12,
+          vertical: spacing12,
+        ),
+        // Default border - no visible border
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(radiusSmall),
+          borderSide: BorderSide.none,
+        ),
+        // Enabled border - no visible border
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radiusMedium),
-          borderSide: BorderSide(color: colorScheme.outline, width: 1),
+          borderRadius: BorderRadius.circular(radiusSmall),
+          borderSide: BorderSide.none,
         ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radiusMedium),
-          borderSide: BorderSide(color: colorScheme.primary, width: 2),
+        // Focused border - subtle bottom indicator only
+        focusedBorder: UnderlineInputBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(radiusSmall),
+            topRight: Radius.circular(radiusSmall),
+          ),
+          borderSide: BorderSide(
+            color: colorScheme.primary,
+            width: 2,
+          ),
         ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radiusMedium),
-          borderSide: BorderSide(color: colorScheme.error, width: 1),
+        // Error border - subtle bottom indicator
+        errorBorder: UnderlineInputBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(radiusSmall),
+            topRight: Radius.circular(radiusSmall),
+          ),
+          borderSide: BorderSide(
+            color: colorScheme.error,
+            width: 2,
+          ),
         ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(radiusMedium),
-          borderSide: BorderSide(color: colorScheme.error, width: 2),
+        // Focused error border
+        focusedErrorBorder: UnderlineInputBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(radiusSmall),
+            topRight: Radius.circular(radiusSmall),
+          ),
+          borderSide: BorderSide(
+            color: colorScheme.error,
+            width: 2,
+          ),
         ),
+        labelStyle: AppFonts.bodyMedium.copyWith(
+          color: colorScheme.onSurfaceVariant,
+        ),
+        floatingLabelStyle: AppFonts.bodySmall.copyWith(
+          color: colorScheme.primary,
+        ),
+        hintStyle: AppFonts.bodyMedium.copyWith(
+          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+        ),
+        isDense: true,
       ),
       chipTheme: ChipThemeData(
         backgroundColor: colorScheme.surfaceContainerHighest,
