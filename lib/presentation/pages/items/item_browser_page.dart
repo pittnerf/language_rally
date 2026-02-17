@@ -823,7 +823,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
     return Stack(
       children: [
         SingleChildScrollView(
-      padding: const EdgeInsets.all(AppTheme.spacing8),
+      padding: const EdgeInsets.all(AppTheme.spacing12),
       physics: const AlwaysScrollableScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -905,7 +905,10 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
           // Examples
           Text(
             l10n.examples,
-            style: reduceFontSize(theme.textTheme.titleMedium),
+            style: reduceFontSize(theme.textTheme.titleMedium)?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.primary,
+            ),
           ),
           const SizedBox(height: AppTheme.spacing8),
           if (item.examples.isEmpty)
@@ -913,37 +916,54 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
               l10n.noExamples,
               style: reduceFontSize(theme.textTheme.bodySmall)?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
+                fontStyle: FontStyle.italic,
               ),
             )
           else
-            ...item.examples.map((example) => Padding(
-                  padding: const EdgeInsets.only(bottom: AppTheme.spacing8),
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(AppTheme.spacing8),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
+            ...item.examples.map((example) {
+              final hasLanguage2 = example.textLanguage2.trim().isNotEmpty;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: AppTheme.spacing8),
+                child: Card(
+                  elevation: 1,
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppTheme.spacing12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (example.textLanguage1.trim().isNotEmpty)
                           Text(
                             example.textLanguage1,
-                            style: reduceFontSize(theme.textTheme.bodySmall),
+                            style: reduceFontSize(theme.textTheme.bodyMedium),
                           ),
-                          const SizedBox(height: AppTheme.spacing4),
+                        if (hasLanguage2) ...[
+                          const SizedBox(height: AppTheme.spacing8),
+                          Divider(
+                            height: 1,
+                            color: theme.colorScheme.outlineVariant,
+                          ),
+                          const SizedBox(height: AppTheme.spacing8),
                           Text(
                             example.textLanguage2,
-                            style: reduceFontSize(theme.textTheme.bodySmall)?.copyWith(
+                            style: reduceFontSize(theme.textTheme.bodyMedium)?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
-                      ),
+                      ],
                     ),
                   ),
-                )),
+                ),
+              );
+            }),
 
           // Categories section
           const SizedBox(height: AppTheme.spacing8),
           _buildCategoryChipsForDialog(item, theme, setDialogState, reduceFontSize),
+
+          // Bottom padding to prevent content from being hidden behind floating buttons
+          const SizedBox(height: AppTheme.spacing24),
         ],
       ),
     ),

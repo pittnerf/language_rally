@@ -63,6 +63,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get packageIcon => 'Csomag ikon';
 
   @override
+  String get packageGroup => 'Csoport';
+
+  @override
   String get selectIcon => 'Ikon kiválasztása';
 
   @override
@@ -397,6 +400,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get examples => 'Példamondatok';
 
   @override
+  String get examplesHint =>
+      'Írj be példamondatokat (soronként egyet, használj | jelet a nyelvek elválasztására)';
+
+  @override
   String get noExamples => 'Nincsenek elérhető példamondatok';
 
   @override
@@ -677,4 +684,73 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get speechNotRecognized =>
       'Nem sikerült felismerni a beszédet. Kérlek, próbáld újra.';
+
+  @override
+  String get trainingSettings => 'Edzés Beállítások';
+
+  @override
+  String get itemScope => 'Elemek Köre';
+
+  @override
+  String get lastNItems => 'Utolsó N elem';
+
+  @override
+  String get onlyUnknown => 'Csak ismeretlen elemek';
+
+  @override
+  String get numberOfItems => 'Elemek Száma';
+
+  @override
+  String get itemOrder => 'Elemek Sorrendje';
+
+  @override
+  String get randomOrder => 'Véletlenszerű sorrend';
+
+  @override
+  String get sequentialOrder => 'Szekvenciális sorrend';
+
+  @override
+  String get displayLanguage => 'Megjelenítési Nyelv';
+
+  @override
+  String get motherTongue => 'Anyanyelv';
+
+  @override
+  String get targetLanguage => 'Célnyelv';
+
+  @override
+  String get randomLanguage => 'Véletlenszerű';
+
+  @override
+  String get categoryFilter => 'Kategória Szűrő';
+
+  @override
+  String get categoryFilterHint =>
+      'Válaszd ki a kategóriákat (üres = minden kategória)';
+
+  @override
+  String get noCategories => 'Nincsenek elérhető kategóriák';
+
+  @override
+  String get dontKnowThreshold => 'Nem Tudom Küszöb';
+
+  @override
+  String get dontKnowThresholdHint =>
+      'Hányszor kell \'nem tudom\'-nak jelölni egy elemet a speciális kezeléshez';
+
+  @override
+  String get startTrainingRally => 'Edzés Rally Indítása';
+
+  @override
+  String get clearTrainingSettings => 'Beállítások Törlése';
+
+  @override
+  String get confirmClearTrainingSettings =>
+      'Biztosan visszaállítod az összes edzési beállítást az alapértelmezett értékekre?';
+
+  @override
+  String get trainingSettingsCleared => 'Az edzési beállítások törölve lettek';
+
+  @override
+  String get startingTraining => 'Edzés indítása...';
 }

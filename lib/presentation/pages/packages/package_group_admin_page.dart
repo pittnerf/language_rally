@@ -67,7 +67,7 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
       appBar: isTablet ? AppBar(
         title: Text(
           'Manage Package Groups',
-          style: theme.textTheme.titleLarge,
+          style: theme.textTheme.titleMedium,
         ),
       ) : null,
       body: SafeArea(

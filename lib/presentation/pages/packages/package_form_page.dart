@@ -215,7 +215,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                     onTap: () => Navigator.of(context).pop(),
                     borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                     child: Padding(
-                      padding: const EdgeInsets.all(AppTheme.spacing8),
+                      padding: const EdgeInsets.all(AppTheme.spacing12),
                       child: Icon(
                         Icons.arrow_back,
                         color: theme.colorScheme.onSurface,
@@ -500,9 +500,10 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                       child: DropdownButtonFormField<LanguagePackageGroup>(
                         initialValue: _selectedGroup,
                         decoration: InputDecoration(
+                          labelText: l10n.packageGroup,
                           contentPadding: EdgeInsets.symmetric(
                             horizontal: AppTheme.spacing12,
-                            vertical: AppTheme.spacing8,
+                            vertical: AppTheme.spacing12,
                           ),
                         ),
                         items: _groups.map((group) {
@@ -510,7 +511,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                             value: group,
                             child: Text(
                               group.name,
-                              style: theme.textTheme.bodyLarge,
+                              style: theme.textTheme.bodyMedium,
                             ),
                           );
                         }).toList(),
@@ -560,9 +561,10 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                 child: DropdownButtonFormField<LanguagePackageGroup>(
                   initialValue: _selectedGroup,
                   decoration: InputDecoration(
+                    labelText: l10n.packageGroup,
                     contentPadding: EdgeInsets.symmetric(
                       horizontal: AppTheme.spacing12,
-                      vertical: AppTheme.spacing8,
+                      vertical: AppTheme.spacing12,
                     ),
                   ),
                   items: _groups.map((group) {
@@ -570,7 +572,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                       value: group,
                       child: Text(
                         group.name,
-                        style: theme.textTheme.bodyLarge,
+                        style: theme.textTheme.bodyMedium,
                       ),
                     );
                   }).toList(),
@@ -606,14 +608,18 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
 
 
   Widget _buildIconDropdown(BuildContext context, ColorScheme colorScheme, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+
     return DropdownButtonFormField<String?>(
       initialValue: _availableIcons.contains(_selectedIcon) ? _selectedIcon : null,
       decoration: InputDecoration(
+        labelText: l10n.packageIcon,
         contentPadding: EdgeInsets.symmetric(
           horizontal: AppTheme.spacing12,
-          vertical: AppTheme.spacing8,
+          vertical: AppTheme.spacing12,
         ),
       ),
+      style: theme.textTheme.bodyMedium,
       hint: _selectedIcon != null && !_availableIcons.contains(_selectedIcon)
           ? Row(
               mainAxisSize: MainAxisSize.min,
@@ -624,7 +630,11 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   margin: EdgeInsets.only(right: AppTheme.spacing8),
                   child: PackageIcon(iconPath: _selectedIcon, size: 20),
                 ),
-                Text('Custom', overflow: TextOverflow.ellipsis),
+                Text(
+                  'Custom',
+                  style: theme.textTheme.bodyMedium,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             )
           : null,
@@ -643,6 +653,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
               Flexible(
                 child: Text(
                   iconPath == null ? 'Default' : _getIconLabel(iconPath),
+                  style: theme.textTheme.bodyMedium,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -837,10 +848,10 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
             suffixIcon: Icon(Icons.arrow_drop_down, color: colorScheme.primary),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: AppTheme.spacing12,
-              vertical: AppTheme.spacing4,
+              vertical: AppTheme.spacing12,
             ),
           ),
-          style: theme.textTheme.bodyLarge,
+          style: theme.textTheme.bodyMedium,
           validator: (value) {
             if (value == null || value.trim().isEmpty) {
               return l10n.fieldRequired;
@@ -931,10 +942,10 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         hintText: hint,
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppTheme.spacing12,
-          vertical: AppTheme.spacing4,
+          vertical: AppTheme.spacing12,
         ),
       ),
-      style: theme.textTheme.bodyLarge,
+      style: theme.textTheme.bodyMedium,
       maxLines: maxLines,
       keyboardType: keyboardType,
       validator: validator ??
@@ -1742,7 +1753,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                 if (result.successful.isNotEmpty) ...[
                   SizedBox(height: AppTheme.spacing12),
                   ...result.successful.take(10).map((item) => Padding(
-                    padding: EdgeInsets.only(left: AppTheme.spacing12, bottom: 4),
+                    padding: EdgeInsets.only(left: AppTheme.spacing12, bottom: AppTheme.spacing12),
                     child: Text('✓ $item', style: Theme.of(context).textTheme.bodySmall),
                   )),
                   if (result.successful.length > 10)
@@ -1762,7 +1773,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                 if (result.failed.isNotEmpty) ...[
                   SizedBox(height: AppTheme.spacing12),
                   ...result.failed.take(10).map((item) => Padding(
-                    padding: EdgeInsets.only(left: AppTheme.spacing12, bottom: 4),
+                    padding: EdgeInsets.only(left: AppTheme.spacing12, bottom: AppTheme.spacing12),
                     child: Text('✗ $item', style: Theme.of(context).textTheme.bodySmall),
                   )),
                   if (result.failed.length > 10)
@@ -1847,7 +1858,7 @@ class _LanguageCodePickerDialogState extends State<_LanguageCodePickerDialog> {
         prefixIcon: const Icon(Icons.search),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: AppTheme.spacing12,
-          vertical: AppTheme.spacing4,
+          vertical: AppTheme.spacing12,
         ),
       ),
       onChanged: (value) {
@@ -1869,7 +1880,7 @@ class _LanguageCodePickerDialogState extends State<_LanguageCodePickerDialog> {
 
   Widget _buildLanguageListItem(MapEntry<String, String> entry, ThemeData theme) {
     return ListTile(
-      title: Text(entry.value, style: theme.textTheme.bodyLarge),
+      title: Text(entry.value, style: theme.textTheme.bodyMedium),
       subtitle: Text(entry.key, style: theme.textTheme.bodySmall),
       onTap: () {
         widget.onLanguageSelected(entry.key, entry.value);

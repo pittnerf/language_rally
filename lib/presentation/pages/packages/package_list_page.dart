@@ -287,7 +287,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
                   value: group,
                   child: Text(
                     group.name,
-                    style: theme.textTheme.bodyLarge,
+                    style: theme.textTheme.bodyMedium,
                   ),
                 );
               }).toList(),

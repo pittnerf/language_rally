@@ -206,6 +206,12 @@ abstract class AppLocalizations {
   /// **'Package Icon'**
   String get packageIcon;
 
+  /// No description provided for @packageGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Package Group'**
+  String get packageGroup;
+
   /// No description provided for @selectIcon.
   ///
   /// In en, this message translates to:
@@ -836,6 +842,12 @@ abstract class AppLocalizations {
   /// **'Examples'**
   String get examples;
 
+  /// No description provided for @examplesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter example sentences (one per line, use | to separate languages)'**
+  String get examplesHint;
+
   /// No description provided for @noExamples.
   ///
   /// In en, this message translates to:
@@ -1339,6 +1351,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No speech was recognized. Please try again.'**
   String get speechNotRecognized;
+
+  /// No description provided for @trainingSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Training Settings'**
+  String get trainingSettings;
+
+  /// No description provided for @itemScope.
+  ///
+  /// In en, this message translates to:
+  /// **'Item Scope'**
+  String get itemScope;
+
+  /// No description provided for @lastNItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Last N items'**
+  String get lastNItems;
+
+  /// No description provided for @onlyUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Only unknown items'**
+  String get onlyUnknown;
+
+  /// No description provided for @numberOfItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of Items'**
+  String get numberOfItems;
+
+  /// No description provided for @itemOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Item Order'**
+  String get itemOrder;
+
+  /// No description provided for @randomOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Random order'**
+  String get randomOrder;
+
+  /// No description provided for @sequentialOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Sequential order'**
+  String get sequentialOrder;
+
+  /// No description provided for @displayLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Display Language'**
+  String get displayLanguage;
+
+  /// No description provided for @motherTongue.
+  ///
+  /// In en, this message translates to:
+  /// **'Mother tongue'**
+  String get motherTongue;
+
+  /// No description provided for @targetLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Target language'**
+  String get targetLanguage;
+
+  /// No description provided for @randomLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Random'**
+  String get randomLanguage;
+
+  /// No description provided for @categoryFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Category Filter'**
+  String get categoryFilter;
+
+  /// No description provided for @categoryFilterHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select categories to include (empty = all categories)'**
+  String get categoryFilterHint;
+
+  /// No description provided for @noCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'No categories available'**
+  String get noCategories;
+
+  /// No description provided for @dontKnowThreshold.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t Know Threshold'**
+  String get dontKnowThreshold;
+
+  /// No description provided for @dontKnowThresholdHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Number of times an item needs to be marked as \'don\'t know\' before special handling'**
+  String get dontKnowThresholdHint;
+
+  /// No description provided for @startTrainingRally.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Training Rally'**
+  String get startTrainingRally;
+
+  /// No description provided for @clearTrainingSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Settings'**
+  String get clearTrainingSettings;
+
+  /// No description provided for @confirmClearTrainingSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to reset all training settings to default values?'**
+  String get confirmClearTrainingSettings;
+
+  /// No description provided for @trainingSettingsCleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Training settings have been cleared'**
+  String get trainingSettingsCleared;
+
+  /// No description provided for @startingTraining.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting training...'**
+  String get startingTraining;
 }
 
 class _AppLocalizationsDelegate

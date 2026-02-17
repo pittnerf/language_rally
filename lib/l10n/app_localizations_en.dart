@@ -63,6 +63,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get packageIcon => 'Package Icon';
 
   @override
+  String get packageGroup => 'Package Group';
+
+  @override
   String get selectIcon => 'Select Icon';
 
   @override
@@ -396,6 +399,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get examples => 'Examples';
 
   @override
+  String get examplesHint =>
+      'Enter example sentences (one per line, use | to separate languages)';
+
+  @override
   String get noExamples => 'No examples available';
 
   @override
@@ -677,4 +684,73 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get speechNotRecognized =>
       'No speech was recognized. Please try again.';
+
+  @override
+  String get trainingSettings => 'Training Settings';
+
+  @override
+  String get itemScope => 'Item Scope';
+
+  @override
+  String get lastNItems => 'Last N items';
+
+  @override
+  String get onlyUnknown => 'Only unknown items';
+
+  @override
+  String get numberOfItems => 'Number of Items';
+
+  @override
+  String get itemOrder => 'Item Order';
+
+  @override
+  String get randomOrder => 'Random order';
+
+  @override
+  String get sequentialOrder => 'Sequential order';
+
+  @override
+  String get displayLanguage => 'Display Language';
+
+  @override
+  String get motherTongue => 'Mother tongue';
+
+  @override
+  String get targetLanguage => 'Target language';
+
+  @override
+  String get randomLanguage => 'Random';
+
+  @override
+  String get categoryFilter => 'Category Filter';
+
+  @override
+  String get categoryFilterHint =>
+      'Select categories to include (empty = all categories)';
+
+  @override
+  String get noCategories => 'No categories available';
+
+  @override
+  String get dontKnowThreshold => 'Don\'t Know Threshold';
+
+  @override
+  String get dontKnowThresholdHint =>
+      'Number of times an item needs to be marked as \'don\'t know\' before special handling';
+
+  @override
+  String get startTrainingRally => 'Start Training Rally';
+
+  @override
+  String get clearTrainingSettings => 'Clear Settings';
+
+  @override
+  String get confirmClearTrainingSettings =>
+      'Are you sure you want to reset all training settings to default values?';
+
+  @override
+  String get trainingSettingsCleared => 'Training settings have been cleared';
+
+  @override
+  String get startingTraining => 'Starting training...';
 }

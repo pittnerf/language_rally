@@ -107,6 +107,9 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
   late TextEditingController _text2Controller;
   late TextEditingController _postItem2Controller;
 
+  // Examples controller
+  late TextEditingController _examplesController;
+
   bool _isSaving = false;
   bool _isTranslating = false;
   bool _isGeneratingExamples = false;
@@ -167,6 +170,13 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
     _preItem2Controller = TextEditingController(text: widget.item.language2Data.preItem ?? '');
     _text2Controller = TextEditingController(text: widget.item.language2Data.text);
     _postItem2Controller = TextEditingController(text: widget.item.language2Data.postItem ?? '');
+
+    // Initialize examples controller with existing examples as text
+    // Convert ExampleSentence list to text format
+    final examplesText = widget.item.examples
+        .map((ex) => '${ex.textLanguage1} | ${ex.textLanguage2}')
+        .join('\n');
+    _examplesController = TextEditingController(text: examplesText);
   }
 
   Future<void> _loadCategories() async {
@@ -191,6 +201,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
     _preItem2Controller.dispose();
     _text2Controller.dispose();
     _postItem2Controller.dispose();
+    _examplesController.dispose();
 
     // Stop and dispose speech recognition
     if (_isListening) {
@@ -332,6 +343,10 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
           ),
         ],
       ),
+      const SizedBox(height: AppTheme.spacing16),
+
+      // Examples field
+      _buildExamplesField(theme, l10n),
     ];
   }
 
@@ -385,6 +400,11 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
           ),
         ],
       ),
+
+      const SizedBox(height: AppTheme.spacing16),
+
+      // Examples field
+      _buildExamplesField(theme, l10n),
     ];
   }
 
@@ -969,6 +989,43 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
                   onPressed: _showAddCategoryDialog,
                 ),
               ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExamplesField(ThemeData theme, AppLocalizations l10n) {
+    return Card(
+      elevation: 1,
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.spacing12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.examples,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontSize: (theme.textTheme.titleSmall?.fontSize ?? 14) * 0.85,
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: AppTheme.spacing8),
+            TextFormField(
+              controller: _examplesController,
+              decoration: InputDecoration(
+                hintText: l10n.examplesHint,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: AppTheme.spacing12,
+                  vertical: AppTheme.spacing12,
+                ),
+              ),
+              style: theme.textTheme.bodyMedium,
+              maxLines: null,
+              minLines: 3,
+              keyboardType: TextInputType.multiline,
             ),
           ],
         ),
@@ -1568,6 +1625,39 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
     setState(() => _isSaving = true);
 
     try {
+      // Parse examples from text field
+      final examplesText = _examplesController.text.trim();
+      final List<ExampleSentence> parsedExamples = [];
+
+      if (examplesText.isNotEmpty) {
+        final lines = examplesText.split('\n');
+        for (final line in lines) {
+          final trimmedLine = line.trim();
+          if (trimmedLine.isNotEmpty) {
+            // Split by | to separate language1 and language2
+            final parts = trimmedLine.split('|');
+            if (parts.length >= 2) {
+              parsedExamples.add(
+                ExampleSentence(
+                  id: const Uuid().v4(),
+                  textLanguage1: parts[0].trim(),
+                  textLanguage2: parts[1].trim(),
+                ),
+              );
+            } else {
+              // If no separator, only save language1 text, leave language2 empty
+              parsedExamples.add(
+                ExampleSentence(
+                  id: const Uuid().v4(),
+                  textLanguage1: trimmedLine,
+                  textLanguage2: '',
+                ),
+              );
+            }
+          }
+        }
+      }
+
       final updatedItem = widget.item.copyWith(
         language1Data: ItemLanguageData(
           languageCode: widget.item.language1Data.languageCode,
@@ -1585,6 +1675,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
         isFavourite: _isFavourite,
         isImportant: _isImportant,
         categoryIds: _itemCategoryIds,
+        examples: parsedExamples,
       );
 
       await _itemRepo.updateItem(updatedItem);
