@@ -21,6 +21,7 @@ import 'package:reorderable_grid_view/reorderable_grid_view.dart';
 import 'package_form_page.dart';
 import 'package_group_admin_page.dart';
 import '../items/item_browser_page.dart';
+import '../training/training_settings_page.dart';
 import '../../../l10n/app_localizations.dart';
 
 /// Package list page displaying all language packages as cards
@@ -1083,11 +1084,11 @@ class _PackageCardState extends State<PackageCard> {
     return FloatingActionButton.small(
       heroTag: 'training_${widget.package.id}',
       onPressed: () {
-        // TODO: Navigate to Training Rally page
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.trainingComingSoon),
-            duration: const Duration(seconds: 2),
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => TrainingSettingsPage(
+              package: widget.package,
+            ),
           ),
         );
       },

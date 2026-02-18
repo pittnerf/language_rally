@@ -1483,6 +1483,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Starting training...'**
   String get startingTraining;
+
+  /// No description provided for @noMoreItemsToDisplay.
+  ///
+  /// In en, this message translates to:
+  /// **'No more items to display based on your filter settings.'**
+  String get noMoreItemsToDisplay;
+
+  /// No description provided for @noItems.
+  ///
+  /// In en, this message translates to:
+  /// **'No Items'**
+  String get noItems;
+
+  /// No description provided for @trainingComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Training Complete'**
+  String get trainingComplete;
+
+  /// No description provided for @allItemsCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Congratulations! You have completed all items in this training session.'**
+  String get allItemsCompleted;
+
+  /// No description provided for @closeTraining.
+  ///
+  /// In en, this message translates to:
+  /// **'Close Training'**
+  String get closeTraining;
+
+  /// No description provided for @confirmCloseTraining.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to close the training? Your progress has been saved.'**
+  String get confirmCloseTraining;
+
+  /// No description provided for @question.
+  ///
+  /// In en, this message translates to:
+  /// **'Question'**
+  String get question;
+
+  /// No description provided for @answer.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer'**
+  String get answer;
+
+  /// No description provided for @iKnow.
+  ///
+  /// In en, this message translates to:
+  /// **'I Know'**
+  String get iKnow;
+
+  /// No description provided for @iDontKnow.
+  ///
+  /// In en, this message translates to:
+  /// **'I Don\'t Know'**
+  String get iDontKnow;
+
+  /// No description provided for @nextItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Item'**
+  String get nextItem;
+
+  /// No description provided for @iDidNotKnowEither.
+  ///
+  /// In en, this message translates to:
+  /// **'I Didn\'t Know Either'**
+  String get iDidNotKnowEither;
 }
 
 class _AppLocalizationsDelegate

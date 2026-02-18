@@ -753,4 +753,43 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get startingTraining => 'Starting training...';
+
+  @override
+  String get noMoreItemsToDisplay =>
+      'No more items to display based on your filter settings.';
+
+  @override
+  String get noItems => 'No Items';
+
+  @override
+  String get trainingComplete => 'Training Complete';
+
+  @override
+  String get allItemsCompleted =>
+      'Congratulations! You have completed all items in this training session.';
+
+  @override
+  String get closeTraining => 'Close Training';
+
+  @override
+  String get confirmCloseTraining =>
+      'Are you sure you want to close the training? Your progress has been saved.';
+
+  @override
+  String get question => 'Question';
+
+  @override
+  String get answer => 'Answer';
+
+  @override
+  String get iKnow => 'I Know';
+
+  @override
+  String get iDontKnow => 'I Don\'t Know';
+
+  @override
+  String get nextItem => 'Next Item';
+
+  @override
+  String get iDidNotKnowEither => 'I Didn\'t Know Either';
 }

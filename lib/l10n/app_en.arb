@@ -230,5 +230,17 @@
   "clearTrainingSettings": "Clear Settings",
   "confirmClearTrainingSettings": "Are you sure you want to reset all training settings to default values?",
   "trainingSettingsCleared": "Training settings have been cleared",
-  "startingTraining": "Starting training..."
+  "startingTraining": "Starting training...",
+  "noMoreItemsToDisplay": "No more items to display based on your filter settings.",
+  "noItems": "No Items",
+  "trainingComplete": "Training Complete",
+  "allItemsCompleted": "Congratulations! You have completed all items in this training session.",
+  "closeTraining": "Close Training",
+  "confirmCloseTraining": "Are you sure you want to close the training? Your progress has been saved.",
+  "question": "Question",
+  "answer": "Answer",
+  "iKnow": "I Know",
+  "iDontKnow": "I Don't Know",
+  "nextItem": "Next Item",
+  "iDidNotKnowEither": "I Didn't Know Either"
 }

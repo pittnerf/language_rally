@@ -231,5 +231,18 @@
   "clearTrainingSettings": "Beállítások Törlése",
   "confirmClearTrainingSettings": "Biztosan visszaállítod az összes edzési beállítást az alapértelmezett értékekre?",
   "trainingSettingsCleared": "Az edzési beállítások törölve lettek",
-  "startingTraining": "Edzés indítása..."
+  "startingTraining": "Edzés indítása...",
+  "noMoreItemsToDisplay": "Nincs több megjelenítendő elem a szűrési beállítások alapján.",
+  "noItems": "Nincs Elem",
+  "trainingComplete": "Edzés Befejezve",
+  "allItemsCompleted": "Gratulálunk! Elvégezted az összes elemet ebben az edzésen.",
+  "closeTraining": "Edzés Bezárása",
+  "confirmCloseTraining": "Biztosan bezárod az edzést? A folyamatod mentve lett.",
+  "question": "Kérdés",
+  "answer": "Válasz",
+  "iKnow": "Tudom",
+  "iDontKnow": "Nem Tudom",
+  "nextItem": "Következő Elem",
+  "iDidNotKnowEither": "Ezt Sem Tudtam"
 }
+

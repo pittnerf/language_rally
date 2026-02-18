@@ -753,4 +753,43 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get startingTraining => 'Edzés indítása...';
+
+  @override
+  String get noMoreItemsToDisplay =>
+      'Nincs több megjelenítendő elem a szűrési beállítások alapján.';
+
+  @override
+  String get noItems => 'Nincs Elem';
+
+  @override
+  String get trainingComplete => 'Edzés Befejezve';
+
+  @override
+  String get allItemsCompleted =>
+      'Gratulálunk! Elvégezted az összes elemet ebben az edzésen.';
+
+  @override
+  String get closeTraining => 'Edzés Bezárása';
+
+  @override
+  String get confirmCloseTraining =>
+      'Biztosan bezárod az edzést? A folyamatod mentve lett.';
+
+  @override
+  String get question => 'Kérdés';
+
+  @override
+  String get answer => 'Válasz';
+
+  @override
+  String get iKnow => 'Tudom';
+
+  @override
+  String get iDontKnow => 'Nem Tudom';
+
+  @override
+  String get nextItem => 'Következő Elem';
+
+  @override
+  String get iDidNotKnowEither => 'Ezt Sem Tudtam';
 }

@@ -21,6 +21,7 @@ import '../../../data/models/category.dart';
 import '../../../data/repositories/category_repository.dart';
 import '../../../data/repositories/training_settings_repository.dart';
 import '../../../l10n/app_localizations.dart';
+import 'training_rally_page.dart';
 
 class TrainingSettingsPage extends ConsumerStatefulWidget {
   final LanguagePackage package;
@@ -154,20 +155,27 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
   }
 
   Future<void> _startTraining() async {
-    final l10n = AppLocalizations.of(context)!;
-
     // Save current settings
     await _saveSettings();
 
-    // TODO: Navigate to training rally page
+    // Navigate to training rally page
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.startingTraining),
-          backgroundColor: Theme.of(context).colorScheme.primary,
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => TrainingRallyPage(
+            package: widget.package,
+            settings: TrainingSettings(
+              packageId: widget.package.id,
+              itemScope: _itemScope,
+              lastNItems: _lastNItems,
+              itemOrder: _itemOrder,
+              displayLanguage: _displayLanguage,
+              selectedCategoryIds: _selectedCategoryIds,
+              dontKnowThreshold: _dontKnowThreshold,
+            ),
+          ),
         ),
       );
-      // Navigator.of(context).push(...) - to training rally page
     }
   }
 
@@ -175,6 +183,7 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final isLandscape = MediaQuery.of(context).size.width >= 600;
 
     if (_isLoading) {
       return Scaffold(
@@ -191,73 +200,118 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
       appBar: AppBar(
         title: Text(
           l10n.trainingSettings,
-          style: theme.textTheme.titleMedium,
+          style: theme.textTheme.titleSmall,
         ),
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppTheme.spacing16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Package info
-              _buildPackageInfo(theme, l10n),
-              const SizedBox(height: AppTheme.spacing24),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.only(
+                left: AppTheme.spacing8,
+                right: AppTheme.spacing8,
+                top: AppTheme.spacing8,
+                bottom: 120, // Space for floating buttons
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Package info
+                  _buildPackageInfo(theme, l10n),
+                  const SizedBox(height: AppTheme.spacing8),
 
-              // Item scope
-              _buildItemScopeSection(theme, l10n),
-              const SizedBox(height: AppTheme.spacing16),
+                  // Main settings in landscape: side by side
+                  if (isLandscape) ...[
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(child: _buildItemScopeSection(theme, l10n)),
+                        const SizedBox(width: AppTheme.spacing8),
+                        Expanded(child: _buildItemOrderSection(theme, l10n)),
+                        const SizedBox(width: AppTheme.spacing8),
+                        Expanded(child: _buildDisplayLanguageSection(theme, l10n)),
+                      ],
+                    ),
+                    const SizedBox(height: AppTheme.spacing8),
+                  ] else ...[
+                    // Portrait mode: stacked
+                    _buildItemScopeSection(theme, l10n),
+                    const SizedBox(height: AppTheme.spacing8),
+                    _buildItemOrderSection(theme, l10n),
+                    const SizedBox(height: AppTheme.spacing8),
+                    _buildDisplayLanguageSection(theme, l10n),
+                    const SizedBox(height: AppTheme.spacing8),
+                  ],
 
-              // Last N items (only visible when itemScope is lastN)
-              if (_itemScope == ItemScope.lastN) ...[
-                _buildLastNItemsField(theme, l10n),
-                const SizedBox(height: AppTheme.spacing16),
-              ],
 
-              // Item order
-              _buildItemOrderSection(theme, l10n),
-              const SizedBox(height: AppTheme.spacing16),
-
-              // Display language
-              _buildDisplayLanguageSection(theme, l10n),
-              const SizedBox(height: AppTheme.spacing16),
-
-              // Category filter
-              _buildCategoryFilterSection(theme, l10n),
-              const SizedBox(height: AppTheme.spacing16),
-
-              // Don't know threshold
-              _buildDontKnowThresholdField(theme, l10n),
-              const SizedBox(height: AppTheme.spacing32),
-
-              // Action buttons
-              _buildActionButtons(theme, l10n),
-            ],
+                  // Category filter
+                  _buildCategoryFilterSection(theme, l10n),
+                ],
+              ),
+            ),
           ),
-        ),
+          // Floating action buttons at bottom right
+          Positioned(
+            right: 16,
+            bottom: 16,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                FloatingActionButton.extended(
+                  onPressed: _startTraining,
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
+                  icon: const Icon(Icons.play_arrow, size: 20),
+                  label: Text(
+                    l10n.startTrainingRally,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onPrimary,
+                    ),
+                  ),
+                  heroTag: 'start_training',
+                ),
+                const SizedBox(height: 12),
+                FloatingActionButton.extended(
+                  onPressed: _clearSettings,
+                  backgroundColor: theme.colorScheme.errorContainer,
+                  foregroundColor: theme.colorScheme.onErrorContainer,
+                  icon: const Icon(Icons.clear_all, size: 18),
+                  label: Text(
+                    l10n.clearTrainingSettings,
+                    style: theme.textTheme.bodyMedium,
+                  ),
+                  heroTag: 'clear_settings',
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildPackageInfo(ThemeData theme, AppLocalizations l10n) {
     return Card(
-      elevation: 2,
+      elevation: 1,
       child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacing16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.all(AppTheme.spacing8),
+        child: Row(
           children: [
-            Text(
-              widget.package.packageName ?? '${widget.package.languageName1} - ${widget.package.languageName2}',
-              style: theme.textTheme.titleLarge?.copyWith(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.bold,
+            Expanded(
+              child: Text(
+                widget.package.packageName ?? '${widget.package.languageName1} - ${widget.package.languageName2}',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
-            const SizedBox(height: AppTheme.spacing8),
+            const SizedBox(width: AppTheme.spacing8),
             Text(
               '${widget.package.languageCode1.split('-')[0].toUpperCase()} → ${widget.package.languageCode2.split('-')[0].toUpperCase()}',
-              style: theme.textTheme.bodyMedium?.copyWith(
+              style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
@@ -271,65 +325,45 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
     return Card(
       elevation: 1,
       child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacing16),
+        padding: const EdgeInsets.all(AppTheme.spacing8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               l10n.itemScope,
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: theme.textTheme.titleSmall?.copyWith(
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: AppTheme.spacing12),
-            RadioListTile<ItemScope>(
-              title: Text(l10n.allItems, style: theme.textTheme.bodyMedium),
-              value: ItemScope.all,
-              groupValue: _itemScope,
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _itemScope = value);
-                }
-              },
-              contentPadding: EdgeInsets.zero,
-              visualDensity: VisualDensity.compact,
+            const SizedBox(height: AppTheme.spacing4),
+            _buildRadioOption<ItemScope>(
+              theme,
+              l10n.allItems,
+              ItemScope.all,
+              _itemScope,
+              (value) => setState(() => _itemScope = value),
             ),
-            RadioListTile<ItemScope>(
-              title: Text(l10n.lastNItems, style: theme.textTheme.bodyMedium),
-              value: ItemScope.lastN,
-              groupValue: _itemScope,
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _itemScope = value);
-                }
-              },
-              contentPadding: EdgeInsets.zero,
-              visualDensity: VisualDensity.compact,
+            _buildRadioOption<ItemScope>(
+              theme,
+              l10n.lastNItems,
+              ItemScope.lastN,
+              _itemScope,
+              (value) => setState(() => _itemScope = value),
             ),
-            RadioListTile<ItemScope>(
-              title: Text(l10n.onlyUnknown, style: theme.textTheme.bodyMedium),
-              value: ItemScope.onlyUnknown,
-              groupValue: _itemScope,
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _itemScope = value);
-                }
-              },
-              contentPadding: EdgeInsets.zero,
-              visualDensity: VisualDensity.compact,
+            _buildRadioOption<ItemScope>(
+              theme,
+              l10n.onlyUnknown,
+              ItemScope.onlyUnknown,
+              _itemScope,
+              (value) => setState(() => _itemScope = value),
             ),
-            RadioListTile<ItemScope>(
-              title: Text(l10n.onlyImportant, style: theme.textTheme.bodyMedium),
-              value: ItemScope.onlyImportant,
-              groupValue: _itemScope,
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _itemScope = value);
-                }
-              },
-              contentPadding: EdgeInsets.zero,
-              visualDensity: VisualDensity.compact,
+            _buildRadioOption<ItemScope>(
+              theme,
+              l10n.onlyImportant,
+              ItemScope.onlyImportant,
+              _itemScope,
+              (value) => setState(() => _itemScope = value),
             ),
           ],
         ),
@@ -337,94 +371,36 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
     );
   }
 
-  Widget _buildLastNItemsField(ThemeData theme, AppLocalizations l10n) {
-    return Card(
-      elevation: 1,
-      child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacing16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.numberOfItems,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: AppTheme.spacing12),
-            Row(
-              children: [
-                Expanded(
-                  child: Slider(
-                    value: _lastNItems.toDouble(),
-                    min: 5,
-                    max: 100,
-                    divisions: 19,
-                    label: _lastNItems.toString(),
-                    onChanged: (value) {
-                      setState(() => _lastNItems = value.toInt());
-                    },
-                  ),
-                ),
-                const SizedBox(width: AppTheme.spacing12),
-                SizedBox(
-                  width: 50,
-                  child: Text(
-                    _lastNItems.toString(),
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 
   Widget _buildItemOrderSection(ThemeData theme, AppLocalizations l10n) {
     return Card(
       elevation: 1,
       child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacing16),
+        padding: const EdgeInsets.all(AppTheme.spacing8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               l10n.itemOrder,
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: theme.textTheme.titleSmall?.copyWith(
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: AppTheme.spacing12),
-            RadioListTile<ItemOrder>(
-              title: Text(l10n.randomOrder, style: theme.textTheme.bodyMedium),
-              value: ItemOrder.random,
-              groupValue: _itemOrder,
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _itemOrder = value);
-                }
-              },
-              contentPadding: EdgeInsets.zero,
-              visualDensity: VisualDensity.compact,
+            const SizedBox(height: AppTheme.spacing4),
+            _buildRadioOption<ItemOrder>(
+              theme,
+              l10n.randomOrder,
+              ItemOrder.random,
+              _itemOrder,
+              (value) => setState(() => _itemOrder = value),
             ),
-            RadioListTile<ItemOrder>(
-              title: Text(l10n.sequentialOrder, style: theme.textTheme.bodyMedium),
-              value: ItemOrder.sequential,
-              groupValue: _itemOrder,
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _itemOrder = value);
-                }
-              },
-              contentPadding: EdgeInsets.zero,
-              visualDensity: VisualDensity.compact,
+            _buildRadioOption<ItemOrder>(
+              theme,
+              l10n.sequentialOrder,
+              ItemOrder.sequential,
+              _itemOrder,
+              (value) => setState(() => _itemOrder = value),
             ),
           ],
         ),
@@ -436,53 +412,38 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
     return Card(
       elevation: 1,
       child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacing16),
+        padding: const EdgeInsets.all(AppTheme.spacing8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               l10n.displayLanguage,
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: theme.textTheme.titleSmall?.copyWith(
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: AppTheme.spacing12),
-            RadioListTile<DisplayLanguage>(
-              title: Text('${l10n.motherTongue} (${widget.package.languageName1})', style: theme.textTheme.bodyMedium),
-              value: DisplayLanguage.motherTongue,
-              groupValue: _displayLanguage,
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _displayLanguage = value);
-                }
-              },
-              contentPadding: EdgeInsets.zero,
-              visualDensity: VisualDensity.compact,
+            const SizedBox(height: AppTheme.spacing4),
+            _buildRadioOption<DisplayLanguage>(
+              theme,
+              '${l10n.motherTongue} (${widget.package.languageName1})',
+              DisplayLanguage.motherTongue,
+              _displayLanguage,
+              (value) => setState(() => _displayLanguage = value),
             ),
-            RadioListTile<DisplayLanguage>(
-              title: Text('${l10n.targetLanguage} (${widget.package.languageName2})', style: theme.textTheme.bodyMedium),
-              value: DisplayLanguage.targetLanguage,
-              groupValue: _displayLanguage,
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _displayLanguage = value);
-                }
-              },
-              contentPadding: EdgeInsets.zero,
-              visualDensity: VisualDensity.compact,
+            _buildRadioOption<DisplayLanguage>(
+              theme,
+              '${l10n.targetLanguage} (${widget.package.languageName2})',
+              DisplayLanguage.targetLanguage,
+              _displayLanguage,
+              (value) => setState(() => _displayLanguage = value),
             ),
-            RadioListTile<DisplayLanguage>(
-              title: Text(l10n.randomLanguage, style: theme.textTheme.bodyMedium),
-              value: DisplayLanguage.random,
-              groupValue: _displayLanguage,
-              onChanged: (value) {
-                if (value != null) {
-                  setState(() => _displayLanguage = value);
-                }
-              },
-              contentPadding: EdgeInsets.zero,
-              visualDensity: VisualDensity.compact,
+            _buildRadioOption<DisplayLanguage>(
+              theme,
+              l10n.randomLanguage,
+              DisplayLanguage.random,
+              _displayLanguage,
+              (value) => setState(() => _displayLanguage = value),
             ),
           ],
         ),
@@ -494,18 +455,18 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
     return Card(
       elevation: 1,
       child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacing16),
+        padding: const EdgeInsets.all(AppTheme.spacing8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               l10n.categoryFilter,
-              style: theme.textTheme.titleMedium?.copyWith(
+              style: theme.textTheme.titleSmall?.copyWith(
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: AppTheme.spacing8),
+            const SizedBox(height: AppTheme.spacing4),
             Text(
               l10n.categoryFilterHint,
               style: theme.textTheme.bodySmall?.copyWith(
@@ -513,29 +474,29 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                 fontStyle: FontStyle.italic,
               ),
             ),
-            const SizedBox(height: AppTheme.spacing12),
+            const SizedBox(height: AppTheme.spacing8),
             if (_allCategories.isEmpty)
               Text(
                 l10n.noCategories,
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               )
             else
               Wrap(
                 spacing: AppTheme.spacing8,
-                runSpacing: AppTheme.spacing8,
+                runSpacing: AppTheme.spacing4,
                 children: _allCategories.map((category) {
                   final isSelected = _selectedCategoryIds.contains(category.id);
                   return FilterChip(
                     selected: isSelected,
                     label: Text(
                       category.name,
-                      style: theme.textTheme.bodyMedium,
+                      style: theme.textTheme.bodySmall,
                     ),
                     avatar: Icon(
                       isSelected ? Icons.check_circle : Icons.label_outline,
-                      size: 18,
+                      size: 16,
                       color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
                     ),
                     onSelected: (selected) {
@@ -556,104 +517,57 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
     );
   }
 
-  Widget _buildDontKnowThresholdField(ThemeData theme, AppLocalizations l10n) {
-    return Card(
-      elevation: 1,
+
+  /// Helper method to build a radio option without using deprecated RadioListTile
+  Widget _buildRadioOption<T>(
+    ThemeData theme,
+    String label,
+    T value,
+    T groupValue,
+    void Function(T) onChanged,
+  ) {
+    final isSelected = value == groupValue;
+    return InkWell(
+      onTap: () => onChanged(value),
       child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacing16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4.0),
+        child: Row(
           children: [
-            Text(
-              l10n.dontKnowThreshold,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: AppTheme.spacing8),
-            Text(
-              l10n.dontKnowThresholdHint,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontStyle: FontStyle.italic,
-              ),
-            ),
-            const SizedBox(height: AppTheme.spacing12),
-            Row(
-              children: [
-                Expanded(
-                  child: Slider(
-                    value: _dontKnowThreshold.toDouble(),
-                    min: 1,
-                    max: 10,
-                    divisions: 9,
-                    label: _dontKnowThreshold.toString(),
-                    onChanged: (value) {
-                      setState(() => _dontKnowThreshold = value.toInt());
-                    },
-                  ),
+            Container(
+              width: 20,
+              height: 20,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: isSelected
+                      ? theme.colorScheme.primary
+                      : theme.colorScheme.onSurfaceVariant,
+                  width: 2,
                 ),
-                const SizedBox(width: AppTheme.spacing12),
-                SizedBox(
-                  width: 50,
-                  child: Text(
-                    _dontKnowThreshold.toString(),
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ],
+              ),
+              child: isSelected
+                  ? Center(
+                      child: Container(
+                        width: 10,
+                        height: 10,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                    )
+                  : null,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                label,
+                style: theme.textTheme.bodySmall,
+              ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildActionButtons(ThemeData theme, AppLocalizations l10n) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        // Start Training button
-        ElevatedButton.icon(
-          onPressed: _startTraining,
-          icon: const Icon(Icons.play_arrow, size: 24),
-          label: Text(
-            l10n.startTrainingRally,
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onPrimary,
-            ),
-          ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: theme.colorScheme.primary,
-            foregroundColor: theme.colorScheme.onPrimary,
-            padding: const EdgeInsets.symmetric(
-              vertical: AppTheme.spacing16,
-              horizontal: AppTheme.spacing24,
-            ),
-            minimumSize: const Size.fromHeight(56),
-          ),
-        ),
-        const SizedBox(height: AppTheme.spacing12),
-        // Clear Settings button
-        OutlinedButton.icon(
-          onPressed: _clearSettings,
-          icon: const Icon(Icons.clear_all, size: 20),
-          label: Text(l10n.clearTrainingSettings),
-          style: OutlinedButton.styleFrom(
-            foregroundColor: theme.colorScheme.error,
-            side: BorderSide(color: theme.colorScheme.error),
-            padding: const EdgeInsets.symmetric(
-              vertical: AppTheme.spacing12,
-              horizontal: AppTheme.spacing24,
-            ),
-            minimumSize: const Size.fromHeight(48),
-          ),
-        ),
-      ],
     );
   }
 }
