@@ -123,7 +123,6 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
   List<Category> _allCategories = [];
   List<String> _itemCategoryIds = [];
 
-  List<ExampleSentence> _generatedExamples = [];
 
   @override
   void initState() {
@@ -1195,6 +1194,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
             ElevatedButton(
               onPressed: () async {
                 final categoryName = categoryController.text.trim();
+                final navigator = Navigator.of(context);
                 if (categoryName.isEmpty) {
                   return;
                 }
@@ -1220,7 +1220,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
                 });
 
                 if (mounted) {
-                  Navigator.of(context).pop();
+                  navigator.pop();
                 }
               },
               child: const Text('Add'),
@@ -1447,9 +1447,6 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
       );
 
       if (mounted) {
-        setState(() {
-          _generatedExamples = examples;
-        });
 
         // Show selection dialog
         final selectedExamples = await _showExampleSelectionDialog(examples);

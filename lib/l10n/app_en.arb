@@ -21,7 +21,7 @@
   "selectIcon": "Select Icon",
   "defaultIcon": "Default Icon",
   "customIcon": "Custom Icon",
-  "upload": "Upload",
+  "upload": "Upload icon",
   "uploadCustomIcon": "Upload Custom Icon (max 512x512, 1MB)",
   "customIconUploaded": "Custom icon uploaded successfully",
   "save": "Save",

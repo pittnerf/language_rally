@@ -1095,7 +1095,7 @@ class _PackageCardState extends State<PackageCard> {
       backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
       foregroundColor: Theme.of(context).colorScheme.onTertiaryContainer,
       tooltip: l10n.trainingRally,
-      child: const Icon(Icons.school, size: 20),
+      child: const Icon(Icons.psychology , size: 20),
     );
   }
 

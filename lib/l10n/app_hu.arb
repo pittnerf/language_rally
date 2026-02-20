@@ -22,7 +22,7 @@
   "selectIcon": "Ikon kiválasztása",
   "defaultIcon": "Alapértelmezett ikon",
   "customIcon": "Egyéni ikon",
-  "upload": "Feltöltés",
+  "upload": "Ikon feltöltése",
   "uploadCustomIcon": "Egyéni ikon feltöltése (max 512x512, 1MB)",
   "customIconUploaded": "Egyéni ikon sikeresen feltöltve",
   "save": "Mentés",

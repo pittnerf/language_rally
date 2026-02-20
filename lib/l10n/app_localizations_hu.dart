@@ -75,7 +75,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get customIcon => 'Egyéni ikon';
 
   @override
-  String get upload => 'Feltöltés';
+  String get upload => 'Ikon feltöltése';
 
   @override
   String get uploadCustomIcon => 'Egyéni ikon feltöltése (max 512x512, 1MB)';

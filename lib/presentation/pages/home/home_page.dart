@@ -73,7 +73,9 @@ class HomePage extends ConsumerWidget {
                         title: Text(option.displayName, style: titleTextStyle),
                         subtitle: Text(option.description, style: subtitleTextStyle),
                         value: option,
+                        // ignore: deprecated_member_use
                         groupValue: currentConfig.themeOption,
+                        // ignore: deprecated_member_use
                         onChanged: (value) {
                           if (value != null) {
                             ref.read(themeProvider.notifier).setThemeOption(value);

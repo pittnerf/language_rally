@@ -233,7 +233,7 @@ abstract class AppLocalizations {
   /// No description provided for @upload.
   ///
   /// In en, this message translates to:
-  /// **'Upload'**
+  /// **'Upload icon'**
   String get upload;
 
   /// No description provided for @uploadCustomIcon.

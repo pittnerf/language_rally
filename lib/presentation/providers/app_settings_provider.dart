@@ -5,7 +5,7 @@ final appSettingsProvider = StateNotifierProvider<AppSettingsNotifier, AppSettin
 class AppSettingsNotifier extends StateNotifier<AppSettings> {
   final _repository = AppSettingsRepository();
   AppSettingsNotifier() : super(const AppSettings()) { _loadSettings(); }
-  Future<void> _loadSettings() async { try { state = await _repository.loadSettings(); } catch (e) {} }
+  Future<void> _loadSettings() async { try { state = await _repository.loadSettings(); } catch (e) { /* Ignore errors and use default settings */ } }
   Future<void> setUserLanguage({required String languageCode, required String languageName}) async {
     await _repository.saveUserLanguage(languageCode: languageCode, languageName: languageName);
     state = state.copyWith(userLanguageCode: languageCode, userLanguageName: languageName);

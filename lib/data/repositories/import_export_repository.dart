@@ -429,7 +429,6 @@ class ImportExportRepository {
     await exportDir.create(recursive: true);
 
     try {
-      String? finalIconPath = package.icon;
 
       // Copy icon file if it exists
       if (package.icon != null && package.icon!.isNotEmpty) {
@@ -445,7 +444,6 @@ class ImportExportRepository {
               // Update the icon path in export data to reference the file within the ZIP
               final packageMap = exportData['package'] as Map<String, dynamic>;
               packageMap['icon'] = iconFileName;
-              finalIconPath = iconFileName;
 
               // print('Exported custom icon: $iconFileName');
             } else {
@@ -454,7 +452,6 @@ class ImportExportRepository {
               final packageMap = exportData['package'] as Map<String, dynamic>;
               packageMap['icon'] = null;
               packageMap['icon_is_custom'] = false;
-              finalIconPath = null;
             }
           }
           // Asset icons don't need to be copied - they're part of the app
@@ -464,7 +461,6 @@ class ImportExportRepository {
           final packageMap = exportData['package'] as Map<String, dynamic>;
           packageMap['icon'] = null;
           packageMap['icon_is_custom'] = false;
-          finalIconPath = null;
         }
       }
 
@@ -894,7 +890,6 @@ class ImportExportRepository {
     // Import items
     final itemsData = data['items'] as List<dynamic>;
     int importedCount = 0;
-    int skippedCount = 0;
 
     // print('Import ZIP: Found ${itemsData.length} items in import data');
 
@@ -914,12 +909,10 @@ class ImportExportRepository {
           // Item with this ID already exists (in any package)
           if (existingItem.packageId == packageId) {
             // Item exists in THIS package - skip it
-            skippedCount++;
             // print('    ⚠ Item already exists in this package, skipped');
           } else {
             // Item exists in ANOTHER package - this shouldn't happen with proper ID generation
             // Skip to avoid database constraint violations
-            skippedCount++;
             // print('    ⚠ Item ID collision with another package, skipped');
           }
         } else {

@@ -118,7 +118,7 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
                                   Icons.delete,
                                   color: canDelete
                                       ? colorScheme.error
-                                      : colorScheme.onSurface.withOpacity(0.3),
+                                      : colorScheme.onSurface.withValues(alpha: 0.3),
                                 ),
                                 onPressed: canDelete ? () => _deleteGroup(group) : null,
                                 tooltip: canDelete

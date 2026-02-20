@@ -227,32 +227,6 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
     }
   }
 
-  void _closeTraining() {
-    final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.closeTraining),
-        content: Text(l10n.confirmCloseTraining),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l10n.cancel),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.of(context).pop(); // Close dialog
-              Navigator.of(context).pop(); // Close training page
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.primary,
-            ),
-            child: Text(l10n.close),
-          ),
-        ],
-      ),
-    );
-  }
 
   Future<void> _toggleImportant() async {
     final currentItem = _filteredItems[_currentItemIndex];
@@ -391,9 +365,9 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
             // isKnown is not clickable
             _buildStatusBadge(
               theme,
-              Icons.check_circle,
-              item.isKnown,
-              Colors.green,
+              (!item.isKnown || item.dontKnowCounter > 0) ? Icons.close : Icons.check_circle,
+              item.isKnown && item.dontKnowCounter == 0,
+              (!item.isKnown || item.dontKnowCounter > 0) ? theme.colorScheme.onErrorContainer : Colors.green,
             ),
             _buildCounterBadge(
               theme,
@@ -407,10 +381,13 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
   }
 
   Widget _buildStatusBadge(ThemeData theme, IconData icon, bool isActive, Color activeColor) {
+    final isErrorState = icon == Icons.close;
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: isActive ? activeColor.withValues(alpha: 0.1) : Colors.transparent,
+        color: isActive
+            ? (isErrorState ? theme.colorScheme.errorContainer : activeColor.withValues(alpha: 0.1))
+            : Colors.transparent,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Icon(
@@ -442,7 +419,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
           ),
           const SizedBox(width: 4),
           Text(
-            count.toString(),
+            count > 0 ? '$count until learned' : count.toString(),
             style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: count > 0
@@ -673,7 +650,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                 padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
                 minimumSize: const Size.fromHeight(52),
               ),
-              icon: const Icon(Icons.help_outline, size: 22),
+              icon: const Icon(Icons.quiz, size: 22),
               label: Text(
                 l10n.iDontKnow,
                 style: theme.textTheme.titleMedium?.copyWith(

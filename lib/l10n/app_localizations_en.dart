@@ -75,7 +75,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get customIcon => 'Custom Icon';
 
   @override
-  String get upload => 'Upload';
+  String get upload => 'Upload icon';
 
   @override
   String get uploadCustomIcon => 'Upload Custom Icon (max 512x512, 1MB)';

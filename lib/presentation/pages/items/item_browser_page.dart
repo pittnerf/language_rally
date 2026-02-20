@@ -17,52 +17,7 @@
 // - Multilingual UI (English/Hungarian)
 // - Uses theme system (no hardcoded colors/fonts)
 //
-// USAGE:
-// Add to your package list or details page:
-//
-// import '../items/item_browser_page.dart';
-//
-// // Example: Add browse button to package card
-// ElevatedButton.icon(
-//   icon: const Icon(Icons.list),
-//   label: Text('Browse Items'),
-//   onPressed: () {
-//     Navigator.of(context).push(
-//       MaterialPageRoute(
-//         builder: (context) => ItemBrowserPage(package: yourPackage),
-//       ),
-//     );
-//   },
-// )
-//
-// INTEGRATION EXAMPLE for PackageCard:
-// Add to the expanded card's floating action buttons section:
-//
-// FloatingActionButton.small(
-//   heroTag: 'browse_${widget.package.id}',
-//   onPressed: () {
-//     Navigator.of(context).push(
-//       MaterialPageRoute(
-//         builder: (context) => ItemBrowserPage(package: widget.package),
-//       ),
-//     );
-//   },
-//   backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-//   foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
-//   tooltip: 'Browse items',
-//   child: const Icon(Icons.list, size: 20),
-// ),
-//
-// LOCALIZATION KEYS:
-// Added to app_en.arb and app_hu.arb:
-// - browseItems, itemDetails, filterItems
-// - searchLanguage1, searchLanguage2
-// - caseSensitive, onlyImportant, knownStatus
-// - allItems, itemsIKnew, itemsIDidNotKnow
-// - known, important, favourite, examples, pronounce
-// - noItemsFound, noItemsInPackage, clearFilters
-// - itemCount, filteredItemCount
-//
+
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -745,11 +700,17 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
               // Status icons
               Column(
                 children: [
-                  if (item.isKnown)
+                  if (item.isKnown && item.dontKnowCounter == 0)
                     Icon(
                       Icons.check_circle,
                       size: 20,
                       color: theme.colorScheme.primary,
+                    ),
+                  if (!item.isKnown || item.dontKnowCounter > 0)
+                    Icon(
+                      Icons.close,
+                      size: 20,
+                      color: theme.colorScheme.onErrorContainer,
                     ),
                   if (item.isFavourite)
                     Icon(
@@ -862,7 +823,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
             spacing: AppTheme.spacing8,
             runSpacing: AppTheme.spacing8,
             children: [
-              if (item.isKnown)
+              if (item.isKnown && item.dontKnowCounter == 0)
                 Chip(
                   avatar: Icon(
                     Icons.check_circle,
@@ -873,6 +834,19 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                     l10n.known,
                     style: reduceFontSize(theme.textTheme.bodyMedium),
                   ),
+                ),
+              if (!item.isKnown || item.dontKnowCounter > 0)
+                Chip(
+                  avatar: Icon(
+                    Icons.close,
+                    size: 15, // 25% smaller than 20
+                    color: theme.colorScheme.onErrorContainer,
+                  ),
+                  label: Text(
+                    '${item.dontKnowCounter} until learned',
+                    style: reduceFontSize(theme.textTheme.bodyMedium),
+                  ),
+                  backgroundColor: theme.colorScheme.errorContainer,
                 ),
               if (item.isFavourite)
                 Chip(
@@ -1128,7 +1102,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                 // spacing: AppTheme.spacing8,
                 runSpacing: AppTheme.spacing8,
                 children: [
-                  if (item.isKnown)
+                  if (item.isKnown && item.dontKnowCounter == 0)
                     Chip(
                       avatar: Icon(
                         Icons.check_circle,
@@ -1136,6 +1110,16 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                         color: theme.colorScheme.primary,
                       ),
                       label: Text(l10n.known),
+                    ),
+                  if (!item.isKnown || item.dontKnowCounter > 0)
+                    Chip(
+                      avatar: Icon(
+                        Icons.close,
+                        size: 20,
+                        color: theme.colorScheme.onErrorContainer,
+                      ),
+                      label: Text('${item.dontKnowCounter} until learned'),
+                      backgroundColor: theme.colorScheme.errorContainer,
                     ),
                   if (item.isFavourite)
                     Chip(
@@ -1323,12 +1307,20 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
             spacing: AppTheme.spacing4, // Half of spacing8
             runSpacing: AppTheme.spacing4,
             children: [
-              if (item.isKnown)
+              if (item.isKnown && item.dontKnowCounter == 0)
                 _buildCompactChip(
                   theme,
                   Icons.check_circle,
                   l10n.known,
                   theme.colorScheme.primary,
+                ),
+              if (!item.isKnown || item.dontKnowCounter > 0)
+                _buildCompactChip(
+                  theme,
+                  Icons.close,
+                  '${item.dontKnowCounter} until learned',
+                  theme.colorScheme.onErrorContainer,
+                  backgroundColor: theme.colorScheme.errorContainer,
                 ),
               if (item.isFavourite)
                 _buildCompactChip(
@@ -1397,14 +1389,14 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
     );
   }
 
-  Widget _buildCompactChip(ThemeData theme, IconData icon, String label, Color color) {
+  Widget _buildCompactChip(ThemeData theme, IconData icon, String label, Color color, {Color? backgroundColor}) {
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppTheme.spacing4,
         vertical: 2.0,
       ),
       decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
+        color: backgroundColor ?? color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
         border: Border.all(
           color: color.withValues(alpha: 0.3),
@@ -1818,8 +1810,9 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
             ElevatedButton(
               onPressed: () async {
                 final categoryName = categoryController.text.trim();
+                final navigator = Navigator.of(context);
                 if (categoryName.isEmpty) {
-                  Navigator.of(context).pop();
+                  navigator.pop();
                   return;
                 }
 
@@ -1842,7 +1835,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                 await _assignCategoryToItem(item, categoryToAdd);
 
                 if (mounted) {
-                  Navigator.of(context).pop();
+                  navigator.pop();
                 }
               },
               style: ElevatedButton.styleFrom(
@@ -2438,10 +2431,12 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
 
       // Show success indicator
       final l10n = AppLocalizations.of(context)!;
-      ScaffoldMessenger.of(context).showSnackBar(
+      final messenger = ScaffoldMessenger.of(context);
+      final colorScheme = Theme.of(context).colorScheme;
+      messenger.showSnackBar(
         SnackBar(
           content: Text(l10n.itemCreated),
-          backgroundColor: Theme.of(context).colorScheme.primary,
+          backgroundColor: colorScheme.primary,
           duration: const Duration(seconds: 2),
         ),
       );
