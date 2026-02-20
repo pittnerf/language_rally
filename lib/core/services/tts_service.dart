@@ -17,6 +17,7 @@
 // await ttsService.speak('Hello world', 'en-US');
 //
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:http/http.dart' as http;
@@ -29,10 +30,60 @@ class TtsService {
   TtsService._internal();
 
   final FlutterTts _flutterTts = FlutterTts();
-  final AudioPlayer _audioPlayer = AudioPlayer();
+  AudioPlayer? _audioPlayer;
   bool _isInitialized = false;
   bool _isSpeaking = false;
   List<dynamic>? _availableVoices;
+
+  /// Get or create audio player with proper configuration
+  Future<AudioPlayer> _getAudioPlayer() async {
+    if (_audioPlayer == null) {
+      _audioPlayer = AudioPlayer();
+
+      try {
+        // Set player mode to low latency to avoid threading issues
+        await _audioPlayer!.setPlayerMode(PlayerMode.lowLatency);
+
+        // Configure audio context for better stability
+        final audioContext = AudioContext(
+          android: AudioContextAndroid(
+            isSpeakerphoneOn: true,
+            stayAwake: false,
+            contentType: AndroidContentType.speech,
+            usageType: AndroidUsageType.media,
+            audioFocus: AndroidAudioFocus.gain,
+          ),
+          iOS: AudioContextIOS(
+            category: AVAudioSessionCategory.playback,
+            options: {
+              AVAudioSessionOptions.mixWithOthers,
+              AVAudioSessionOptions.duckOthers,
+            },
+          ),
+        );
+        await _audioPlayer!.setAudioContext(audioContext);
+      } catch (e) {
+        if (kDebugMode) {
+          print('Warning: Could not fully configure audio player: $e');
+        }
+        // Continue anyway - basic playback might still work
+      }
+
+      // Set up event handlers on the player
+      _audioPlayer!.onPlayerComplete.listen((_) {
+        _isSpeaking = false;
+      });
+
+      _audioPlayer!.onPlayerStateChanged.listen((state) {
+        if (state == PlayerState.completed || state == PlayerState.stopped) {
+          _isSpeaking = false;
+        } else if (state == PlayerState.playing) {
+          _isSpeaking = true;
+        }
+      });
+    }
+    return _audioPlayer!;
+  }
 
   /// Initialize the TTS service
   Future<void> initialize() async {
@@ -199,14 +250,22 @@ class TtsService {
         final tempFile = File('${tempDir.path}/tts_${DateTime.now().millisecondsSinceEpoch}.mp3');
         await tempFile.writeAsBytes(response.bodyBytes);
 
+        // Get properly configured audio player
+        final player = await _getAudioPlayer();
+
         // Play audio
-        await _audioPlayer.stop();
-        await _audioPlayer.play(DeviceFileSource(tempFile.path));
+        await player.stop();
+        _isSpeaking = true;
+        await player.play(DeviceFileSource(tempFile.path));
 
         // Clean up temp file after a delay
         Future.delayed(const Duration(seconds: 10), () {
           if (tempFile.existsSync()) {
-            tempFile.deleteSync();
+            try {
+              tempFile.deleteSync();
+            } catch (e) {
+              // Ignore deletion errors
+            }
           }
         });
 
@@ -225,7 +284,9 @@ class TtsService {
   Future<void> stop() async {
     try {
       await _flutterTts.stop();
-      await _audioPlayer.stop();
+      if (_audioPlayer != null) {
+        await _audioPlayer!.stop();
+      }
       _isSpeaking = false;
     } catch (e) {
       // print('TTS stop error: $e');
@@ -264,7 +325,8 @@ class TtsService {
   /// Dispose resources
   void dispose() {
     _flutterTts.stop();
-    _audioPlayer.dispose();
+    _audioPlayer?.dispose();
+    _audioPlayer = null;
   }
 }
 
