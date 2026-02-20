@@ -1130,6 +1130,24 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settings;
 
+  /// No description provided for @uiLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'UI Language'**
+  String get uiLanguage;
+
+  /// No description provided for @uiLanguageDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Application interface language'**
+  String get uiLanguageDescription;
+
+  /// No description provided for @uiLanguageHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the language for menus, buttons, and labels'**
+  String get uiLanguageHelper;
+
   /// No description provided for @userLanguage.
   ///
   /// In en, this message translates to:
@@ -1139,7 +1157,7 @@ abstract class AppLocalizations {
   /// No description provided for @userLanguageDescription.
   ///
   /// In en, this message translates to:
-  /// **'Your preferred UI language'**
+  /// **'Your preferred mother tongue for creating new language packages'**
   String get userLanguageDescription;
 
   /// No description provided for @apiKeys.
@@ -1157,7 +1175,7 @@ abstract class AppLocalizations {
   /// No description provided for @deeplApiKeyDescription.
   ///
   /// In en, this message translates to:
-  /// **'For premium translation quality (optional)'**
+  /// **'For premium translation quality when editing language items (optional)'**
   String get deeplApiKeyDescription;
 
   /// No description provided for @openaiApiKey.
@@ -1169,7 +1187,7 @@ abstract class AppLocalizations {
   /// No description provided for @openaiApiKeyDescription.
   ///
   /// In en, this message translates to:
-  /// **'For AI example generation'**
+  /// **'For example generation with AI when editing language items (optional)'**
   String get openaiApiKeyDescription;
 
   /// No description provided for @enterApiKey.

@@ -9,6 +9,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/constants/language_codes.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../providers/app_settings_provider.dart';
+import '../../providers/locale_provider.dart';
 
 class AppSettingsPage extends ConsumerStatefulWidget {
   const AppSettingsPage({super.key});
@@ -75,6 +76,18 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // UI Language Section
+            _buildSectionHeader(
+              theme,
+              Icons.translate,
+              l10n.uiLanguage,
+              l10n.uiLanguageDescription,
+            ),
+            const SizedBox(height: AppTheme.spacing12),
+            _buildUiLanguageDropdown(context, l10n, theme),
+
+            const SizedBox(height: AppTheme.spacing24),
+
             // User Language Section
             _buildSectionHeader(
               theme,
@@ -113,7 +126,7 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
               label: l10n.openaiApiKey,
               hint: l10n.enterApiKey,
               description: l10n.openaiApiKeyDescription,
-              isOptional: false,
+              isOptional: true,
               theme: theme,
             ),
 
@@ -157,6 +170,52 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildUiLanguageDropdown(
+    BuildContext context,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    final currentLocale = ref.watch(localeProvider);
+
+    // Map of supported UI languages
+    final Map<String, String> uiLanguages = {
+      'en': 'English',
+      'hu': 'Magyar (Hungarian)',
+    };
+
+    return DropdownButtonFormField<String>(
+      initialValue: currentLocale.languageCode,
+      decoration: InputDecoration(
+        labelText: l10n.uiLanguage,
+        prefixIcon: const Icon(Icons.translate),
+        helperText: l10n.uiLanguageHelper,
+      ),
+      items: uiLanguages.entries.map((entry) {
+        return DropdownMenuItem<String>(
+          value: entry.key,
+          child: Row(
+            children: [
+              Text(
+                entry.key.toUpperCase(),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(width: AppTheme.spacing8),
+              Text(entry.value),
+            ],
+          ),
+        );
+      }).toList(),
+      onChanged: (String? newValue) {
+        if (newValue != null) {
+          ref.read(localeProvider.notifier).setLocale(Locale(newValue));
+        }
+      },
     );
   }
 

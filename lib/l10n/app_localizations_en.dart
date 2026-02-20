@@ -562,10 +562,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
+  String get uiLanguage => 'UI Language';
+
+  @override
+  String get uiLanguageDescription => 'Application interface language';
+
+  @override
+  String get uiLanguageHelper =>
+      'Select the language for menus, buttons, and labels';
+
+  @override
   String get userLanguage => 'User Language';
 
   @override
-  String get userLanguageDescription => 'Your preferred UI language';
+  String get userLanguageDescription =>
+      'Your preferred mother tongue for creating new language packages';
 
   @override
   String get apiKeys => 'API Keys';
@@ -575,13 +586,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deeplApiKeyDescription =>
-      'For premium translation quality (optional)';
+      'For premium translation quality when editing language items (optional)';
 
   @override
   String get openaiApiKey => 'OpenAI API Key';
 
   @override
-  String get openaiApiKeyDescription => 'For AI example generation';
+  String get openaiApiKeyDescription =>
+      'For example generation with AI when editing language items (optional)';
 
   @override
   String get enterApiKey => 'Enter API key';

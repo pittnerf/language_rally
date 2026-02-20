@@ -563,10 +563,20 @@ class AppLocalizationsHu extends AppLocalizations {
   String get settings => 'Beállítások';
 
   @override
+  String get uiLanguage => 'Felület Nyelve';
+
+  @override
+  String get uiLanguageDescription => 'Az alkalmazás felületének nyelve';
+
+  @override
+  String get uiLanguageHelper => 'Válaszd ki a menük, gombok és címkék nyelvét';
+
+  @override
   String get userLanguage => 'Felhasználói nyelv';
 
   @override
-  String get userLanguageDescription => 'Az általad preferált felület nyelv';
+  String get userLanguageDescription =>
+      'A nyilvi csomagok létrehozásánál preferált anyanyelv';
 
   @override
   String get apiKeys => 'API kulcsok';
@@ -576,13 +586,14 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get deeplApiKeyDescription =>
-      'Prémium fordítási minőséghez (opcionális)';
+      'Prémium fordítási minőséghez a tételek szerkesztésénél (opcionális)';
 
   @override
   String get openaiApiKey => 'OpenAI API kulcs';
 
   @override
-  String get openaiApiKeyDescription => 'AI példa generáláshoz';
+  String get openaiApiKeyDescription =>
+      'Jó minőségű példák generáláshoz AI segítségével (opcionális)';
 
   @override
   String get enterApiKey => 'API kulcs megadása';
