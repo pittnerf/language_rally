@@ -41,23 +41,18 @@ class LanguageRallyApp extends ConsumerWidget {
       case AppThemeOption.calmTeal:
         lightTheme = AppTheme.lightTheme;
         darkTheme = AppTheme.darkTheme;
-        break;
       case AppThemeOption.oceanBlue:
         lightTheme = AppTheme.oceanLightTheme;
         darkTheme = AppTheme.oceanDarkTheme;
-        break;
       case AppThemeOption.forestGreen:
         lightTheme = AppTheme.forestLightTheme;
         darkTheme = AppTheme.forestDarkTheme;
-        break;
       case AppThemeOption.sunsetOrange:
         lightTheme = AppTheme.sunsetLightTheme;
         darkTheme = AppTheme.sunsetDarkTheme;
-        break;
       case AppThemeOption.purpleDreams:
         lightTheme = AppTheme.purpleLightTheme;
         darkTheme = AppTheme.purpleDarkTheme;
-        break;
     }
 
     return MaterialApp(

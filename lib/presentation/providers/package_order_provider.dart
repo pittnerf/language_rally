@@ -16,19 +16,19 @@ final packageOrderProvider = FutureProvider<PackageOrder?>((ref) async {
 
 /// Provider for updating package order
 final packageOrderNotifierProvider =
-    StateNotifierProvider<PackageOrderNotifier, AsyncValue<PackageOrder?>>(
-        (ref) {
-  final repository = ref.watch(packageOrderRepositoryProvider);
-  return PackageOrderNotifier(repository);
+    NotifierProvider<PackageOrderNotifier, AsyncValue<PackageOrder?>>(
+        () {
+  return PackageOrderNotifier();
 });
 
 /// Notifier for managing package order state
-class PackageOrderNotifier extends StateNotifier<AsyncValue<PackageOrder?>> {
-  final PackageOrderRepository _repository;
+class PackageOrderNotifier extends Notifier<AsyncValue<PackageOrder?>> {
+  PackageOrderRepository get _repository => ref.read(packageOrderRepositoryProvider);
 
-  PackageOrderNotifier(this._repository)
-      : super(const AsyncValue.loading()) {
+  @override
+  AsyncValue<PackageOrder?> build() {
     _loadOrder();
+    return const AsyncValue.loading();
   }
 
   Future<void> _loadOrder() async {

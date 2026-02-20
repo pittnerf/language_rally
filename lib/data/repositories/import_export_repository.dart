@@ -498,7 +498,7 @@ class ImportExportRepository {
       final fileName = 'package_${package.languageName1}_${package.languageName2}_$timestamp.zip';
       final zipFilePath = path.join(destinationPath, fileName);
       final zipFile = File(zipFilePath);
-      await zipFile.writeAsBytes(zipData!);
+      await zipFile.writeAsBytes(zipData);
 
       // print('ZIP file created: $zipFilePath');
       // print('Total files in archive: ${archive.files.length}');

@@ -2429,6 +2429,9 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
     if (result == true && mounted) {
       await _loadItems();
 
+      // Get context-dependent values before using them
+      if (!mounted) return;
+
       // Show success indicator
       final l10n = AppLocalizations.of(context)!;
       final messenger = ScaffoldMessenger.of(context);

@@ -34,20 +34,21 @@ class ThemeConfig {
   }
 }
 
-final themeProvider = StateNotifierProvider<ThemeNotifier, ThemeConfig>((ref) {
+final themeProvider = NotifierProvider<ThemeNotifier, ThemeConfig>(() {
   return ThemeNotifier();
 });
 
-class ThemeNotifier extends StateNotifier<ThemeConfig> {
+class ThemeNotifier extends Notifier<ThemeConfig> {
   static const String _themeOptionKey = 'theme_option';
   static const String _darkModeKey = 'dark_mode';
 
-  ThemeNotifier()
-      : super(const ThemeConfig(
-          themeOption: AppThemeOption.calmTeal,
-          isDarkMode: false, // Light mode by default
-        )) {
+  @override
+  ThemeConfig build() {
     _loadThemeFromPreferences();
+    return const ThemeConfig(
+      themeOption: AppThemeOption.calmTeal,
+      isDarkMode: false, // Light mode by default
+    );
   }
 
   /// Load saved theme from SharedPreferences
