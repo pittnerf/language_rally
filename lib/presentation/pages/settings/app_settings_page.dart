@@ -109,31 +109,36 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
             ),
             const SizedBox(height: AppTheme.spacing12),
 
-            // DeepL API Key
-            _buildApiKeyField(
+            // DeepL API Key with Status
+            _buildApiKeyRowWithStatus(
               controller: _deeplApiKeyController,
               label: l10n.deeplApiKey,
               hint: l10n.enterApiKey,
               description: l10n.deeplApiKeyDescription,
+              statusLabel: 'Translation Service',
+              statusTextActive: l10n.usingDeepL,
+              statusTextInactive: l10n.usingGoogleTranslate,
+              statusIcon: Icons.translate,
               isOptional: true,
               theme: theme,
+              settings: settings,
             ),
             const SizedBox(height: AppTheme.spacing16),
 
-            // OpenAI API Key
-            _buildApiKeyField(
+            // OpenAI API Key with Status
+            _buildApiKeyRowWithStatus(
               controller: _openaiApiKeyController,
               label: l10n.openaiApiKey,
               hint: l10n.enterApiKey,
               description: l10n.openaiApiKeyDescription,
+              statusLabel: 'AI Examples',
+              statusTextActive: 'Configured (OpenAI)',
+              statusTextInactive: 'Not configured',
+              statusIcon: Icons.auto_awesome,
               isOptional: true,
               theme: theme,
+              settings: settings,
             ),
-
-            const SizedBox(height: AppTheme.spacing24),
-
-            // Current Status Card
-            _buildStatusCard(theme, settings),
           ],
         ),
       ),
@@ -374,92 +379,134 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
     );
   }
 
-  Widget _buildStatusCard(ThemeData theme, dynamic settings) {
-    final l10n = AppLocalizations.of(context)!;
+  Widget _buildApiKeyRowWithStatus({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required String description,
+    required String statusLabel,
+    required String statusTextActive,
+    required String statusTextInactive,
+    required IconData statusIcon,
+    required bool isOptional,
+    required ThemeData theme,
+    required dynamic settings,
+  }) {
+    final isActive = controller.text.isNotEmpty;
+    final isScreenWide = MediaQuery.of(context).size.width > 600;
 
+    if (!isScreenWide) {
+      // Mobile layout: Stack vertically
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildApiKeyField(
+            controller: controller,
+            label: label,
+            hint: hint,
+            description: description,
+            isOptional: isOptional,
+            theme: theme,
+          ),
+          const SizedBox(height: AppTheme.spacing12),
+          _buildStatusCard(
+            theme: theme,
+            icon: statusIcon,
+            statusLabel: statusLabel,
+            statusText: isActive ? statusTextActive : statusTextInactive,
+            isActive: isActive,
+          ),
+        ],
+      );
+    }
+
+    // Desktop/Tablet layout: Side by side
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 3,
+          child: _buildApiKeyField(
+            controller: controller,
+            label: label,
+            hint: hint,
+            description: description,
+            isOptional: isOptional,
+            theme: theme,
+          ),
+        ),
+        const SizedBox(width: AppTheme.spacing16),
+        Expanded(
+          flex: 2,
+          child: _buildStatusCard(
+            theme: theme,
+            icon: statusIcon,
+            statusLabel: statusLabel,
+            statusText: isActive ? statusTextActive : statusTextInactive,
+            isActive: isActive,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatusCard({
+    required ThemeData theme,
+    required IconData icon,
+    required String statusLabel,
+    required String statusText,
+    required bool isActive,
+  }) {
     return Card(
-      elevation: 2,
+      elevation: 1,
       child: Padding(
         padding: const EdgeInsets.all(AppTheme.spacing16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Row(
               children: [
-                Icon(Icons.info_outline, color: theme.colorScheme.primary),
+                Icon(icon, size: 20, color: theme.colorScheme.primary),
                 const SizedBox(width: AppTheme.spacing8),
-                Text(
-                  'Current Status',
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: theme.colorScheme.primary,
+                Expanded(
+                  child: Text(
+                    statusLabel,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
             ),
-            const Divider(height: AppTheme.spacing16),
-            _buildStatusRow(
-              theme,
-              Icons.translate,
-              'Translation Service',
-              settings.deeplApiKey != null && settings.deeplApiKey!.isNotEmpty
-                  ? l10n.usingDeepL
-                  : l10n.usingGoogleTranslate,
-              settings.deeplApiKey != null && settings.deeplApiKey!.isNotEmpty,
-            ),
-            const SizedBox(height: AppTheme.spacing8),
-            _buildStatusRow(
-              theme,
-              Icons.auto_awesome,
-              'AI Examples',
-              settings.openaiApiKey != null && settings.openaiApiKey!.isNotEmpty
-                  ? 'Configured (OpenAI)'
-                  : 'Not configured',
-              settings.openaiApiKey != null && settings.openaiApiKey!.isNotEmpty,
+            const Divider(height: AppTheme.spacing12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppTheme.spacing12,
+                vertical: AppTheme.spacing8,
+              ),
+              decoration: BoxDecoration(
+                color: isActive
+                    ? theme.colorScheme.primaryContainer
+                    : theme.colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+              ),
+              child: Text(
+                statusText,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: isActive
+                      ? theme.colorScheme.onPrimaryContainer
+                      : theme.colorScheme.onSurfaceVariant,
+                  fontWeight: isActive ? FontWeight.w500 : FontWeight.normal,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildStatusRow(
-    ThemeData theme,
-    IconData icon,
-    String label,
-    String status,
-    bool isActive,
-  ) {
-    return Row(
-      children: [
-        Icon(icon, size: 20, color: theme.colorScheme.onSurfaceVariant),
-        const SizedBox(width: AppTheme.spacing8),
-        Expanded(
-          child: Text(
-            label,
-            style: theme.textTheme.bodyMedium,
-          ),
-        ),
-        Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppTheme.spacing8,
-            vertical: AppTheme.spacing4,
-          ),
-          decoration: BoxDecoration(
-            color: isActive
-                ? theme.colorScheme.primaryContainer
-                : theme.colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-          ),
-          child: Text(
-            status,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: isActive
-                  ? theme.colorScheme.onPrimaryContainer
-                  : theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ),
-      ],
     );
   }
 
