@@ -70,10 +70,13 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
               : allItems;
           break;
         case ItemScope.onlyUnknown:
-          filteredItems = allItems.where((item) => !item.isKnown).toList();
+          filteredItems = allItems.where((item) => item.dontKnowCounter > 0 || !item.isKnown).toList();
           break;
         case ItemScope.onlyImportant:
           filteredItems = allItems.where((item) => item.isImportant).toList();
+          break;
+        case ItemScope.onlyFavourite:
+          filteredItems = allItems.where((item) => item.isFavourite).toList();
           break;
       }
 
@@ -196,7 +199,12 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
     _moveToNextItem();
   }
 
-  void _moveToNextItem() {
+  void _moveToNextItem() async {
+    // For onlyUnknown scope, refresh the filtered items to reflect updated counters
+    if (widget.settings.itemScope == ItemScope.onlyUnknown) {
+      await _refreshFilteredItemsForUnknown();
+    }
+
     if (_currentItemIndex < _filteredItems.length - 1) {
       setState(() {
         _currentItemIndex++;
@@ -205,26 +213,84 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
         _determineDisplayLanguage();
       });
     } else {
-      // No more items
-      final l10n = AppLocalizations.of(context)!;
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => AlertDialog(
-          title: Text(l10n.trainingComplete),
-          content: Text(l10n.allItemsCompleted),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close dialog
-                Navigator.of(context).pop(); // Close training page
-              },
-              child: Text(l10n.ok),
-            ),
-          ],
-        ),
-      );
+      // Reached the last item
+      // Check if we should loop back or end training based on scope
+      final shouldLoop = widget.settings.itemScope == ItemScope.all ||
+                         widget.settings.itemScope == ItemScope.lastN ||
+                         widget.settings.itemScope == ItemScope.onlyImportant ||
+                         widget.settings.itemScope == ItemScope.onlyFavourite;
+
+      if (shouldLoop && _filteredItems.isNotEmpty) {
+        // Loop back to the first item
+        setState(() {
+          _currentItemIndex = 0;
+          _isAnswerRevealed = false;
+          _userKnows = false;
+          _determineDisplayLanguage();
+        });
+      } else if (widget.settings.itemScope == ItemScope.onlyUnknown && _filteredItems.isEmpty) {
+        // No more unknown items - training complete
+        _showTrainingCompleteDialog();
+      } else {
+        // No more items in general
+        _showTrainingCompleteDialog();
+      }
     }
+  }
+
+  Future<void> _refreshFilteredItemsForUnknown() async {
+    try {
+      List<Item> allItems = await _itemRepo.getItemsForPackage(widget.package.id);
+
+      // Apply onlyUnknown filter
+      List<Item> filteredItems = allItems.where((item) => item.dontKnowCounter > 0 || !item.isKnown).toList();
+
+      // Apply category filter if categories are selected
+      if (widget.settings.selectedCategoryIds.isNotEmpty) {
+        filteredItems = filteredItems.where((item) {
+          return item.categoryIds.any((catId) => widget.settings.selectedCategoryIds.contains(catId));
+        }).toList();
+      }
+
+      // Apply item order
+      if (widget.settings.itemOrder == ItemOrder.random) {
+        filteredItems.shuffle(_random);
+      }
+
+      if (mounted) {
+        setState(() {
+          _filteredItems = filteredItems;
+          // If current index is out of bounds, reset to 0
+          if (_currentItemIndex >= _filteredItems.length) {
+            _currentItemIndex = 0;
+          }
+        });
+      }
+    } catch (e) {
+      // Handle error silently or log it
+      debugPrint('Error refreshing items: $e');
+    }
+  }
+
+  void _showTrainingCompleteDialog() {
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.trainingComplete),
+        content: Text(l10n.allItemsCompleted),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close dialog
+              Navigator.of(context).pop(); // Close training page
+            },
+            child: Text(l10n.ok),
+          ),
+        ],
+      ),
+    );
   }
 
 
@@ -301,17 +367,17 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppTheme.spacing16),
+          padding: const EdgeInsets.all(AppTheme.spacing8),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Item status indicators (clickable for Important and Favourite)
               _buildStatusIndicators(theme, currentItem),
-              const SizedBox(height: AppTheme.spacing16),
+              const SizedBox(height: AppTheme.spacing8),
 
               // Action buttons in a single line
               _buildActionButtons(theme, l10n),
-              const SizedBox(height: AppTheme.spacing16),
+              const SizedBox(height: AppTheme.spacing8),
 
               // Question section (always visible)
               _buildQuestionSection(theme, l10n, currentItem),
@@ -320,7 +386,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
               // Answer section (visible only after reveal)
               if (_isAnswerRevealed) ...[
                 _buildAnswerSection(theme, l10n, currentItem),
-                const SizedBox(height: AppTheme.spacing16),
+                const SizedBox(height: AppTheme.spacing8),
 
                 // Examples section
                 if (currentItem.examples.isNotEmpty) ...[
@@ -439,11 +505,15 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
     final postText = languageData.postItem ?? '';
     final languageName = _displayLanguage1 ? widget.package.languageName1 : widget.package.languageName2;
 
+    // Check screen width for responsive design
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isPortrait = screenWidth < 900;
+
     return Card(
       elevation: 2,
       color: theme.colorScheme.primaryContainer,
       child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacing16),
+        padding: const EdgeInsets.all(AppTheme.spacing8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -465,7 +535,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
             if (preText.isNotEmpty) ...[
               Text(
                 preText,
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style: (isPortrait ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium)?.copyWith(
                   color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
                   fontStyle: FontStyle.italic,
                 ),
@@ -474,7 +544,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
             ],
             Text(
               mainText,
-              style: theme.textTheme.headlineSmall?.copyWith(
+              style: (isPortrait ? theme.textTheme.titleLarge : theme.textTheme.headlineSmall)?.copyWith(
                 color: theme.colorScheme.onPrimaryContainer,
                 fontWeight: FontWeight.bold,
               ),
@@ -483,7 +553,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
               const SizedBox(height: AppTheme.spacing4),
               Text(
                 postText,
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style: (isPortrait ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium)?.copyWith(
                   color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
                   fontStyle: FontStyle.italic,
                 ),
@@ -502,11 +572,15 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
     final postText = languageData.postItem ?? '';
     final languageName = !_displayLanguage1 ? widget.package.languageName1 : widget.package.languageName2;
 
+    // Check screen width for responsive design
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isPortrait = screenWidth < 900;
+
     return Card(
       elevation: 2,
       color: theme.colorScheme.secondaryContainer,
       child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacing16),
+        padding: const EdgeInsets.all(AppTheme.spacing8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -528,7 +602,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
             if (preText.isNotEmpty) ...[
               Text(
                 preText,
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style: (isPortrait ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium)?.copyWith(
                   color: theme.colorScheme.onSecondaryContainer.withValues(alpha: 0.8),
                   fontStyle: FontStyle.italic,
                 ),
@@ -537,7 +611,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
             ],
             Text(
               mainText,
-              style: theme.textTheme.headlineSmall?.copyWith(
+              style: (isPortrait ? theme.textTheme.titleLarge : theme.textTheme.headlineSmall)?.copyWith(
                 color: theme.colorScheme.onSecondaryContainer,
                 fontWeight: FontWeight.bold,
               ),
@@ -546,7 +620,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
               const SizedBox(height: AppTheme.spacing4),
               Text(
                 postText,
-                style: theme.textTheme.bodyMedium?.copyWith(
+                style: (isPortrait ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium)?.copyWith(
                   color: theme.colorScheme.onSecondaryContainer.withValues(alpha: 0.8),
                   fontStyle: FontStyle.italic,
                 ),
@@ -562,7 +636,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
     return Card(
       elevation: 1,
       child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacing16),
+        padding: const EdgeInsets.all(AppTheme.spacing8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

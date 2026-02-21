@@ -12,7 +12,7 @@ TrainingSettings _$TrainingSettingsFromJson(Map<String, dynamic> json) =>
       itemScope:
           $enumDecodeNullable(_$ItemScopeEnumMap, json['itemScope']) ??
           ItemScope.all,
-      lastNItems: (json['lastNItems'] as num?)?.toInt() ?? 10,
+      lastNItems: (json['lastNItems'] as num?)?.toInt() ?? 20,
       itemOrder:
           $enumDecodeNullable(_$ItemOrderEnumMap, json['itemOrder']) ??
           ItemOrder.random,
@@ -46,6 +46,7 @@ const _$ItemScopeEnumMap = {
   ItemScope.lastN: 'lastN',
   ItemScope.onlyUnknown: 'onlyUnknown',
   ItemScope.onlyImportant: 'onlyImportant',
+  ItemScope.onlyFavourite: 'onlyFavourite',
 };
 
 const _$ItemOrderEnumMap = {

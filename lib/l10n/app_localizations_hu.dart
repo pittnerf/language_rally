@@ -137,7 +137,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get confirmClearCounters =>
-      'Biztosan törölni szeretné az összes edzési számlálót ebből a csomagból? Ez visszaállítja a \'nem tudom\' számlálókat és az edzési statisztikákat.';
+      'Biztosan törölni szeretné az összes gyakorlásii számlálót ebből a csomagból? Ez visszaállítja a \'nem tudom\' számlálókat és a gyakorlási statisztikákat.';
 
   @override
   String get clear => 'Törlés';
@@ -153,7 +153,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get confirmDeleteAllData =>
-      'Biztosan törölni szeretné ezt a csomagot az ÖSSZES adatával? Ez véglegesen törli az összes kategóriát, elemet és edzési statisztikát. Ez a művelet nem vonható vissza!';
+      'Biztosan törölni szeretné ezt a csomagot az ÖSSZES adatával? Ez véglegesen törli az összes kategóriát, elemet és gyakorlási statisztikát. Ez a művelet nem vonható vissza!';
 
   @override
   String get allDataDeleted => 'Csomag és minden adat sikeresen törölve';
@@ -374,6 +374,9 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get onlyImportant => 'Csak fontos elemek';
+
+  @override
+  String get onlyFavourite => 'Csak kedvenc elemek';
 
   @override
   String get knownStatus => 'Tudás állapota';
@@ -697,7 +700,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Nem sikerült felismerni a beszédet. Kérlek, próbáld újra.';
 
   @override
-  String get trainingSettings => 'Edzés Beállítások';
+  String get trainingSettings => 'Gyakorlási Beállítások';
 
   @override
   String get itemScope => 'Elemek Köre';
@@ -750,20 +753,21 @@ class AppLocalizationsHu extends AppLocalizations {
       'Hányszor kell \'nem tudom\'-nak jelölni egy elemet a speciális kezeléshez';
 
   @override
-  String get startTrainingRally => 'Edzés Rally Indítása';
+  String get startTrainingRally => 'Gyakorlási Rally Indítása';
 
   @override
   String get clearTrainingSettings => 'Beállítások Törlése';
 
   @override
   String get confirmClearTrainingSettings =>
-      'Biztosan visszaállítod az összes edzési beállítást az alapértelmezett értékekre?';
+      'Biztosan visszaállítod az összes gyakorlási beállítást az alapértelmezett értékekre?';
 
   @override
-  String get trainingSettingsCleared => 'Az edzési beállítások törölve lettek';
+  String get trainingSettingsCleared =>
+      'A gyakorlási beállítások törölve lettek';
 
   @override
-  String get startingTraining => 'Edzés indítása...';
+  String get startingTraining => 'Gyakorlás indítása...';
 
   @override
   String get noMoreItemsToDisplay =>
@@ -773,18 +777,18 @@ class AppLocalizationsHu extends AppLocalizations {
   String get noItems => 'Nincs Elem';
 
   @override
-  String get trainingComplete => 'Edzés Befejezve';
+  String get trainingComplete => 'Gyakorlás Befejezve';
 
   @override
   String get allItemsCompleted =>
-      'Gratulálunk! Elvégezted az összes elemet ebben az edzésen.';
+      'Gratulálunk! Befejezted az összes elemet ebben a gyakorlásban.';
 
   @override
-  String get closeTraining => 'Edzés Bezárása';
+  String get closeTraining => 'Gyakorlás Bezárása';
 
   @override
   String get confirmCloseTraining =>
-      'Biztosan bezárod az edzést? A folyamatod mentve lett.';
+      'Biztosan bezárod a gyakorlást? A folyamatod mentve lett.';
 
   @override
   String get question => 'Kérdés';

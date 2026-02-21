@@ -78,7 +78,7 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
           } else {
             // Default values
             _itemScope = ItemScope.all;
-            _lastNItems = 10;
+            _lastNItems = 20;
             _itemOrder = ItemOrder.random;
             _displayLanguage = DisplayLanguage.random;
             _selectedCategoryIds = [];
@@ -351,6 +351,69 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
               _itemScope,
               (value) => setState(() => _itemScope = value),
             ),
+            // Show lastNItems value control only when lastN is selected
+            if (_itemScope == ItemScope.lastN) ...[
+              const SizedBox(height: AppTheme.spacing8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'N = $_lastNItems',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              onPressed: _lastNItems > 5
+                                  ? () => setState(() => _lastNItems -= 5)
+                                  : null,
+                              icon: const Icon(Icons.remove),
+                              iconSize: 18,
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(
+                                minWidth: 32,
+                                minHeight: 32,
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: _lastNItems < 200
+                                  ? () => setState(() => _lastNItems += 5)
+                                  : null,
+                              icon: const Icon(Icons.add),
+                              iconSize: 18,
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(
+                                minWidth: 32,
+                                minHeight: 32,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Slider(
+                      value: _lastNItems.toDouble(),
+                      min: 5,
+                      max: 200,
+                      divisions: 39, // (200-5)/5 = 39
+                      label: _lastNItems.toString(),
+                      onChanged: (value) {
+                        setState(() => _lastNItems = value.round());
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
             _buildRadioOption<ItemScope>(
               theme,
               l10n.onlyUnknown,
@@ -362,6 +425,13 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
               theme,
               l10n.onlyImportant,
               ItemScope.onlyImportant,
+              _itemScope,
+              (value) => setState(() => _itemScope = value),
+            ),
+            _buildRadioOption<ItemScope>(
+              theme,
+              l10n.onlyFavourite,
+              ItemScope.onlyFavourite,
               _itemScope,
               (value) => setState(() => _itemScope = value),
             ),

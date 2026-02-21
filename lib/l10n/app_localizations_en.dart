@@ -375,6 +375,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onlyImportant => 'Only important items';
 
   @override
+  String get onlyFavourite => 'Only favourite items';
+
+  @override
   String get knownStatus => 'Known status';
 
   @override

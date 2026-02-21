@@ -8,6 +8,7 @@ enum ItemScope {
   lastN,
   onlyUnknown,
   onlyImportant,
+  onlyFavourite,
 }
 
 enum ItemOrder {
@@ -44,7 +45,7 @@ class TrainingSettings extends Equatable {
   const TrainingSettings({
     required this.packageId,
     this.itemScope = ItemScope.all,
-    this.lastNItems = 10,
+    this.lastNItems = 20,
     this.itemOrder = ItemOrder.random,
     this.displayLanguage = DisplayLanguage.random,
     this.selectedCategoryIds = const [],

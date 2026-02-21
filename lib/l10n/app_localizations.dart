@@ -794,6 +794,12 @@ abstract class AppLocalizations {
   /// **'Only important items'**
   String get onlyImportant;
 
+  /// No description provided for @onlyFavourite.
+  ///
+  /// In en, this message translates to:
+  /// **'Only favourite items'**
+  String get onlyFavourite;
+
   /// No description provided for @knownStatus.
   ///
   /// In en, this message translates to:
