@@ -49,6 +49,7 @@ class TrainingStatisticsRepository {
       'longest_streak': stats.longestStreak,
       'last_trained_at': stats.lastTrainedAt.millisecondsSinceEpoch,
       'average_accuracy': stats.averageAccuracy,
+      'current_badge': stats.currentBadge,
     };
   }
 
@@ -63,6 +64,7 @@ class TrainingStatisticsRepository {
         (map['last_trained_at'] as int?) ?? 0,
       ),
       averageAccuracy: ((map['average_accuracy'] as num?) ?? 0).toDouble(),
+      currentBadge: map['current_badge'] as String?,
     );
   }
 

@@ -9,11 +9,8 @@ class BadgeHelper {
     BadgeLevel(25, 'badge_25', 'Beginner', '🥉'),
     BadgeLevel(50, 'badge_50', 'Learner', '🥈'),
     BadgeLevel(75, 'badge_75', 'Skilled', '🥇'),
-    BadgeLevel(80, 'badge_80', 'Advanced', '💚'),
-    BadgeLevel(85, 'badge_85', 'Proficient', '💙'),
     BadgeLevel(90, 'badge_90', 'Excellent', '💜'),
     BadgeLevel(95, 'badge_95', 'Master', '⭐'),
-    BadgeLevel(100, 'badge_100', 'Wizard', '🧙‍♂️'),
   ];
 
   /// Get the asset path for a badge
@@ -23,9 +20,13 @@ class BadgeHelper {
 
   /// Get badge ID from accuracy percentage
   /// Returns null if minimum answers requirement is not met
-  static String? getBadgeIdForAccuracy(double accuracy, {int totalAnswers = 0}) {
+  static String? getBadgeIdForAccuracy(
+    double accuracy, {
+    int totalAnswers = 0,
+    int minAnswersRequired = AppConstants.minAnswersForBadges,
+  }) {
     // Check if minimum answers requirement is met
-    if (totalAnswers < AppConstants.minAnswersForBadges) {
+    if (totalAnswers < minAnswersRequired) {
       return null; // Not enough answers to earn a badge
     }
 
@@ -40,9 +41,13 @@ class BadgeHelper {
 
   /// Get all badge IDs that should be earned for given accuracy
   /// Returns empty list if minimum answers requirement is not met
-  static List<String> getAllEarnedBadgeIds(double accuracy, {int totalAnswers = 0}) {
+  static List<String> getAllEarnedBadgeIds(
+    double accuracy, {
+    int totalAnswers = 0,
+    int minAnswersRequired = AppConstants.minAnswersForBadges,
+  }) {
     // Check if minimum answers requirement is met
-    if (totalAnswers < AppConstants.minAnswersForBadges) {
+    if (totalAnswers < minAnswersRequired) {
       return []; // Not enough answers to earn badges
     }
 
@@ -67,9 +72,18 @@ class BadgeHelper {
     double previousAccuracy,
     double currentAccuracy, {
     required int totalAnswers,
+    int minAnswersRequired = AppConstants.minAnswersForBadges,
   }) {
-    final previousBadge = getBadgeIdForAccuracy(previousAccuracy, totalAnswers: totalAnswers - 1);
-    final currentBadge = getBadgeIdForAccuracy(currentAccuracy, totalAnswers: totalAnswers);
+    final previousBadge = getBadgeIdForAccuracy(
+      previousAccuracy,
+      totalAnswers: totalAnswers - 1,
+      minAnswersRequired: minAnswersRequired,
+    );
+    final currentBadge = getBadgeIdForAccuracy(
+      currentAccuracy,
+      totalAnswers: totalAnswers,
+      minAnswersRequired: minAnswersRequired,
+    );
 
     if (currentBadge != null && currentBadge != previousBadge) {
       return currentBadge;
@@ -83,9 +97,10 @@ class BadgeHelper {
     double fromAccuracy,
     double toAccuracy, {
     required int totalAnswers,
+    int minAnswersRequired = AppConstants.minAnswersForBadges,
   }) {
     // Check if minimum answers requirement is met
-    if (totalAnswers < AppConstants.minAnswersForBadges) {
+    if (totalAnswers < minAnswersRequired) {
       return []; // Not enough answers to earn badges
     }
 
@@ -140,8 +155,12 @@ class BadgeHelper {
 
   /// Check if all badges are earned
   /// Requires minimum answers to be met
-  static bool hasAllBadges(double accuracy, {int totalAnswers = 0}) {
-    if (totalAnswers < AppConstants.minAnswersForBadges) {
+  static bool hasAllBadges(
+    double accuracy, {
+    int totalAnswers = 0,
+    int minAnswersRequired = AppConstants.minAnswersForBadges,
+  }) {
+    if (totalAnswers < minAnswersRequired) {
       return false; // Not enough answers
     }
     return accuracy >= badgeLevels.last.threshold;
@@ -152,8 +171,16 @@ class BadgeHelper {
 
   /// Get number of earned badges for given accuracy
   /// Returns 0 if minimum answers requirement is not met
-  static int getEarnedBadgeCount(double accuracy, {int totalAnswers = 0}) {
-    return getAllEarnedBadgeIds(accuracy, totalAnswers: totalAnswers).length;
+  static int getEarnedBadgeCount(
+    double accuracy, {
+    int totalAnswers = 0,
+    int minAnswersRequired = AppConstants.minAnswersForBadges,
+  }) {
+    return getAllEarnedBadgeIds(
+      accuracy,
+      totalAnswers: totalAnswers,
+      minAnswersRequired: minAnswersRequired,
+    ).length;
   }
 }
 

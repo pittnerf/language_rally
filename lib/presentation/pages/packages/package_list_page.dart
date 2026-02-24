@@ -385,7 +385,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
           isCompact: package.isCompactView,
           onTap: () => _onPackageTap(package),
           onToggleCompact: () => _toggleCompactMode(package),
-          onDelete: package.isPurchased ? () => _deletePackage(package) : null,
+          onDelete: () => _deletePackage(package),
           showToggleButton: true, // Show toggle button in portrait/list mode
         );
       },
@@ -414,7 +414,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
           isCompact: false, // Always expanded in landscape/grid mode
           onTap: () => _onPackageTap(package),
           onToggleCompact: () => _toggleCompactMode(package),
-          onDelete: package.isPurchased ? () => _deletePackage(package) : null,
+          onDelete: () => _deletePackage(package),
           isInGrid: true,
           showToggleButton: false, // Hide toggle button in landscape/grid mode
         );
@@ -513,13 +513,98 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
     final confirmed = await _showDeleteConfirmationDialog(package, l10n);
     if (confirmed != true) return;
 
+    // For non-purchased packages, ask if user wants to export before deleting
+    if (!package.isPurchased && package.canExport) {
+      final exportChoice = await _showExportBeforeDeleteDialog(l10n);
+
+      if (exportChoice == null) return; // User cancelled
+
+      if (exportChoice == true) {
+        // User wants to export before deleting
+        final exported = await _exportPackageBeforeDelete(package, l10n);
+        if (!exported) return; // Export failed, don't delete
+      }
+      // If exportChoice == false, proceed with deletion without export
+    }
+
     try {
       await _performPackageDeletion(package);
       await _showDeleteSuccessMessage();
       await _loadPackages();
     } catch (e) {
       if (!mounted) return;
-      _showErrorDialog('Error', 'Failed to delete package: $e');
+      _showErrorDialog(l10n.error, '${l10n.errorDeletingPackage}: $e');
+    }
+  }
+
+  Future<bool?> _showExportBeforeDeleteDialog(AppLocalizations l10n) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.exportBeforeDelete),
+        content: Text(l10n.exportBeforeDeleteMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(null),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.deleteWithoutExport),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+              foregroundColor: Theme.of(context).colorScheme.onPrimary,
+            ),
+            child: Text(l10n.exportAndDelete),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<bool> _exportPackageBeforeDelete(LanguagePackage package, AppLocalizations l10n) async {
+    try {
+      // Show loading dialog
+      _showLoadingDialog(l10n.exportingPackage);
+
+      // Get export directory
+      final exportDir = await _importExportRepo.getExportDirectory();
+
+      // Export package to ZIP
+      final zipPath = await _importExportRepo.exportPackageToZip(
+        package.id,
+        exportDir,
+      );
+
+      // Close loading dialog
+      if (mounted) Navigator.of(context).pop();
+
+      // Show success message with path
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.packageExportedToPath(zipPath)),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+
+      return true; // Export successful
+    } catch (e) {
+      // Close loading dialog if showing
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+
+      if (mounted) {
+        _showErrorDialog(l10n.error, '${l10n.errorExportingPackage}: $e');
+      }
+
+      return false; // Export failed
     }
   }
 
@@ -527,10 +612,10 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete Package'),
+        title: Text(l10n.deleteAll),
         content: Text(
-          'Are you sure you want to delete "${package.languageName1} → ${package.languageName2}"? '
-          'This action cannot be undone.',
+          '${l10n.confirmDelete}\n\n'
+          '"${package.languageName1} → ${package.languageName2}"',
         ),
         actions: [
           TextButton(
@@ -543,7 +628,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
               backgroundColor: Theme.of(context).colorScheme.error,
               foregroundColor: Theme.of(context).colorScheme.onError,
             ),
-            child: Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -570,9 +655,11 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
   Future<void> _showDeleteSuccessMessage() async {
     if (!mounted) return;
 
+    final l10n = AppLocalizations.of(context)!;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Package deleted successfully'),
+        content: Text(l10n.packageDeleted),
         backgroundColor: Theme.of(context).colorScheme.primary,
       ),
     );
@@ -859,50 +946,12 @@ class _PackageCardState extends State<PackageCard> {
 
   Future<String?> _getHighestBadge() async {
     try {
+      // Get the current badge directly from training statistics
+      final stats = await _statsRepo.getStatisticsForPackage(widget.package.id);
 
-
-      // Get all training sessions for this package
-      final sessions = await _statsRepo.getSessionsForPackage(widget.package.id);
-
-
-
-      if (sessions.isEmpty) {
-
-        return null;
-      }
-
-      // Collect all earned badges from all sessions
-      final allBadgeIds = <String>{};
-      for (final session in sessions) {
-
-
-        allBadgeIds.addAll(session.currentBadges);
-      }
-
-
-
-      if (allBadgeIds.isEmpty) {
-
-        return null;
-      }
-
-      // Find the highest badge based on threshold
-      String? highestBadge;
-      double highestThreshold = 0.0;
-
-      for (final badgeId in allBadgeIds) {
-        final level = BadgeHelper.getBadgeLevelById(badgeId);
-        if (level != null && level.threshold > highestThreshold) {
-          highestThreshold = level.threshold;
-          highestBadge = badgeId;
-
-        }
-      }
-
-
-      return highestBadge;
+      return stats?.currentBadge;
     } catch (e) {
-
+      debugPrint('Error getting highest badge: $e');
       return null;
     }
   }
@@ -1008,7 +1057,13 @@ class _PackageCardState extends State<PackageCard> {
             child: content,
           )
         : Padding(
-            padding: EdgeInsets.all(AppTheme.spacing8),
+            // Add extra bottom padding in portrait mode to ensure floating buttons are visible
+            padding: EdgeInsets.only(
+              left: AppTheme.spacing8,
+              right: AppTheme.spacing8,
+              top: AppTheme.spacing8,
+              bottom: 60.0, // Space for floating action buttons
+            ),
             child: content,
           );
 
@@ -1045,17 +1100,17 @@ class _PackageCardState extends State<PackageCard> {
     return Positioned(
       bottom: AppTheme.spacing8,
       right: AppTheme.spacing8,
-      child: Column(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Training Rally button (top)
+          // Training Rally button (left)
           _buildTrainingRallyButton(context, l10n),
-          SizedBox(height: AppTheme.spacing8),
+          SizedBox(width: AppTheme.spacing8),
           // Browse Items button (middle)
           _buildBrowseItemsButton(context, l10n),
-          SizedBox(height: AppTheme.spacing8),
-          // Delete button (bottom - only for purchased packages)
-          if (widget.package.isPurchased && widget.onDelete != null)
+          SizedBox(width: AppTheme.spacing8),
+          // Delete button (right - visible for all packages)
+          if (widget.onDelete != null)
             _buildDeleteButton(context),
         ],
       ),

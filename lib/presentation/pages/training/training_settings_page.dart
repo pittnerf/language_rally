@@ -38,6 +38,7 @@ class TrainingSettingsPage extends ConsumerStatefulWidget {
 class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
   final _trainingSettingsRepo = TrainingSettingsRepository();
   final _categoryRepo = CategoryRepository();
+  final _categoryScrollController = ScrollController();
 
   // Settings values
   late ItemScope _itemScope;
@@ -54,6 +55,12 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
   void initState() {
     super.initState();
     _loadSettings();
+  }
+
+  @override
+  void dispose() {
+    _categoryScrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadSettings() async {
@@ -91,9 +98,10 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error loading settings: $e'),
+            content: Text(l10n.errorLoadingSettings(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -258,30 +266,42 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                FloatingActionButton.extended(
+                ElevatedButton.icon(
                   onPressed: _startTraining,
-                  backgroundColor: theme.colorScheme.primary,
-                  foregroundColor: theme.colorScheme.onPrimary,
-                  icon: const Icon(Icons.play_arrow, size: 20),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.primary,
+                    foregroundColor: theme.colorScheme.onPrimary,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    elevation: 6,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  icon: const Icon(Icons.play_arrow, size: 16),
                   label: Text(
                     l10n.startTrainingRally,
-                    style: theme.textTheme.bodyMedium?.copyWith(
+                    style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onPrimary,
                     ),
                   ),
-                  heroTag: 'start_training',
                 ),
                 const SizedBox(height: 12),
-                FloatingActionButton.extended(
+                ElevatedButton.icon(
                   onPressed: _clearSettings,
-                  backgroundColor: theme.colorScheme.errorContainer,
-                  foregroundColor: theme.colorScheme.onErrorContainer,
-                  icon: const Icon(Icons.clear_all, size: 18),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.errorContainer,
+                    foregroundColor: theme.colorScheme.onErrorContainer,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    elevation: 6,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                  ),
+                  icon: const Icon(Icons.clear_all, size: 14),
                   label: Text(
                     l10n.clearTrainingSettings,
-                    style: theme.textTheme.bodyMedium,
+                    style: theme.textTheme.bodySmall,
                   ),
-                  heroTag: 'clear_settings',
                 ),
               ],
             ),
@@ -363,7 +383,7 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'N = $_lastNItems',
+                          l10n.lastNValue(_lastNItems.toString()),
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.primary,
                             fontWeight: FontWeight.bold,
@@ -528,21 +548,31 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
         padding: const EdgeInsets.all(AppTheme.spacing8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Text(
-              l10n.categoryFilter,
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: AppTheme.spacing4),
-            Text(
-              l10n.categoryFilterHint,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontStyle: FontStyle.italic,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  l10n.categoryFilter,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Flexible(
+                  child: Text(
+                    l10n.categoryFilterHint,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontStyle: FontStyle.italic,
+                    ),
+                    textAlign: TextAlign.right,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
             ),
             const SizedBox(height: AppTheme.spacing8),
             if (_allCategories.isEmpty)
@@ -553,33 +583,45 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                 ),
               )
             else
-              Wrap(
-                spacing: AppTheme.spacing8,
-                runSpacing: AppTheme.spacing4,
-                children: _allCategories.map((category) {
-                  final isSelected = _selectedCategoryIds.contains(category.id);
-                  return FilterChip(
-                    selected: isSelected,
-                    label: Text(
-                      category.name,
-                      style: theme.textTheme.bodySmall,
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxHeight: 200, // Limit height to 200 pixels
+                ),
+                child: Scrollbar(
+                  controller: _categoryScrollController,
+                  thumbVisibility: true,
+                  child: SingleChildScrollView(
+                    controller: _categoryScrollController,
+                    child: Wrap(
+                      spacing: AppTheme.spacing8,
+                      runSpacing: AppTheme.spacing4,
+                      children: _allCategories.map((category) {
+                        final isSelected = _selectedCategoryIds.contains(category.id);
+                        return FilterChip(
+                          selected: isSelected,
+                          label: Text(
+                            category.name,
+                            style: theme.textTheme.bodySmall,
+                          ),
+                          avatar: Icon(
+                            isSelected ? Icons.check_circle : Icons.label_outline,
+                            size: 16,
+                            color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
+                          ),
+                          onSelected: (selected) {
+                            setState(() {
+                              if (selected) {
+                                _selectedCategoryIds.add(category.id);
+                              } else {
+                                _selectedCategoryIds.remove(category.id);
+                              }
+                            });
+                          },
+                        );
+                      }).toList(),
                     ),
-                    avatar: Icon(
-                      isSelected ? Icons.check_circle : Icons.label_outline,
-                      size: 16,
-                      color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
-                    ),
-                    onSelected: (selected) {
-                      setState(() {
-                        if (selected) {
-                          _selectedCategoryIds.add(category.id);
-                        } else {
-                          _selectedCategoryIds.remove(category.id);
-                        }
-                      });
-                    },
-                  );
-                }).toList(),
+                  ),
+                ),
               ),
           ],
         ),

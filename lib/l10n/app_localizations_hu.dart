@@ -373,12 +373,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get caseSensitive => 'Kis- és nagybetű érzékeny';
 
   @override
-  String get onlyImportant => 'Csak fontos elemek';
-
-  @override
-  String get onlyFavourite => 'Csak kedvenc elemek';
-
-  @override
   String get knownStatus => 'Tudás állapota';
 
   @override
@@ -712,6 +706,12 @@ class AppLocalizationsHu extends AppLocalizations {
   String get onlyUnknown => 'Csak ismeretlen elemek';
 
   @override
+  String get onlyImportant => 'Csak fontos elemek';
+
+  @override
+  String get onlyFavourite => 'Csak kedvenc elemek';
+
+  @override
   String get numberOfItems => 'Elemek Száma';
 
   @override
@@ -807,4 +807,59 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get iDidNotKnowEither => 'Ezt Sem Tudtam';
+
+  @override
+  String get exportBeforeDelete => 'Exportálás Törlés Előtt?';
+
+  @override
+  String get exportBeforeDeleteMessage =>
+      'Szeretnéd exportálni ezt a csomagot a törlés előtt? Ez minden adatot menteni fog egy ZIP fájlba.';
+
+  @override
+  String get deleteWithoutExport => 'Törlés Exportálás Nélkül';
+
+  @override
+  String get exportAndDelete => 'Exportálás és Törlés';
+
+  @override
+  String get exportingPackage => 'Csomag exportálása...';
+
+  @override
+  String packageExportedToPath(Object path) {
+    return 'Csomag exportálva ide: $path';
+  }
+
+  @override
+  String errorLoadingItems(Object error) {
+    return 'Hiba az elemek betöltésekor: $error';
+  }
+
+  @override
+  String badgeEarnedWithName(Object badgeName) {
+    return 'Jelvény Megszerzve: $badgeName!';
+  }
+
+  @override
+  String badgeLostWithName(Object badgeName) {
+    return 'Jelvény Elveszítve: $badgeName';
+  }
+
+  @override
+  String get speakText => 'Szöveg felolvasása';
+
+  @override
+  String get trainingSessionProgress => 'Gyakorlás Előrehaladása';
+
+  @override
+  String get total => 'Összesen';
+
+  @override
+  String lastNValue(Object value) {
+    return 'N = $value';
+  }
+
+  @override
+  String errorLoadingSettings(Object error) {
+    return 'Hiba a beállítások betöltésekor: $error';
+  }
 }

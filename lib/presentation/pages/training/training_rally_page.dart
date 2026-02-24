@@ -13,12 +13,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:math' as math;
+import 'package:fl_chart/fl_chart.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/utils/badge_helper.dart';
+import '../../../core/services/tts_service.dart';
 import '../../../data/models/training_settings.dart';
 import '../../../data/models/language_package.dart';
 import '../../../data/models/item.dart';
+import '../../../data/models/badge_event.dart';
+import '../../../data/models/training_statistics.dart';
 import '../../../data/repositories/item_repository.dart';
+import '../../../data/repositories/training_statistics_repository.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../providers/app_settings_provider.dart';
+import '../../widgets/feedback_animation.dart';
 
 class TrainingRallyPage extends ConsumerStatefulWidget {
   final LanguagePackage package;
@@ -36,6 +44,8 @@ class TrainingRallyPage extends ConsumerStatefulWidget {
 
 class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
   final _itemRepo = ItemRepository();
+  final _statsRepo = TrainingStatisticsRepository();
+  final _ttsService = TtsService();
 
   List<Item> _filteredItems = [];
   int _currentItemIndex = 0;
@@ -45,10 +55,52 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
   bool _userKnows = false; // Track if user clicked "I know"
   final _random = math.Random();
 
+  // Training session history tracking
+  int _totalGuesses = 0;
+  int _successfulGuesses = 0;
+  final List<double> _historyPercentages = []; // Stores success percentage after each guess
+
+  // Badge tracking
+  String? _currentBadge; // Current badge in this training session
+  final List<BadgeEvent> _badgeEvents = []; // Badge events in this session
+  int _minItemsForBadges = 10; // Minimum items required for badges (loaded from settings)
+  int _itemsSinceLastBadgeEvent = 0; // Track items evaluated since last badge event
+
+  // Feedback animation
+  bool _showFeedbackAnimation = false;
+  bool _feedbackIsSuccess = false;
+
+  // Answer section positioning and cover animation
+  final GlobalKey _answerSectionKey = GlobalKey();
+  bool _showAnswerCover = true;
+
   @override
   void initState() {
     super.initState();
+    _ttsService.initialize();
+    _loadSettings();
+    _loadCurrentBadge();
     _loadAndFilterItems();
+  }
+
+  @override
+  void dispose() {
+    _ttsService.stop();
+    super.dispose();
+  }
+
+  void _loadSettings() {
+    final appSettings = ref.read(appSettingsProvider);
+    _minItemsForBadges = appSettings.minItemsForBadges;
+  }
+
+  Future<void> _loadCurrentBadge() async {
+    final stats = await _statsRepo.getStatisticsForPackage(widget.package.id);
+    if (mounted) {
+      setState(() {
+        _currentBadge = stats?.currentBadge;
+      });
+    }
   }
 
   Future<void> _loadAndFilterItems() async {
@@ -110,9 +162,10 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
     } catch (e) {
       if (mounted) {
         setState(() => _isLoading = false);
+        final l10n = AppLocalizations.of(context)!;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error loading items: $e'),
+            content: Text(l10n.errorLoadingItems(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -161,7 +214,25 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
     setState(() {
       _isAnswerRevealed = true;
       _userKnows = userKnows;
+      _showAnswerCover = false; // Remove the cover
     });
+
+    // Track statistics
+    _totalGuesses++;
+    if (userKnows) {
+      _successfulGuesses++;
+    }
+    _updateHistoryPercentage();
+
+    // Small delay to let cover animation start, then show feedback animation
+    await Future.delayed(const Duration(milliseconds: 100));
+
+    if (mounted) {
+      setState(() {
+        _showFeedbackAnimation = true;
+        _feedbackIsSuccess = userKnows;
+      });
+    }
 
     if (userKnows) {
       // User knows - decrease don't know counter by 1 (if > 0)
@@ -188,6 +259,11 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
   Future<void> _handleDidNotKnowEither() async {
     final currentItem = _filteredItems[_currentItemIndex];
 
+    // Track statistics - user didn't know either, so it's a failure
+    // Note: This counts as an additional guess that failed
+    _totalGuesses++;
+    _updateHistoryPercentage();
+
     // Increment don't know counter (even if already incremented when clicking "I don't know")
     final updatedItem = currentItem.copyWith(
       dontKnowCounter: currentItem.dontKnowCounter + 1,
@@ -197,6 +273,144 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
     _filteredItems[_currentItemIndex] = updatedItem;
 
     _moveToNextItem();
+  }
+
+  void _updateHistoryPercentage() {
+    if (_totalGuesses > 0) {
+      final percentage = (_successfulGuesses / _totalGuesses) * 100;
+      setState(() {
+        _historyPercentages.add(percentage);
+      });
+
+      // Check for badge changes
+      _checkBadgeChanges(percentage);
+    }
+  }
+
+  Future<void> _checkBadgeChanges(double currentAccuracy) async {
+    // Increment counter for items evaluated
+    _itemsSinceLastBadgeEvent++;
+
+    // Only check for badge changes if enough items have been evaluated since last badge event
+    if (_itemsSinceLastBadgeEvent < _minItemsForBadges) {
+      return;
+    }
+
+    // Get the badge based on current accuracy and total guesses
+    final newBadgeId = BadgeHelper.getBadgeIdForAccuracy(
+      currentAccuracy,
+      totalAnswers: _totalGuesses,
+      minAnswersRequired: _minItemsForBadges,
+    );
+
+    // Check if badge changed
+    if (newBadgeId != _currentBadge) {
+      // Reset counter since a badge event occurred
+      _itemsSinceLastBadgeEvent = 0;
+
+      // Badge lost or earned
+      if (_currentBadge != null && (newBadgeId == null || BadgeHelper.badgeLevels.indexWhere((b) => b.id == newBadgeId) < BadgeHelper.badgeLevels.indexWhere((b) => b.id == _currentBadge!))) {
+        // Badge lost
+        _badgeEvents.add(BadgeEvent.lost(
+          badgeId: _currentBadge!,
+          totalAnswers: _totalGuesses,
+          accuracy: currentAccuracy,
+        ));
+        _showBadgeLostNotification(_currentBadge!);
+      }
+
+      if (newBadgeId != null && newBadgeId != _currentBadge) {
+        // New badge earned
+        _badgeEvents.add(BadgeEvent.earned(
+          badgeId: newBadgeId,
+          totalAnswers: _totalGuesses,
+          accuracy: currentAccuracy,
+        ));
+        _showBadgeEarnedNotification(newBadgeId);
+      }
+
+      setState(() {
+        _currentBadge = newBadgeId;
+      });
+
+      // Save to database
+      await _updatePackageBadge(newBadgeId);
+    }
+  }
+
+  Future<void> _updatePackageBadge(String? badgeId) async {
+    // Get or create statistics
+    var stats = await _statsRepo.getStatisticsForPackage(widget.package.id);
+
+    if (stats == null) {
+      stats = TrainingStatistics(
+        packageId: widget.package.id,
+        lastTrainedAt: DateTime.now(),
+        currentBadge: badgeId,
+      );
+    } else {
+      stats = stats.copyWith(
+        currentBadge: badgeId,
+        lastTrainedAt: DateTime.now(),
+      );
+    }
+
+    await _statsRepo.saveStatistics(stats);
+  }
+
+  void _showBadgeEarnedNotification(String badgeId) {
+    final badgeLevel = BadgeHelper.getBadgeLevelById(badgeId);
+    final l10n = AppLocalizations.of(context)!;
+
+    if (badgeLevel != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              Text(
+                badgeLevel.emoji,
+                style: const TextStyle(fontSize: 24),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.badgeEarnedWithName(badgeLevel.name),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+  }
+
+  void _showBadgeLostNotification(String badgeId) {
+    final badgeLevel = BadgeHelper.getBadgeLevelById(badgeId);
+    final l10n = AppLocalizations.of(context)!;
+
+    if (badgeLevel != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.warning, color: Colors.white),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  l10n.badgeLostWithName(badgeLevel.name),
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.orange,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
   }
 
   void _moveToNextItem() async {
@@ -210,6 +424,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
         _currentItemIndex++;
         _isAnswerRevealed = false;
         _userKnows = false;
+        _showAnswerCover = true; // Reset cover for next item
         _determineDisplayLanguage();
       });
     } else {
@@ -226,6 +441,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
           _currentItemIndex = 0;
           _isAnswerRevealed = false;
           _userKnows = false;
+          _showAnswerCover = true; // Reset cover for next item
           _determineDisplayLanguage();
         });
       } else if (widget.settings.itemScope == ItemScope.onlyUnknown && _filteredItems.isEmpty) {
@@ -356,7 +572,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
             padding: const EdgeInsets.only(right: 16.0),
             child: Center(
               child: Text(
-                '${_currentItemIndex + 1} / ${_filteredItems.length}',
+                '${_filteredItems.length} items',
                 style: theme.textTheme.titleSmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -365,80 +581,223 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
           ),
         ],
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppTheme.spacing8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Item status indicators (clickable for Important and Favourite)
-              _buildStatusIndicators(theme, currentItem),
-              const SizedBox(height: AppTheme.spacing8),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.only(
+                left: AppTheme.spacing8,
+                right: AppTheme.spacing8,
+                top: AppTheme.spacing8,
+                bottom: 140, // Space for floating buttons
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Item status indicators (clickable for Important and Favourite)
+                  _buildStatusIndicators(theme, currentItem),
+                  const SizedBox(height: AppTheme.spacing8),
 
-              // Action buttons in a single line
-              _buildActionButtons(theme, l10n),
-              const SizedBox(height: AppTheme.spacing8),
+                  // Question section (always visible)
+                  _buildQuestionSection(theme, l10n, currentItem),
+                  const SizedBox(height: AppTheme.spacing8),
 
-              // Question section (always visible)
-              _buildQuestionSection(theme, l10n, currentItem),
-              const SizedBox(height: AppTheme.spacing24),
+                  // Answer section (always visible, but covered when not revealed)
+                  Stack(
+                    key: _answerSectionKey,
+                    clipBehavior: Clip.none,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          _buildAnswerSection(theme, l10n, currentItem),
+                          const SizedBox(height: AppTheme.spacing8),
 
-              // Answer section (visible only after reveal)
-              if (_isAnswerRevealed) ...[
-                _buildAnswerSection(theme, l10n, currentItem),
-                const SizedBox(height: AppTheme.spacing8),
+                          // Examples section
+                          if (currentItem.examples.isNotEmpty) ...[
+                            _buildExamplesSection(theme, l10n, currentItem),
+                            const SizedBox(height: AppTheme.spacing8),
+                          ],
+                        ],
+                      ),
+                      // Cover overlay with "?" icon
+                      if (_showAnswerCover)
+                        Positioned.fill(
+                          child: AnimatedOpacity(
+                            opacity: _showAnswerCover ? 1.0 : 0.0,
+                            duration: const Duration(milliseconds: 300),
+                            child: Card(
+                              elevation: 4,
+                              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 1.0),
+                              child: Center(
+                                child: Icon(
+                                  Icons.help_outline,
+                                  size: 80,
+                                  color: theme.colorScheme.primary.withValues(alpha: 0.6),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      // Feedback animation - positioned within this Stack
+                      if (_showFeedbackAnimation)
+                        Positioned(
+                          right: MediaQuery.of(context).size.width * 0.25 - 60, // From right edge, at 1/4 position
+                          top: 0,
+                          bottom: 0,
+                          child: IgnorePointer(
+                            child: Center(
+                              child: FeedbackAnimation(
+                                isSuccess: _feedbackIsSuccess,
+                                onComplete: () {
+                                  if (mounted) {
+                                    setState(() {
+                                      _showFeedbackAnimation = false;
+                                    });
+                                  }
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
 
-                // Examples section
-                if (currentItem.examples.isNotEmpty) ...[
-                  _buildExamplesSection(theme, l10n, currentItem),
+                  // Training history chart
+                  if (_historyPercentages.isNotEmpty) ...[
+                    _buildHistoryChart(theme, l10n),
+                  ],
                 ],
-              ],
-            ],
+              ),
+            ),
           ),
-        ),
+          // Floating action buttons at the bottom
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: _buildActionButtons(theme, l10n),
+          ),
+        ],
       ),
     );
   }
 
   Widget _buildStatusIndicators(ThemeData theme, Item item) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isNarrow = screenWidth < 400; // Very narrow screens
+
     return Card(
       elevation: 1,
       child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacing12),
+        padding: const EdgeInsets.all(AppTheme.spacing8),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            InkWell(
-              onTap: _toggleImportant,
-              borderRadius: BorderRadius.circular(8),
-              child: _buildStatusBadge(
-                theme,
-                Icons.star,
-                item.isImportant,
-                theme.colorScheme.primary,
+            Flexible(
+              flex: 2,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  InkWell(
+                    onTap: _toggleImportant,
+                    borderRadius: BorderRadius.circular(8),
+                    child: _buildStatusBadge(
+                      theme,
+                      Icons.star,
+                      item.isImportant,
+                      theme.colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  InkWell(
+                    onTap: _toggleFavourite,
+                    borderRadius: BorderRadius.circular(8),
+                    child: _buildStatusBadge(
+                      theme,
+                      Icons.favorite,
+                      item.isFavourite,
+                      Colors.red,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  // isKnown is not clickable - Red exclamation for unknown, green checkmark for known
+                  _buildStatusBadge(
+                    theme,
+                    (!item.isKnown || item.dontKnowCounter > 0) ? Icons.error : Icons.check_circle,
+                    item.isKnown && item.dontKnowCounter == 0,
+                    (!item.isKnown || item.dontKnowCounter > 0) ? Colors.red : Colors.green,
+                  ),
+                  const SizedBox(width: 8),
+                  _buildCounterBadge(
+                    theme,
+                    Icons.help_outline,
+                    item.dontKnowCounter,
+                    isNarrow,
+                  ),
+                ],
               ),
             ),
-            InkWell(
-              onTap: _toggleFavourite,
-              borderRadius: BorderRadius.circular(8),
-              child: _buildStatusBadge(
-                theme,
-                Icons.favorite,
-                item.isFavourite,
-                Colors.red,
+            const SizedBox(width: 8),
+            // Current item badge and current training badge
+            Flexible(
+              flex: 1,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  // Current badge
+                  if (_currentBadge != null && !isNarrow) ...[
+                    Flexible(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.tertiaryContainer,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              BadgeHelper.getBadgeLevelById(_currentBadge!)?.emoji ?? '',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                            const SizedBox(width: 2),
+                            Flexible(
+                              child: Text(
+                                BadgeHelper.getBadgeLevelById(_currentBadge!)?.name ?? '',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.onTertiaryContainer,
+                                  fontSize: 11,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                  ],
+                  // Current item counter
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primaryContainer,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Text(
+                      '${_currentItemIndex + 1}/${_filteredItems.length}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onPrimaryContainer,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            // isKnown is not clickable
-            _buildStatusBadge(
-              theme,
-              (!item.isKnown || item.dontKnowCounter > 0) ? Icons.close : Icons.check_circle,
-              item.isKnown && item.dontKnowCounter == 0,
-              (!item.isKnown || item.dontKnowCounter > 0) ? theme.colorScheme.onErrorContainer : Colors.green,
-            ),
-            _buildCounterBadge(
-              theme,
-              Icons.help_outline,
-              item.dontKnowCounter,
             ),
           ],
         ),
@@ -447,7 +806,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
   }
 
   Widget _buildStatusBadge(ThemeData theme, IconData icon, bool isActive, Color activeColor) {
-    final isErrorState = icon == Icons.close;
+    final isErrorState = icon == Icons.error;
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
@@ -464,9 +823,9 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
     );
   }
 
-  Widget _buildCounterBadge(ThemeData theme, IconData icon, int count) {
+  Widget _buildCounterBadge(ThemeData theme, IconData icon, int count, bool isNarrow) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: count > 0
             ? theme.colorScheme.errorContainer
@@ -481,16 +840,19 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
             color: count > 0
                 ? theme.colorScheme.onErrorContainer
                 : theme.colorScheme.onSurfaceVariant,
-            size: 20,
+            size: 16,
           ),
           const SizedBox(width: 4),
           Text(
-            count > 0 ? '$count until learned' : count.toString(),
-            style: theme.textTheme.bodyMedium?.copyWith(
+            count > 0
+                ? (isNarrow ? '$count' : '$count left')  // Shorter text on narrow screens
+                : count.toString(),
+            style: theme.textTheme.bodySmall?.copyWith(
               fontWeight: FontWeight.bold,
               color: count > 0
                   ? theme.colorScheme.onErrorContainer
                   : theme.colorScheme.onSurfaceVariant,
+              fontSize: 11,
             ),
           ),
         ],
@@ -517,21 +879,46 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              l10n.question,
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: theme.colorScheme.onPrimaryContainer,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.question,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: theme.colorScheme.onPrimaryContainer,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: AppTheme.spacing4),
+                      Text(
+                        languageName,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.volume_up,
+                    color: theme.colorScheme.onPrimaryContainer,
+                  ),
+                  tooltip: 'Speak text',
+                  onPressed: () {
+                    final fullText = '${preText.isNotEmpty ? "$preText " : ""}$mainText';
+                    final languageCode = _displayLanguage1
+                        ? item.language1Data.languageCode
+                        : item.language2Data.languageCode;
+                    _ttsService.speak(fullText, languageCode);
+                  },
+                ),
+              ],
             ),
-            const SizedBox(height: AppTheme.spacing4),
-            Text(
-              languageName,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
-              ),
-            ),
-            const SizedBox(height: AppTheme.spacing12),
+            const SizedBox(height: AppTheme.spacing8),
             if (preText.isNotEmpty) ...[
               Text(
                 preText,
@@ -544,7 +931,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
             ],
             Text(
               mainText,
-              style: (isPortrait ? theme.textTheme.titleLarge : theme.textTheme.headlineSmall)?.copyWith(
+              style: (isPortrait ? theme.textTheme.titleMedium : theme.textTheme.titleMedium)?.copyWith(
                 color: theme.colorScheme.onPrimaryContainer,
                 fontWeight: FontWeight.bold,
               ),
@@ -584,21 +971,46 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              l10n.answer,
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: theme.colorScheme.onSecondaryContainer,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.answer,
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: theme.colorScheme.onSecondaryContainer,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: AppTheme.spacing4),
+                      Text(
+                        languageName,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSecondaryContainer.withValues(alpha: 0.7),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    Icons.volume_up,
+                    color: theme.colorScheme.onSecondaryContainer,
+                  ),
+                  tooltip: 'Speak text',
+                  onPressed: () {
+                    final fullText = '${preText.isNotEmpty ? "$preText " : ""}$mainText';
+                    final languageCode = !_displayLanguage1
+                        ? item.language1Data.languageCode
+                        : item.language2Data.languageCode;
+                    _ttsService.speak(fullText, languageCode);
+                  },
+                ),
+              ],
             ),
-            const SizedBox(height: AppTheme.spacing4),
-            Text(
-              languageName,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSecondaryContainer.withValues(alpha: 0.7),
-              ),
-            ),
-            const SizedBox(height: AppTheme.spacing12),
+            const SizedBox(height: AppTheme.spacing8),
             if (preText.isNotEmpty) ...[
               Text(
                 preText,
@@ -611,7 +1023,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
             ],
             Text(
               mainText,
-              style: (isPortrait ? theme.textTheme.titleLarge : theme.textTheme.headlineSmall)?.copyWith(
+              style: (isPortrait ? theme.textTheme.titleMedium : theme.textTheme.titleMedium)?.copyWith(
                 color: theme.colorScheme.onSecondaryContainer,
                 fontWeight: FontWeight.bold,
               ),
@@ -692,116 +1104,317 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
   }
 
   Widget _buildActionButtons(ThemeData theme, AppLocalizations l10n) {
-    if (!_isAnswerRevealed) {
-      // Initial state: "I know" and "I don't know" side by side
-      return Row(
-        children: [
-          Expanded(
-            child: ElevatedButton.icon(
-              onPressed: () => _handleKnowResponse(true),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                minimumSize: const Size.fromHeight(52),
-              ),
-              icon: const Icon(Icons.check, size: 22),
-              label: Text(
-                l10n.iKnow,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: ElevatedButton.icon(
-              onPressed: () => _handleKnowResponse(false),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.orange,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                minimumSize: const Size.fromHeight(52),
-              ),
-              icon: const Icon(Icons.quiz, size: 22),
-              label: Text(
-                l10n.iDontKnow,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: Colors.white,
-                ),
-              ),
-            ),
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isPortrait = screenWidth < 900;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: theme.scaffoldBackgroundColor,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 8,
+            offset: const Offset(0, -2),
           ),
         ],
-      );
-    } else {
-      // After reveal
-      if (_userKnows) {
-        // User clicked "I know" - show both "I didn't know either" and "Next item"
-        return Row(
+      ),
+      padding: const EdgeInsets.all(AppTheme.spacing8),
+      child: SafeArea(
+        top: false,
+        child: !_isAnswerRevealed
+            ? Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => _handleKnowResponse(true),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: AppTheme.spacing8, horizontal: AppTheme.spacing8),
+                        minimumSize: const Size.fromHeight(48),
+                        elevation: 4,
+                      ),
+                      icon: const Icon(Icons.check, size: 20),
+                      label: Text(
+                        l10n.iKnow,
+                        style: (isPortrait ? theme.textTheme.titleSmall : theme.textTheme.titleMedium)?.copyWith(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppTheme.spacing8),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: () => _handleKnowResponse(false),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orange,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: AppTheme.spacing8, horizontal: AppTheme.spacing8),
+                        minimumSize: const Size.fromHeight(48),
+                        elevation: 4,
+                      ),
+                      icon: const Icon(Icons.quiz, size: 20),
+                      label: Text(
+                        l10n.iDontKnow,
+                        style: (isPortrait ? theme.textTheme.titleSmall : theme.textTheme.titleMedium)?.copyWith(
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            : _userKnows
+                ? Row(
+                    children: [
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: _moveToNextItem,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: theme.colorScheme.primary,
+                            foregroundColor: theme.colorScheme.onPrimary,
+                            padding: const EdgeInsets.symmetric(vertical: AppTheme.spacing8, horizontal: AppTheme.spacing8),
+                            minimumSize: const Size.fromHeight(48),
+                            elevation: 4,
+                          ),
+                          icon: const Icon(Icons.arrow_forward, size: 20),
+                          label: Text(
+                            l10n.nextItem,
+                            style: (isPortrait ? theme.textTheme.titleSmall : theme.textTheme.titleMedium)?.copyWith(
+                              color: theme.colorScheme.onPrimary,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppTheme.spacing8),
+                      Expanded(
+                        child: ElevatedButton.icon(
+                          onPressed: _handleDidNotKnowEither,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(vertical: AppTheme.spacing8, horizontal: AppTheme.spacing8),
+                            minimumSize: const Size.fromHeight(48),
+                            elevation: 4,
+                          ),
+                          icon: const Icon(Icons.close, size: 20),
+                          label: Text(
+                            l10n.iDidNotKnowEither,
+                            style: (isPortrait ? theme.textTheme.titleSmall : theme.textTheme.titleMedium)?.copyWith(
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                : ElevatedButton.icon(
+                    onPressed: _moveToNextItem,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: theme.colorScheme.onPrimary,
+                      padding: const EdgeInsets.symmetric(vertical: AppTheme.spacing8, horizontal: AppTheme.spacing8),
+                      minimumSize: const Size.fromHeight(48),
+                      elevation: 4,
+                    ),
+                    icon: const Icon(Icons.arrow_forward, size: 20),
+                    label: Text(
+                      l10n.nextItem,
+                      style: (isPortrait ? theme.textTheme.titleSmall : theme.textTheme.titleMedium)?.copyWith(
+                        color: theme.colorScheme.onPrimary,
+                      ),
+                    ),
+                  ),
+      ),
+    );
+  }
+
+  Widget _buildHistoryChart(ThemeData theme, AppLocalizations l10n) {
+    // Calculate current success rate
+    final currentSuccessRate = _totalGuesses > 0
+        ? (_successfulGuesses / _totalGuesses * 100).toStringAsFixed(1)
+        : '0.0';
+
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.spacing8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: _handleDidNotKnowEither,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                  minimumSize: const Size.fromHeight(52),
-                ),
-                icon: const Icon(Icons.close, size: 22),
-                label: Text(
-                  l10n.iDidNotKnowEither,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: Colors.white,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Training Session Progress',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: ElevatedButton.icon(
-                onPressed: _moveToNextItem,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primary,
-                  foregroundColor: theme.colorScheme.onPrimary,
-                  padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                  minimumSize: const Size.fromHeight(52),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    '$currentSuccessRate%',
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onPrimaryContainer,
+                    ),
+                  ),
                 ),
-                icon: const Icon(Icons.arrow_forward, size: 22),
-                label: Text(
-                  l10n.nextItem,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    color: theme.colorScheme.onPrimary,
+              ],
+            ),
+            const SizedBox(height: AppTheme.spacing4),
+            Row(
+              children: [
+                _buildStatChip(theme, l10n.iKnow, _successfulGuesses, Colors.green),
+                const SizedBox(width: 8),
+                _buildStatChip(theme, l10n.iDontKnow, _totalGuesses - _successfulGuesses, Colors.orange),
+                const SizedBox(width: 8),
+                _buildStatChip(theme, l10n.total, _totalGuesses, theme.colorScheme.primary),
+              ],
+            ),
+            const SizedBox(height: AppTheme.spacing8),
+            SizedBox(
+              height: 150,
+              child: LineChart(
+                LineChartData(
+                  minY: 0,
+                  maxY: 100,
+                  lineBarsData: [
+                    LineChartBarData(
+                      spots: _historyPercentages.asMap().entries.map((entry) {
+                        return FlSpot(entry.key.toDouble(), entry.value);
+                      }).toList(),
+                      isCurved: true,
+                      color: theme.colorScheme.primary,
+                      barWidth: 3,
+                      dotData: FlDotData(
+                        show: true,
+                        getDotPainter: (spot, percent, barData, index) {
+                          return FlDotCirclePainter(
+                            radius: 4,
+                            color: theme.colorScheme.primary,
+                            strokeWidth: 2,
+                            strokeColor: theme.colorScheme.surface,
+                          );
+                        },
+                      ),
+                      belowBarData: BarAreaData(
+                        show: true,
+                        color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                      ),
+                    ),
+                  ],
+                  titlesData: FlTitlesData(
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 40,
+                        interval: 25,
+                        getTitlesWidget: (value, meta) {
+                          return Text(
+                            '${value.toInt()}%',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 30,
+                        interval: math.max(1, (_historyPercentages.length / 5).ceil().toDouble()),
+                        getTitlesWidget: (value, meta) {
+                          if (value.toInt() < _historyPercentages.length) {
+                            return Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(
+                                '${value.toInt() + 1}',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        },
+                      ),
+                    ),
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                  ),
+                  gridData: FlGridData(
+                    show: true,
+                    horizontalInterval: 25,
+                    getDrawingHorizontalLine: (value) {
+                      return FlLine(
+                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+                        strokeWidth: 1,
+                      );
+                    },
+                    drawVerticalLine: false,
+                  ),
+                  borderData: FlBorderData(
+                    show: true,
+                    border: Border(
+                      left: BorderSide(color: theme.colorScheme.outline, width: 1),
+                      bottom: BorderSide(color: theme.colorScheme.outline, width: 1),
+                    ),
                   ),
                 ),
               ),
             ),
           ],
-        );
-      } else {
-        // User clicked "I don't know" - show only "Next" button (full width)
-        return ElevatedButton.icon(
-          onPressed: _moveToNextItem,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: theme.colorScheme.primary,
-            foregroundColor: theme.colorScheme.onPrimary,
-            padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-            minimumSize: const Size.fromHeight(52),
-          ),
-          icon: const Icon(Icons.arrow_forward, size: 22),
-          label: Text(
-            l10n.nextItem,
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: theme.colorScheme.onPrimary,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatChip(ThemeData theme, String label, int value, Color color) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.1),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              '$label: ',
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: color,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
-        );
-      }
-    }
+            Text(
+              value.toString(),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: color,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
+
 
 
 

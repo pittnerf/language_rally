@@ -115,8 +115,6 @@
   "searchLanguage1": "Keresés ebben: {language}",
   "searchLanguage2": "Keresés ebben: {language}",
   "caseSensitive": "Kis- és nagybetű érzékeny",
-  "onlyImportant": "Csak fontos elemek",
-  "onlyFavourite": "Csak kedvenc elemek",
   "knownStatus": "Tudás állapota",
   "allItems": "Minden elem",
   "itemsIKnew": "Elemek, amiket tudtam",
@@ -248,6 +246,20 @@
   "iKnow": "Tudom",
   "iDontKnow": "Nem Tudom",
   "nextItem": "Következő Elem",
-  "iDidNotKnowEither": "Ezt Sem Tudtam"
+  "iDidNotKnowEither": "Ezt Sem Tudtam",
+  "exportBeforeDelete": "Exportálás Törlés Előtt?",
+  "exportBeforeDeleteMessage": "Szeretnéd exportálni ezt a csomagot a törlés előtt? Ez minden adatot menteni fog egy ZIP fájlba.",
+  "deleteWithoutExport": "Törlés Exportálás Nélkül",
+  "exportAndDelete": "Exportálás és Törlés",
+  "exportingPackage": "Csomag exportálása...",
+  "packageExportedToPath": "Csomag exportálva ide: {path}",
+  "errorLoadingItems": "Hiba az elemek betöltésekor: {error}",
+  "badgeEarnedWithName": "Jelvény Megszerzve: {badgeName}!",
+  "badgeLostWithName": "Jelvény Elveszítve: {badgeName}",
+  "speakText": "Szöveg felolvasása",
+  "trainingSessionProgress": "Gyakorlás Előrehaladása",
+  "total": "Összesen",
+  "lastNValue": "N = {value}",
+  "errorLoadingSettings": "Hiba a beállítások betöltésekor: {error}"
 }
 

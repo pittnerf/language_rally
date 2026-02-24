@@ -12,6 +12,7 @@ class TrainingStatistics extends Equatable {
   final int longestStreak;
   final DateTime lastTrainedAt;
   final double averageAccuracy;
+  final String? currentBadge; // Current badge earned for this package
 
   const TrainingStatistics({
     required this.packageId,
@@ -21,6 +22,7 @@ class TrainingStatistics extends Equatable {
     this.longestStreak = 0,
     required this.lastTrainedAt,
     this.averageAccuracy = 0.0,
+    this.currentBadge,
   });
 
   factory TrainingStatistics.fromJson(Map<String, dynamic> json) =>
@@ -36,6 +38,7 @@ class TrainingStatistics extends Equatable {
     int? longestStreak,
     DateTime? lastTrainedAt,
     double? averageAccuracy,
+    String? currentBadge,
   }) =>
       TrainingStatistics(
         packageId: packageId ?? this.packageId,
@@ -45,6 +48,7 @@ class TrainingStatistics extends Equatable {
         longestStreak: longestStreak ?? this.longestStreak,
         lastTrainedAt: lastTrainedAt ?? this.lastTrainedAt,
         averageAccuracy: averageAccuracy ?? this.averageAccuracy,
+        currentBadge: currentBadge ?? this.currentBadge,
       );
 
   @override
@@ -56,5 +60,6 @@ class TrainingStatistics extends Equatable {
     longestStreak,
     lastTrainedAt,
     averageAccuracy,
+    currentBadge,
   ];
 }

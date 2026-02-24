@@ -1,0 +1,38 @@
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fantastic - Rocket -->
+  <defs>
+    <linearGradient id="rocketGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#E91E63;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#9C27B0;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="flameGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF5722;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#FF9800;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFC107;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Rocket body -->
+  <ellipse cx="100" cy="40" rx="25" ry="35" fill="url(#rocketGrad)" stroke="#880E4F" stroke-width="3"/>
+  <rect x="75" y="40" width="50" height="70" fill="url(#rocketGrad)" stroke="#880E4F" stroke-width="3"/>
+
+  <!-- Rocket window -->
+  <circle cx="100" cy="60" r="15" fill="#42A5F5" stroke="#1976D2" stroke-width="2"/>
+  <circle cx="100" cy="60" r="10" fill="#90CAF9" opacity="0.5"/>
+
+  <!-- Rocket fins -->
+  <path d="M75 90 L60 120 L75 110 Z" fill="#C2185B" stroke="#880E4F" stroke-width="2"/>
+  <path d="M125 90 L140 120 L125 110 Z" fill="#C2185B" stroke="#880E4F" stroke-width="2"/>
+
+  <!-- Flames -->
+  <path d="M85 110 Q75 130 80 150 Q85 135 90 150 Q90 130 85 110" fill="url(#flameGrad)"/>
+  <path d="M95 110 Q90 135 95 155 Q100 130 95 110" fill="url(#flameGrad)"/>
+  <path d="M105 110 Q100 130 105 155 Q110 135 105 110" fill="url(#flameGrad)"/>
+  <path d="M115 110 Q110 135 110 150 Q115 130 125 150 Q120 130 115 110" fill="url(#flameGrad)"/>
+
+  <!-- Stars around -->
+  <path d="M40 60 L42 65 L47 65 L43 68 L45 73 L40 70 L35 73 L37 68 L33 65 L38 65 Z" fill="#FFEB3B"/>
+  <path d="M160 80 L162 85 L167 85 L163 88 L165 93 L160 90 L155 93 L157 88 L153 85 L158 85 Z" fill="#FFEB3B"/>
+  <circle cx="50" cy="100" r="2" fill="#FFC107"/>
+  <circle cx="150" cy="50" r="2" fill="#FFC107"/>
+</svg>

@@ -11,7 +11,7 @@ class AppConstants {
   static const int minAnswersForBadges = 10;
 
   /// Badge thresholds (percentage)
-  static const List<int> badgeThresholds = [25, 50, 75, 80, 85, 90, 95, 100];
+  static const List<int> badgeThresholds = [25, 50, 75, 90, 95];
 
   /// Default items per training session
   static const int defaultItemsPerSession = 20;

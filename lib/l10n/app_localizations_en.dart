@@ -372,12 +372,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get caseSensitive => 'Case sensitive';
 
   @override
-  String get onlyImportant => 'Only important items';
-
-  @override
-  String get onlyFavourite => 'Only favourite items';
-
-  @override
   String get knownStatus => 'Known status';
 
   @override
@@ -713,6 +707,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onlyUnknown => 'Only unknown items';
 
   @override
+  String get onlyImportant => 'Only important items';
+
+  @override
+  String get onlyFavourite => 'Only favourite items';
+
+  @override
   String get numberOfItems => 'Number of Items';
 
   @override
@@ -807,4 +807,59 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get iDidNotKnowEither => 'I Didn\'t Know Either';
+
+  @override
+  String get exportBeforeDelete => 'Export Before Deleting?';
+
+  @override
+  String get exportBeforeDeleteMessage =>
+      'Would you like to export this package before deleting it? This will save all your data to a ZIP file.';
+
+  @override
+  String get deleteWithoutExport => 'Delete Without Export';
+
+  @override
+  String get exportAndDelete => 'Export and Delete';
+
+  @override
+  String get exportingPackage => 'Exporting package...';
+
+  @override
+  String packageExportedToPath(Object path) {
+    return 'Package exported to: $path';
+  }
+
+  @override
+  String errorLoadingItems(Object error) {
+    return 'Error loading items: $error';
+  }
+
+  @override
+  String badgeEarnedWithName(Object badgeName) {
+    return 'Badge Earned: $badgeName!';
+  }
+
+  @override
+  String badgeLostWithName(Object badgeName) {
+    return 'Badge Lost: $badgeName';
+  }
+
+  @override
+  String get speakText => 'Speak text';
+
+  @override
+  String get trainingSessionProgress => 'Training Session Progress';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String lastNValue(Object value) {
+    return 'N = $value';
+  }
+
+  @override
+  String errorLoadingSettings(Object error) {
+    return 'Error loading settings: $error';
+  }
 }

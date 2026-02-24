@@ -19,11 +19,15 @@ class AppSettings extends Equatable {
   /// OpenAI API key (optional)
   final String? openaiApiKey;
 
+  /// Minimum number of guesses required in training session to earn badges (not visible to user)
+  final int minItemsForBadges;
+
   const AppSettings({
     this.userLanguageCode = 'en-US',
     this.userLanguageName = 'English (United States)',
     this.deeplApiKey,
     this.openaiApiKey,
+    this.minItemsForBadges = 10,
   });
 
   AppSettings copyWith({
@@ -31,12 +35,14 @@ class AppSettings extends Equatable {
     String? userLanguageName,
     String? deeplApiKey,
     String? openaiApiKey,
+    int? minItemsForBadges,
   }) {
     return AppSettings(
       userLanguageCode: userLanguageCode ?? this.userLanguageCode,
       userLanguageName: userLanguageName ?? this.userLanguageName,
       deeplApiKey: deeplApiKey ?? this.deeplApiKey,
       openaiApiKey: openaiApiKey ?? this.openaiApiKey,
+      minItemsForBadges: minItemsForBadges ?? this.minItemsForBadges,
     );
   }
 
@@ -46,6 +52,7 @@ class AppSettings extends Equatable {
         userLanguageName,
         deeplApiKey,
         openaiApiKey,
+        minItemsForBadges,
       ];
 }
 

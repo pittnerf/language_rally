@@ -676,22 +676,70 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Language 1
-                    _buildLanguageText(
-                      theme,
-                      item.language1Data,
-                      isSelected
-                          ? theme.colorScheme.onPrimaryContainer
-                          : theme.colorScheme.onSurface,
+                    // Language 1 with speaker icon
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildLanguageText(
+                            theme,
+                            item.language1Data,
+                            isSelected
+                                ? theme.colorScheme.onPrimaryContainer
+                                : theme.colorScheme.onSurface,
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.volume_up,
+                            size: 18,
+                            color: isSelected
+                                ? theme.colorScheme.onPrimaryContainer
+                                : theme.colorScheme.primary,
+                          ),
+                          tooltip: l10n.pronounce,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          onPressed: () {
+                            final preText = item.language1Data.preItem?.trim() ?? '';
+                            final mainText = item.language1Data.text;
+                            final fullText = '${preText.isNotEmpty ? "$preText " : ""}$mainText';
+                            _ttsService.speak(fullText, item.language1Data.languageCode);
+                          },
+                        ),
+                      ],
                     ),
                     const SizedBox(height: AppTheme.spacing8),
-                    // Language 2
-                    _buildLanguageText(
-                      theme,
-                      item.language2Data,
-                      isSelected
-                          ? theme.colorScheme.onPrimaryContainer
-                          : theme.colorScheme.onSurfaceVariant,
+                    // Language 2 with speaker icon
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _buildLanguageText(
+                            theme,
+                            item.language2Data,
+                            isSelected
+                                ? theme.colorScheme.onPrimaryContainer
+                                : theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.volume_up,
+                            size: 18,
+                            color: isSelected
+                                ? theme.colorScheme.onPrimaryContainer
+                                : theme.colorScheme.primary,
+                          ),
+                          tooltip: l10n.pronounce,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          onPressed: () {
+                            final preText = item.language2Data.preItem?.trim() ?? '';
+                            final mainText = item.language2Data.text;
+                            final fullText = '${preText.isNotEmpty ? "$preText " : ""}$mainText';
+                            _ttsService.speak(fullText, item.language2Data.languageCode);
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -704,13 +752,13 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                     Icon(
                       Icons.check_circle,
                       size: 20,
-                      color: theme.colorScheme.primary,
+                      color: Colors.green,
                     ),
                   if (!item.isKnown || item.dontKnowCounter > 0)
                     Icon(
-                      Icons.close,
+                      Icons.error,
                       size: 20,
-                      color: theme.colorScheme.onErrorContainer,
+                      color: Colors.red,
                     ),
                   if (item.isFavourite)
                     Icon(
@@ -828,7 +876,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                   avatar: Icon(
                     Icons.check_circle,
                     size: 15, // 25% smaller than 20
-                    color: theme.colorScheme.primary,
+                    color: Colors.green,
                   ),
                   label: Text(
                     l10n.known,
@@ -838,9 +886,9 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
               if (!item.isKnown || item.dontKnowCounter > 0)
                 Chip(
                   avatar: Icon(
-                    Icons.close,
+                    Icons.error,
                     size: 15, // 25% smaller than 20
-                    color: theme.colorScheme.onErrorContainer,
+                    color: Colors.red,
                   ),
                   label: Text(
                     '${item.dontKnowCounter} until learned',
@@ -1107,16 +1155,16 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                       avatar: Icon(
                         Icons.check_circle,
                         size: 20,
-                        color: theme.colorScheme.primary,
+                        color: Colors.green,
                       ),
                       label: Text(l10n.known),
                     ),
                   if (!item.isKnown || item.dontKnowCounter > 0)
                     Chip(
                       avatar: Icon(
-                        Icons.close,
+                        Icons.error,
                         size: 20,
-                        color: theme.colorScheme.onErrorContainer,
+                        color: Colors.red,
                       ),
                       label: Text('${item.dontKnowCounter} until learned'),
                       backgroundColor: theme.colorScheme.errorContainer,
@@ -1312,14 +1360,14 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                   theme,
                   Icons.check_circle,
                   l10n.known,
-                  theme.colorScheme.primary,
+                  Colors.green,
                 ),
               if (!item.isKnown || item.dontKnowCounter > 0)
                 _buildCompactChip(
                   theme,
-                  Icons.close,
+                  Icons.error,
                   '${item.dontKnowCounter} until learned',
-                  theme.colorScheme.onErrorContainer,
+                  Colors.red,
                   backgroundColor: theme.colorScheme.errorContainer,
                 ),
               if (item.isFavourite)

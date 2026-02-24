@@ -5,10 +5,12 @@ import 'package:language_rally/l10n/app_localizations.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_theme.dart';
+import 'core/services/app_initialization_service.dart';
 import 'data/database_helper.dart';
 import 'presentation/pages/home/home_page.dart';
 import 'presentation/providers/locale_provider.dart';
 import 'presentation/providers/theme_provider.dart';
+import 'presentation/widgets/splash_screen.dart';
 
 void main() {
   // Ensure Flutter binding is initialized
@@ -25,11 +27,40 @@ void main() {
   runApp(const ProviderScope(child: LanguageRallyApp()));
 }
 
-class LanguageRallyApp extends ConsumerWidget {
+class LanguageRallyApp extends ConsumerStatefulWidget {
   const LanguageRallyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<LanguageRallyApp> createState() => _LanguageRallyAppState();
+}
+
+class _LanguageRallyAppState extends ConsumerState<LanguageRallyApp> {
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    // Perform heavy initialization tasks
+    final success = await AppInitializationService.initialize();
+
+    if (mounted) {
+      setState(() {
+        _isInitialized = success;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Show splash screen during initialization
+    if (!_isInitialized) {
+      return const SplashScreen();
+    }
+
     final themeConfig = ref.watch(themeProvider);
     final locale = ref.watch(localeProvider);
 

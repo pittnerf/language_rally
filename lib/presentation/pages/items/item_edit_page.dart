@@ -868,9 +868,9 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
                     ),
                   ),
                   avatar: Icon(
-                    _isKnown ? Icons.check_circle : Icons.check_circle_outline,
+                    _isKnown ? Icons.check_circle : Icons.error,
                     size: 18,
-                    color: _isKnown ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
+                    color: _isKnown ? Colors.green : Colors.red,
                   ),
                   onSelected: (value) {
                     setState(() {

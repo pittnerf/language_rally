@@ -788,18 +788,6 @@ abstract class AppLocalizations {
   /// **'Case sensitive'**
   String get caseSensitive;
 
-  /// No description provided for @onlyImportant.
-  ///
-  /// In en, this message translates to:
-  /// **'Only important items'**
-  String get onlyImportant;
-
-  /// No description provided for @onlyFavourite.
-  ///
-  /// In en, this message translates to:
-  /// **'Only favourite items'**
-  String get onlyFavourite;
-
   /// No description provided for @knownStatus.
   ///
   /// In en, this message translates to:
@@ -1400,6 +1388,18 @@ abstract class AppLocalizations {
   /// **'Only unknown items'**
   String get onlyUnknown;
 
+  /// No description provided for @onlyImportant.
+  ///
+  /// In en, this message translates to:
+  /// **'Only important items'**
+  String get onlyImportant;
+
+  /// No description provided for @onlyFavourite.
+  ///
+  /// In en, this message translates to:
+  /// **'Only favourite items'**
+  String get onlyFavourite;
+
   /// No description provided for @numberOfItems.
   ///
   /// In en, this message translates to:
@@ -1579,6 +1579,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'I Didn\'t Know Either'**
   String get iDidNotKnowEither;
+
+  /// No description provided for @exportBeforeDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Before Deleting?'**
+  String get exportBeforeDelete;
+
+  /// No description provided for @exportBeforeDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Would you like to export this package before deleting it? This will save all your data to a ZIP file.'**
+  String get exportBeforeDeleteMessage;
+
+  /// No description provided for @deleteWithoutExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Without Export'**
+  String get deleteWithoutExport;
+
+  /// No description provided for @exportAndDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Export and Delete'**
+  String get exportAndDelete;
+
+  /// No description provided for @exportingPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Exporting package...'**
+  String get exportingPackage;
+
+  /// No description provided for @packageExportedToPath.
+  ///
+  /// In en, this message translates to:
+  /// **'Package exported to: {path}'**
+  String packageExportedToPath(Object path);
+
+  /// No description provided for @errorLoadingItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading items: {error}'**
+  String errorLoadingItems(Object error);
+
+  /// No description provided for @badgeEarnedWithName.
+  ///
+  /// In en, this message translates to:
+  /// **'Badge Earned: {badgeName}!'**
+  String badgeEarnedWithName(Object badgeName);
+
+  /// No description provided for @badgeLostWithName.
+  ///
+  /// In en, this message translates to:
+  /// **'Badge Lost: {badgeName}'**
+  String badgeLostWithName(Object badgeName);
+
+  /// No description provided for @speakText.
+  ///
+  /// In en, this message translates to:
+  /// **'Speak text'**
+  String get speakText;
+
+  /// No description provided for @trainingSessionProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Training Session Progress'**
+  String get trainingSessionProgress;
+
+  /// No description provided for @total.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get total;
+
+  /// No description provided for @lastNValue.
+  ///
+  /// In en, this message translates to:
+  /// **'N = {value}'**
+  String lastNValue(Object value);
+
+  /// No description provided for @errorLoadingSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading settings: {error}'**
+  String errorLoadingSettings(Object error);
 }
 
 class _AppLocalizationsDelegate

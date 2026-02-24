@@ -15,6 +15,7 @@ TrainingStatistics _$TrainingStatisticsFromJson(Map<String, dynamic> json) =>
       longestStreak: (json['longestStreak'] as num?)?.toInt() ?? 0,
       lastTrainedAt: DateTime.parse(json['lastTrainedAt'] as String),
       averageAccuracy: (json['averageAccuracy'] as num?)?.toDouble() ?? 0.0,
+      currentBadge: json['currentBadge'] as String?,
     );
 
 Map<String, dynamic> _$TrainingStatisticsToJson(TrainingStatistics instance) =>
@@ -26,4 +27,5 @@ Map<String, dynamic> _$TrainingStatisticsToJson(TrainingStatistics instance) =>
       'longestStreak': instance.longestStreak,
       'lastTrainedAt': instance.lastTrainedAt.toIso8601String(),
       'averageAccuracy': instance.averageAccuracy,
+      'currentBadge': instance.currentBadge,
     };

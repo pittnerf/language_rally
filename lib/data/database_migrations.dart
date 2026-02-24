@@ -16,7 +16,7 @@ import 'package:sqflite/sqflite.dart';
 class DatabaseMigrations {
   /// Current database version
   /// Increment this when adding a new migration
-  static const int currentVersion = 5;
+  static const int currentVersion = 6;
 
   /// Type definitions for database types
   static const idType = 'TEXT PRIMARY KEY';
@@ -42,8 +42,11 @@ class DatabaseMigrations {
     // Version 4 -> 5: Add package_name column to language_packages
     5: _migrateToVersion5,
 
+    // Version 5 -> 6: Add current_badge column to training_statistics
+    6: _migrateToVersion6,
+
     // Add future migrations here:
-    // 6: _migrateToVersion6,
+    // 7: _migrateToVersion7,
   };
 
   /// Initial database creation (version 1)
@@ -188,6 +191,7 @@ class DatabaseMigrations {
         longest_streak $intType,
         last_trained_at $intType,
         average_accuracy $realType,
+        current_badge $textNullable,
         FOREIGN KEY (package_id) REFERENCES language_packages (id) ON DELETE CASCADE
       )
     ''');
@@ -367,8 +371,28 @@ class DatabaseMigrations {
     }
   }
 
-  // /// Migration to version 6: Example future migration
-  // static Future<void> _migrateToVersion6(Database db) async {
+  /// Migration to version 6: Add current_badge column to training_statistics
+  static Future<void> _migrateToVersion6(Database db) async {
+    developer.log('  ℹ️  Adding current_badge column to training_statistics...', name: 'DatabaseMigrations');
+
+    // Check if current_badge column already exists
+    final result = await db.rawQuery('PRAGMA table_info(training_statistics)');
+    final columnExists = result.any((column) => column['name'] == 'current_badge');
+
+    if (!columnExists) {
+      // Add current_badge column to training_statistics
+      await db.execute('''
+        ALTER TABLE training_statistics 
+        ADD COLUMN current_badge TEXT
+      ''');
+      developer.log('  ✓ Added current_badge column to training_statistics', name: 'DatabaseMigrations');
+    } else {
+      developer.log('  ⚠️  Column current_badge already exists in training_statistics, skipping', name: 'DatabaseMigrations');
+    }
+  }
+
+  // /// Migration to version 7: Example future migration
+  // static Future<void> _migrateToVersion7(Database db) async {
   //   // Your migration logic here
   //   await db.execute('ALTER TABLE some_table ADD COLUMN new_field TEXT');
   // }
