@@ -1,0 +1,12 @@
+L1pre=the---L1=Be on a lookout for sensitive data---L1post=---L2pre=---L2=Legyen résen az érzékeny adatokkal kapcsolatban---L2post=---EX=Be careful when sharing files:::Legyen óvatos fájlmegosztáskor---EX=Always check before upload:::Mindig ellenőrizze feltöltés előtt---CAT=Security:::Awareness:::Data Protection
+L1=Hello---L2=Szia---CAT=Greetings
+L1=Goodbye---L2=Viszlát---CAT=Greetings
+L1=Thank you---L2=Köszönöm---EX=Thank you very much:::Nagyon szépen köszönöm---CAT=Courtesy
+L1pre=a---L1=dog---L2=kutya---CAT=Animals
+L1pre=a---L1=cat---L2=macska---EX=I have a cat:::Van egy macskám---CAT=Animals
+L1=red---L2=piros---CAT=Colors
+L1=blue---L2=kék---CAT=Colors
+L1=green---L2=zöld---CAT=Colors
+L1=one---L2=egy---CAT=Numbers
+L1=two---L2=kettő---CAT=Numbers
+

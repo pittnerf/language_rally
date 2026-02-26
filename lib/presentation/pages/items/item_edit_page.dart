@@ -908,7 +908,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
                     ),
                   ),
                   avatar: Icon(
-                    _isImportant ? Icons.label_important : Icons.label_important_outline,
+                    _isImportant ? Icons.bookmark : Icons.bookmark_border,
                     size: 18,
                     color: _isImportant ? theme.colorScheme.secondary : theme.colorScheme.onSurfaceVariant,
                   ),

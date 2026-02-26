@@ -7,6 +7,7 @@ import '../font_test_page.dart';
 import '../design_system_showcase.dart';
 import '../packages/package_list_page.dart';
 import '../packages/package_form_page.dart';
+import '../training/training_settings_page.dart';
 import '../dev/test_data_page.dart';
 import '../settings/app_settings_page.dart';
 
@@ -148,6 +149,25 @@ class HomePage extends ConsumerWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: AppTheme.spacing32),
+
+              // Start Training Rally Button
+              FilledButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const TrainingSettingsPage()),
+                  );
+                },
+                icon: const Icon(Icons.school),
+                label: Text(localizations.startTrainingRally),
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppTheme.spacing24,
+                    vertical: AppTheme.spacing16,
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppTheme.spacing16),
 
               // Font Test Button
               FilledButton.icon(

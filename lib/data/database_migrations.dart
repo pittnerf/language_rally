@@ -59,6 +59,14 @@ class DatabaseMigrations {
       )
     ''');
 
+    // Create default group immediately after table creation
+    const defaultGroupId = 'default-group-id';
+    const defaultGroupName = 'Default';
+    await db.insert('language_package_groups', {
+      'id': defaultGroupId,
+      'name': defaultGroupName,
+    });
+
     // Language Packages table
     await db.execute('''
       CREATE TABLE language_packages (

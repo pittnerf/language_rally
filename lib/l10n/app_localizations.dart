@@ -746,6 +746,108 @@ abstract class AppLocalizations {
   /// **'• Duplicates are skipped'**
   String get importFormatLine6;
 
+  /// No description provided for @importProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Importing {current} of {total}'**
+  String importProgress(Object current, Object total);
+
+  /// No description provided for @importFormatNewDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Import items from a text file. Each line should contain an item with fields separated by ---'**
+  String get importFormatNewDescription;
+
+  /// No description provided for @importFormatNewLine1.
+  ///
+  /// In en, this message translates to:
+  /// **'• Main delimiter: ---'**
+  String get importFormatNewLine1;
+
+  /// No description provided for @importFormatNewLine2.
+  ///
+  /// In en, this message translates to:
+  /// **'• L1=<text> - Language 1 main text (required if L2 is missing)'**
+  String get importFormatNewLine2;
+
+  /// No description provided for @importFormatNewLine3.
+  ///
+  /// In en, this message translates to:
+  /// **'• L2=<text> - Language 2 main text (required if L1 is missing)'**
+  String get importFormatNewLine3;
+
+  /// No description provided for @importFormatNewLine4.
+  ///
+  /// In en, this message translates to:
+  /// **'• L1pre=<text> - Language 1 prefix (optional)'**
+  String get importFormatNewLine4;
+
+  /// No description provided for @importFormatNewLine5.
+  ///
+  /// In en, this message translates to:
+  /// **'• L1post=<text> - Language 1 suffix (optional)'**
+  String get importFormatNewLine5;
+
+  /// No description provided for @importFormatNewLine6.
+  ///
+  /// In en, this message translates to:
+  /// **'• L2pre=<text> - Language 2 prefix (optional)'**
+  String get importFormatNewLine6;
+
+  /// No description provided for @importFormatNewLine7.
+  ///
+  /// In en, this message translates to:
+  /// **'• L2post=<text> - Language 2 suffix (optional)'**
+  String get importFormatNewLine7;
+
+  /// No description provided for @importFormatNewLine8.
+  ///
+  /// In en, this message translates to:
+  /// **'• EX=<L1 text>:::<L2 text> - Example (optional, can be multiple)'**
+  String get importFormatNewLine8;
+
+  /// No description provided for @importFormatNewLine9.
+  ///
+  /// In en, this message translates to:
+  /// **'• CAT=<cat1>:::<cat2>:::<cat3> - Categories (optional)'**
+  String get importFormatNewLine9;
+
+  /// No description provided for @importFormatNewLine10.
+  ///
+  /// In en, this message translates to:
+  /// **'• At least one of L1= or L2= must be present'**
+  String get importFormatNewLine10;
+
+  /// No description provided for @importFormatNewLine11.
+  ///
+  /// In en, this message translates to:
+  /// **'• Empty lines are ignored'**
+  String get importFormatNewLine11;
+
+  /// No description provided for @importFormatNewLine12.
+  ///
+  /// In en, this message translates to:
+  /// **'• Duplicates are skipped'**
+  String get importFormatNewLine12;
+
+  /// No description provided for @invalidImportLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid line'**
+  String get invalidImportLine;
+
+  /// No description provided for @missingRequiredFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing \'L1=\' vagy \'L2=\''**
+  String get missingRequiredFields;
+
+  /// No description provided for @unknownField.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown field prefix'**
+  String get unknownField;
+
   /// No description provided for @andMore.
   ///
   /// In en, this message translates to:
@@ -1586,6 +1688,324 @@ abstract class AppLocalizations {
   /// **'Export Before Deleting?'**
   String get exportBeforeDelete;
 
+  /// No description provided for @aiTextAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Text Analysis'**
+  String get aiTextAnalysis;
+
+  /// No description provided for @aiTextAnalysisImport.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Text Analysis Import'**
+  String get aiTextAnalysisImport;
+
+  /// No description provided for @knowledgeLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Knowledge Level'**
+  String get knowledgeLevel;
+
+  /// No description provided for @a1Beginner.
+  ///
+  /// In en, this message translates to:
+  /// **'A1 - Beginner'**
+  String get a1Beginner;
+
+  /// No description provided for @a2Elementary.
+  ///
+  /// In en, this message translates to:
+  /// **'A2 - Elementary'**
+  String get a2Elementary;
+
+  /// No description provided for @b1Intermediate.
+  ///
+  /// In en, this message translates to:
+  /// **'B1 - Intermediate'**
+  String get b1Intermediate;
+
+  /// No description provided for @b2UpperIntermediate.
+  ///
+  /// In en, this message translates to:
+  /// **'B2 - Upper Intermediate'**
+  String get b2UpperIntermediate;
+
+  /// No description provided for @c1Advanced.
+  ///
+  /// In en, this message translates to:
+  /// **'C1 - Advanced'**
+  String get c1Advanced;
+
+  /// No description provided for @c2Proficient.
+  ///
+  /// In en, this message translates to:
+  /// **'C2 - Proficient'**
+  String get c2Proficient;
+
+  /// No description provided for @pasteTextHere.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste your text here...'**
+  String get pasteTextHere;
+
+  /// No description provided for @extractWords.
+  ///
+  /// In en, this message translates to:
+  /// **'Extract Words'**
+  String get extractWords;
+
+  /// No description provided for @extractExpressions.
+  ///
+  /// In en, this message translates to:
+  /// **'Extract Expressions'**
+  String get extractExpressions;
+
+  /// No description provided for @maxItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum Items'**
+  String get maxItems;
+
+  /// No description provided for @maxItemsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave empty for no limit'**
+  String get maxItemsHint;
+
+  /// No description provided for @categoryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Category Name'**
+  String get categoryName;
+
+  /// No description provided for @categoryNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Name for imported items category'**
+  String get categoryNameHint;
+
+  /// No description provided for @analyzeText.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyze Text'**
+  String get analyzeText;
+
+  /// No description provided for @configureAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure Analysis'**
+  String get configureAnalysis;
+
+  /// No description provided for @openaiModel.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Model'**
+  String get openaiModel;
+
+  /// No description provided for @openaiModelDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Select ChatGPT model'**
+  String get openaiModelDescription;
+
+  /// No description provided for @modelGpt35Turbo.
+  ///
+  /// In en, this message translates to:
+  /// **'GPT-3.5 Turbo'**
+  String get modelGpt35Turbo;
+
+  /// No description provided for @modelGpt35Turbo16k.
+  ///
+  /// In en, this message translates to:
+  /// **'GPT-3.5 Turbo 16K'**
+  String get modelGpt35Turbo16k;
+
+  /// No description provided for @modelGpt4.
+  ///
+  /// In en, this message translates to:
+  /// **'GPT-4'**
+  String get modelGpt4;
+
+  /// No description provided for @modelGpt4Turbo.
+  ///
+  /// In en, this message translates to:
+  /// **'GPT-4 Turbo'**
+  String get modelGpt4Turbo;
+
+  /// No description provided for @modelGpt35TurboDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast and cost-effective; standard for production'**
+  String get modelGpt35TurboDesc;
+
+  /// No description provided for @modelGpt35Turbo16kDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Same as GPT-3.5, but 16K token context window'**
+  String get modelGpt35Turbo16kDesc;
+
+  /// No description provided for @modelGpt4Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Higher accuracy/reasoning; slower and more expensive'**
+  String get modelGpt4Desc;
+
+  /// No description provided for @modelGpt4TurboDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Faster, cheaper, high accuracy; improved context'**
+  String get modelGpt4TurboDesc;
+
+  /// No description provided for @analyzing.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing...'**
+  String get analyzing;
+
+  /// No description provided for @languageDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'Language Detected'**
+  String get languageDetected;
+
+  /// No description provided for @itemsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Items Found'**
+  String get itemsFound;
+
+  /// No description provided for @selectItemsToImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Items to Import'**
+  String get selectItemsToImport;
+
+  /// No description provided for @importSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Selected'**
+  String get importSelected;
+
+  /// No description provided for @importing.
+  ///
+  /// In en, this message translates to:
+  /// **'Importing...'**
+  String get importing;
+
+  /// No description provided for @itemsImported.
+  ///
+  /// In en, this message translates to:
+  /// **'Items imported successfully'**
+  String get itemsImported;
+
+  /// No description provided for @noItemsSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'No items selected'**
+  String get noItemsSelected;
+
+  /// No description provided for @selectAtLeastOneType.
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least one type (words or expressions)'**
+  String get selectAtLeastOneType;
+
+  /// No description provided for @languageNotMatching.
+  ///
+  /// In en, this message translates to:
+  /// **'The detected language does not match any language in the package'**
+  String get languageNotMatching;
+
+  /// No description provided for @openaiKeyRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'OpenAI API key is required for this feature'**
+  String get openaiKeyRequired;
+
+  /// No description provided for @analyzingProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing: {current} / {total}'**
+  String analyzingProgress(Object current, Object total);
+
+  /// No description provided for @translatingProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Translating: {current} / {total}'**
+  String translatingProgress(Object current, Object total);
+
+  /// No description provided for @duplicate.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get duplicate;
+
+  /// No description provided for @detectingLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Detecting language...'**
+  String get detectingLanguage;
+
+  /// No description provided for @extractingItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Extracting items...'**
+  String get extractingItems;
+
+  /// No description provided for @checkingDuplicates.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking for duplicates...'**
+  String get checkingDuplicates;
+
+  /// No description provided for @translating.
+  ///
+  /// In en, this message translates to:
+  /// **'Translating...'**
+  String get translating;
+
+  /// No description provided for @generatingExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating examples...'**
+  String get generatingExamples;
+
+  /// No description provided for @errorAnalyzingText.
+  ///
+  /// In en, this message translates to:
+  /// **'Error analyzing text'**
+  String get errorAnalyzingText;
+
+  /// No description provided for @warning.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning'**
+  String get warning;
+
+  /// No description provided for @textIsVeryLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'The text is very large'**
+  String get textIsVeryLarge;
+
+  /// No description provided for @words.
+  ///
+  /// In en, this message translates to:
+  /// **'words'**
+  String get words;
+
+  /// No description provided for @continueAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'This may take longer to process and will be analyzed in chunks. Do you want to continue'**
+  String get continueAnalysis;
+
+  /// No description provided for @continueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueLabel;
+
   /// No description provided for @exportBeforeDeleteMessage.
   ///
   /// In en, this message translates to:
@@ -1663,6 +2083,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error loading settings: {error}'**
   String errorLoadingSettings(Object error);
+
+  /// No description provided for @selectPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Package'**
+  String get selectPackage;
+
+  /// No description provided for @noPackagesAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No packages available'**
+  String get noPackagesAvailable;
+
+  /// No description provided for @possibleSolutions.
+  ///
+  /// In en, this message translates to:
+  /// **'Possible Solutions'**
+  String get possibleSolutions;
+
+  /// No description provided for @technicalDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical Details'**
+  String get technicalDetails;
+
+  /// No description provided for @checkApiKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your OpenAI API key'**
+  String get checkApiKey;
+
+  /// No description provided for @ensureValidOpenAIKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Ensure the API key is valid and active'**
+  String get ensureValidOpenAIKey;
+
+  /// No description provided for @verifyKeyInSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify the key in Settings'**
+  String get verifyKeyInSettings;
+
+  /// No description provided for @rateLimitExceeded.
+  ///
+  /// In en, this message translates to:
+  /// **'API rate limit exceeded'**
+  String get rateLimitExceeded;
+
+  /// No description provided for @waitAndRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Wait a few minutes and try again'**
+  String get waitAndRetry;
+
+  /// No description provided for @checkAccountQuota.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your OpenAI account quota'**
+  String get checkAccountQuota;
+
+  /// No description provided for @invalidRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid request format'**
+  String get invalidRequest;
+
+  /// No description provided for @tryReducingTextLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Try reducing the text length'**
+  String get tryReducingTextLength;
+
+  /// No description provided for @checkTextFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Check that the text format is correct'**
+  String get checkTextFormat;
+
+  /// No description provided for @checkInternetConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your internet connection'**
+  String get checkInternetConnection;
+
+  /// No description provided for @retryInMoment.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry in a moment'**
+  String get retryInMoment;
+
+  /// No description provided for @checkFirewall.
+  ///
+  /// In en, this message translates to:
+  /// **'Check firewall settings'**
+  String get checkFirewall;
+
+  /// No description provided for @textMayBeTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Text may be too short'**
+  String get textMayBeTooShort;
+
+  /// No description provided for @tryDifferentKnowledgeLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different knowledge level'**
+  String get tryDifferentKnowledgeLevel;
+
+  /// No description provided for @ensureTextInCorrectLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Ensure text is in the correct language'**
+  String get ensureTextInCorrectLanguage;
+
+  /// No description provided for @requestTimedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Request timed out'**
+  String get requestTimedOut;
+
+  /// No description provided for @textMayBeTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Text may be too long'**
+  String get textMayBeTooLong;
+
+  /// No description provided for @tryAgainOrReduceSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again or reduce text size'**
+  String get tryAgainOrReduceSize;
+
+  /// No description provided for @unexpectedError.
+  ///
+  /// In en, this message translates to:
+  /// **'An unexpected error occurred'**
+  String get unexpectedError;
+
+  /// No description provided for @checkErrorDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Check error details below'**
+  String get checkErrorDetails;
+
+  /// No description provided for @tryAgainLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again later'**
+  String get tryAgainLater;
+
+  /// No description provided for @translationServiceFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Translation service failed'**
+  String get translationServiceFailed;
+
+  /// No description provided for @checkApiKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your API keys (DeepL, OpenAI)'**
+  String get checkApiKeys;
+
+  /// No description provided for @retryImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry the import'**
+  String get retryImport;
+
+  /// No description provided for @exampleGenerationFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Example generation failed'**
+  String get exampleGenerationFailed;
+
+  /// No description provided for @itemsStillImported.
+  ///
+  /// In en, this message translates to:
+  /// **'Items were still imported'**
+  String get itemsStillImported;
+
+  /// No description provided for @canAddExamplesManually.
+  ///
+  /// In en, this message translates to:
+  /// **'You can add examples manually later'**
+  String get canAddExamplesManually;
+
+  /// No description provided for @databaseError.
+  ///
+  /// In en, this message translates to:
+  /// **'Database error occurred'**
+  String get databaseError;
+
+  /// No description provided for @checkStorageSpace.
+  ///
+  /// In en, this message translates to:
+  /// **'Check available storage space'**
+  String get checkStorageSpace;
+
+  /// No description provided for @restartApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Try restarting the app'**
+  String get restartApp;
 }
 
 class _AppLocalizationsDelegate

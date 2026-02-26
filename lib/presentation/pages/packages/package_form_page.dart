@@ -15,6 +15,7 @@ import '../../../data/models/language_package_group.dart';
 import '../../../data/models/item.dart';
 import '../../../data/models/item_language_data.dart';
 import '../../../data/models/category.dart';
+import '../../../data/models/example_sentence.dart';
 import '../../../data/repositories/language_package_repository.dart';
 import '../../../data/repositories/language_package_group_repository.dart';
 import '../../../data/repositories/category_repository.dart';
@@ -22,6 +23,7 @@ import '../../../data/repositories/item_repository.dart';
 import '../../../data/repositories/import_export_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../widgets/package_icon.dart';
+import '../ai_import/ai_text_analysis_page.dart';
 
 /// Page for creating or editing a language package
 class PackageFormPage extends ConsumerStatefulWidget {
@@ -1025,6 +1027,22 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                 ],
               ),
               SizedBox(height: AppTheme.spacing12),
+              // AI Text Analysis button
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: _isPurchased ? null : _openAITextAnalysis,
+                  icon: const Icon(Icons.psychology),
+                  label: Text(l10n.aiTextAnalysis),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.secondary,
+                    foregroundColor: Theme.of(context).colorScheme.onSecondary,
+                    disabledBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                    disabledForegroundColor: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.38),
+                  ),
+                ),
+              ),
+              SizedBox(height: AppTheme.spacing12),
             ],
             // Main action buttons - responsive layout
             if (buttonsCanFitInOneRow)
@@ -1149,6 +1167,8 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
       _isLoading = true;
     });
 
+    final wasCreating = !_isEditMode;
+
     try {
       final package = LanguagePackage(
         id: widget.package?.id ?? const Uuid().v4(),
@@ -1196,7 +1216,19 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
             backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
-        Navigator.of(context).pop(true); // Return true to indicate success
+
+        if (wasCreating) {
+          // If we just created the package, navigate to edit mode with the new package
+          // This will make all import/export/delete buttons visible
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+              builder: (context) => PackageFormPage(package: package),
+            ),
+          );
+        } else {
+          // If editing, just pop back
+          Navigator.of(context).pop(true);
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -1511,12 +1543,43 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         return;
       }
 
-      final importResult = await _processImportLines(lines);
+      // Create a ValueNotifier for progress updates
+      final progressNotifier = ValueNotifier<_ImportProgress>(
+        _ImportProgress(current: 0, total: lines.length),
+      );
+
+      // Show progress dialog
+      if (mounted) {
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => _ImportProgressDialog(
+            progressNotifier: progressNotifier,
+          ),
+        );
+      }
+
+      final importResult = await _processImportLines(
+        lines,
+        onProgress: (current, total) {
+          progressNotifier.value = _ImportProgress(current: current, total: total);
+        },
+      );
+
+      // Close progress dialog
+      if (mounted) {
+        Navigator.of(context).pop();
+      }
 
       if (mounted) {
         _showImportResultDialog(l10n, importResult);
       }
     } catch (e) {
+      // Close progress dialog if open
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -1534,10 +1597,24 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     }
   }
 
-  Future<_ImportResult> _processImportLines(List<String> lines) async {
+  Future<void> _openAITextAnalysis() async {
+    if (widget.package == null) return;
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AITextAnalysisPage(package: widget.package!),
+      ),
+    );
+  }
+
+  Future<_ImportResult> _processImportLines(
+    List<String> lines,
+    {void Function(int current, int total)? onProgress}
+  ) async {
     final successfulItems = <String>[];
     final failedItems = <String>[];
     final package = widget.package!;
+    final l10n = AppLocalizations.of(context)!;
 
     // Get existing items to check for duplicates
     final existingCategories = await _categoryRepo.getCategoriesForPackage(package.id);
@@ -1558,35 +1635,79 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
       existingItemKeys.add(key);
     }
 
-    for (final line in lines) {
+    for (int lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+      final line = lines[lineIndex];
+
+      // Report progress
+      onProgress?.call(lineIndex + 1, lines.length);
+
       try {
-        final parts = line.split('|');
+        // Split by main delimiter
+        final parts = line.split('---');
 
-        if (parts.length < 2) {
-          failedItems.add('$line (Invalid format: missing fields)');
+        // Parse fields
+        String? lang1Text;
+        String? lang1Pre;
+        String? lang1Post;
+        String? lang2Text;
+        String? lang2Pre;
+        String? lang2Post;
+        final examples = <Map<String, String>>[];
+        final categories = <String>[];
+
+        for (final part in parts) {
+          final trimmedPart = part.trim();
+          if (trimmedPart.isEmpty) continue;
+
+          if (trimmedPart.startsWith('L1=')) {
+            lang1Text = trimmedPart.substring(3).trim();
+          } else if (trimmedPart.startsWith('L1pre=')) {
+            lang1Pre = trimmedPart.substring(6).trim();
+          } else if (trimmedPart.startsWith('L1post=')) {
+            lang1Post = trimmedPart.substring(7).trim();
+          } else if (trimmedPart.startsWith('L2=')) {
+            lang2Text = trimmedPart.substring(3).trim();
+          } else if (trimmedPart.startsWith('L2pre=')) {
+            lang2Pre = trimmedPart.substring(6).trim();
+          } else if (trimmedPart.startsWith('L2post=')) {
+            lang2Post = trimmedPart.substring(7).trim();
+          } else if (trimmedPart.startsWith('EX=')) {
+            final exampleContent = trimmedPart.substring(3).trim();
+            final exampleParts = exampleContent.split(':::');
+            if (exampleParts.length == 2) {
+              examples.add({
+                'language1': exampleParts[0].trim(),
+                'language2': exampleParts[1].trim(),
+              });
+            }
+          } else if (trimmedPart.startsWith('CAT=')) {
+            final catContent = trimmedPart.substring(4).trim();
+            categories.addAll(
+              catContent.split(':::').map((c) => c.trim()).where((c) => c.isNotEmpty)
+            );
+          } else {
+            // Unknown field prefix - this is an error
+            failedItems.add('${l10n.invalidImportLine} ${lineIndex + 1}: ${l10n.unknownField} "$trimmedPart"');
+            throw Exception(l10n.unknownField);
+          }
+        }
+
+        // Validate: at least L1 or L2 must be present
+        if ((lang1Text == null || lang1Text.isEmpty) &&
+            (lang2Text == null || lang2Text.isEmpty)) {
+          failedItems.add('${l10n.invalidImportLine} ${lineIndex + 1}: ${l10n.missingRequiredFields}');
           continue;
         }
 
-        final lang1Text = parts[0].trim();
-        final lang2Text = parts[1].trim();
-
-        if (lang1Text.isEmpty || lang2Text.isEmpty) {
-          failedItems.add('$line (Invalid format: empty text)');
-          continue;
-        }
+        // Use empty string if one is missing
+        lang1Text = lang1Text ?? '';
+        lang2Text = lang2Text ?? '';
 
         // Check for duplicate
         final itemKey = '${lang1Text.toLowerCase()}|${lang2Text.toLowerCase()}';
         if (existingItemKeys.contains(itemKey)) {
-          failedItems.add('$line (Duplicate item)');
+          failedItems.add('${l10n.invalidImportLine} ${lineIndex + 1}: Duplicate item');
           continue;
-        }
-
-        // Parse categories
-        final categories = <String>[];
-        if (parts.length >= 3 && parts[2].trim().isNotEmpty) {
-          final catPart = parts[2].trim();
-          categories.addAll(catPart.split(';').map((c) => c.trim()).where((c) => c.isNotEmpty));
         }
 
         // If no categories specified, add to a default "Imported" category
@@ -1614,6 +1735,13 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
           itemCategoryIds.add(categoryMap[catKey]!.id);
         }
 
+        // Convert examples to ExampleSentence objects
+        final exampleSentences = examples.map((ex) => ExampleSentence(
+          id: const Uuid().v4(),
+          textLanguage1: ex['language1'] ?? '',
+          textLanguage2: ex['language2'] ?? '',
+        )).toList();
+
         // Create item
         final item = Item(
           id: const Uuid().v4(),
@@ -1622,28 +1750,35 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
           language1Data: ItemLanguageData(
             languageCode: package.languageCode1,
             text: lang1Text,
-            preItem: null,
-            postItem: null,
+            preItem: lang1Pre?.isNotEmpty == true ? lang1Pre : null,
+            postItem: lang1Post?.isNotEmpty == true ? lang1Post : null,
           ),
           language2Data: ItemLanguageData(
             languageCode: package.languageCode2,
             text: lang2Text,
-            preItem: null,
-            postItem: null,
+            preItem: lang2Pre?.isNotEmpty == true ? lang2Pre : null,
+            postItem: lang2Post?.isNotEmpty == true ? lang2Post : null,
           ),
-          examples: [],
+          examples: exampleSentences,
           isKnown: false,
           isFavourite: false,
           isImportant: false,
-          dontKnowCounter: 0,
+          dontKnowCounter: 1,
           lastReviewedAt: null,
         );
 
         await _itemRepo.insertItem(item);
         existingItemKeys.add(itemKey);
-        successfulItems.add('$lang1Text | $lang2Text (${categories.join(", ")})');
+
+        final displayText = lang1Text.isNotEmpty && lang2Text.isNotEmpty
+            ? '$lang1Text | $lang2Text'
+            : (lang1Text.isNotEmpty ? lang1Text : lang2Text);
+        successfulItems.add('$displayText (${categories.join(", ")})');
       } catch (e) {
-        failedItems.add('$line (Error: $e)');
+        // Only add to failed if not already added
+        if (!failedItems.any((f) => f.startsWith('${l10n.invalidImportLine} ${lineIndex + 1}'))) {
+          failedItems.add('${l10n.invalidImportLine} ${lineIndex + 1}: $e');
+        }
       }
     }
 
@@ -1663,61 +1798,77 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Text(l10n.importFormatDescription),
-              SizedBox(height: AppTheme.spacing12),
+              Text(l10n.importFormatNewDescription),
+              const SizedBox(height: AppTheme.spacing12),
               Text(
                 'Format:',
-                style: TextStyle(fontWeight: FontWeight.bold),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: AppTheme.spacing12),
+              const SizedBox(height: AppTheme.spacing12),
               Container(
-                padding: EdgeInsets.all(AppTheme.spacing12),
+                padding: const EdgeInsets.all(AppTheme.spacing12),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
                 ),
-                child: Text(
-                  '<${widget.package!.languageName1}>|<${widget.package!.languageName2}>|<category1>;<category2>;',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                child: const Text(
+                  'L1pre=<prefix>---L1=<main text>---L1post=<suffix>---'
+                  'L2pre=<prefix>---L2=<main text>---L2post=<suffix>---'
+                  'EX=<L1 example>:::<L2 example>---'
+                  'EX=<L1 example2>:::<L2 example2>---'
+                  'CAT=<category1>:::<category2>:::<category3>',
+                  style: TextStyle(
                     fontFamily: 'monospace',
+                    fontSize: 11,
                   ),
                 ),
               ),
-              SizedBox(height: AppTheme.spacing12),
+              const SizedBox(height: AppTheme.spacing12),
               Text(
-                'Examples:',
+                'Example:',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: AppTheme.spacing12),
+              const SizedBox(height: AppTheme.spacing12),
               Container(
-                padding: EdgeInsets.all(AppTheme.spacing12),
+                padding: const EdgeInsets.all(AppTheme.spacing12),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
                 ),
-                child: Text(
-                  'hello|hola|greetings;\ncat|gato|animals;pets;\nbook|libro|',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                child: const Text(
+                  'L1pre=the---L1=Be on a lookout for sensitive data---L1post=---'
+                  'L2pre=---L2=Legyen résen az érzékeny adatokkal kapcsolatban---'
+                  'L2Post=---EX=Be careful when sharing files:::Legyen óvatos fájlmegosztáskor---'
+                  'EX=Always check before upload:::Mindig ellenőrizze feltöltés előtt---'
+                  'CAT=Security:::Awareness:::Data Protection',
+                  style: TextStyle(
                     fontFamily: 'monospace',
+                    fontSize: 10,
                   ),
                 ),
               ),
-              SizedBox(height: AppTheme.spacing12),
+              const SizedBox(height: AppTheme.spacing12),
               Text(
                 l10n.importFormatNotes,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: AppTheme.spacing12),
-              Text(l10n.importFormatLine1),
-              Text(l10n.importFormatLine2),
-              Text(l10n.importFormatLine3),
-              Text(l10n.importFormatLine4),
-              Text(l10n.importFormatLine5),
-              Text(l10n.importFormatLine6),
+              const SizedBox(height: AppTheme.spacing12),
+              Text(l10n.importFormatNewLine1),
+              Text(l10n.importFormatNewLine2),
+              Text(l10n.importFormatNewLine3),
+              Text(l10n.importFormatNewLine4),
+              Text(l10n.importFormatNewLine5),
+              Text(l10n.importFormatNewLine6),
+              Text(l10n.importFormatNewLine7),
+              Text(l10n.importFormatNewLine8),
+              Text(l10n.importFormatNewLine9),
+              Text(l10n.importFormatNewLine10),
+              Text(l10n.importFormatNewLine11),
+              Text(l10n.importFormatNewLine12),
             ],
           ),
         ),
@@ -1805,6 +1956,55 @@ class _ImportResult {
     required this.successful,
     required this.failed,
   });
+}
+
+class _ImportProgress {
+  final int current;
+  final int total;
+
+  _ImportProgress({
+    required this.current,
+    required this.total,
+  });
+
+  double get progress => total > 0 ? current / total : 0.0;
+}
+
+class _ImportProgressDialog extends StatelessWidget {
+  final ValueNotifier<_ImportProgress> progressNotifier;
+
+  const _ImportProgressDialog({
+    required this.progressNotifier,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    return AlertDialog(
+      title: Text(l10n.importingPackage),
+      content: ValueListenableBuilder<_ImportProgress>(
+        valueListenable: progressNotifier,
+        builder: (context, progress, child) {
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              LinearProgressIndicator(
+                value: progress.progress,
+                minHeight: 8,
+              ),
+              const SizedBox(height: AppTheme.spacing12),
+              Text(
+                l10n.importProgress(progress.current, progress.total),
+                style: theme.textTheme.bodyMedium,
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
 }
 
 // Language Code Picker Dialog

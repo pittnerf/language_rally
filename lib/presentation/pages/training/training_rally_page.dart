@@ -704,9 +704,9 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                     borderRadius: BorderRadius.circular(8),
                     child: _buildStatusBadge(
                       theme,
-                      Icons.star,
+                      Icons.bookmark,
                       item.isImportant,
-                      theme.colorScheme.primary,
+                      theme.colorScheme.secondary,
                     ),
                   ),
                   const SizedBox(width: 8),
@@ -865,7 +865,9 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
     final preText = languageData.preItem ?? '';
     final mainText = languageData.text;
     final postText = languageData.postItem ?? '';
-    final languageName = _displayLanguage1 ? widget.package.languageName1 : widget.package.languageName2;
+    final languageCode = (_displayLanguage1 ? widget.package.languageCode1 : widget.package.languageCode2)
+        .split('-')[0]
+        .toUpperCase();
 
     // Check screen width for responsive design
     final screenWidth = MediaQuery.of(context).size.width;
@@ -882,24 +884,12 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
             Row(
               children: [
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.question,
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: theme.colorScheme.onPrimaryContainer,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: AppTheme.spacing4),
-                      Text(
-                        languageName,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    '${l10n.question} - $languageCode',
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: theme.colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 IconButton(
@@ -910,10 +900,10 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                   tooltip: 'Speak text',
                   onPressed: () {
                     final fullText = '${preText.isNotEmpty ? "$preText " : ""}$mainText';
-                    final languageCode = _displayLanguage1
+                    final languageCodeFull = _displayLanguage1
                         ? item.language1Data.languageCode
                         : item.language2Data.languageCode;
-                    _ttsService.speak(fullText, languageCode);
+                    _ttsService.speak(fullText, languageCodeFull);
                   },
                 ),
               ],
@@ -957,7 +947,9 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
     final preText = languageData.preItem ?? '';
     final mainText = languageData.text;
     final postText = languageData.postItem ?? '';
-    final languageName = !_displayLanguage1 ? widget.package.languageName1 : widget.package.languageName2;
+    final languageCode = (!_displayLanguage1 ? widget.package.languageCode1 : widget.package.languageCode2)
+        .split('-')[0]
+        .toUpperCase();
 
     // Check screen width for responsive design
     final screenWidth = MediaQuery.of(context).size.width;
@@ -974,24 +966,12 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
             Row(
               children: [
                 Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.answer,
-                        style: theme.textTheme.labelLarge?.copyWith(
-                          color: theme.colorScheme.onSecondaryContainer,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: AppTheme.spacing4),
-                      Text(
-                        languageName,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSecondaryContainer.withValues(alpha: 0.7),
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    '${l10n.answer} - $languageCode',
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: theme.colorScheme.onSecondaryContainer,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 IconButton(
@@ -1002,10 +982,10 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                   tooltip: 'Speak text',
                   onPressed: () {
                     final fullText = '${preText.isNotEmpty ? "$preText " : ""}$mainText';
-                    final languageCode = !_displayLanguage1
+                    final languageCodeFull = !_displayLanguage1
                         ? item.language1Data.languageCode
                         : item.language2Data.languageCode;
-                    _ttsService.speak(fullText, languageCode);
+                    _ttsService.speak(fullText, languageCodeFull);
                   },
                 ),
               ],
@@ -1383,9 +1363,15 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
   }
 
   Widget _buildStatChip(ThemeData theme, String label, int value, Color color) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isPortrait = screenWidth < 900;
+
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        padding: EdgeInsets.symmetric(
+          horizontal: isPortrait ? 4 : 8,
+          vertical: isPortrait ? 4 : 6,
+        ),
         decoration: BoxDecoration(
           color: color.withValues(alpha: 0.1),
           borderRadius: BorderRadius.circular(8),
@@ -1394,16 +1380,19 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
-              '$label: ',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: color,
-                fontWeight: FontWeight.w500,
+            Flexible(
+              child: Text(
+                '$label: ',
+                style: (isPortrait ? theme.textTheme.labelSmall : theme.textTheme.bodySmall)?.copyWith(
+                  color: color,
+                  fontWeight: FontWeight.w500,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             Text(
               value.toString(),
-              style: theme.textTheme.bodySmall?.copyWith(
+              style: (isPortrait ? theme.textTheme.labelSmall : theme.textTheme.bodySmall)?.copyWith(
                 color: color,
                 fontWeight: FontWeight.bold,
               ),

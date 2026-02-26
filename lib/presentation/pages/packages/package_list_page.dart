@@ -1169,8 +1169,8 @@ class _PackageCardState extends State<PackageCard> {
   Widget _buildExpandedHeader(BuildContext context) {
     return Row(
       children: [
-        if (!widget.isInGrid) _buildDragHandle(context, size: 20),
-        if (!widget.isInGrid) SizedBox(width: AppTheme.spacing8),
+        _buildDragHandle(context, size: 20),
+        SizedBox(width: AppTheme.spacing8),
         _buildPackageIcon(size: 40),
         SizedBox(width: AppTheme.spacing8),
         _buildLanguageInfo(context, isCompact: false),

@@ -346,6 +346,69 @@ class AppLocalizationsHu extends AppLocalizations {
   String get importFormatLine6 => '• A duplikátumok kihagyásra kerülnek';
 
   @override
+  String importProgress(Object current, Object total) {
+    return '$current / $total importálása';
+  }
+
+  @override
+  String get importFormatNewDescription =>
+      'Elemek importálása szöveges fájlból. Minden sor egy elemet tartalmaz, a mezőket --- választja el';
+
+  @override
+  String get importFormatNewLine1 => '• Fő elválasztó: ---';
+
+  @override
+  String get importFormatNewLine2 =>
+      '• L1=<szöveg> - 1. nyelv fő szövege (kötelező, ha L2 hiányzik)';
+
+  @override
+  String get importFormatNewLine3 =>
+      '• L2=<szöveg> - 2. nyelv fő szövege (kötelező, ha L1 hiányzik)';
+
+  @override
+  String get importFormatNewLine4 =>
+      '• L1pre=<szöveg> - 1. nyelv előtag (opcionális)';
+
+  @override
+  String get importFormatNewLine5 =>
+      '• L1post=<szöveg> - 1. nyelv utótag (opcionális)';
+
+  @override
+  String get importFormatNewLine6 =>
+      '• L2pre=<szöveg> - 2. nyelv előtag (opcionális)';
+
+  @override
+  String get importFormatNewLine7 =>
+      '• L2post=<szöveg> - 2. nyelv utótag (opcionális)';
+
+  @override
+  String get importFormatNewLine8 =>
+      '• EX=<L1 szöveg>:::<L2 szöveg> - Példa (opcionális, többször is szerepelhet)';
+
+  @override
+  String get importFormatNewLine9 =>
+      '• CAT=<kat1>:::<kat2>:::<kat3> - Kategóriák (opcionális)';
+
+  @override
+  String get importFormatNewLine10 => '• Legalább az L1= vagy az L2= kötelező';
+
+  @override
+  String get importFormatNewLine11 =>
+      '• Az üres sorok figyelmen kívül maradnak';
+
+  @override
+  String get importFormatNewLine12 => '• A duplikátumok kihagyásra kerülnek';
+
+  @override
+  String get invalidImportLine => 'Érvénytelen sor';
+
+  @override
+  String get missingRequiredFields => 'Hiányzik \'L1=\' vagy \'L2=\'';
+
+  @override
+  String get unknownField => 'Ismeretlen mező előtag';
+
+  @override
   String andMore(Object count) {
     return '... és még $count';
   }
@@ -470,7 +533,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Válaszd ki, melyik példákat szeretnéd hozzáadni:';
 
   @override
-  String get deselectAll => 'Összes kijelölésének törlése';
+  String get deselectAll => 'Összes kijelölés törlése';
 
   @override
   String get selectAll => 'Összes kijelölése';
@@ -809,7 +872,177 @@ class AppLocalizationsHu extends AppLocalizations {
   String get iDidNotKnowEither => 'Ezt Sem Tudtam';
 
   @override
-  String get exportBeforeDelete => 'Exportálás Törlés Előtt?';
+  String get exportBeforeDelete => 'Exportálja törlés előtt?';
+
+  @override
+  String get aiTextAnalysis => 'AI Szövegelemzés';
+
+  @override
+  String get aiTextAnalysisImport => 'AI Szövegelemzés Import';
+
+  @override
+  String get knowledgeLevel => 'Tudásszint';
+
+  @override
+  String get a1Beginner => 'A1 - Kezdő';
+
+  @override
+  String get a2Elementary => 'A2 - Alapszint';
+
+  @override
+  String get b1Intermediate => 'B1 - Középhaladó';
+
+  @override
+  String get b2UpperIntermediate => 'B2 - Felső középhaladó';
+
+  @override
+  String get c1Advanced => 'C1 - Haladó';
+
+  @override
+  String get c2Proficient => 'C2 - Felsőfokú';
+
+  @override
+  String get pasteTextHere => 'Illessze be ide a szöveget...';
+
+  @override
+  String get extractWords => 'Szavak kinyerése';
+
+  @override
+  String get extractExpressions => 'Kifejezések kinyerése';
+
+  @override
+  String get maxItems => 'Maximum elemszám';
+
+  @override
+  String get maxItemsHint => 'Hagyja üresen korlát nélkül';
+
+  @override
+  String get categoryName => 'Kategória neve';
+
+  @override
+  String get categoryNameHint => 'Név az importált elemek kategóriájához';
+
+  @override
+  String get analyzeText => 'Szöveg elemzése';
+
+  @override
+  String get configureAnalysis => 'Elemzés Beállítása';
+
+  @override
+  String get openaiModel => 'AI Modell';
+
+  @override
+  String get openaiModelDescription => 'ChatGPT modell kiválasztása';
+
+  @override
+  String get modelGpt35Turbo => 'GPT-3.5 Turbo';
+
+  @override
+  String get modelGpt35Turbo16k => 'GPT-3.5 Turbo 16K';
+
+  @override
+  String get modelGpt4 => 'GPT-4';
+
+  @override
+  String get modelGpt4Turbo => 'GPT-4 Turbo';
+
+  @override
+  String get modelGpt35TurboDesc =>
+      'Gyors és költséghatékony; általános használatra';
+
+  @override
+  String get modelGpt35Turbo16kDesc =>
+      'Mint a GPT-3.5, de 16K token kontextusablakkal';
+
+  @override
+  String get modelGpt4Desc => 'Magasabb pontosság/érvelés; lassabb és drágább';
+
+  @override
+  String get modelGpt4TurboDesc =>
+      'Gyorsabb, olcsóbb, magas pontosság; jobb kontextus';
+
+  @override
+  String get analyzing => 'Elemzés folyamatban...';
+
+  @override
+  String get languageDetected => 'Észlelt nyelv';
+
+  @override
+  String get itemsFound => 'Talált elemek';
+
+  @override
+  String get selectItemsToImport => 'Válassza ki az importálandó elemeket';
+
+  @override
+  String get importSelected => 'Kijelöltek importálása';
+
+  @override
+  String get importing => 'Importálás...';
+
+  @override
+  String get itemsImported => 'Elemek sikeresen importálva';
+
+  @override
+  String get noItemsSelected => 'Nincs elem kijelölve';
+
+  @override
+  String get selectAtLeastOneType =>
+      'Válasszon ki legalább egy típust (szavak vagy kifejezések)';
+
+  @override
+  String get languageNotMatching =>
+      'Az észlelt nyelv nem egyezik a csomag egyik nyelvével sem';
+
+  @override
+  String get openaiKeyRequired =>
+      'OpenAI API kulcs szükséges ehhez a funkcióhoz';
+
+  @override
+  String analyzingProgress(Object current, Object total) {
+    return 'Elemzés: $current / $total';
+  }
+
+  @override
+  String translatingProgress(Object current, Object total) {
+    return 'Fordítás: $current / $total';
+  }
+
+  @override
+  String get duplicate => 'Duplikátum';
+
+  @override
+  String get detectingLanguage => 'Nyelv felismerése...';
+
+  @override
+  String get extractingItems => 'Elemek kinyerése...';
+
+  @override
+  String get checkingDuplicates => 'Duplikátumok ellenőrzése...';
+
+  @override
+  String get translating => 'Fordítás...';
+
+  @override
+  String get generatingExamples => 'Példák generálása...';
+
+  @override
+  String get errorAnalyzingText => 'Hiba a szöveg elemzése során';
+
+  @override
+  String get warning => 'Figyelmeztetés';
+
+  @override
+  String get textIsVeryLarge => 'A szöveg nagyon hosszú';
+
+  @override
+  String get words => 'szó';
+
+  @override
+  String get continueAnalysis =>
+      'Az elemzés hosszabb időt vehet igénybe és részletekben lesz feldolgozva. Folytatja';
+
+  @override
+  String get continueLabel => 'Folytatás';
 
   @override
   String get exportBeforeDeleteMessage =>
@@ -862,4 +1095,113 @@ class AppLocalizationsHu extends AppLocalizations {
   String errorLoadingSettings(Object error) {
     return 'Hiba a beállítások betöltésekor: $error';
   }
+
+  @override
+  String get selectPackage => 'Csomag Kiválasztása';
+
+  @override
+  String get noPackagesAvailable => 'Nincsenek elérhető csomagok';
+
+  @override
+  String get possibleSolutions => 'Lehetséges Megoldások';
+
+  @override
+  String get technicalDetails => 'Technikai Részletek';
+
+  @override
+  String get checkApiKey => 'Ellenőrizd az OpenAI API kulcsot';
+
+  @override
+  String get ensureValidOpenAIKey =>
+      'Győződj meg róla, hogy az API kulcs érvényes és aktív';
+
+  @override
+  String get verifyKeyInSettings => 'Ellenőrizd a kulcsot a Beállításokban';
+
+  @override
+  String get rateLimitExceeded => 'API használati korlát túllépve';
+
+  @override
+  String get waitAndRetry => 'Várj néhány percet és próbáld újra';
+
+  @override
+  String get checkAccountQuota => 'Ellenőrizd az OpenAI fiók kvótáját';
+
+  @override
+  String get invalidRequest => 'Érvénytelen kérés formátum';
+
+  @override
+  String get tryReducingTextLength =>
+      'Próbáld meg csökkenteni a szöveg hosszát';
+
+  @override
+  String get checkTextFormat => 'Ellenőrizd, hogy a szöveg formátuma helyes-e';
+
+  @override
+  String get checkInternetConnection => 'Ellenőrizd az internet kapcsolatot';
+
+  @override
+  String get retryInMoment => 'Próbáld újra egy pillanat múlva';
+
+  @override
+  String get checkFirewall => 'Ellenőrizd a tűzfal beállításokat';
+
+  @override
+  String get textMayBeTooShort => 'A szöveg túl rövid lehet';
+
+  @override
+  String get tryDifferentKnowledgeLevel => 'Próbálj ki egy másik tudásszintet';
+
+  @override
+  String get ensureTextInCorrectLanguage =>
+      'Győződj meg róla, hogy a szöveg a megfelelő nyelven van';
+
+  @override
+  String get requestTimedOut => 'A kérés időtúllépés miatt megszakadt';
+
+  @override
+  String get textMayBeTooLong => 'A szöveg túl hosszú lehet';
+
+  @override
+  String get tryAgainOrReduceSize =>
+      'Próbáld újra vagy csökkentsd a szöveg méretét';
+
+  @override
+  String get unexpectedError => 'Váratlan hiba történt';
+
+  @override
+  String get checkErrorDetails => 'Nézd meg a hiba részleteit alább';
+
+  @override
+  String get tryAgainLater => 'Próbáld újra később';
+
+  @override
+  String get translationServiceFailed =>
+      'A fordítási szolgáltatás hibát jelzett';
+
+  @override
+  String get checkApiKeys => 'Ellenőrizd az API kulcsokat (DeepL, OpenAI)';
+
+  @override
+  String get retryImport => 'Próbáld újra az importálást';
+
+  @override
+  String get exampleGenerationFailed => 'A példamondatok generálása sikertelen';
+
+  @override
+  String get itemsStillImported =>
+      'Az elemek ettől függetlenül importálva lettek';
+
+  @override
+  String get canAddExamplesManually =>
+      'Később manuálisan is hozzáadhatsz példákat';
+
+  @override
+  String get databaseError => 'Adatbázis hiba történt';
+
+  @override
+  String get checkStorageSpace => 'Ellenőrizd a rendelkezésre álló tárhelyet';
+
+  @override
+  String get restartApp => 'Próbáld újraindítani az alkalmazást';
 }

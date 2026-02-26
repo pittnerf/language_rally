@@ -1,6 +1,6 @@
 // lib/core/services/translation_service.dart
 //
-// Translation Service - Google Translate (free) and DeepL (with API key)
+// Translation Service - Cascading fallback: DeepL Pro → DeepL Free → OpenAI → Google Translate
 //
 
 import 'dart:convert';
@@ -9,17 +9,28 @@ import 'service_error_messages.dart';
 
 class TranslationService {
   static const String _googleTranslateUrl = 'https://translate.googleapis.com/translate_a/single';
-  static const String _deeplBaseUrl = 'https://api-free.deepl.com/v2/translate';
+  static const String _deeplProUrl = 'https://api.deepl.com/v2/translate';
+  static const String _deeplFreeUrl = 'https://api-free.deepl.com/v2/translate';
+  static const String _openaiUrl = 'https://api.openai.com/v1/chat/completions';
 
   final String? _deeplApiKey;
+  final String? _openaiApiKey;
   final ServiceErrorMessages? _errorMessages;
 
-  TranslationService({String? deeplApiKey, ServiceErrorMessages? errorMessages})
-      : _deeplApiKey = deeplApiKey,
+  TranslationService({
+    String? deeplApiKey,
+    String? openaiApiKey,
+    ServiceErrorMessages? errorMessages,
+  })  : _deeplApiKey = deeplApiKey,
+        _openaiApiKey = openaiApiKey,
         _errorMessages = errorMessages;
 
   /// Translate text from source language to target language
-  /// Uses Google Translate (free) by default, DeepL if API key is provided
+  /// Cascading fallback order:
+  /// 1. DeepL Pro (if API key provided)
+  /// 2. DeepL Free (if API key provided and Pro fails)
+  /// 3. OpenAI (if API key provided)
+  /// 4. Google Translate (free, always available)
   ///
   /// [text] - The text to translate
   /// [sourceLang] - Source language code (e.g., 'en-US')
@@ -35,11 +46,39 @@ class TranslationService {
       throw Exception(_errorMessages?.textCannotBeEmpty ?? 'Text cannot be empty');
     }
 
-    // Use DeepL if API key is available, otherwise use Google Translate
+    final errors = <String>[];
+
+    // 1. Try DeepL Pro (if API key available)
     if (_deeplApiKey != null && _deeplApiKey.isNotEmpty) {
-      return await _translateWithDeepL(text, sourceLang, targetLang);
-    } else {
+      try {
+        return await _translateWithDeepL(text, sourceLang, targetLang, _deeplProUrl);
+      } catch (e) {
+        errors.add('DeepL Pro: $e');
+
+        // 2. Try DeepL Free endpoint
+        try {
+          return await _translateWithDeepL(text, sourceLang, targetLang, _deeplFreeUrl);
+        } catch (e2) {
+          errors.add('DeepL Free: $e2');
+        }
+      }
+    }
+
+    // 3. Try OpenAI (if API key available)
+    if (_openaiApiKey != null && _openaiApiKey.isNotEmpty) {
+      try {
+        return await _translateWithOpenAI(text, sourceLang, targetLang);
+      } catch (e) {
+        errors.add('OpenAI: $e');
+      }
+    }
+
+    // 4. Final fallback: Google Translate (always available)
+    try {
       return await _translateWithGoogle(text, sourceLang, targetLang);
+    } catch (e) {
+      errors.add('Google Translate: $e');
+      throw Exception('All translation services failed:\n${errors.join('\n')}');
     }
   }
 
@@ -77,13 +116,14 @@ class TranslationService {
   }
 
   /// Translate using DeepL API (requires API key)
-  Future<String> _translateWithDeepL(String text, String sourceLang, String targetLang) async {
+  /// [baseUrl] - Either Pro or Free endpoint URL
+  Future<String> _translateWithDeepL(String text, String sourceLang, String targetLang, String baseUrl) async {
     try {
       final sourceCode = _convertToDeepLCode(sourceLang);
       final targetCode = _convertToDeepLCode(targetLang);
 
       final response = await http.post(
-        Uri.parse(_deeplBaseUrl),
+        Uri.parse(baseUrl),
         headers: {
           'Authorization': 'DeepL-Auth-Key $_deeplApiKey',
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -117,6 +157,51 @@ class TranslationService {
     }
   }
 
+  /// Translate using OpenAI API (requires API key)
+  Future<String> _translateWithOpenAI(String text, String sourceLang, String targetLang) async {
+    try {
+      final sourceLangName = _getLanguageName(sourceLang);
+      final targetLangName = _getLanguageName(targetLang);
+
+      final response = await http.post(
+        Uri.parse(_openaiUrl),
+        headers: {
+          'Authorization': 'Bearer $_openaiApiKey',
+          'Content-Type': 'application/json',
+        },
+        body: json.encode({
+          'model': 'gpt-3.5-turbo',
+          'messages': [
+            {
+              'role': 'system',
+              'content': 'You are a professional translator. Translate the text accurately and naturally. Respond with ONLY the translation, no explanations.',
+            },
+            {
+              'role': 'user',
+              'content': 'Translate from $sourceLangName to $targetLangName:\n\n$text',
+            }
+          ],
+          'temperature': 0.3,
+          'max_tokens': 500,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        final translation = data['choices'][0]['message']['content'].toString().trim();
+        return translation;
+      } else if (response.statusCode == 401) {
+        throw Exception('Invalid OpenAI API key');
+      } else if (response.statusCode == 429) {
+        throw Exception('OpenAI rate limit exceeded');
+      } else {
+        throw Exception('OpenAI translation failed: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('OpenAI translation error: $e');
+    }
+  }
+
   /// Convert language code to Google Translate format
   /// e.g., 'en-US' -> 'en', 'zh-CN' -> 'zh-CN'
   String _convertToGoogleCode(String languageCode) {
@@ -146,9 +231,57 @@ class TranslationService {
     return parts[0];
   }
 
+  /// Get human-readable language name from code for OpenAI
+  String _getLanguageName(String languageCode) {
+    final code = languageCode.toLowerCase();
+
+    // Common language mappings
+    final Map<String, String> languageMap = {
+      'en': 'English',
+      'es': 'Spanish',
+      'fr': 'French',
+      'de': 'German',
+      'it': 'Italian',
+      'pt': 'Portuguese',
+      'ru': 'Russian',
+      'ja': 'Japanese',
+      'ko': 'Korean',
+      'zh': 'Chinese',
+      'ar': 'Arabic',
+      'hi': 'Hindi',
+      'nl': 'Dutch',
+      'pl': 'Polish',
+      'tr': 'Turkish',
+      'sv': 'Swedish',
+      'da': 'Danish',
+      'no': 'Norwegian',
+      'fi': 'Finnish',
+      'hu': 'Hungarian',
+      'cs': 'Czech',
+      'ro': 'Romanian',
+      'el': 'Greek',
+      'he': 'Hebrew',
+      'th': 'Thai',
+      'vi': 'Vietnamese',
+      'id': 'Indonesian',
+      'uk': 'Ukrainian',
+      'bg': 'Bulgarian',
+      'hr': 'Croatian',
+      'sk': 'Slovak',
+    };
+
+    final langCode = code.split('-')[0];
+    return languageMap[langCode] ?? langCode.toUpperCase();
+  }
+
   /// Check if using DeepL (with API key)
   bool isUsingDeepL() {
     return _deeplApiKey != null && _deeplApiKey.isNotEmpty;
+  }
+
+  /// Check if using OpenAI (with API key)
+  bool isUsingOpenAI() {
+    return _openaiApiKey != null && _openaiApiKey.isNotEmpty;
   }
 
   /// Check if service is ready (always true since Google is free fallback)
@@ -156,9 +289,15 @@ class TranslationService {
     return true; // Always configured (Google is free)
   }
 
-  /// Get the name of the service being used
+  /// Get the name of the primary service being used
   String getServiceName() {
-    return isUsingDeepL() ? 'DeepL' : 'Google Translate';
+    if (isUsingDeepL()) {
+      return 'DeepL (Pro/Free)';
+    } else if (isUsingOpenAI()) {
+      return 'OpenAI + Google Translate';
+    } else {
+      return 'Google Translate';
+    }
   }
 }
 

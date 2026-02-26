@@ -19,15 +19,23 @@ class AppSettings extends Equatable {
   /// OpenAI API key (optional)
   final String? openaiApiKey;
 
+  /// Selected OpenAI model for AI text analysis
+  final String openaiModel;
+
   /// Minimum number of guesses required in training session to earn badges (not visible to user)
   final int minItemsForBadges;
+
+  /// Last trained package ID (hidden setting to remember last training session)
+  final String? lastTrainedPackageId;
 
   const AppSettings({
     this.userLanguageCode = 'en-US',
     this.userLanguageName = 'English (United States)',
     this.deeplApiKey,
     this.openaiApiKey,
+    this.openaiModel = 'gpt-4-turbo',
     this.minItemsForBadges = 10,
+    this.lastTrainedPackageId,
   });
 
   AppSettings copyWith({
@@ -35,14 +43,18 @@ class AppSettings extends Equatable {
     String? userLanguageName,
     String? deeplApiKey,
     String? openaiApiKey,
+    String? openaiModel,
     int? minItemsForBadges,
+    String? lastTrainedPackageId,
   }) {
     return AppSettings(
       userLanguageCode: userLanguageCode ?? this.userLanguageCode,
       userLanguageName: userLanguageName ?? this.userLanguageName,
       deeplApiKey: deeplApiKey ?? this.deeplApiKey,
       openaiApiKey: openaiApiKey ?? this.openaiApiKey,
+      openaiModel: openaiModel ?? this.openaiModel,
       minItemsForBadges: minItemsForBadges ?? this.minItemsForBadges,
+      lastTrainedPackageId: lastTrainedPackageId ?? this.lastTrainedPackageId,
     );
   }
 
@@ -52,7 +64,9 @@ class AppSettings extends Equatable {
         userLanguageName,
         deeplApiKey,
         openaiApiKey,
+        openaiModel,
         minItemsForBadges,
+        lastTrainedPackageId,
       ];
 }
 

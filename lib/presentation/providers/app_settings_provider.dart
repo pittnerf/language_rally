@@ -35,4 +35,9 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
     await _repository.saveOpenaiApiKey(apiKey);
     state = state.copyWith(openaiApiKey: apiKey);
   }
+
+  Future<void> setOpenaiModel(String model) async {
+    await _repository.saveOpenaiModel(model);
+    state = state.copyWith(openaiModel: model);
+  }
 }

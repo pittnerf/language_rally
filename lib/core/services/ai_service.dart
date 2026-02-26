@@ -38,7 +38,7 @@ class AIService {
       throw Exception(_errorMessages?.textCannotBeEmpty ?? 'Text cannot be empty');
     }
 
-    final prompt = '''Help search for 5 practical example sentences using the word or phrase "$text" in $language1Name.
+    final prompt = '''Help search for 1-3 practical example sentences using the word or phrase "$text" in $language1Name.
 
 Requirements:
 1. Examples should be natural, everyday sentences

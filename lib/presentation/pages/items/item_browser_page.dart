@@ -669,15 +669,20 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
         },
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
         child: Padding(
-          padding: const EdgeInsets.all(AppTheme.spacing8),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppTheme.spacing8,
+            vertical: 2,
+          ),
           child: Row(
             children: [
               Expanded(
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Language 1 with speaker icon
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
                           child: _buildLanguageText(
@@ -686,31 +691,36 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                             isSelected
                                 ? theme.colorScheme.onPrimaryContainer
                                 : theme.colorScheme.onSurface,
+
                           ),
+
                         ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.volume_up,
-                            size: 18,
-                            color: isSelected
-                                ? theme.colorScheme.onPrimaryContainer
-                                : theme.colorScheme.primary,
-                          ),
-                          tooltip: l10n.pronounce,
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          onPressed: () {
+                        const SizedBox(width: 4),
+                        InkWell(
+                          onTap: () {
                             final preText = item.language1Data.preItem?.trim() ?? '';
                             final mainText = item.language1Data.text;
                             final fullText = '${preText.isNotEmpty ? "$preText " : ""}$mainText';
                             _ttsService.speak(fullText, item.language1Data.languageCode);
                           },
+                          borderRadius: BorderRadius.circular(4),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: Icon(
+                              Icons.volume_up,
+                              size: 16,
+                              color: isSelected
+                                  ? theme.colorScheme.onPrimaryContainer
+                                  : theme.colorScheme.primary,
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: AppTheme.spacing8),
+                    const SizedBox(height: 1),
                     // Language 2 with speaker icon
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
                           child: _buildLanguageText(
@@ -721,23 +731,25 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                                 : theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
-                        IconButton(
-                          icon: Icon(
-                            Icons.volume_up,
-                            size: 18,
-                            color: isSelected
-                                ? theme.colorScheme.onPrimaryContainer
-                                : theme.colorScheme.primary,
-                          ),
-                          tooltip: l10n.pronounce,
-                          padding: EdgeInsets.zero,
-                          constraints: const BoxConstraints(),
-                          onPressed: () {
+                        const SizedBox(width: 4),
+                        InkWell(
+                          onTap: () {
                             final preText = item.language2Data.preItem?.trim() ?? '';
                             final mainText = item.language2Data.text;
                             final fullText = '${preText.isNotEmpty ? "$preText " : ""}$mainText';
                             _ttsService.speak(fullText, item.language2Data.languageCode);
                           },
+                          borderRadius: BorderRadius.circular(4),
+                          child: Padding(
+                            padding: const EdgeInsets.all(4),
+                            child: Icon(
+                              Icons.volume_up,
+                              size: 16,
+                              color: isSelected
+                                  ? theme.colorScheme.onPrimaryContainer
+                                  : theme.colorScheme.primary,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -747,29 +759,31 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
               const SizedBox(width: AppTheme.spacing8),
               // Status icons
               Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (item.isKnown && item.dontKnowCounter == 0)
                     Icon(
                       Icons.check_circle,
-                      size: 20,
+                      size: 18,
                       color: Colors.green,
                     ),
                   if (!item.isKnown || item.dontKnowCounter > 0)
                     Icon(
                       Icons.error,
-                      size: 20,
+                      size: 18,
                       color: Colors.red,
                     ),
                   if (item.isFavourite)
                     Icon(
                       Icons.star,
-                      size: 20,
+                      size: 18,
                       color: theme.colorScheme.tertiary,
                     ),
                   if (item.isImportant)
                     Icon(
-                      Icons.label_important,
-                      size: 20,
+                      Icons.bookmark,
+                      size: 18,
                       color: theme.colorScheme.secondary,
                     ),
                 ],
@@ -794,7 +808,10 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
 
     return Text(
       displayText,
-      style: theme.textTheme.bodySmall?.copyWith(color: color),
+      style: theme.textTheme.bodySmall?.copyWith(
+        color: color,
+        height: 1.2, // Reduced line height for tighter spacing
+      ),
     );
   }
 
@@ -911,7 +928,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
               if (item.isImportant)
                 Chip(
                   avatar: Icon(
-                    Icons.label_important,
+                    Icons.bookmark,
                     size: 15, // 25% smaller than 20
                     color: theme.colorScheme.secondary,
                   ),
@@ -1181,7 +1198,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                   if (item.isImportant)
                     Chip(
                       avatar: Icon(
-                        Icons.label_important,
+                        Icons.bookmark,
                         size: 20,
                         color: theme.colorScheme.secondary,
                       ),
@@ -1380,7 +1397,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
               if (item.isImportant)
                 _buildCompactChip(
                   theme,
-                  Icons.label_important,
+                  Icons.bookmark,
                   l10n.important,
                   theme.colorScheme.secondary,
                 ),

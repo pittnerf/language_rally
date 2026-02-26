@@ -345,6 +345,69 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importFormatLine6 => '• Duplicates are skipped';
 
   @override
+  String importProgress(Object current, Object total) {
+    return 'Importing $current of $total';
+  }
+
+  @override
+  String get importFormatNewDescription =>
+      'Import items from a text file. Each line should contain an item with fields separated by ---';
+
+  @override
+  String get importFormatNewLine1 => '• Main delimiter: ---';
+
+  @override
+  String get importFormatNewLine2 =>
+      '• L1=<text> - Language 1 main text (required if L2 is missing)';
+
+  @override
+  String get importFormatNewLine3 =>
+      '• L2=<text> - Language 2 main text (required if L1 is missing)';
+
+  @override
+  String get importFormatNewLine4 =>
+      '• L1pre=<text> - Language 1 prefix (optional)';
+
+  @override
+  String get importFormatNewLine5 =>
+      '• L1post=<text> - Language 1 suffix (optional)';
+
+  @override
+  String get importFormatNewLine6 =>
+      '• L2pre=<text> - Language 2 prefix (optional)';
+
+  @override
+  String get importFormatNewLine7 =>
+      '• L2post=<text> - Language 2 suffix (optional)';
+
+  @override
+  String get importFormatNewLine8 =>
+      '• EX=<L1 text>:::<L2 text> - Example (optional, can be multiple)';
+
+  @override
+  String get importFormatNewLine9 =>
+      '• CAT=<cat1>:::<cat2>:::<cat3> - Categories (optional)';
+
+  @override
+  String get importFormatNewLine10 =>
+      '• At least one of L1= or L2= must be present';
+
+  @override
+  String get importFormatNewLine11 => '• Empty lines are ignored';
+
+  @override
+  String get importFormatNewLine12 => '• Duplicates are skipped';
+
+  @override
+  String get invalidImportLine => 'Invalid line';
+
+  @override
+  String get missingRequiredFields => 'Missing \'L1=\' vagy \'L2=\'';
+
+  @override
+  String get unknownField => 'Unknown field prefix';
+
+  @override
   String andMore(Object count) {
     return '... and $count more';
   }
@@ -812,6 +875,176 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportBeforeDelete => 'Export Before Deleting?';
 
   @override
+  String get aiTextAnalysis => 'AI Text Analysis';
+
+  @override
+  String get aiTextAnalysisImport => 'AI Text Analysis Import';
+
+  @override
+  String get knowledgeLevel => 'Knowledge Level';
+
+  @override
+  String get a1Beginner => 'A1 - Beginner';
+
+  @override
+  String get a2Elementary => 'A2 - Elementary';
+
+  @override
+  String get b1Intermediate => 'B1 - Intermediate';
+
+  @override
+  String get b2UpperIntermediate => 'B2 - Upper Intermediate';
+
+  @override
+  String get c1Advanced => 'C1 - Advanced';
+
+  @override
+  String get c2Proficient => 'C2 - Proficient';
+
+  @override
+  String get pasteTextHere => 'Paste your text here...';
+
+  @override
+  String get extractWords => 'Extract Words';
+
+  @override
+  String get extractExpressions => 'Extract Expressions';
+
+  @override
+  String get maxItems => 'Maximum Items';
+
+  @override
+  String get maxItemsHint => 'Leave empty for no limit';
+
+  @override
+  String get categoryName => 'Category Name';
+
+  @override
+  String get categoryNameHint => 'Name for imported items category';
+
+  @override
+  String get analyzeText => 'Analyze Text';
+
+  @override
+  String get configureAnalysis => 'Configure Analysis';
+
+  @override
+  String get openaiModel => 'AI Model';
+
+  @override
+  String get openaiModelDescription => 'Select ChatGPT model';
+
+  @override
+  String get modelGpt35Turbo => 'GPT-3.5 Turbo';
+
+  @override
+  String get modelGpt35Turbo16k => 'GPT-3.5 Turbo 16K';
+
+  @override
+  String get modelGpt4 => 'GPT-4';
+
+  @override
+  String get modelGpt4Turbo => 'GPT-4 Turbo';
+
+  @override
+  String get modelGpt35TurboDesc =>
+      'Fast and cost-effective; standard for production';
+
+  @override
+  String get modelGpt35Turbo16kDesc =>
+      'Same as GPT-3.5, but 16K token context window';
+
+  @override
+  String get modelGpt4Desc =>
+      'Higher accuracy/reasoning; slower and more expensive';
+
+  @override
+  String get modelGpt4TurboDesc =>
+      'Faster, cheaper, high accuracy; improved context';
+
+  @override
+  String get analyzing => 'Analyzing...';
+
+  @override
+  String get languageDetected => 'Language Detected';
+
+  @override
+  String get itemsFound => 'Items Found';
+
+  @override
+  String get selectItemsToImport => 'Select Items to Import';
+
+  @override
+  String get importSelected => 'Import Selected';
+
+  @override
+  String get importing => 'Importing...';
+
+  @override
+  String get itemsImported => 'Items imported successfully';
+
+  @override
+  String get noItemsSelected => 'No items selected';
+
+  @override
+  String get selectAtLeastOneType =>
+      'Select at least one type (words or expressions)';
+
+  @override
+  String get languageNotMatching =>
+      'The detected language does not match any language in the package';
+
+  @override
+  String get openaiKeyRequired => 'OpenAI API key is required for this feature';
+
+  @override
+  String analyzingProgress(Object current, Object total) {
+    return 'Analyzing: $current / $total';
+  }
+
+  @override
+  String translatingProgress(Object current, Object total) {
+    return 'Translating: $current / $total';
+  }
+
+  @override
+  String get duplicate => 'Duplicate';
+
+  @override
+  String get detectingLanguage => 'Detecting language...';
+
+  @override
+  String get extractingItems => 'Extracting items...';
+
+  @override
+  String get checkingDuplicates => 'Checking for duplicates...';
+
+  @override
+  String get translating => 'Translating...';
+
+  @override
+  String get generatingExamples => 'Generating examples...';
+
+  @override
+  String get errorAnalyzingText => 'Error analyzing text';
+
+  @override
+  String get warning => 'Warning';
+
+  @override
+  String get textIsVeryLarge => 'The text is very large';
+
+  @override
+  String get words => 'words';
+
+  @override
+  String get continueAnalysis =>
+      'This may take longer to process and will be analyzed in chunks. Do you want to continue';
+
+  @override
+  String get continueLabel => 'Continue';
+
+  @override
   String get exportBeforeDeleteMessage =>
       'Would you like to export this package before deleting it? This will save all your data to a ZIP file.';
 
@@ -862,4 +1095,107 @@ class AppLocalizationsEn extends AppLocalizations {
   String errorLoadingSettings(Object error) {
     return 'Error loading settings: $error';
   }
+
+  @override
+  String get selectPackage => 'Select Package';
+
+  @override
+  String get noPackagesAvailable => 'No packages available';
+
+  @override
+  String get possibleSolutions => 'Possible Solutions';
+
+  @override
+  String get technicalDetails => 'Technical Details';
+
+  @override
+  String get checkApiKey => 'Check your OpenAI API key';
+
+  @override
+  String get ensureValidOpenAIKey => 'Ensure the API key is valid and active';
+
+  @override
+  String get verifyKeyInSettings => 'Verify the key in Settings';
+
+  @override
+  String get rateLimitExceeded => 'API rate limit exceeded';
+
+  @override
+  String get waitAndRetry => 'Wait a few minutes and try again';
+
+  @override
+  String get checkAccountQuota => 'Check your OpenAI account quota';
+
+  @override
+  String get invalidRequest => 'Invalid request format';
+
+  @override
+  String get tryReducingTextLength => 'Try reducing the text length';
+
+  @override
+  String get checkTextFormat => 'Check that the text format is correct';
+
+  @override
+  String get checkInternetConnection => 'Check your internet connection';
+
+  @override
+  String get retryInMoment => 'Retry in a moment';
+
+  @override
+  String get checkFirewall => 'Check firewall settings';
+
+  @override
+  String get textMayBeTooShort => 'Text may be too short';
+
+  @override
+  String get tryDifferentKnowledgeLevel => 'Try a different knowledge level';
+
+  @override
+  String get ensureTextInCorrectLanguage =>
+      'Ensure text is in the correct language';
+
+  @override
+  String get requestTimedOut => 'Request timed out';
+
+  @override
+  String get textMayBeTooLong => 'Text may be too long';
+
+  @override
+  String get tryAgainOrReduceSize => 'Try again or reduce text size';
+
+  @override
+  String get unexpectedError => 'An unexpected error occurred';
+
+  @override
+  String get checkErrorDetails => 'Check error details below';
+
+  @override
+  String get tryAgainLater => 'Try again later';
+
+  @override
+  String get translationServiceFailed => 'Translation service failed';
+
+  @override
+  String get checkApiKeys => 'Check your API keys (DeepL, OpenAI)';
+
+  @override
+  String get retryImport => 'Retry the import';
+
+  @override
+  String get exampleGenerationFailed => 'Example generation failed';
+
+  @override
+  String get itemsStillImported => 'Items were still imported';
+
+  @override
+  String get canAddExamplesManually => 'You can add examples manually later';
+
+  @override
+  String get databaseError => 'Database error occurred';
+
+  @override
+  String get checkStorageSpace => 'Check available storage space';
+
+  @override
+  String get restartApp => 'Try restarting the app';
 }

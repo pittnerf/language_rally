@@ -11,7 +11,9 @@ class AppSettingsRepository {
   static const String _keyUserLanguageName = 'user_language_name';
   static const String _keyDeeplApiKey = 'deepl_api_key';
   static const String _keyOpenaiApiKey = 'openai_api_key';
+  static const String _keyOpenaiModel = 'openai_model';
   static const String _keyMinItemsForBadges = 'min_items_for_badges';
+  static const String _keyLastTrainedPackageId = 'last_trained_package_id';
 
   /// Load app settings from SharedPreferences
   Future<AppSettings> loadSettings() async {
@@ -23,7 +25,9 @@ class AppSettingsRepository {
         userLanguageName: prefs.getString(_keyUserLanguageName) ?? 'English',
         deeplApiKey: prefs.getString(_keyDeeplApiKey),
         openaiApiKey: prefs.getString(_keyOpenaiApiKey),
+        openaiModel: prefs.getString(_keyOpenaiModel) ?? 'gpt-4-turbo',
         minItemsForBadges: prefs.getInt(_keyMinItemsForBadges) ?? 10,
+        lastTrainedPackageId: prefs.getString(_keyLastTrainedPackageId),
       );
     } catch (e) {
       // Return defaults if loading fails
@@ -61,10 +65,26 @@ class AppSettingsRepository {
     }
   }
 
+  /// Save OpenAI model selection
+  Future<void> saveOpenaiModel(String model) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyOpenaiModel, model);
+  }
+
   /// Save minimum items for badges
   Future<void> saveMinItemsForBadges(int value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_keyMinItemsForBadges, value);
+  }
+
+  /// Save last trained package ID
+  Future<void> saveLastTrainedPackageId(String? packageId) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (packageId == null || packageId.isEmpty) {
+      await prefs.remove(_keyLastTrainedPackageId);
+    } else {
+      await prefs.setString(_keyLastTrainedPackageId, packageId);
+    }
   }
 
   /// Save all settings at once
@@ -75,7 +95,9 @@ class AppSettingsRepository {
     );
     await saveDeeplApiKey(settings.deeplApiKey);
     await saveOpenaiApiKey(settings.openaiApiKey);
+    await saveOpenaiModel(settings.openaiModel);
     await saveMinItemsForBadges(settings.minItemsForBadges);
+    await saveLastTrainedPackageId(settings.lastTrainedPackageId);
   }
 
   /// Clear all API keys (for security/logout)
