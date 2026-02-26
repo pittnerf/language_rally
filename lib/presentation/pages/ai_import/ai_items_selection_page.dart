@@ -49,6 +49,7 @@ class _AIItemsSelectionPageState extends ConsumerState<AIItemsSelectionPage> {
   final _categoryRepo = CategoryRepository();
   bool _isLoading = false;
   bool _isImporting = false;
+  bool _cancelRequested = false;
 
   @override
   void initState() {
@@ -351,10 +352,29 @@ class _AIItemsSelectionPageState extends ConsumerState<AIItemsSelectionPage> {
 
     setState(() {
       _isImporting = true;
+      _cancelRequested = false;
     });
+
+    print('═══════════════════════════════════════════════════════════');
+    print('🚀 STARTING IMPORT PROCESS');
+    print('═══════════════════════════════════════════════════════════');
+    print('Selected Items: ${selectedItems.length}');
+    print('Package ID: ${widget.package.id}');
+    print('Package Language 1: ${widget.package.languageCode1}');
+    print('Package Language 2: ${widget.package.languageCode2}');
+    print('Detected Language Code: ${widget.detectedLangCode}');
+    print('Source Language: ${widget.sourceLanguage}');
+    print('Target Language: ${widget.targetLanguage}');
+    print('Category Name: ${widget.categoryName}');
+    print('Generate Examples: ${widget.generateExamples}');
 
     try {
       final settings = ref.read(appSettingsProvider);
+      print('\n📋 Settings:');
+      print('  OpenAI API Key configured: ${settings.openaiApiKey != null && settings.openaiApiKey!.isNotEmpty}');
+      print('  DeepL API Key configured: ${settings.deeplApiKey != null && settings.deeplApiKey!.isNotEmpty}');
+      print('  OpenAI Model: ${settings.openaiModel}');
+
       final analysisService = TextAnalysisService(
         apiKey: settings.openaiApiKey!,
         model: settings.openaiModel,
@@ -362,6 +382,7 @@ class _AIItemsSelectionPageState extends ConsumerState<AIItemsSelectionPage> {
       final deeplService = DeepLService(apiKey: settings.deeplApiKey);
 
       // Get or create category
+      print('\n📁 Getting/Creating Category...');
       final categories = await _categoryRepo.getCategoriesForPackage(widget.package.id);
       Category? category = categories.firstWhere(
         (c) => c.name.toLowerCase() == widget.categoryName.toLowerCase(),
@@ -374,7 +395,10 @@ class _AIItemsSelectionPageState extends ConsumerState<AIItemsSelectionPage> {
       );
 
       if (!categories.contains(category)) {
+        print('  Creating new category: ${category.name}');
         await _categoryRepo.insertCategory(category);
+      } else {
+        print('  Using existing category: ${category.name}');
       }
 
       // Determine language codes
@@ -388,68 +412,89 @@ class _AIItemsSelectionPageState extends ConsumerState<AIItemsSelectionPage> {
           ? widget.package.languageCode2
           : widget.package.languageCode1;
 
+      print('\n🔄 Language Direction:');
+      print('  Is Language1 Source: $isLang1Source');
+      print('  Source Language Code: $sourceLangCode');
+      print('  Target Language Code: $targetLangCode');
+
       // Show progress dialog
       _showProgressDialog(l10n, 0, selectedItems.length);
 
       // Process each item
       for (int i = 0; i < selectedItems.length; i++) {
+        // Check if cancel was requested
+        if (_cancelRequested) {
+          print('\n❌ IMPORT CANCELLED BY USER');
+          break;
+        }
+
         final extractedItem = selectedItems[i];
+
+        print('\n───────────────────────────────────────────────────────────');
+        print('📦 Processing Item ${i + 1}/${selectedItems.length}');
+        print('───────────────────────────────────────────────────────────');
+        print('  Text: "${extractedItem.text}"');
+        print('  Type: ${extractedItem.type}');
+        print('  PreItem: "${extractedItem.preItem}"');
+        print('  PostItem: "${extractedItem.postItem}"');
 
         // Update progress
         _updateProgress(l10n, i + 1, selectedItems.length);
 
         // Translate main text
+        print('\n🔤 Translating Main Text...');
         String? translatedText = await deeplService.translate(
           text: extractedItem.text,
           targetLang: targetLangCode,
           sourceLang: sourceLangCode,
         );
 
-        translatedText ??= await analysisService.translate(
-          text: extractedItem.text,
-          sourceLang: widget.sourceLanguage,
-          targetLang: widget.targetLanguage,
-        );
+        if (translatedText == null) {
+          print('  DeepL returned null, trying OpenAI...');
+          translatedText = await analysisService.translate(
+            text: extractedItem.text,
+            sourceLang: widget.sourceLanguage,
+            targetLang: widget.targetLanguage,
+          );
+          print('  OpenAI translation: "$translatedText"');
+        }
 
-        // Translate preItem if exists and is not empty
-        String? translatedPreItem;
-        if (extractedItem.preItem != null && extractedItem.preItem!.trim().isNotEmpty) {
-          translatedPreItem = await deeplService.translate(
-            text: extractedItem.preItem!,
-            targetLang: targetLangCode,
-            sourceLang: sourceLangCode,
+        // Generate grammatical metadata (preItem and postItem) for the target language
+        print('\n📚 Generating Grammatical Metadata for Target Language...');
+        String? targetPreItem;
+        String? targetPostItem;
+
+        try {
+          final metadata = await analysisService.generateGrammaticalMetadata(
+            text: translatedText,
+            language: widget.targetLanguage,
+            wordType: extractedItem.type,
           );
 
-          // Only use OpenAI fallback if DeepL returned null and preItem is not empty
-          if (translatedPreItem == null || translatedPreItem.trim().isEmpty) {
-            try {
-              translatedPreItem = await analysisService.translate(
-                text: extractedItem.preItem!,
-                sourceLang: widget.sourceLanguage,
-                targetLang: widget.targetLanguage,
-              );
+          targetPreItem = metadata['preItem'];
+          targetPostItem = metadata['postItem'];
 
-              // If translation returned empty or looks like an error, set to null
-              if (translatedPreItem.trim().isEmpty) {
-                translatedPreItem = null;
-              }
-            } catch (e) {
-              // If translation fails, just leave it as null
-              debugPrint('Failed to translate preItem "${extractedItem.preItem}": $e');
-              translatedPreItem = null;
-            }
-          }
+          print('  Target PreItem: "$targetPreItem"');
+          print('  Target PostItem: "$targetPostItem"');
+        } catch (e) {
+          // If metadata generation fails, continue without it
+          print('  ❌ Failed to generate metadata: $e');
+          targetPreItem = null;
+          targetPostItem = null;
         }
 
         // Generate examples if requested
         List<ExampleSentence> examples = [];
         if (widget.generateExamples) {
+          print('\n📝 Generating Examples...');
           try {
             final exampleMaps = await analysisService.generateExamples(
               text: extractedItem.text,
               sourceLang: widget.sourceLanguage,
               targetLang: widget.targetLanguage,
             );
+
+            print('  Generated ${exampleMaps.length} examples');
 
             // Map examples correctly based on language direction
             examples = exampleMaps.map((ex) {
@@ -463,11 +508,12 @@ class _AIItemsSelectionPageState extends ConsumerState<AIItemsSelectionPage> {
             }).toList();
           } catch (e) {
             // Log error but continue without examples
-            debugPrint('Failed to generate examples for "${extractedItem.text}": $e');
+            print('  ❌ Failed to generate examples: $e');
           }
         }
 
         // Create item
+        print('\n💾 Creating Item...');
         final item = Item(
           id: const Uuid().v4(),
           packageId: widget.package.id,
@@ -475,40 +521,72 @@ class _AIItemsSelectionPageState extends ConsumerState<AIItemsSelectionPage> {
           language1Data: ItemLanguageData(
             languageCode: widget.package.languageCode1,
             text: isLang1Source ? extractedItem.text : translatedText,
-            preItem: isLang1Source ? extractedItem.preItem : translatedPreItem,
-            postItem: isLang1Source ? extractedItem.postItem : null,
+            preItem: isLang1Source ? extractedItem.preItem : targetPreItem,
+            postItem: isLang1Source ? extractedItem.postItem : targetPostItem,
           ),
           language2Data: ItemLanguageData(
             languageCode: widget.package.languageCode2,
             text: isLang1Source ? translatedText : extractedItem.text,
-            preItem: isLang1Source ? translatedPreItem : extractedItem.preItem,
-            postItem: isLang1Source ? null : extractedItem.postItem,
+            preItem: isLang1Source ? targetPreItem : extractedItem.preItem,
+            postItem: isLang1Source ? targetPostItem : extractedItem.postItem,
           ),
           examples: examples,
           isKnown: false,
           isFavourite: false,
           isImportant: false,
-          dontKnowCounter: 0,
+          dontKnowCounter: 1,
           lastReviewedAt: null,
         );
 
+        print('  Language1 Data:');
+        print('    Text: "${item.language1Data.text}"');
+        print('    PreItem: "${item.language1Data.preItem}"');
+        print('    PostItem: "${item.language1Data.postItem}"');
+        print('  Language2 Data:');
+        print('    Text: "${item.language2Data.text}"');
+        print('    PreItem: "${item.language2Data.preItem}"');
+        print('    PostItem: "${item.language2Data.postItem}"');
+        print('  Examples: ${item.examples.length}');
+
         await _itemRepo.insertItem(item);
+        print('  ✅ Item saved to database');
       }
+
+      print('\n═══════════════════════════════════════════════════════════');
+      if (_cancelRequested) {
+        print('❌ IMPORT CANCELLED');
+      } else {
+        print('✅ IMPORT COMPLETED SUCCESSFULLY');
+      }
+      print('═══════════════════════════════════════════════════════════');
 
       if (mounted) {
         Navigator.of(context).pop(); // Close progress dialog
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.itemsImported),
-            backgroundColor: Theme.of(context).colorScheme.primary,
-          ),
-        );
+        if (_cancelRequested) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.cancel),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.itemsImported),
+              backgroundColor: Theme.of(context).colorScheme.primary,
+            ),
+          );
+        }
 
         // Go back to previous page
         Navigator.of(context).pop();
       }
     } catch (e) {
+      print('\n❌ ERROR DURING IMPORT:');
+      print(e.toString());
+      print('═══════════════════════════════════════════════════════════');
+
       if (mounted) {
         Navigator.of(context).pop(); // Close progress dialog
         _showDetailedErrorDialog(l10n.errorImportingItems, e.toString());
@@ -517,6 +595,7 @@ class _AIItemsSelectionPageState extends ConsumerState<AIItemsSelectionPage> {
       if (mounted) {
         setState(() {
           _isImporting = false;
+          _cancelRequested = false;
         });
       }
     }
@@ -537,6 +616,18 @@ class _AIItemsSelectionPageState extends ConsumerState<AIItemsSelectionPage> {
             Text(
               '${l10n.importing} $current / $total',
               style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: AppTheme.spacing12),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _cancelRequested = true;
+                });
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.error,
+              ),
+              child: Text(l10n.cancel),
             ),
           ],
         ),

@@ -40,4 +40,9 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
     await _repository.saveOpenaiModel(model);
     state = state.copyWith(openaiModel: model);
   }
+
+  Future<void> setAiKnowledgeLevel(String level) async {
+    await _repository.saveAiKnowledgeLevel(level);
+    state = state.copyWith(aiKnowledgeLevel: level);
+  }
 }

@@ -12,6 +12,7 @@ class AppSettingsRepository {
   static const String _keyDeeplApiKey = 'deepl_api_key';
   static const String _keyOpenaiApiKey = 'openai_api_key';
   static const String _keyOpenaiModel = 'openai_model';
+  static const String _keyAiKnowledgeLevel = 'ai_knowledge_level';
   static const String _keyMinItemsForBadges = 'min_items_for_badges';
   static const String _keyLastTrainedPackageId = 'last_trained_package_id';
 
@@ -26,6 +27,7 @@ class AppSettingsRepository {
         deeplApiKey: prefs.getString(_keyDeeplApiKey),
         openaiApiKey: prefs.getString(_keyOpenaiApiKey),
         openaiModel: prefs.getString(_keyOpenaiModel) ?? 'gpt-4-turbo',
+        aiKnowledgeLevel: prefs.getString(_keyAiKnowledgeLevel) ?? 'B1',
         minItemsForBadges: prefs.getInt(_keyMinItemsForBadges) ?? 10,
         lastTrainedPackageId: prefs.getString(_keyLastTrainedPackageId),
       );
@@ -71,6 +73,12 @@ class AppSettingsRepository {
     await prefs.setString(_keyOpenaiModel, model);
   }
 
+  /// Save AI knowledge level selection
+  Future<void> saveAiKnowledgeLevel(String level) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_keyAiKnowledgeLevel, level);
+  }
+
   /// Save minimum items for badges
   Future<void> saveMinItemsForBadges(int value) async {
     final prefs = await SharedPreferences.getInstance();
@@ -96,6 +104,7 @@ class AppSettingsRepository {
     await saveDeeplApiKey(settings.deeplApiKey);
     await saveOpenaiApiKey(settings.openaiApiKey);
     await saveOpenaiModel(settings.openaiModel);
+    await saveAiKnowledgeLevel(settings.aiKnowledgeLevel);
     await saveMinItemsForBadges(settings.minItemsForBadges);
     await saveLastTrainedPackageId(settings.lastTrainedPackageId);
   }

@@ -379,28 +379,49 @@ Do not include any explanation, only the JSON array.''';
     required String sourceLang,
     required String targetLang,
   }) async {
+    print('🔄 OpenAI Translation Request:');
+    print('  Source Language: $sourceLang');
+    print('  Target Language: $targetLang');
+    print('  Text: "$text"');
+    print('  Text Length: ${text.length}');
+    print('  Text is empty: ${text.trim().isEmpty}');
+
     // Check if text is empty or null
     if (text.trim().isEmpty) {
+      print('  ⚠️ Text is empty, returning empty string');
       return ''; // Return empty string instead of making API call
     }
 
-    final prompt = '''Translate the following text from $sourceLang to $targetLang. Respond with ONLY the translation, no explanations.
+    final prompt = '''Translate the following text from $sourceLang to $targetLang. 
 
-Text: "$text"
+CRITICAL INSTRUCTIONS:
+- Respond with ONLY the direct translation
+- Do NOT add any explanations, apologies, or commentary
+- Do NOT say things like "I'm sorry" or "you haven't provided"
+- If the text is already provided below, translate it immediately
+
+Text to translate: "$text"
 
 Translation:''';
 
     try {
+      print('  📤 Sending translation request to OpenAI...');
       final response = await _makeRequest(prompt, maxTokens: 200);
+      print('  📥 OpenAI Response: "$response"');
+
       final cleaned = _removeQuotes(response.trim());
+      print('  🧹 Cleaned Response: "$cleaned"');
 
       // Filter out common error messages from OpenAI
       if (_isErrorMessage(cleaned)) {
-        throw Exception('OpenAI returned error message instead of translation');
+        print('  ❌ ERROR: OpenAI returned error message instead of translation');
+        throw Exception('OpenAI returned error message: $cleaned');
       }
 
+      print('  ✅ Translation successful');
       return cleaned;
     } catch (e) {
+      print('  ❌ Translation failed: $e');
       throw Exception('Failed to translate: $e');
     }
   }
@@ -430,6 +451,121 @@ Translation:''';
     }
 
     return false;
+  }
+
+  /// Generate grammatical metadata (preItem and postItem) for a word
+  ///
+  /// For nouns: returns article in preItem and plural form in postItem
+  /// For verbs: returns infinitive marker in preItem and conjugations in postItem
+  /// For other types: may return null for both
+  ///
+  /// Returns a map with 'preItem' and 'postItem' keys (values may be null)
+  Future<Map<String, String?>> generateGrammaticalMetadata({
+    required String text,
+    required String language,
+    required String wordType,
+  }) async {
+    print('📚 Generating Grammatical Metadata:');
+    print('  Text: "$text"');
+    print('  Language: $language');
+    print('  Type: $wordType');
+
+    final prompt = '''You are a language expert. For the following ${wordType == 'word' ? 'word' : 'expression'} in $language, provide grammatical metadata.
+
+Word/Expression: "$text"
+Language: $language
+
+INSTRUCTIONS:
+${wordType == 'word' ? '''
+If this is a NOUN:
+- preItem: the appropriate article (e.g., "der"/"die"/"das" for German, "the" for English, "le"/"la" for French)
+- postItem: the plural form (e.g., "pl. Häuser" for German, "pl. houses" for English)
+
+If this is a VERB:
+- preItem: leave empty or use infinitive marker if applicable (e.g., "to" for English infinitive)
+- postItem: past tense or key conjugation forms (e.g., "went, had gone" for English, "machte, h. gemacht" for German)
+
+If this is an ADJECTIVE or OTHER:
+- preItem: null
+- postItem: comparative/superlative forms if applicable (e.g., "better, best"), otherwise null
+''' : '''
+For EXPRESSIONS/PHRASES:
+- preItem: null (not applicable for multi-word expressions)
+- postItem: null (not applicable for multi-word expressions)
+'''}
+
+Return ONLY a JSON object with this exact format:
+{
+  "preItem": "article or marker (or null)",
+  "postItem": "plural/conjugation/forms (or null)"
+}
+
+IMPORTANT:
+- Use null (not empty string) if a field is not applicable
+- For German nouns, ALWAYS include the article (der/die/das) in preItem
+- For verbs, include the most important conjugation forms in postItem
+- Be concise and follow language-specific grammar rules
+- Do not include explanations, only the JSON object
+
+Examples:
+
+German noun "Haus":
+{"preItem": "das", "postItem": "pl. Häuser"}
+
+English verb "make":
+{"preItem": null, "postItem": "made, made"}
+
+German verb "machen":
+{"preItem": null, "postItem": "machte, h. gemacht"}
+
+English noun "house":
+{"preItem": "the", "postItem": "pl. houses"}
+
+Expression "in Betracht ziehen":
+{"preItem": null, "postItem": null}
+
+Do not include any explanation, only the JSON object.''';
+
+    try {
+      print('  📤 Sending request to OpenAI...');
+      final response = await _makeRequest(prompt, maxTokens: 150);
+      print('  📥 OpenAI Response: "$response"');
+
+      // Extract JSON from response
+      String jsonContent = response;
+      if (response.contains('```json')) {
+        final start = response.indexOf('{');
+        final end = response.lastIndexOf('}') + 1;
+        if (start >= 0 && end > start) {
+          jsonContent = response.substring(start, end);
+        }
+      } else if (response.contains('```')) {
+        final start = response.indexOf('{');
+        final end = response.lastIndexOf('}') + 1;
+        if (start >= 0 && end > start) {
+          jsonContent = response.substring(start, end);
+        }
+      }
+
+      final data = json.decode(jsonContent) as Map<String, dynamic>;
+      final result = <String, String?>{
+        'preItem': _removeQuotes(data['preItem']?.toString()),
+        'postItem': _removeQuotes(data['postItem']?.toString()),
+      };
+
+      // Convert empty strings to null
+      if (result['preItem']?.isEmpty ?? false) result['preItem'] = null;
+      if (result['postItem']?.isEmpty ?? false) result['postItem'] = null;
+
+      print('  ✅ Generated metadata:');
+      print('    preItem: "${result['preItem']}"');
+      print('    postItem: "${result['postItem']}"');
+
+      return result;
+    } catch (e) {
+      print('  ❌ Failed to generate metadata: $e');
+      throw Exception('Failed to generate grammatical metadata: $e');
+    }
   }
 
   /// Generate examples for a word/expression

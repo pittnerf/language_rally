@@ -30,12 +30,13 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
   final _maxItemsController = TextEditingController();
   final _categoryController = TextEditingController();
 
-  String _selectedLevel = 'B1';
+  String _selectedLevel = 'A1';
   String _selectedModel = 'gpt-4-turbo';
   bool _extractWords = true;
   bool _extractExpressions = true;
   bool _generateExamples = false;
   bool _isAnalyzing = false;
+  bool _cancelRequested = false;
 
 
   @override
@@ -43,11 +44,12 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
     super.initState();
     _categoryController.text = 'AI Imported';
 
-    // Load saved model selection
+    // Load saved model and knowledge level selection
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final settings = ref.read(appSettingsProvider);
       setState(() {
         _selectedModel = settings.openaiModel;
+        _selectedLevel = settings.aiKnowledgeLevel;
       });
     });
   }
@@ -131,11 +133,13 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
                       DropdownMenuItem(value: 'C1', child: Text(l10n.c1Advanced)),
                       DropdownMenuItem(value: 'C2', child: Text(l10n.c2Proficient)),
                     ],
-                    onChanged: (value) {
+                    onChanged: (value) async {
                       if (value != null) {
                         setState(() {
                           _selectedLevel = value;
                         });
+                        // Save knowledge level selection
+                        await ref.read(appSettingsProvider.notifier).setAiKnowledgeLevel(value);
                       }
                     },
                   ),
@@ -473,7 +477,18 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
 
     setState(() {
       _isAnalyzing = true;
+      _cancelRequested = false;
     });
+
+    print('═══════════════════════════════════════════════════════════');
+    print('🔍 STARTING TEXT ANALYSIS');
+    print('═══════════════════════════════════════════════════════════');
+    print('Text word count: $wordCount');
+    print('Knowledge Level: $_selectedLevel');
+    print('Extract Words: $_extractWords');
+    print('Extract Expressions: $_extractExpressions');
+    print('Generate Examples: $_generateExamples');
+    print('Model: $_selectedModel');
 
     try {
       final settings = ref.read(appSettingsProvider);
@@ -497,11 +512,26 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
         model: _selectedModel,
       );
 
-      // Show progress dialog
-      _showProgressDialog(l10n.detectingLanguage);
+      // Show progress dialog - Step 1
+      _showProgressDialog(l10n.detectingLanguage, 1, 2);
 
       // Step 1: Detect language
+      print('\n🔤 Step 1: Detecting Language...');
       final detectedLang = await analysisService.detectLanguage(text);
+      print('  Detected Language: $detectedLang');
+
+      // Check for cancellation
+      if (_cancelRequested) {
+        print('  ❌ ANALYSIS CANCELLED BY USER');
+        if (mounted) {
+          Navigator.of(context).pop(); // Close progress dialog
+          setState(() {
+            _isAnalyzing = false;
+            _cancelRequested = false;
+          });
+        }
+        return;
+      }
 
       // Check if detected language matches package languages
       final lang1Code = widget.package.languageCode1.split('-')[0].toLowerCase();
@@ -517,6 +547,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
         sourceLanguage = widget.package.languageName2;
         targetLanguage = widget.package.languageName1;
       } else {
+        print('  ❌ Language mismatch: $detectedLang not in [$lang1Code, $lang2Code]');
         if (mounted) {
           Navigator.of(context).pop(); // Close progress dialog
           setState(() {
@@ -527,16 +558,35 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
         return;
       }
 
-      // Update progress
+      print('  Source Language: $sourceLanguage');
+      print('  Target Language: $targetLanguage');
+
+      // Check for cancellation
+      if (_cancelRequested) {
+        print('  ❌ ANALYSIS CANCELLED BY USER');
+        if (mounted) {
+          Navigator.of(context).pop(); // Close progress dialog
+          setState(() {
+            _isAnalyzing = false;
+            _cancelRequested = false;
+          });
+        }
+        return;
+      }
+
+      // Update progress - Step 2
       if (mounted) {
         Navigator.of(context).pop(); // Close previous dialog
-        _showProgressDialog(l10n.extractingItems);
+        _showProgressDialog(l10n.extractingItems, 2, 2);
       }
 
       // Step 2: Extract items
+      print('\n📋 Step 2: Extracting Items...');
       final maxItems = _maxItemsController.text.isEmpty
           ? null
           : int.tryParse(_maxItemsController.text);
+
+      print('  Max Items: $maxItems');
 
       final extractedItems = await analysisService.extractItems(
         text: text,
@@ -547,9 +597,25 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
         maxItems: maxItems,
       );
 
+      print('  Extracted ${extractedItems.length} items');
+
+      // Check for cancellation
+      if (_cancelRequested) {
+        print('  ❌ ANALYSIS CANCELLED BY USER');
+        if (mounted) {
+          Navigator.of(context).pop(); // Close progress dialog
+          setState(() {
+            _isAnalyzing = false;
+            _cancelRequested = false;
+          });
+        }
+        return;
+      }
+
       if (mounted) Navigator.of(context).pop(); // Close progress dialog
 
       if (extractedItems.isEmpty) {
+        print('  ⚠️ No items found');
         if (mounted) {
           setState(() {
             _isAnalyzing = false;
@@ -558,6 +624,9 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
         }
         return;
       }
+
+      print('\n✅ ANALYSIS COMPLETED SUCCESSFULLY');
+      print('═══════════════════════════════════════════════════════════');
 
       // Navigate to selection page
       if (mounted) {
@@ -581,6 +650,10 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
         }
       }
     } catch (e) {
+      print('\n❌ ERROR DURING ANALYSIS:');
+      print(e.toString());
+      print('═══════════════════════════════════════════════════════════');
+
       if (mounted) {
         Navigator.of(context).pop(); // Close progress dialog if open
         _showDetailedErrorDialog(l10n.errorAnalyzingText, e.toString());
@@ -589,25 +662,47 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
       if (mounted) {
         setState(() {
           _isAnalyzing = false;
+          _cancelRequested = false;
         });
       }
     }
   }
 
-  void _showProgressDialog(String message) {
+  void _showProgressDialog(String message, int currentStep, int totalSteps) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        content: Row(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const CircularProgressIndicator(),
-            const SizedBox(width: AppTheme.spacing8),
-            Expanded(
-              child: Text(
-                message,
-                style: Theme.of(context).textTheme.bodyMedium,
+            LinearProgressIndicator(
+              value: totalSteps > 0 ? currentStep / totalSteps : 0,
+            ),
+            const SizedBox(height: AppTheme.spacing12),
+            Text(
+              message,
+              style: Theme.of(context).textTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppTheme.spacing8),
+            Text(
+              'Step $currentStep of $totalSteps',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
               ),
+            ),
+            const SizedBox(height: AppTheme.spacing12),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _cancelRequested = true;
+                });
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.error,
+              ),
+              child: Text(AppLocalizations.of(context)!.cancel),
             ),
           ],
         ),

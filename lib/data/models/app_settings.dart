@@ -22,6 +22,9 @@ class AppSettings extends Equatable {
   /// Selected OpenAI model for AI text analysis
   final String openaiModel;
 
+  /// Selected knowledge level for AI text analysis (A1, A2, B1, B2, C1, C2)
+  final String aiKnowledgeLevel;
+
   /// Minimum number of guesses required in training session to earn badges (not visible to user)
   final int minItemsForBadges;
 
@@ -34,6 +37,7 @@ class AppSettings extends Equatable {
     this.deeplApiKey,
     this.openaiApiKey,
     this.openaiModel = 'gpt-4-turbo',
+    this.aiKnowledgeLevel = 'B1',
     this.minItemsForBadges = 10,
     this.lastTrainedPackageId,
   });
@@ -44,6 +48,7 @@ class AppSettings extends Equatable {
     String? deeplApiKey,
     String? openaiApiKey,
     String? openaiModel,
+    String? aiKnowledgeLevel,
     int? minItemsForBadges,
     String? lastTrainedPackageId,
   }) {
@@ -53,6 +58,7 @@ class AppSettings extends Equatable {
       deeplApiKey: deeplApiKey ?? this.deeplApiKey,
       openaiApiKey: openaiApiKey ?? this.openaiApiKey,
       openaiModel: openaiModel ?? this.openaiModel,
+      aiKnowledgeLevel: aiKnowledgeLevel ?? this.aiKnowledgeLevel,
       minItemsForBadges: minItemsForBadges ?? this.minItemsForBadges,
       lastTrainedPackageId: lastTrainedPackageId ?? this.lastTrainedPackageId,
     );
@@ -65,6 +71,7 @@ class AppSettings extends Equatable {
         deeplApiKey,
         openaiApiKey,
         openaiModel,
+        aiKnowledgeLevel,
         minItemsForBadges,
         lastTrainedPackageId,
       ];
