@@ -27,6 +27,12 @@ class AppLocalizationsHu extends AppLocalizations {
   String get packageDetails => 'Csomag részletei';
 
   @override
+  String get packageName => 'Csomag neve';
+
+  @override
+  String get packageNameHint => 'pl. Spanyol alapok, Német kezdőknek';
+
+  @override
   String get languageCode1 => 'Forrás nyelv kódja';
 
   @override
@@ -87,6 +93,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get save => 'Mentés';
 
   @override
+  String get edit => 'Szerkesztés';
+
+  @override
   String get cancel => 'Mégse';
 
   @override
@@ -131,6 +140,13 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get selectLanguageCode => 'Nyelvkód kiválasztása';
+
+  @override
+  String get typeToSearchLanguages =>
+      'Kezdj el gépelni a nyelvek kereséséhez...';
+
+  @override
+  String get search => 'Keresés...';
 
   @override
   String get clearCounters => 'Számlálók törlése';
@@ -451,10 +467,22 @@ class AppLocalizationsHu extends AppLocalizations {
   String get known => 'Tudom';
 
   @override
+  String get unknown => 'Tanulandó';
+
+  @override
   String get important => 'Fontos';
 
   @override
   String get favourite => 'Kedvenc';
+
+  @override
+  String get badge => 'Jelvény';
+
+  @override
+  String get position => 'Pozíció';
+
+  @override
+  String get stepsUntilLearned => 'Lépés a megtanulásig';
 
   @override
   String get examples => 'Példamondatok';
@@ -787,6 +815,15 @@ class AppLocalizationsHu extends AppLocalizations {
   String get sequentialOrder => 'Szekvenciális sorrend';
 
   @override
+  String get itemType => 'Elem Típusa';
+
+  @override
+  String get dictionaryItems => 'Szótár elemek';
+
+  @override
+  String get examplesType => 'Példák';
+
+  @override
   String get displayLanguage => 'Megjelenítési Nyelv';
 
   @override
@@ -875,10 +912,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get exportBeforeDelete => 'Exportálja törlés előtt?';
 
   @override
-  String get aiTextAnalysis => 'AI Szövegelemzés';
+  String get aiTextAnalysis => 'Import AI-val';
 
   @override
-  String get aiTextAnalysisImport => 'AI Szövegelemzés Import';
+  String get aiTextAnalysisImport => 'Import AI Szövegelemzéssel';
 
   @override
   String get knowledgeLevel => 'Tudásszint';

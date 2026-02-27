@@ -57,10 +57,13 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
 
   String? _selectedIcon;
   bool _isLoading = false;
+  bool _isEditingEnabled = false; // Controls whether fields are editable
   bool get _isEditMode => widget.package != null;
   bool get _isReadOnly => widget.package?.isReadonly ?? false;
   bool get _isPurchased => widget.package?.isPurchased ?? false;
 
+  // Helper method to determine if fields should be enabled
+  bool get _fieldsEnabled => !_isPurchased && _isEditingEnabled;
 
   // Package groups
   List<LanguagePackageGroup> _groups = [];
@@ -75,10 +78,11 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     'assets/images/package_icons/package_icon_v3.png',
   ];
 
-
   @override
   void initState() {
     super.initState();
+    // Enable editing by default for new packages, disable for existing ones
+    _isEditingEnabled = !_isEditMode;
     _importExportRepo = ImportExportRepository(
       packageRepo: _packageRepo,
       groupRepo: _groupRepo,
@@ -113,15 +117,31 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
 
   void _initializeControllers() {
     final pkg = widget.package;
-    _packageNameController = TextEditingController(text: pkg?.packageName ?? '');
-    _languageCode1Controller = TextEditingController(text: pkg?.languageCode1 ?? '');
-    _languageName1Controller = TextEditingController(text: pkg?.languageName1 ?? '');
-    _languageCode2Controller = TextEditingController(text: pkg?.languageCode2 ?? '');
-    _languageName2Controller = TextEditingController(text: pkg?.languageName2 ?? '');
-    _descriptionController = TextEditingController(text: pkg?.description ?? '');
+    _packageNameController = TextEditingController(
+      text: pkg?.packageName ?? '',
+    );
+    _languageCode1Controller = TextEditingController(
+      text: pkg?.languageCode1 ?? '',
+    );
+    _languageName1Controller = TextEditingController(
+      text: pkg?.languageName1 ?? '',
+    );
+    _languageCode2Controller = TextEditingController(
+      text: pkg?.languageCode2 ?? '',
+    );
+    _languageName2Controller = TextEditingController(
+      text: pkg?.languageName2 ?? '',
+    );
+    _descriptionController = TextEditingController(
+      text: pkg?.description ?? '',
+    );
     _authorNameController = TextEditingController(text: pkg?.authorName ?? '');
-    _authorEmailController = TextEditingController(text: pkg?.authorEmail ?? '');
-    _authorWebpageController = TextEditingController(text: pkg?.authorWebpage ?? '');
+    _authorEmailController = TextEditingController(
+      text: pkg?.authorEmail ?? '',
+    );
+    _authorWebpageController = TextEditingController(
+      text: pkg?.authorWebpage ?? '',
+    );
     _versionController = TextEditingController(text: pkg?.version ?? '1.0');
     _selectedIcon = pkg?.icon;
   }
@@ -129,7 +149,9 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
   Future<void> _loadCustomIcons() async {
     try {
       final appDir = await getApplicationDocumentsDirectory();
-      final customIconsDir = Directory(path.join(appDir.path, 'custom_package_icons'));
+      final customIconsDir = Directory(
+        path.join(appDir.path, 'custom_package_icons'),
+      );
 
       // Start with asset icons only
       final assetIcons = [
@@ -148,7 +170,10 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         for (final entity in files) {
           if (entity is File) {
             final ext = path.extension(entity.path).toLowerCase();
-            if (ext == '.png' || ext == '.jpg' || ext == '.jpeg' || ext == '.svg') {
+            if (ext == '.png' ||
+                ext == '.jpg' ||
+                ext == '.jpeg' ||
+                ext == '.svg') {
               customIconsSet.add(entity.path);
             }
           }
@@ -217,7 +242,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                     onTap: () => Navigator.of(context).pop(),
                     borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
                     child: Padding(
-                      padding: const EdgeInsets.all(AppTheme.spacing12),
+                      padding: const EdgeInsets.all(AppTheme.spacing8),
                       child: Icon(
                         Icons.arrow_back,
                         color: theme.colorScheme.onSurface,
@@ -243,7 +268,11 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     );
   }
 
-  AppBar _buildAppBar(BuildContext context, ThemeData theme, AppLocalizations l10n) {
+  AppBar _buildAppBar(
+    BuildContext context,
+    ThemeData theme,
+    AppLocalizations l10n,
+  ) {
     return AppBar(
       title: Text(
         _isEditMode ? l10n.editPackage : l10n.createPackage,
@@ -270,7 +299,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
       child: Form(
         key: _formKey,
         child: ListView(
-          padding: EdgeInsets.all(AppTheme.spacing12),
+          padding: EdgeInsets.all(AppTheme.spacing8),
           children: _buildFormFields(context, l10n),
         ),
       ),
@@ -281,26 +310,27 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     return [
       // Package Group selector with icon selector integrated
       _buildGroupSelector(context, l10n),
-      SizedBox(height: AppTheme.spacing12),
+      SizedBox(height: AppTheme.spacing8),
       // Package details section with background
       _buildPackageDetailsSection(context, l10n),
-      SizedBox(height: AppTheme.spacing12),
-      // Author fields without section header
-      _buildResponsiveAuthorFields(context, l10n),
-      SizedBox(height: AppTheme.spacing12),
-      _buildTextField(context, l10n, _authorWebpageController, l10n.authorWebpage, keyboardType: TextInputType.url, validator: _validateUrl, enabled: !_isPurchased),
-      SizedBox(height: AppTheme.spacing12),
+      SizedBox(height: AppTheme.spacing16),
+      // Author details section with background
+      _buildAuthorDetailsSection(context, l10n),
+      SizedBox(height: AppTheme.spacing16),
       _buildActionButtons(context, l10n),
-      SizedBox(height: AppTheme.spacing12),
+      SizedBox(height: AppTheme.spacing8),
     ];
   }
 
-  Widget _buildPackageDetailsSection(BuildContext context, AppLocalizations l10n) {
+  Widget _buildPackageDetailsSection(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
     return Container(
-      padding: EdgeInsets.all(AppTheme.spacing12),
+      padding: EdgeInsets.all(AppTheme.spacing8),
       decoration: BoxDecoration(
         color: colorScheme.primaryContainer.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
@@ -311,17 +341,71 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
       ),
       child: Column(
         children: [
+          _buildTextField(
+            context,
+            l10n,
+            _packageNameController,
+            l10n.packageName,
+            hint: l10n.packageNameHint,
+            enabled: _fieldsEnabled,
+            bold: true,
+          ),
+          SizedBox(height: AppTheme.spacing8),
           _buildResponsiveLanguageFields(context, l10n),
-          SizedBox(height: AppTheme.spacing12),
-          _buildTextField(context, l10n, _packageNameController, 'Package Name', hint: 'e.g., Spanish Essentials, German Basics', enabled: !_isPurchased),
-          SizedBox(height: AppTheme.spacing12),
-          _buildTextField(context, l10n, _descriptionController, l10n.description, maxLines: 2, hint: l10n.descriptionHint, enabled: !_isPurchased),
+          SizedBox(height: AppTheme.spacing8),
+          _buildTextField(
+            context,
+            l10n,
+            _descriptionController,
+            l10n.description,
+            maxLines: 2,
+            hint: l10n.descriptionHint,
+            enabled: _fieldsEnabled,
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildResponsiveLanguageFields(BuildContext context, AppLocalizations l10n) {
+  Widget _buildAuthorDetailsSection(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Container(
+      padding: EdgeInsets.all(AppTheme.spacing8),
+      decoration: BoxDecoration(
+        color: colorScheme.primaryContainer.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+        border: Border.all(
+          color: colorScheme.secondaryContainer.withValues(alpha: 0.5),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        children: [
+          _buildResponsiveAuthorFields(context, l10n),
+          SizedBox(height: AppTheme.spacing8),
+          _buildTextField(
+            context,
+            l10n,
+            _authorWebpageController,
+            l10n.authorWebpage,
+            keyboardType: TextInputType.url,
+            validator: _validateUrl,
+            enabled: _fieldsEnabled,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildResponsiveLanguageFields(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final availableWidth = constraints.maxWidth;
@@ -334,25 +418,52 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
               Row(
                 children: [
                   Expanded(
-                    child: _buildLanguageNameAutocomplete(context, l10n, _languageName1Controller, l10n.languageName1, true, enabled: !_isPurchased),
+                    child: _buildLanguageNameAutocomplete(
+                      context,
+                      l10n,
+                      _languageName1Controller,
+                      l10n.languageName1,
+                      true,
+                      enabled: _fieldsEnabled,
+                    ),
                   ),
-                  SizedBox(width: AppTheme.spacing12),
+                  SizedBox(width: AppTheme.spacing8),
                   Expanded(
-                    child: _buildLanguageNameAutocomplete(context, l10n, _languageName2Controller, l10n.languageName2, false, enabled: !_isPurchased),
+                    child: _buildLanguageNameAutocomplete(
+                      context,
+                      l10n,
+                      _languageName2Controller,
+                      l10n.languageName2,
+                      false,
+                      enabled: _fieldsEnabled,
+                    ),
                   ),
                 ],
               ),
             ],
           );
         }
-
         // Medium/Narrow layout: Each language name field in its own row
         else {
           return Column(
             children: [
-              _buildLanguageNameAutocomplete(context, l10n, _languageName1Controller, l10n.languageName1, true, enabled: !_isPurchased),
-              SizedBox(height: AppTheme.spacing12),
-              _buildLanguageNameAutocomplete(context, l10n, _languageName2Controller, l10n.languageName2, false, enabled: !_isPurchased),
+              _buildLanguageNameAutocomplete(
+                context,
+                l10n,
+                _languageName1Controller,
+                l10n.languageName1,
+                true,
+                enabled: _fieldsEnabled,
+              ),
+              SizedBox(height: AppTheme.spacing8),
+              _buildLanguageNameAutocomplete(
+                context,
+                l10n,
+                _languageName2Controller,
+                l10n.languageName2,
+                false,
+                enabled: _fieldsEnabled,
+              ),
             ],
           );
         }
@@ -360,7 +471,10 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     );
   }
 
-  Widget _buildResponsiveAuthorFields(BuildContext context, AppLocalizations l10n) {
+  Widget _buildResponsiveAuthorFields(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
     return LayoutBuilder(
       builder: (context, constraints) {
         final availableWidth = constraints.maxWidth;
@@ -372,22 +486,42 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
             children: [
               Expanded(
                 flex: 2,
-                child: _buildTextField(context, l10n, _authorNameController, l10n.authorName, enabled: !_isPurchased),
+                child: _buildTextField(
+                  context,
+                  l10n,
+                  _authorNameController,
+                  l10n.authorName,
+                  enabled: _fieldsEnabled,
+                ),
               ),
-              SizedBox(width: AppTheme.spacing12),
+              SizedBox(width: AppTheme.spacing8),
               Expanded(
                 flex: 2,
-                child: _buildTextField(context, l10n, _authorEmailController, l10n.authorEmail, keyboardType: TextInputType.emailAddress, validator: _validateEmail, enabled: !_isPurchased),
+                child: _buildTextField(
+                  context,
+                  l10n,
+                  _authorEmailController,
+                  l10n.authorEmail,
+                  keyboardType: TextInputType.emailAddress,
+                  validator: _validateEmail,
+                  enabled: _fieldsEnabled,
+                ),
               ),
-              SizedBox(width: AppTheme.spacing12),
+              SizedBox(width: AppTheme.spacing8),
               Expanded(
                 flex: 1,
-                child: _buildTextField(context, l10n, _versionController, l10n.version, required: true, enabled: !_isPurchased),
+                child: _buildTextField(
+                  context,
+                  l10n,
+                  _versionController,
+                  l10n.version,
+                  required: true,
+                  enabled: _fieldsEnabled,
+                ),
               ),
             ],
           );
         }
-
         // Medium layout: Name and Email in one row, Version in another
         // Threshold: ~600px for comfortable 2-field layout
         else if (availableWidth >= 600) {
@@ -396,29 +530,70 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
               Row(
                 children: [
                   Expanded(
-                    child: _buildTextField(context, l10n, _authorNameController, l10n.authorName, enabled: !_isPurchased),
+                    child: _buildTextField(
+                      context,
+                      l10n,
+                      _authorNameController,
+                      l10n.authorName,
+                      enabled: _fieldsEnabled,
+                    ),
                   ),
-                  SizedBox(width: AppTheme.spacing12),
+                  SizedBox(width: AppTheme.spacing8),
                   Expanded(
-                    child: _buildTextField(context, l10n, _authorEmailController, l10n.authorEmail, keyboardType: TextInputType.emailAddress, validator: _validateEmail, enabled: !_isPurchased),
+                    child: _buildTextField(
+                      context,
+                      l10n,
+                      _authorEmailController,
+                      l10n.authorEmail,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: _validateEmail,
+                      enabled: _fieldsEnabled,
+                    ),
                   ),
                 ],
               ),
-              SizedBox(height: AppTheme.spacing12),
-              _buildTextField(context, l10n, _versionController, l10n.version, required: true, enabled: !_isPurchased),
+              SizedBox(height: AppTheme.spacing8),
+              _buildTextField(
+                context,
+                l10n,
+                _versionController,
+                l10n.version,
+                required: true,
+                enabled: _fieldsEnabled,
+              ),
             ],
           );
         }
-
         // Narrow layout: Each field gets its own row
         else {
           return Column(
             children: [
-              _buildTextField(context, l10n, _authorNameController, l10n.authorName, enabled: !_isPurchased),
-              SizedBox(height: AppTheme.spacing12),
-              _buildTextField(context, l10n, _authorEmailController, l10n.authorEmail, keyboardType: TextInputType.emailAddress, validator: _validateEmail, enabled: !_isPurchased),
-              SizedBox(height: AppTheme.spacing12),
-              _buildTextField(context, l10n, _versionController, l10n.version, required: true, enabled: !_isPurchased),
+              _buildTextField(
+                context,
+                l10n,
+                _authorNameController,
+                l10n.authorName,
+                enabled: _fieldsEnabled,
+              ),
+              SizedBox(height: AppTheme.spacing8),
+              _buildTextField(
+                context,
+                l10n,
+                _authorEmailController,
+                l10n.authorEmail,
+                keyboardType: TextInputType.emailAddress,
+                validator: _validateEmail,
+                enabled: _fieldsEnabled,
+              ),
+              SizedBox(height: AppTheme.spacing8),
+              _buildTextField(
+                context,
+                l10n,
+                _versionController,
+                l10n.version,
+                required: true,
+                enabled: _fieldsEnabled,
+              ),
             ],
           );
         }
@@ -426,15 +601,17 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     );
   }
 
-  Widget _buildReadOnlyWarning(BuildContext context, AppLocalizations l10n, ThemeData theme) {
+  Widget _buildReadOnlyWarning(
+    BuildContext context,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
     return Scaffold(
-       appBar: AppBar(
-        title: Text(l10n.editPackage),
-      ),
+      appBar: AppBar(title: Text(l10n.editPackage)),
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: EdgeInsets.all(AppTheme.spacing12),
+            padding: EdgeInsets.all(AppTheme.spacing8),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -443,13 +620,13 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   size: 60,
                   color: theme.colorScheme.outline,
                 ),
-                SizedBox(height: AppTheme.spacing12),
+                SizedBox(height: AppTheme.spacing8),
                 Text(
                   _isPurchased ? l10n.purchasedPackage : l10n.readOnlyPackage,
                   style: theme.textTheme.titleMedium,
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: AppTheme.spacing12),
+                SizedBox(height: AppTheme.spacing8),
                 ElevatedButton(
                   onPressed: () => Navigator.of(context).pop(),
                   child: Text(l10n.cancel),
@@ -471,14 +648,11 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     }
 
     return Container(
-      padding: EdgeInsets.all(AppTheme.spacing12),
+      padding: EdgeInsets.all(AppTheme.spacing8),
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-        border: Border.all(
-          color: colorScheme.outlineVariant,
-          width: 1,
-        ),
+        border: Border.all(color: colorScheme.outlineVariant, width: 1),
       ),
       child: LayoutBuilder(
         builder: (context, constraints) {
@@ -497,15 +671,15 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                       size: 20,
                       color: colorScheme.primary,
                     ),
-                    SizedBox(width: AppTheme.spacing12),
+                    SizedBox(width: AppTheme.spacing8),
                     Expanded(
                       child: DropdownButtonFormField<LanguagePackageGroup>(
                         initialValue: _selectedGroup,
                         decoration: InputDecoration(
                           labelText: l10n.packageGroup,
                           contentPadding: EdgeInsets.symmetric(
-                            horizontal: AppTheme.spacing12,
-                            vertical: AppTheme.spacing12,
+                            horizontal: AppTheme.spacing8,
+                            vertical: AppTheme.spacing8,
                           ),
                         ),
                         items: _groups.map((group) {
@@ -517,11 +691,13 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                             ),
                           );
                         }).toList(),
-                        onChanged: (newGroup) {
-                          setState(() {
-                            _selectedGroup = newGroup;
-                          });
-                        },
+                        onChanged: _fieldsEnabled
+                            ? (newGroup) {
+                                setState(() {
+                                  _selectedGroup = newGroup;
+                                });
+                              }
+                            : null,
                         validator: (value) {
                           if (value == null) {
                             return 'Please select a package group';
@@ -532,14 +708,14 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: AppTheme.spacing12),
+                SizedBox(height: AppTheme.spacing8),
                 // Second row: Icon selector and upload button
                 Row(
                   children: [
                     Expanded(
                       child: _buildIconDropdown(context, colorScheme, l10n),
                     ),
-                    SizedBox(width: AppTheme.spacing12),
+                    SizedBox(width: AppTheme.spacing8),
                     _buildUploadIconButton(context, colorScheme, l10n),
                   ],
                 ),
@@ -551,12 +727,8 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
           return Row(
             children: [
               // Group icon (no label)
-              Icon(
-                Icons.folder_outlined,
-                size: 20,
-                color: colorScheme.primary,
-              ),
-              SizedBox(width: AppTheme.spacing12),
+              Icon(Icons.folder_outlined, size: 20, color: colorScheme.primary),
+              SizedBox(width: AppTheme.spacing8),
               // Group dropdown
               Expanded(
                 flex: 2,
@@ -565,8 +737,8 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   decoration: InputDecoration(
                     labelText: l10n.packageGroup,
                     contentPadding: EdgeInsets.symmetric(
-                      horizontal: AppTheme.spacing12,
-                      vertical: AppTheme.spacing12,
+                      horizontal: AppTheme.spacing8,
+                      vertical: AppTheme.spacing8,
                     ),
                   ),
                   items: _groups.map((group) {
@@ -578,11 +750,13 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                       ),
                     );
                   }).toList(),
-                  onChanged: (newGroup) {
-                    setState(() {
-                      _selectedGroup = newGroup;
-                    });
-                  },
+                  onChanged: _fieldsEnabled
+                      ? (newGroup) {
+                          setState(() {
+                            _selectedGroup = newGroup;
+                          });
+                        }
+                      : null,
                   validator: (value) {
                     if (value == null) {
                       return 'Please select a package group';
@@ -591,13 +765,13 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   },
                 ),
               ),
-              SizedBox(width: AppTheme.spacing12),
+              SizedBox(width: AppTheme.spacing8),
               // Package icon dropdown (moved here, no label)
               Expanded(
                 flex: 2,
                 child: _buildIconDropdown(context, colorScheme, l10n),
               ),
-              SizedBox(width: AppTheme.spacing12),
+              SizedBox(width: AppTheme.spacing8),
               // Upload icon button (moved here)
               _buildUploadIconButton(context, colorScheme, l10n),
             ],
@@ -607,18 +781,22 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     );
   }
 
-
-
-  Widget _buildIconDropdown(BuildContext context, ColorScheme colorScheme, AppLocalizations l10n) {
+  Widget _buildIconDropdown(
+    BuildContext context,
+    ColorScheme colorScheme,
+    AppLocalizations l10n,
+  ) {
     final theme = Theme.of(context);
 
     return DropdownButtonFormField<String?>(
-      initialValue: _availableIcons.contains(_selectedIcon) ? _selectedIcon : null,
+      initialValue: _availableIcons.contains(_selectedIcon)
+          ? _selectedIcon
+          : null,
       decoration: InputDecoration(
         labelText: l10n.packageIcon,
         contentPadding: EdgeInsets.symmetric(
-          horizontal: AppTheme.spacing12,
-          vertical: AppTheme.spacing12,
+          horizontal: AppTheme.spacing8,
+          vertical: AppTheme.spacing8,
         ),
       ),
       style: theme.textTheme.bodyMedium,
@@ -663,11 +841,13 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
           ),
         );
       }).toList(),
-      onChanged: _isPurchased ? null : (newValue) {
-        setState(() {
-          _selectedIcon = newValue;
-        });
-      },
+      onChanged: _fieldsEnabled
+          ? (newValue) {
+              setState(() {
+                _selectedIcon = newValue;
+              });
+            }
+          : null,
     );
   }
 
@@ -682,27 +862,35 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     if (fileName == 'package_icon_v3') return 'Icon 3';
 
     // Handle custom icons - show "Custom Icon" for uploaded ones
-    if (iconPath.contains('custom_package_icons') || fileName.startsWith('custom_icon_')) {
+    if (iconPath.contains('custom_package_icons') ||
+        fileName.startsWith('custom_icon_')) {
       return 'Custom Icon';
     }
-    if (iconPath.contains('custom_package_icons') || fileName.startsWith('imported_icon_')) {
+    if (iconPath.contains('custom_package_icons') ||
+        fileName.startsWith('imported_icon_')) {
       return 'Imported Icon';
     }
 
     return fileName;
   }
 
-  Widget _buildUploadIconButton(BuildContext context, ColorScheme colorScheme, AppLocalizations l10n) {
+  Widget _buildUploadIconButton(
+    BuildContext context,
+    ColorScheme colorScheme,
+    AppLocalizations l10n,
+  ) {
+    final isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
     return Tooltip(
       message: l10n.uploadCustomIcon,
       child: ElevatedButton.icon(
-        onPressed: _isPurchased ? null : _uploadCustomIcon,
+        onPressed: _fieldsEnabled ? _uploadCustomIcon : null,
         icon: const Icon(Icons.upload_file, size: 20),
         label: Text(l10n.upload),
         style: ElevatedButton.styleFrom(
           padding: EdgeInsets.symmetric(
-            horizontal: AppTheme.spacing12,
-            vertical: AppTheme.spacing12,
+            horizontal: isPortrait ? AppTheme.spacing8 : AppTheme.spacing8,
+            vertical: isPortrait ? AppTheme.spacing8 : AppTheme.spacing8,
           ),
         ),
       ),
@@ -760,7 +948,9 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
 
       // Create custom icons directory
       final appDir = await getApplicationDocumentsDirectory();
-      final customIconsDir = Directory(path.join(appDir.path, 'custom_package_icons'));
+      final customIconsDir = Directory(
+        path.join(appDir.path, 'custom_package_icons'),
+      );
       if (!await customIconsDir.exists()) {
         await customIconsDir.create(recursive: true);
       }
@@ -797,7 +987,6 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     }
   }
 
-
   /// Build autocomplete language name dropdown field
   /// This replaces the language code field and updates the code in the background
   Widget _buildLanguageNameAutocomplete(
@@ -824,53 +1013,57 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         final query = textEditingValue.text.toLowerCase();
         return allLanguages.where((entry) {
           return entry.value.toLowerCase().contains(query) ||
-                 entry.key.toLowerCase().contains(query);
+              entry.key.toLowerCase().contains(query);
         });
       },
       displayStringForOption: (MapEntry<String, String> option) => option.value,
-      fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
-        // Sync the text controller with our controller
-        if (textEditingController.text != controller.text) {
-          textEditingController.text = controller.text;
-        }
-
-        textEditingController.addListener(() {
-          if (controller.text != textEditingController.text) {
-            controller.text = textEditingController.text;
-          }
-        });
-
-        return TextFormField(
-          controller: textEditingController,
-          focusNode: focusNode,
-          enabled: enabled,
-          decoration: InputDecoration(
-            labelText: label,
-            hintText: 'Type to search languages...',
-            suffixIcon: Icon(Icons.arrow_drop_down, color: colorScheme.primary),
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacing12,
-              vertical: AppTheme.spacing12,
-            ),
-          ),
-          style: theme.textTheme.bodyMedium,
-          validator: (value) {
-            if (value == null || value.trim().isEmpty) {
-              return l10n.fieldRequired;
+      fieldViewBuilder:
+          (context, textEditingController, focusNode, onFieldSubmitted) {
+            // Sync the text controller with our controller
+            if (textEditingController.text != controller.text) {
+              textEditingController.text = controller.text;
             }
-            // Check if selected language name matches a valid language
-            final matchingLanguage = allLanguages.firstWhere(
-              (entry) => entry.value == value.trim(),
-              orElse: () => const MapEntry('', ''),
+
+            textEditingController.addListener(() {
+              if (controller.text != textEditingController.text) {
+                controller.text = textEditingController.text;
+              }
+            });
+
+            return TextFormField(
+              controller: textEditingController,
+              focusNode: focusNode,
+              enabled: enabled,
+              decoration: InputDecoration(
+                labelText: label,
+                hintText: l10n.typeToSearchLanguages,
+                suffixIcon: Icon(
+                  Icons.arrow_drop_down,
+                  color: colorScheme.primary,
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: AppTheme.spacing8,
+                  vertical: AppTheme.spacing8,
+                ),
+              ),
+              style: theme.textTheme.bodyMedium,
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return l10n.fieldRequired;
+                }
+                // Check if selected language name matches a valid language
+                final matchingLanguage = allLanguages.firstWhere(
+                  (entry) => entry.value == value.trim(),
+                  orElse: () => const MapEntry('', ''),
+                );
+                if (matchingLanguage.key.isEmpty) {
+                  return 'Please select a valid language from the list';
+                }
+                return null;
+              },
+              onFieldSubmitted: (_) => onFieldSubmitted(),
             );
-            if (matchingLanguage.key.isEmpty) {
-              return 'Please select a valid language from the list';
-            }
-            return null;
           },
-          onFieldSubmitted: (_) => onFieldSubmitted(),
-        );
-      },
       optionsViewBuilder: (context, onSelected, options) {
         return Align(
           alignment: Alignment.topLeft,
@@ -933,6 +1126,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     TextInputType? keyboardType,
     String? Function(String?)? validator,
     bool enabled = true,
+    bool bold = false,
   }) {
     final theme = Theme.of(context);
 
@@ -943,14 +1137,17 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         labelText: label,
         hintText: hint,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppTheme.spacing12,
-          vertical: AppTheme.spacing12,
+          horizontal: AppTheme.spacing8,
+          vertical: AppTheme.spacing8,
         ),
       ),
-      style: theme.textTheme.bodyMedium,
+      style: bold
+          ? theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)
+          : theme.textTheme.bodyMedium,
       maxLines: maxLines,
       keyboardType: keyboardType,
-      validator: validator ??
+      validator:
+          validator ??
           (required
               ? (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -989,60 +1186,183 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
 
         // In edit mode, we need to check if 4 buttons fit
         // Threshold: ~550px for comfortable 4-button layout with icons and labels
-        final buttonsCanFitInOneRow = _isEditMode ? availableWidth >= 550 : true;
+        final buttonsCanFitInOneRow = _isEditMode
+            ? availableWidth >= 550
+            : true;
+        final isPortrait =
+            MediaQuery.of(context).orientation == Orientation.portrait;
 
         return Column(
           children: [
-            // Export and Import buttons (if editing)
+            // Export, Import, and AI Text Analysis buttons (if editing)
             if (_isEditMode) ...[
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: _isPurchased ? null : _exportPackage,
-                      icon: const Icon(Icons.file_download),
-                      label: Text(l10n.exportPackage),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.tertiary,
-                        foregroundColor: Theme.of(context).colorScheme.onTertiary,
-                        disabledBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                        disabledForegroundColor: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.38),
+              // In landscape mode: all three buttons in one row
+              // In portrait mode: stack them vertically
+              if (!isPortrait)
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: _fieldsEnabled ? _exportPackage : null,
+                        icon: const Icon(Icons.file_download),
+                        label: Text(l10n.exportPackage),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.tertiary,
+                          foregroundColor: Theme.of(
+                            context,
+                          ).colorScheme.onTertiary,
+                          disabledBackgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
+                          disabledForegroundColor: Theme.of(context)
+                              .colorScheme
+                              .onSurfaceVariant
+                              .withValues(alpha: 0.38),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(width: AppTheme.spacing12),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: _isPurchased ? null : _importItems,
-                      icon: const Icon(Icons.file_upload),
-                      label: Text(l10n.importItems),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.tertiary,
-                        foregroundColor: Theme.of(context).colorScheme.onTertiary,
-                        disabledBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                        disabledForegroundColor: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.38),
+                    SizedBox(width: AppTheme.spacing8),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: _fieldsEnabled ? _importItems : null,
+                        icon: const Icon(Icons.file_upload),
+                        label: Text(l10n.importItems),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.tertiary,
+                          foregroundColor: Theme.of(
+                            context,
+                          ).colorScheme.onTertiary,
+                          disabledBackgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
+                          disabledForegroundColor: Theme.of(context)
+                              .colorScheme
+                              .onSurfaceVariant
+                              .withValues(alpha: 0.38),
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: AppTheme.spacing12),
-              // AI Text Analysis button
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton.icon(
-                  onPressed: _isPurchased ? null : _openAITextAnalysis,
-                  icon: const Icon(Icons.psychology),
-                  label: Text(l10n.aiTextAnalysis),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.secondary,
-                    foregroundColor: Theme.of(context).colorScheme.onSecondary,
-                    disabledBackgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
-                    disabledForegroundColor: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.38),
-                  ),
+                    SizedBox(width: AppTheme.spacing8),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: _fieldsEnabled ? _openAITextAnalysis : null,
+                        icon: const Icon(Icons.psychology),
+                        label: Text(l10n.aiTextAnalysis),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.secondary,
+                          foregroundColor: Theme.of(
+                            context,
+                          ).colorScheme.onSecondary,
+                          disabledBackgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
+                          disabledForegroundColor: Theme.of(context)
+                              .colorScheme
+                              .onSurfaceVariant
+                              .withValues(alpha: 0.38),
+                        ),
+                      ),
+                    ),
+                  ],
+                )
+              else
+                // Portrait mode: stack vertically
+                Column(
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: _fieldsEnabled ? _exportPackage : null,
+                            icon: const Icon(Icons.file_download),
+                            label: Text(l10n.exportPackage),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.tertiary,
+                              foregroundColor: Theme.of(
+                                context,
+                              ).colorScheme.onTertiary,
+                              disabledBackgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
+                              disabledForegroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant
+                                  .withValues(alpha: 0.38),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 6,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: AppTheme.spacing8),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: _fieldsEnabled ? _importItems : null,
+                            icon: const Icon(Icons.file_upload),
+                            label: Text(l10n.importItems),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.tertiary,
+                              foregroundColor: Theme.of(
+                                context,
+                              ).colorScheme.onTertiary,
+                              disabledBackgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
+                              disabledForegroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant
+                                  .withValues(alpha: 0.38),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 6,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: AppTheme.spacing8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: _fieldsEnabled ? _openAITextAnalysis : null,
+                        icon: const Icon(Icons.psychology),
+                        label: Text(l10n.aiTextAnalysis),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.secondary,
+                          foregroundColor: Theme.of(
+                            context,
+                          ).colorScheme.onSecondary,
+                          disabledBackgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
+                          disabledForegroundColor: Theme.of(context)
+                              .colorScheme
+                              .onSurfaceVariant
+                              .withValues(alpha: 0.38),
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 6,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              SizedBox(height: AppTheme.spacing12),
+              SizedBox(height: AppTheme.spacing8),
             ],
             // Main action buttons - responsive layout
             if (buttonsCanFitInOneRow)
@@ -1056,6 +1376,8 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
   }
 
   Widget _buildButtonsInOneRow(BuildContext context, AppLocalizations l10n) {
+    final isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
     return Row(
       children: [
         if (_isEditMode) ...[
@@ -1067,10 +1389,13 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
               label: Text(l10n.clearCounters),
               style: OutlinedButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.primary,
+                padding: isPortrait
+                    ? EdgeInsets.symmetric(horizontal: 8, vertical: 6)
+                    : null,
               ),
             ),
           ),
-          SizedBox(width: AppTheme.spacing12),
+          SizedBox(width: AppTheme.spacing8),
           // Delete All Data button
           Expanded(
             child: OutlinedButton.icon(
@@ -1079,24 +1404,65 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
               label: Text(l10n.deleteAll),
               style: OutlinedButton.styleFrom(
                 foregroundColor: Theme.of(context).colorScheme.error,
+                padding: isPortrait
+                    ? EdgeInsets.symmetric(horizontal: 8, vertical: 6)
+                    : null,
               ),
             ),
           ),
-          SizedBox(width: AppTheme.spacing12),
+          SizedBox(width: AppTheme.spacing8),
         ],
         // Cancel button
         Expanded(
           child: OutlinedButton(
             onPressed: () => Navigator.of(context).pop(),
+            style: OutlinedButton.styleFrom(
+              padding: isPortrait
+                  ? EdgeInsets.symmetric(horizontal: 8, vertical: 6)
+                  : null,
+            ),
             child: Text(l10n.cancel),
           ),
         ),
-        SizedBox(width: AppTheme.spacing12),
+        SizedBox(width: AppTheme.spacing8),
+        // Edit button (only in edit mode)
+        if (_isEditMode) ...[
+          Expanded(
+            child: ElevatedButton.icon(
+              onPressed: !_isPurchased
+                  ? () {
+                      setState(() {
+                        _isEditingEnabled = !_isEditingEnabled;
+                      });
+                    }
+                  : null,
+              icon: Icon(_isEditingEnabled ? Icons.lock_open : Icons.edit),
+              label: Text(l10n.edit),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: _isEditingEnabled
+                    ? Theme.of(context).colorScheme.tertiary
+                    : Theme.of(context).colorScheme.primary,
+                foregroundColor: _isEditingEnabled
+                    ? Theme.of(context).colorScheme.onTertiary
+                    : Theme.of(context).colorScheme.onPrimary,
+                padding: isPortrait
+                    ? EdgeInsets.symmetric(horizontal: 8, vertical: 6)
+                    : null,
+              ),
+            ),
+          ),
+          SizedBox(width: AppTheme.spacing8),
+        ],
         // Save button
         Expanded(
           flex: _isEditMode ? 1 : 2,
           child: ElevatedButton(
-            onPressed: _savePackage,
+            onPressed: _fieldsEnabled ? _savePackage : null,
+            style: ElevatedButton.styleFrom(
+              padding: isPortrait
+                  ? EdgeInsets.symmetric(horizontal: 8, vertical: 6)
+                  : null,
+            ),
             child: Text(l10n.save),
           ),
         ),
@@ -1105,6 +1471,8 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
   }
 
   Widget _buildButtonsInTwoRows(BuildContext context, AppLocalizations l10n) {
+    final isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
     return Column(
       children: [
         // First row: Clear Counters and Delete All Data
@@ -1118,10 +1486,13 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   label: Text(l10n.clearCounters),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Theme.of(context).colorScheme.primary,
+                    padding: isPortrait
+                        ? EdgeInsets.symmetric(horizontal: 8, vertical: 6)
+                        : null,
                   ),
                 ),
               ),
-              SizedBox(width: AppTheme.spacing12),
+              SizedBox(width: AppTheme.spacing8),
               Expanded(
                 child: OutlinedButton.icon(
                   onPressed: _confirmDeleteAllData,
@@ -1129,27 +1500,68 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   label: Text(l10n.deleteAll),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: Theme.of(context).colorScheme.error,
+                    padding: isPortrait
+                        ? EdgeInsets.symmetric(horizontal: 8, vertical: 6)
+                        : null,
                   ),
                 ),
               ),
             ],
           ),
-          SizedBox(height: AppTheme.spacing12),
+          SizedBox(height: AppTheme.spacing8),
         ],
-        // Second row: Cancel and Save
+        // Second row: Cancel, Edit (if editing), and Save
         Row(
           children: [
             Expanded(
               child: OutlinedButton(
                 onPressed: () => Navigator.of(context).pop(),
+                style: OutlinedButton.styleFrom(
+                  padding: isPortrait
+                      ? EdgeInsets.symmetric(horizontal: 8, vertical: 6)
+                      : null,
+                ),
                 child: Text(l10n.cancel),
               ),
             ),
-            SizedBox(width: AppTheme.spacing12),
+            SizedBox(width: AppTheme.spacing8),
+            // Edit button (only in edit mode)
+            if (_isEditMode) ...[
+              Expanded(
+                child: ElevatedButton.icon(
+                  onPressed: !_isPurchased
+                      ? () {
+                          setState(() {
+                            _isEditingEnabled = !_isEditingEnabled;
+                          });
+                        }
+                      : null,
+                  icon: Icon(_isEditingEnabled ? Icons.lock_open : Icons.edit),
+                  label: Text(l10n.edit),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: _isEditingEnabled
+                        ? Theme.of(context).colorScheme.tertiary
+                        : Theme.of(context).colorScheme.primary,
+                    foregroundColor: _isEditingEnabled
+                        ? Theme.of(context).colorScheme.onTertiary
+                        : Theme.of(context).colorScheme.onPrimary,
+                    padding: isPortrait
+                        ? EdgeInsets.symmetric(horizontal: 8, vertical: 6)
+                        : null,
+                  ),
+                ),
+              ),
+              SizedBox(width: AppTheme.spacing8),
+            ],
             Expanded(
               flex: 2,
               child: ElevatedButton(
-                onPressed: _savePackage,
+                onPressed: _fieldsEnabled ? _savePackage : null,
+                style: ElevatedButton.styleFrom(
+                  padding: isPortrait
+                      ? EdgeInsets.symmetric(horizontal: 8, vertical: 6)
+                      : null,
+                ),
                 child: Text(l10n.save),
               ),
             ),
@@ -1158,7 +1570,6 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
       ],
     );
   }
-
 
   Future<void> _savePackage() async {
     if (!_formKey.currentState!.validate()) return;
@@ -1172,7 +1583,8 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     try {
       final package = LanguagePackage(
         id: widget.package?.id ?? const Uuid().v4(),
-        groupId: _selectedGroup?.id ?? widget.package?.groupId ?? 'default-group-id',
+        groupId:
+            _selectedGroup?.id ?? widget.package?.groupId ?? 'default-group-id',
         packageName: _packageNameController.text.trim().isEmpty
             ? null
             : _packageNameController.text.trim(),
@@ -1536,7 +1948,10 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     try {
       final file = File(result.files.single.path!);
       final content = await file.readAsString();
-      final lines = content.split('\n').where((line) => line.trim().isNotEmpty).toList();
+      final lines = content
+          .split('\n')
+          .where((line) => line.trim().isNotEmpty)
+          .toList();
 
       if (lines.isEmpty) {
         _showImportFormatDialog(l10n);
@@ -1553,16 +1968,18 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         showDialog(
           context: context,
           barrierDismissible: false,
-          builder: (context) => _ImportProgressDialog(
-            progressNotifier: progressNotifier,
-          ),
+          builder: (context) =>
+              _ImportProgressDialog(progressNotifier: progressNotifier),
         );
       }
 
       final importResult = await _processImportLines(
         lines,
         onProgress: (current, total) {
-          progressNotifier.value = _ImportProgress(current: current, total: total);
+          progressNotifier.value = _ImportProgress(
+            current: current,
+            total: total,
+          );
         },
       );
 
@@ -1608,16 +2025,18 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
   }
 
   Future<_ImportResult> _processImportLines(
-    List<String> lines,
-    {void Function(int current, int total)? onProgress}
-  ) async {
+    List<String> lines, {
+    void Function(int current, int total)? onProgress,
+  }) async {
     final successfulItems = <String>[];
     final failedItems = <String>[];
     final package = widget.package!;
     final l10n = AppLocalizations.of(context)!;
 
     // Get existing items to check for duplicates
-    final existingCategories = await _categoryRepo.getCategoriesForPackage(package.id);
+    final existingCategories = await _categoryRepo.getCategoriesForPackage(
+      package.id,
+    );
     final categoryMap = <String, Category>{};
     for (final cat in existingCategories) {
       categoryMap[cat.name.toLowerCase()] = cat;
@@ -1631,7 +2050,8 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
 
     final existingItemKeys = <String>{};
     for (final item in existingItems) {
-      final key = '${item.language1Data.text.toLowerCase()}|${item.language2Data.text.toLowerCase()}';
+      final key =
+          '${item.language1Data.text.toLowerCase()}|${item.language2Data.text.toLowerCase()}';
       existingItemKeys.add(key);
     }
 
@@ -1683,11 +2103,16 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
           } else if (trimmedPart.startsWith('CAT=')) {
             final catContent = trimmedPart.substring(4).trim();
             categories.addAll(
-              catContent.split(':::').map((c) => c.trim()).where((c) => c.isNotEmpty)
+              catContent
+                  .split(':::')
+                  .map((c) => c.trim())
+                  .where((c) => c.isNotEmpty),
             );
           } else {
             // Unknown field prefix - this is an error
-            failedItems.add('${l10n.invalidImportLine} ${lineIndex + 1}: ${l10n.unknownField} "$trimmedPart"');
+            failedItems.add(
+              '${l10n.invalidImportLine} ${lineIndex + 1}: ${l10n.unknownField} "$trimmedPart"',
+            );
             throw Exception(l10n.unknownField);
           }
         }
@@ -1695,7 +2120,9 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         // Validate: at least L1 or L2 must be present
         if ((lang1Text == null || lang1Text.isEmpty) &&
             (lang2Text == null || lang2Text.isEmpty)) {
-          failedItems.add('${l10n.invalidImportLine} ${lineIndex + 1}: ${l10n.missingRequiredFields}');
+          failedItems.add(
+            '${l10n.invalidImportLine} ${lineIndex + 1}: ${l10n.missingRequiredFields}',
+          );
           continue;
         }
 
@@ -1706,7 +2133,9 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         // Check for duplicate
         final itemKey = '${lang1Text.toLowerCase()}|${lang2Text.toLowerCase()}';
         if (existingItemKeys.contains(itemKey)) {
-          failedItems.add('${l10n.invalidImportLine} ${lineIndex + 1}: Duplicate item');
+          failedItems.add(
+            '${l10n.invalidImportLine} ${lineIndex + 1}: Duplicate item',
+          );
           continue;
         }
 
@@ -1736,11 +2165,15 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         }
 
         // Convert examples to ExampleSentence objects
-        final exampleSentences = examples.map((ex) => ExampleSentence(
-          id: const Uuid().v4(),
-          textLanguage1: ex['language1'] ?? '',
-          textLanguage2: ex['language2'] ?? '',
-        )).toList();
+        final exampleSentences = examples
+            .map(
+              (ex) => ExampleSentence(
+                id: const Uuid().v4(),
+                textLanguage1: ex['language1'] ?? '',
+                textLanguage2: ex['language2'] ?? '',
+              ),
+            )
+            .toList();
 
         // Create item
         final item = Item(
@@ -1776,16 +2209,15 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         successfulItems.add('$displayText (${categories.join(", ")})');
       } catch (e) {
         // Only add to failed if not already added
-        if (!failedItems.any((f) => f.startsWith('${l10n.invalidImportLine} ${lineIndex + 1}'))) {
+        if (!failedItems.any(
+          (f) => f.startsWith('${l10n.invalidImportLine} ${lineIndex + 1}'),
+        )) {
           failedItems.add('${l10n.invalidImportLine} ${lineIndex + 1}: $e');
         }
       }
     }
 
-    return _ImportResult(
-      successful: successfulItems,
-      failed: failedItems,
-    );
+    return _ImportResult(successful: successfulItems, failed: failedItems);
   }
 
   void _showImportFormatDialog(AppLocalizations l10n) {
@@ -1799,14 +2231,14 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(l10n.importFormatNewDescription),
-              const SizedBox(height: AppTheme.spacing12),
+              const SizedBox(height: AppTheme.spacing8),
               Text(
                 'Format:',
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: AppTheme.spacing12),
+              const SizedBox(height: AppTheme.spacing8),
               Container(
-                padding: const EdgeInsets.all(AppTheme.spacing12),
+                padding: const EdgeInsets.all(AppTheme.spacing8),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
@@ -1817,22 +2249,19 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   'EX=<L1 example>:::<L2 example>---'
                   'EX=<L1 example2>:::<L2 example2>---'
                   'CAT=<category1>:::<category2>:::<category3>',
-                  style: TextStyle(
-                    fontFamily: 'monospace',
-                    fontSize: 11,
-                  ),
+                  style: TextStyle(fontFamily: 'monospace', fontSize: 11),
                 ),
               ),
-              const SizedBox(height: AppTheme.spacing12),
+              const SizedBox(height: AppTheme.spacing8),
               Text(
                 'Example:',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: AppTheme.spacing12),
+              const SizedBox(height: AppTheme.spacing8),
               Container(
-                padding: const EdgeInsets.all(AppTheme.spacing12),
+                padding: const EdgeInsets.all(AppTheme.spacing8),
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
@@ -1843,20 +2272,17 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   'L2Post=---EX=Be careful when sharing files:::Legyen óvatos fájlmegosztáskor---'
                   'EX=Always check before upload:::Mindig ellenőrizze feltöltés előtt---'
                   'CAT=Security:::Awareness:::Data Protection',
-                  style: TextStyle(
-                    fontFamily: 'monospace',
-                    fontSize: 10,
-                  ),
+                  style: TextStyle(fontFamily: 'monospace', fontSize: 10),
                 ),
               ),
-              const SizedBox(height: AppTheme.spacing12),
+              const SizedBox(height: AppTheme.spacing8),
               Text(
                 l10n.importFormatNotes,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: AppTheme.spacing12),
+              const SizedBox(height: AppTheme.spacing8),
               Text(l10n.importFormatNewLine1),
               Text(l10n.importFormatNewLine2),
               Text(l10n.importFormatNewLine3),
@@ -1902,18 +2328,30 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   ),
                 ),
                 if (result.successful.isNotEmpty) ...[
-                  SizedBox(height: AppTheme.spacing12),
-                  ...result.successful.take(10).map((item) => Padding(
-                    padding: EdgeInsets.only(left: AppTheme.spacing12, bottom: AppTheme.spacing12),
-                    child: Text('✓ $item', style: Theme.of(context).textTheme.bodySmall),
-                  )),
+                  SizedBox(height: AppTheme.spacing8),
+                  ...result.successful
+                      .take(10)
+                      .map(
+                        (item) => Padding(
+                          padding: EdgeInsets.only(
+                            left: AppTheme.spacing8,
+                            bottom: AppTheme.spacing8,
+                          ),
+                          child: Text(
+                            '✓ $item',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ),
+                      ),
                   if (result.successful.length > 10)
                     Padding(
-                      padding: EdgeInsets.only(left: AppTheme.spacing12),
-                      child: Text('... ${l10n.successfullyImported} ${result.successful.length - 10} ${l10n.items}'),
+                      padding: EdgeInsets.only(left: AppTheme.spacing8),
+                      child: Text(
+                        '... ${l10n.successfullyImported} ${result.successful.length - 10} ${l10n.items}',
+                      ),
                     ),
                 ],
-                SizedBox(height: AppTheme.spacing12),
+                SizedBox(height: AppTheme.spacing8),
                 Text(
                   '${l10n.failedToImport}: ${result.failed.length}',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -1922,15 +2360,27 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   ),
                 ),
                 if (result.failed.isNotEmpty) ...[
-                  SizedBox(height: AppTheme.spacing12),
-                  ...result.failed.take(10).map((item) => Padding(
-                    padding: EdgeInsets.only(left: AppTheme.spacing12, bottom: AppTheme.spacing12),
-                    child: Text('✗ $item', style: Theme.of(context).textTheme.bodySmall),
-                  )),
+                  SizedBox(height: AppTheme.spacing8),
+                  ...result.failed
+                      .take(10)
+                      .map(
+                        (item) => Padding(
+                          padding: EdgeInsets.only(
+                            left: AppTheme.spacing8,
+                            bottom: AppTheme.spacing8,
+                          ),
+                          child: Text(
+                            '✗ $item',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ),
+                      ),
                   if (result.failed.length > 10)
                     Padding(
-                      padding: EdgeInsets.only(left: AppTheme.spacing12),
-                      child: Text('... ${l10n.failedToImport} ${result.failed.length - 10} ${l10n.items}'),
+                      padding: EdgeInsets.only(left: AppTheme.spacing8),
+                      child: Text(
+                        '... ${l10n.failedToImport} ${result.failed.length - 10} ${l10n.items}',
+                      ),
                     ),
                 ],
               ],
@@ -1952,20 +2402,14 @@ class _ImportResult {
   final List<String> successful;
   final List<String> failed;
 
-  _ImportResult({
-    required this.successful,
-    required this.failed,
-  });
+  _ImportResult({required this.successful, required this.failed});
 }
 
 class _ImportProgress {
   final int current;
   final int total;
 
-  _ImportProgress({
-    required this.current,
-    required this.total,
-  });
+  _ImportProgress({required this.current, required this.total});
 
   double get progress => total > 0 ? current / total : 0.0;
 }
@@ -1973,9 +2417,7 @@ class _ImportProgress {
 class _ImportProgressDialog extends StatelessWidget {
   final ValueNotifier<_ImportProgress> progressNotifier;
 
-  const _ImportProgressDialog({
-    required this.progressNotifier,
-  });
+  const _ImportProgressDialog({required this.progressNotifier});
 
   @override
   Widget build(BuildContext context) {
@@ -1990,11 +2432,8 @@ class _ImportProgressDialog extends StatelessWidget {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              LinearProgressIndicator(
-                value: progress.progress,
-                minHeight: 8,
-              ),
-              const SizedBox(height: AppTheme.spacing12),
+              LinearProgressIndicator(value: progress.progress, minHeight: 8),
+              const SizedBox(height: AppTheme.spacing8),
               Text(
                 l10n.importProgress(progress.current, progress.total),
                 style: theme.textTheme.bodyMedium,
@@ -2018,7 +2457,8 @@ class _LanguageCodePickerDialog extends StatefulWidget {
   });
 
   @override
-  State<_LanguageCodePickerDialog> createState() => _LanguageCodePickerDialogState();
+  State<_LanguageCodePickerDialog> createState() =>
+      _LanguageCodePickerDialogState();
 }
 
 class _LanguageCodePickerDialogState extends State<_LanguageCodePickerDialog> {
@@ -2037,7 +2477,7 @@ class _LanguageCodePickerDialogState extends State<_LanguageCodePickerDialog> {
         child: Column(
           children: [
             _buildSearchField(),
-            SizedBox(height: AppTheme.spacing12),
+            SizedBox(height: AppTheme.spacing8),
             _buildLanguageList(languages, theme),
           ],
         ),
@@ -2052,13 +2492,14 @@ class _LanguageCodePickerDialogState extends State<_LanguageCodePickerDialog> {
   }
 
   Widget _buildSearchField() {
+    final l10n = AppLocalizations.of(context)!;
     return TextField(
       decoration: InputDecoration(
-        hintText: 'Search...',
+        hintText: l10n.search,
         prefixIcon: const Icon(Icons.search),
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppTheme.spacing12,
-          vertical: AppTheme.spacing12,
+          horizontal: AppTheme.spacing8,
+          vertical: AppTheme.spacing8,
         ),
       ),
       onChanged: (value) {
@@ -2069,16 +2510,23 @@ class _LanguageCodePickerDialogState extends State<_LanguageCodePickerDialog> {
     );
   }
 
-  Widget _buildLanguageList(List<MapEntry<String, String>> languages, ThemeData theme) {
+  Widget _buildLanguageList(
+    List<MapEntry<String, String>> languages,
+    ThemeData theme,
+  ) {
     return Expanded(
       child: ListView.builder(
         itemCount: languages.length,
-        itemBuilder: (context, index) => _buildLanguageListItem(languages[index], theme),
+        itemBuilder: (context, index) =>
+            _buildLanguageListItem(languages[index], theme),
       ),
     );
   }
 
-  Widget _buildLanguageListItem(MapEntry<String, String> entry, ThemeData theme) {
+  Widget _buildLanguageListItem(
+    MapEntry<String, String> entry,
+    ThemeData theme,
+  ) {
     return ListTile(
       title: Text(entry.value, style: theme.textTheme.bodyMedium),
       subtitle: Text(entry.key, style: theme.textTheme.bodySmall),

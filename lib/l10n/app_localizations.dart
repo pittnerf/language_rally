@@ -134,6 +134,18 @@ abstract class AppLocalizations {
   /// **'Package Details'**
   String get packageDetails;
 
+  /// No description provided for @packageName.
+  ///
+  /// In en, this message translates to:
+  /// **'Package Name'**
+  String get packageName;
+
+  /// No description provided for @packageNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Spanish Essentials, German Basics'**
+  String get packageNameHint;
+
   /// No description provided for @languageCode1.
   ///
   /// In en, this message translates to:
@@ -254,6 +266,12 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get save;
 
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:
@@ -343,6 +361,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select Language Code'**
   String get selectLanguageCode;
+
+  /// No description provided for @typeToSearchLanguages.
+  ///
+  /// In en, this message translates to:
+  /// **'Type to search languages...'**
+  String get typeToSearchLanguages;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search...'**
+  String get search;
 
   /// No description provided for @clearCounters.
   ///
@@ -920,6 +950,12 @@ abstract class AppLocalizations {
   /// **'Known'**
   String get known;
 
+  /// No description provided for @unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get unknown;
+
   /// No description provided for @important.
   ///
   /// In en, this message translates to:
@@ -931,6 +967,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Favourite'**
   String get favourite;
+
+  /// No description provided for @badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Badge'**
+  String get badge;
+
+  /// No description provided for @position.
+  ///
+  /// In en, this message translates to:
+  /// **'Position'**
+  String get position;
+
+  /// No description provided for @stepsUntilLearned.
+  ///
+  /// In en, this message translates to:
+  /// **'Steps until learned'**
+  String get stepsUntilLearned;
 
   /// No description provided for @examples.
   ///
@@ -1526,6 +1580,24 @@ abstract class AppLocalizations {
   /// **'Sequential order'**
   String get sequentialOrder;
 
+  /// No description provided for @itemType.
+  ///
+  /// In en, this message translates to:
+  /// **'Item Type'**
+  String get itemType;
+
+  /// No description provided for @dictionaryItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Dictionary items'**
+  String get dictionaryItems;
+
+  /// No description provided for @examplesType.
+  ///
+  /// In en, this message translates to:
+  /// **'Examples'**
+  String get examplesType;
+
   /// No description provided for @displayLanguage.
   ///
   /// In en, this message translates to:
@@ -1691,13 +1763,13 @@ abstract class AppLocalizations {
   /// No description provided for @aiTextAnalysis.
   ///
   /// In en, this message translates to:
-  /// **'AI Text Analysis'**
+  /// **'Import with AI'**
   String get aiTextAnalysis;
 
   /// No description provided for @aiTextAnalysisImport.
   ///
   /// In en, this message translates to:
-  /// **'AI Text Analysis Import'**
+  /// **'Import with AI Text Analysis'**
   String get aiTextAnalysisImport;
 
   /// No description provided for @knowledgeLevel.

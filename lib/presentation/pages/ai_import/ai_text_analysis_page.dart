@@ -16,10 +16,7 @@ import 'ai_items_selection_page.dart';
 class AITextAnalysisPage extends ConsumerStatefulWidget {
   final LanguagePackage package;
 
-  const AITextAnalysisPage({
-    super.key,
-    required this.package,
-  });
+  const AITextAnalysisPage({super.key, required this.package});
 
   @override
   ConsumerState<AITextAnalysisPage> createState() => _AITextAnalysisPageState();
@@ -37,7 +34,6 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
   bool _generateExamples = false;
   bool _isAnalyzing = false;
   bool _cancelRequested = false;
-
 
   @override
   void initState() {
@@ -76,18 +72,16 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(AppTheme.spacing8),
+          padding: const EdgeInsets.all(AppTheme.spacing4),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _buildKnowledgeLevelAndCategorySection(theme, l10n),
-              const SizedBox(height: AppTheme.spacing8),
+
               _buildModelSelectionSection(theme, l10n),
-              const SizedBox(height: AppTheme.spacing8),
               _buildTextInputSection(theme, l10n),
-              const SizedBox(height: AppTheme.spacing8),
               _buildOptionsAndMaxItemsSection(theme, l10n),
-              const SizedBox(height: AppTheme.spacing8),
+
               _buildAnalyzeButton(theme, l10n),
             ],
           ),
@@ -96,88 +90,207 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
     );
   }
 
-  Widget _buildKnowledgeLevelAndCategorySection(ThemeData theme, AppLocalizations l10n) {
+  Widget _buildKnowledgeLevelAndCategorySection(
+    ThemeData theme,
+    AppLocalizations l10n,
+  ) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 600; // Portrait mode on small screens
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(AppTheme.spacing8),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Knowledge Level - Left side
-            Expanded(
-              flex: 1,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        child: isSmallScreen
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Text(
-                    l10n.knowledgeLevel,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: AppTheme.spacing8),
-                  DropdownButtonFormField<String>(
-                    initialValue: _selectedLevel,
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.symmetric(
-                        horizontal: AppTheme.spacing8,
-                        vertical: AppTheme.spacing8,
+                  // Knowledge Level - Top
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.knowledgeLevel,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    style: theme.textTheme.bodyMedium,
-                    items: [
-                      DropdownMenuItem(value: 'A1', child: Text(l10n.a1Beginner)),
-                      DropdownMenuItem(value: 'A2', child: Text(l10n.a2Elementary)),
-                      DropdownMenuItem(value: 'B1', child: Text(l10n.b1Intermediate)),
-                      DropdownMenuItem(value: 'B2', child: Text(l10n.b2UpperIntermediate)),
-                      DropdownMenuItem(value: 'C1', child: Text(l10n.c1Advanced)),
-                      DropdownMenuItem(value: 'C2', child: Text(l10n.c2Proficient)),
+
+                      DropdownButtonFormField<String>(
+                        initialValue: _selectedLevel,
+                        decoration: const InputDecoration(
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: AppTheme.spacing8,
+                            vertical: AppTheme.spacing8,
+                          ),
+                        ),
+                        style: theme.textTheme.bodyMedium,
+                        items: [
+                          DropdownMenuItem(
+                            value: 'A1',
+                            child: Text(l10n.a1Beginner),
+                          ),
+                          DropdownMenuItem(
+                            value: 'A2',
+                            child: Text(l10n.a2Elementary),
+                          ),
+                          DropdownMenuItem(
+                            value: 'B1',
+                            child: Text(l10n.b1Intermediate),
+                          ),
+                          DropdownMenuItem(
+                            value: 'B2',
+                            child: Text(l10n.b2UpperIntermediate),
+                          ),
+                          DropdownMenuItem(
+                            value: 'C1',
+                            child: Text(l10n.c1Advanced),
+                          ),
+                          DropdownMenuItem(
+                            value: 'C2',
+                            child: Text(l10n.c2Proficient),
+                          ),
+                        ],
+                        onChanged: (value) async {
+                          if (value != null) {
+                            setState(() {
+                              _selectedLevel = value;
+                            });
+                            // Save knowledge level selection
+                            await ref
+                                .read(appSettingsProvider.notifier)
+                                .setAiKnowledgeLevel(value);
+                          }
+                        },
+                      ),
                     ],
-                    onChanged: (value) async {
-                      if (value != null) {
-                        setState(() {
-                          _selectedLevel = value;
-                        });
-                        // Save knowledge level selection
-                        await ref.read(appSettingsProvider.notifier).setAiKnowledgeLevel(value);
-                      }
-                    },
+                  ),
+
+                  // Category Name - Bottom
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.categoryName,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+
+                      TextField(
+                        controller: _categoryController,
+                        style: theme.textTheme.bodyMedium,
+                        decoration: InputDecoration(
+                          hintText: l10n.categoryNameHint,
+                          hintStyle: theme.textTheme.bodySmall,
+                          border: const OutlineInputBorder(),
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: AppTheme.spacing8,
+                            vertical: AppTheme.spacing8,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
-              ),
-            ),
-            const SizedBox(width: AppTheme.spacing8),
-            // Category Name - Right side
-            Expanded(
-              flex: 1,
-              child: Column(
+              )
+            : Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    l10n.categoryName,
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
+                  // Knowledge Level - Left side
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.knowledgeLevel,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+
+                        DropdownButtonFormField<String>(
+                          initialValue: _selectedLevel,
+                          decoration: const InputDecoration(
+                            contentPadding: EdgeInsets.symmetric(
+                              horizontal: AppTheme.spacing8,
+                              vertical: AppTheme.spacing8,
+                            ),
+                          ),
+                          style: theme.textTheme.bodyMedium,
+                          items: [
+                            DropdownMenuItem(
+                              value: 'A1',
+                              child: Text(l10n.a1Beginner),
+                            ),
+                            DropdownMenuItem(
+                              value: 'A2',
+                              child: Text(l10n.a2Elementary),
+                            ),
+                            DropdownMenuItem(
+                              value: 'B1',
+                              child: Text(l10n.b1Intermediate),
+                            ),
+                            DropdownMenuItem(
+                              value: 'B2',
+                              child: Text(l10n.b2UpperIntermediate),
+                            ),
+                            DropdownMenuItem(
+                              value: 'C1',
+                              child: Text(l10n.c1Advanced),
+                            ),
+                            DropdownMenuItem(
+                              value: 'C2',
+                              child: Text(l10n.c2Proficient),
+                            ),
+                          ],
+                          onChanged: (value) async {
+                            if (value != null) {
+                              setState(() {
+                                _selectedLevel = value;
+                              });
+                              // Save knowledge level selection
+                              await ref
+                                  .read(appSettingsProvider.notifier)
+                                  .setAiKnowledgeLevel(value);
+                            }
+                          },
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: AppTheme.spacing8),
-                  TextField(
-                    controller: _categoryController,
-                    style: theme.textTheme.bodyMedium,
-                    decoration: InputDecoration(
-                      hintText: l10n.categoryNameHint,
-                      hintStyle: theme.textTheme.bodySmall,
-                      border: const OutlineInputBorder(),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: AppTheme.spacing8,
-                        vertical: AppTheme.spacing8,
-                      ),
+                  const SizedBox(width: AppTheme.spacing8),
+                  // Category Name - Right side
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.categoryName,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+
+                        TextField(
+                          controller: _categoryController,
+                          style: theme.textTheme.bodyMedium,
+                          decoration: InputDecoration(
+                            hintText: l10n.categoryNameHint,
+                            hintStyle: theme.textTheme.bodySmall,
+                            border: const OutlineInputBorder(),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: AppTheme.spacing8,
+                              vertical: AppTheme.spacing8,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -210,7 +323,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: AppTheme.spacing8),
+
             DropdownButtonFormField<String>(
               initialValue: _selectedModel,
               decoration: const InputDecoration(
@@ -229,10 +342,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
                   value: 'gpt-3.5-turbo-16k',
                   child: Text(l10n.modelGpt35Turbo16k),
                 ),
-                DropdownMenuItem(
-                  value: 'gpt-4',
-                  child: Text(l10n.modelGpt4),
-                ),
+                DropdownMenuItem(value: 'gpt-4', child: Text(l10n.modelGpt4)),
                 DropdownMenuItem(
                   value: 'gpt-4-turbo',
                   child: Text(l10n.modelGpt4Turbo),
@@ -244,7 +354,9 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
                     _selectedModel = value;
                   });
                   // Save model selection
-                  await ref.read(appSettingsProvider.notifier).setOpenaiModel(value);
+                  await ref
+                      .read(appSettingsProvider.notifier)
+                      .setOpenaiModel(value);
                 }
               },
             ),
@@ -265,7 +377,12 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
   Widget _buildTextInputSection(ThemeData theme, AppLocalizations l10n) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacing8),
+        padding: const EdgeInsets.fromLTRB(
+          AppTheme.spacing8,
+          AppTheme.spacing4,
+          AppTheme.spacing8,
+          AppTheme.spacing8,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -287,10 +404,10 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
                 ),
               ],
             ),
-            const SizedBox(height: AppTheme.spacing8),
+            const SizedBox(height: AppTheme.spacing4),
             TextField(
               controller: _textController,
-              maxLines: 10,
+              maxLines: 9,
               style: theme.textTheme.bodySmall,
               decoration: InputDecoration(
                 hintText: l10n.pasteTextHere,
@@ -307,7 +424,13 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
     );
   }
 
-  Widget _buildOptionsAndMaxItemsSection(ThemeData theme, AppLocalizations l10n) {
+  Widget _buildOptionsAndMaxItemsSection(
+    ThemeData theme,
+    AppLocalizations l10n,
+  ) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isSmallScreen = screenWidth < 600; // Portrait mode on small screens
+
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(AppTheme.spacing8),
@@ -320,100 +443,204 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: AppTheme.spacing8),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Checkboxes - Left side
-                Expanded(
-                  flex: 2,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+
+            isSmallScreen
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      CheckboxListTile(
-                        title: Text(
-                          l10n.extractWords,
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                        value: _extractWords,
-                        onChanged: (value) {
-                          setState(() {
-                            _extractWords = value ?? false;
-                          });
-                        },
-                        controlAffinity: ListTileControlAffinity.leading,
-                        contentPadding: EdgeInsets.zero,
-                        dense: true,
-                      ),
-                      CheckboxListTile(
-                        title: Text(
-                          l10n.extractExpressions,
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                        value: _extractExpressions,
-                        onChanged: (value) {
-                          setState(() {
-                            _extractExpressions = value ?? false;
-                          });
-                        },
-                        controlAffinity: ListTileControlAffinity.leading,
-                        contentPadding: EdgeInsets.zero,
-                        dense: true,
-                      ),
-                      CheckboxListTile(
-                        title: Text(
-                          l10n.generateExamples,
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                        value: _generateExamples,
-                        onChanged: (value) {
-                          setState(() {
-                            _generateExamples = value ?? false;
-                          });
-                        },
-                        controlAffinity: ListTileControlAffinity.leading,
-                        contentPadding: EdgeInsets.zero,
-                        dense: true,
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: AppTheme.spacing8),
-                // Max Items - Right side
-                Expanded(
-                  flex: 1,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        l10n.maxItems,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: AppTheme.spacing8),
-                      TextField(
-                        controller: _maxItemsController,
-                        keyboardType: TextInputType.number,
-                        style: theme.textTheme.bodyMedium,
-                        decoration: InputDecoration(
-                          hintText: l10n.maxItemsHint,
-                          hintStyle: theme.textTheme.bodySmall,
-                          border: const OutlineInputBorder(),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: AppTheme.spacing8,
-                            vertical: AppTheme.spacing8,
+                      // Checkboxes - Top
+                      Transform.translate(
+                        offset: const Offset(0, 4),
+                        child: CheckboxListTile(
+                          title: Text(
+                            l10n.extractWords,
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                          value: _extractWords,
+                          onChanged: (value) {
+                            setState(() {
+                              _extractWords = value ?? false;
+                            });
+                          },
+                          controlAffinity: ListTileControlAffinity.leading,
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
+                          visualDensity: const VisualDensity(
+                            horizontal: 0,
+                            vertical: -4,
                           ),
                         ),
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
+                      ),
+                      Transform.translate(
+                        offset: const Offset(0, -4),
+                        child: CheckboxListTile(
+                          title: Text(
+                            l10n.extractExpressions,
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                          value: _extractExpressions,
+                          onChanged: (value) {
+                            setState(() {
+                              _extractExpressions = value ?? false;
+                            });
+                          },
+                          controlAffinity: ListTileControlAffinity.leading,
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
+                          visualDensity: const VisualDensity(
+                            horizontal: 0,
+                            vertical: -4,
+                          ),
+                        ),
+                      ),
+                      Transform.translate(
+                        offset: const Offset(0, -12),
+                        child: CheckboxListTile(
+                          title: Text(
+                            l10n.generateExamples,
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                          value: _generateExamples,
+                          onChanged: (value) {
+                            setState(() {
+                              _generateExamples = value ?? false;
+                            });
+                          },
+                          controlAffinity: ListTileControlAffinity.leading,
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
+                          visualDensity: const VisualDensity(
+                            horizontal: 0,
+                            vertical: -4,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: AppTheme.spacing12),
+                      // Max Items - Bottom
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.maxItems,
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+
+                          TextField(
+                            controller: _maxItemsController,
+                            keyboardType: TextInputType.number,
+                            style: theme.textTheme.bodyMedium,
+                            decoration: InputDecoration(
+                              hintText: l10n.maxItemsHint,
+                              hintStyle: theme.textTheme.bodySmall,
+                              border: const OutlineInputBorder(),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: AppTheme.spacing8,
+                                vertical: AppTheme.spacing8,
+                              ),
+                            ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                          ),
                         ],
                       ),
                     ],
+                  )
+                : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Checkboxes - Left side
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            CheckboxListTile(
+                              title: Text(
+                                l10n.extractWords,
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                              value: _extractWords,
+                              onChanged: (value) {
+                                setState(() {
+                                  _extractWords = value ?? false;
+                                });
+                              },
+                              controlAffinity: ListTileControlAffinity.leading,
+                              contentPadding: EdgeInsets.zero,
+                              dense: true,
+                            ),
+                            CheckboxListTile(
+                              title: Text(
+                                l10n.extractExpressions,
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                              value: _extractExpressions,
+                              onChanged: (value) {
+                                setState(() {
+                                  _extractExpressions = value ?? false;
+                                });
+                              },
+                              controlAffinity: ListTileControlAffinity.leading,
+                              contentPadding: EdgeInsets.zero,
+                              dense: true,
+                            ),
+                            CheckboxListTile(
+                              title: Text(
+                                l10n.generateExamples,
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                              value: _generateExamples,
+                              onChanged: (value) {
+                                setState(() {
+                                  _generateExamples = value ?? false;
+                                });
+                              },
+                              controlAffinity: ListTileControlAffinity.leading,
+                              contentPadding: EdgeInsets.zero,
+                              dense: true,
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: AppTheme.spacing8),
+                      // Max Items - Right side
+                      Expanded(
+                        flex: 1,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.maxItems,
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+
+                            TextField(
+                              controller: _maxItemsController,
+                              keyboardType: TextInputType.number,
+                              style: theme.textTheme.bodyMedium,
+                              decoration: InputDecoration(
+                                hintText: l10n.maxItemsHint,
+                                hintStyle: theme.textTheme.bodySmall,
+                                border: const OutlineInputBorder(),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: AppTheme.spacing8,
+                                  vertical: AppTheme.spacing8,
+                                ),
+                              ),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
           ],
         ),
       ),
@@ -435,10 +662,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
                 color: theme.colorScheme.onPrimary,
               ),
             )
-          : Text(
-              l10n.analyzeText,
-              style: theme.textTheme.titleSmall,
-            ),
+          : Text(l10n.analyzeText, style: theme.textTheme.titleSmall),
     );
   }
 
@@ -494,7 +718,8 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
       final settings = ref.read(appSettingsProvider);
 
       // Check if OpenAI API key is configured
-      if (settings.openaiApiKey == null || settings.openaiApiKey!.trim().isEmpty) {
+      if (settings.openaiApiKey == null ||
+          settings.openaiApiKey!.trim().isEmpty) {
         if (mounted) {
           setState(() {
             _isAnalyzing = false;
@@ -534,8 +759,12 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
       }
 
       // Check if detected language matches package languages
-      final lang1Code = widget.package.languageCode1.split('-')[0].toLowerCase();
-      final lang2Code = widget.package.languageCode2.split('-')[0].toLowerCase();
+      final lang1Code = widget.package.languageCode1
+          .split('-')[0]
+          .toLowerCase();
+      final lang2Code = widget.package.languageCode2
+          .split('-')[0]
+          .toLowerCase();
 
       String sourceLanguage;
       String targetLanguage;
@@ -547,7 +776,9 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
         sourceLanguage = widget.package.languageName2;
         targetLanguage = widget.package.languageName1;
       } else {
-        print('  ❌ Language mismatch: $detectedLang not in [$lang1Code, $lang2Code]');
+        print(
+          '  ❌ Language mismatch: $detectedLang not in [$lang1Code, $lang2Code]',
+        );
         if (mounted) {
           Navigator.of(context).pop(); // Close progress dialog
           setState(() {
@@ -679,20 +910,22 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
             LinearProgressIndicator(
               value: totalSteps > 0 ? currentStep / totalSteps : 0,
             ),
-            const SizedBox(height: AppTheme.spacing12),
+
             Text(
               message,
               style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: AppTheme.spacing8),
+
             Text(
               'Step $currentStep of $totalSteps',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurface.withValues(alpha: 0.6),
               ),
             ),
-            const SizedBox(height: AppTheme.spacing12),
+
             ElevatedButton(
               onPressed: () {
                 setState(() {
@@ -726,20 +959,32 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
     String guidance = '';
     String technicalDetails = errorMessage;
 
-    if (errorMessage.contains('Invalid API key') || errorMessage.contains('401')) {
-      guidance = '• ${l10n.checkApiKey}\n• ${l10n.ensureValidOpenAIKey}\n• ${l10n.verifyKeyInSettings}';
-    } else if (errorMessage.contains('rate limit') || errorMessage.contains('429')) {
-      guidance = '• ${l10n.rateLimitExceeded}\n• ${l10n.waitAndRetry}\n• ${l10n.checkAccountQuota}';
-    } else if (errorMessage.contains('400') || errorMessage.contains('Bad Request')) {
-      guidance = '• ${l10n.invalidRequest}\n• ${l10n.tryReducingTextLength}\n• ${l10n.checkTextFormat}';
-    } else if (errorMessage.contains('Network error') || errorMessage.contains('Connection')) {
-      guidance = '• ${l10n.checkInternetConnection}\n• ${l10n.retryInMoment}\n• ${l10n.checkFirewall}';
+    if (errorMessage.contains('Invalid API key') ||
+        errorMessage.contains('401')) {
+      guidance =
+          '• ${l10n.checkApiKey}\n• ${l10n.ensureValidOpenAIKey}\n• ${l10n.verifyKeyInSettings}';
+    } else if (errorMessage.contains('rate limit') ||
+        errorMessage.contains('429')) {
+      guidance =
+          '• ${l10n.rateLimitExceeded}\n• ${l10n.waitAndRetry}\n• ${l10n.checkAccountQuota}';
+    } else if (errorMessage.contains('400') ||
+        errorMessage.contains('Bad Request')) {
+      guidance =
+          '• ${l10n.invalidRequest}\n• ${l10n.tryReducingTextLength}\n• ${l10n.checkTextFormat}';
+    } else if (errorMessage.contains('Network error') ||
+        errorMessage.contains('Connection')) {
+      guidance =
+          '• ${l10n.checkInternetConnection}\n• ${l10n.retryInMoment}\n• ${l10n.checkFirewall}';
     } else if (errorMessage.contains('No items found')) {
-      guidance = '• ${l10n.textMayBeTooShort}\n• ${l10n.tryDifferentKnowledgeLevel}\n• ${l10n.ensureTextInCorrectLanguage}';
-    } else if (errorMessage.contains('timeout') || errorMessage.contains('Timeout')) {
-      guidance = '• ${l10n.requestTimedOut}\n• ${l10n.textMayBeTooLong}\n• ${l10n.tryAgainOrReduceSize}';
+      guidance =
+          '• ${l10n.textMayBeTooShort}\n• ${l10n.tryDifferentKnowledgeLevel}\n• ${l10n.ensureTextInCorrectLanguage}';
+    } else if (errorMessage.contains('timeout') ||
+        errorMessage.contains('Timeout')) {
+      guidance =
+          '• ${l10n.requestTimedOut}\n• ${l10n.textMayBeTooLong}\n• ${l10n.tryAgainOrReduceSize}';
     } else {
-      guidance = '• ${l10n.unexpectedError}\n• ${l10n.checkErrorDetails}\n• ${l10n.tryAgainLater}';
+      guidance =
+          '• ${l10n.unexpectedError}\n• ${l10n.checkErrorDetails}\n• ${l10n.tryAgainLater}';
     }
 
     showDialog(
@@ -771,37 +1016,36 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
               if (guidance.isNotEmpty) ...[
                 Text(
                   l10n.possibleSolutions,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  guidance,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
+                Text(guidance, style: Theme.of(context).textTheme.bodyMedium),
                 const SizedBox(height: 16),
               ],
               ExpansionTile(
                 title: Text(
                   l10n.technicalDetails,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 initiallyExpanded: false,
                 children: [
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: SelectableText(
                       technicalDetails,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        fontFamily: 'monospace',
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodySmall?.copyWith(fontFamily: 'monospace'),
                     ),
                   ),
                 ],

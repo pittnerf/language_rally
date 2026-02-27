@@ -22,6 +22,9 @@ TrainingSettings _$TrainingSettingsFromJson(Map<String, dynamic> json) =>
             json['displayLanguage'],
           ) ??
           DisplayLanguage.random,
+      itemType:
+          $enumDecodeNullable(_$ItemTypeEnumMap, json['itemType']) ??
+          ItemType.dictionaryItems,
       selectedCategoryIds:
           (json['selectedCategoryIds'] as List<dynamic>?)
               ?.map((e) => e as String)
@@ -37,6 +40,7 @@ Map<String, dynamic> _$TrainingSettingsToJson(TrainingSettings instance) =>
       'lastNItems': instance.lastNItems,
       'itemOrder': _$ItemOrderEnumMap[instance.itemOrder]!,
       'displayLanguage': _$DisplayLanguageEnumMap[instance.displayLanguage]!,
+      'itemType': _$ItemTypeEnumMap[instance.itemType]!,
       'selectedCategoryIds': instance.selectedCategoryIds,
       'dontKnowThreshold': instance.dontKnowThreshold,
     };
@@ -58,4 +62,9 @@ const _$DisplayLanguageEnumMap = {
   DisplayLanguage.motherTongue: 'motherTongue',
   DisplayLanguage.targetLanguage: 'targetLanguage',
   DisplayLanguage.random: 'random',
+};
+
+const _$ItemTypeEnumMap = {
+  ItemType.dictionaryItems: 'dictionaryItems',
+  ItemType.examples: 'examples',
 };

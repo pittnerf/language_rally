@@ -57,7 +57,9 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
 
   Future<void> _toggleCompactMode(LanguagePackage package) async {
     // Update in database
-    final updatedPackage = package.copyWith(isCompactView: !package.isCompactView);
+    final updatedPackage = package.copyWith(
+      isCompactView: !package.isCompactView,
+    );
     await _packageRepo.updatePackage(updatedPackage);
 
     // Update local state
@@ -83,13 +85,17 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
 
         // Validate that the currently selected group still exists
         if (_selectedGroup != null) {
-          final groupStillExists = _groups.any((g) => g.id == _selectedGroup!.id);
+          final groupStillExists = _groups.any(
+            (g) => g.id == _selectedGroup!.id,
+          );
           if (!groupStillExists) {
             // Selected group was deleted, reset to first available group
             _selectedGroup = _groups.isNotEmpty ? _groups.first : null;
           } else {
             // Update the selected group object to the one from the new list
-            _selectedGroup = _groups.firstWhere((g) => g.id == _selectedGroup!.id);
+            _selectedGroup = _groups.firstWhere(
+              (g) => g.id == _selectedGroup!.id,
+            );
           }
         } else {
           // No group selected yet, select first group by default if available
@@ -145,9 +151,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
 
   Future<void> _openGroupAdminPage() async {
     await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const PackageGroupAdminPage(),
-      ),
+      MaterialPageRoute(builder: (context) => const PackageGroupAdminPage()),
     );
 
     // Refresh the entire page when returning from group admin
@@ -168,7 +172,9 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
   }
 
   List<LanguagePackage> _reorderPackages(
-      List<LanguagePackage> packages, List<String> orderedIds) {
+    List<LanguagePackage> packages,
+    List<String> orderedIds,
+  ) {
     final packageMap = {for (var p in packages) p.id: p};
     final reordered = <LanguagePackage>[];
 
@@ -193,31 +199,31 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
     final isTablet = screenWidth >= 600; // Consider 600dp+ as tablet
 
     return Scaffold(
-      appBar: isTablet ? AppBar(
-        title: Text(
-          l10n.languagePackages,
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _loadGroupsAndPackages,
-          ),
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _createNewPackage,
-          ),
-        ],
-      ) : null,
+      appBar: isTablet
+          ? AppBar(
+              title: Text(
+                l10n.languagePackages,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.refresh),
+                  onPressed: _loadGroupsAndPackages,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.add),
+                  onPressed: _createNewPackage,
+                ),
+              ],
+            )
+          : null,
       body: SafeArea(
         child: Column(
           children: [
             // Group filter dropdown
             if (_groups.isNotEmpty) _buildGroupFilter(context),
             // Main content
-            Expanded(
-              child: _buildMainContent(l10n),
-            ),
+            Expanded(child: _buildMainContent(l10n)),
           ],
         ),
       ),
@@ -252,10 +258,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         border: Border(
-          bottom: BorderSide(
-            color: colorScheme.outlineVariant,
-            width: 1,
-          ),
+          bottom: BorderSide(color: colorScheme.outlineVariant, width: 1),
         ),
       ),
       child: Row(
@@ -279,17 +282,11 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
               value: _selectedGroup,
               isExpanded: true,
               isDense: false,
-              underline: Container(
-                height: 1,
-                color: colorScheme.outline,
-              ),
+              underline: Container(height: 1, color: colorScheme.outline),
               items: _groups.map((group) {
                 return DropdownMenuItem<LanguagePackageGroup>(
                   value: group,
-                  child: Text(
-                    group.name,
-                    style: theme.textTheme.bodyMedium,
-                  ),
+                  child: Text(group.name, style: theme.textTheme.bodyMedium),
                 );
               }).toList(),
               onChanged: _onGroupChanged,
@@ -411,12 +408,12 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
           key: ValueKey(package.id),
           package: package,
           index: index,
-          isCompact: false, // Always expanded in landscape/grid mode
+          isCompact: package.isCompactView, // Use saved compact view state
           onTap: () => _onPackageTap(package),
           onToggleCompact: () => _toggleCompactMode(package),
           onDelete: () => _deletePackage(package),
           isInGrid: true,
-          showToggleButton: false, // Hide toggle button in landscape/grid mode
+          showToggleButton: true, // Show toggle button in landscape/grid mode
         );
       },
     );
@@ -430,7 +427,9 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
         horizontal: AppTheme.spacing8,
         vertical: AppTheme.spacing4,
       ),
-      color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+      color: Theme.of(
+        context,
+      ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -473,15 +472,15 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
           Text(
             l10n.noPackagesYet,
             style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
           SizedBox(height: AppTheme.spacing4),
           Text(
             l10n.createFirstPackage,
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
         ],
       ),
@@ -565,7 +564,10 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
     );
   }
 
-  Future<bool> _exportPackageBeforeDelete(LanguagePackage package, AppLocalizations l10n) async {
+  Future<bool> _exportPackageBeforeDelete(
+    LanguagePackage package,
+    AppLocalizations l10n,
+  ) async {
     try {
       // Show loading dialog
       _showLoadingDialog(l10n.exportingPackage);
@@ -608,7 +610,10 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
     }
   }
 
-  Future<bool?> _showDeleteConfirmationDialog(LanguagePackage package, AppLocalizations l10n) {
+  Future<bool?> _showDeleteConfirmationDialog(
+    LanguagePackage package,
+    AppLocalizations l10n,
+  ) {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -665,13 +670,10 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
     );
   }
 
-
   Future<void> _createNewPackage() async {
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => const PackageFormPage(),
-      ),
-    );
+    await Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (context) => const PackageFormPage()));
     // Always reload packages after returning from PackageFormPage
     // This ensures any new or edited packages are shown
     await _loadGroupsAndPackages();
@@ -712,7 +714,10 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
     return filePath;
   }
 
-  Future<void> _performPackageImport(String filePath, AppLocalizations l10n) async {
+  Future<void> _performPackageImport(
+    String filePath,
+    AppLocalizations l10n,
+  ) async {
     // Show loading dialog
     _showLoadingDialog(l10n.importingPackage);
 
@@ -733,7 +738,10 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
     }
   }
 
-  Future<ImportResult> _attemptPackageImport(String filePath, AppLocalizations l10n) async {
+  Future<ImportResult> _attemptPackageImport(
+    String filePath,
+    AppLocalizations l10n,
+  ) async {
     try {
       return await _importExportRepo.importPackageFromZip(filePath);
     } on PackageAlreadyExistsException catch (e) {
@@ -772,15 +780,20 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
     );
   }
 
-  Future<void> _showImportSuccess(ImportResult importResult, AppLocalizations l10n) async {
+  Future<void> _showImportSuccess(
+    ImportResult importResult,
+    AppLocalizations l10n,
+  ) async {
     if (!mounted) return;
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(l10n.packageImportedWithGroup(
-          importResult.itemCount,
-          importResult.groupName,
-        )),
+        content: Text(
+          l10n.packageImportedWithGroup(
+            importResult.itemCount,
+            importResult.groupName,
+          ),
+        ),
         backgroundColor: Theme.of(context).colorScheme.primary,
         duration: const Duration(seconds: 3),
       ),
@@ -814,7 +827,10 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
     }
   }
 
-  Future<bool?> _showDuplicatePackageDialog(AppLocalizations l10n, String groupName) {
+  Future<bool?> _showDuplicatePackageDialog(
+    AppLocalizations l10n,
+    String groupName,
+  ) {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -877,7 +893,6 @@ class PackageCard extends StatefulWidget {
   @override
   State<PackageCard> createState() => _PackageCardState();
 }
-
 
 class _PackageCardState extends State<PackageCard> {
   final _itemRepo = ItemRepository();
@@ -958,13 +973,16 @@ class _PackageCardState extends State<PackageCard> {
 
   @override
   Widget build(BuildContext context) {
-
     return Card(
-      margin: widget.isInGrid ? EdgeInsets.zero : EdgeInsets.only(bottom: AppTheme.spacing8),
+      margin: widget.isInGrid
+          ? EdgeInsets.zero
+          : EdgeInsets.only(bottom: AppTheme.spacing8),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: widget.onTap,
-        child: widget.isCompact ? _buildCompactCard(context) : _buildExpandedCard(context),
+        child: widget.isCompact
+            ? _buildCompactCard(context)
+            : _buildExpandedCard(context),
       ),
     );
   }
@@ -977,7 +995,8 @@ class _PackageCardState extends State<PackageCard> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildCompactHeader(context),
-          if (widget.package.description != null && widget.package.description!.isNotEmpty)
+          if (widget.package.description != null &&
+              widget.package.description!.isNotEmpty)
             _buildCompactDescription(context),
         ],
       ),
@@ -993,7 +1012,8 @@ class _PackageCardState extends State<PackageCard> {
         SizedBox(width: AppTheme.spacing4),
         _buildLanguageInfo(context, isCompact: true),
         if (widget.package.isPurchased) _buildCompactPurchasedBadge(context),
-        if (widget.showToggleButton) _buildToggleButton(context, isExpanded: false),
+        if (widget.showToggleButton)
+          _buildToggleButton(context, isExpanded: false),
       ],
     );
   }
@@ -1022,11 +1042,7 @@ class _PackageCardState extends State<PackageCard> {
     final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: EdgeInsets.only(right: AppTheme.spacing4),
-      child: Icon(
-        Icons.shopping_bag,
-        size: 18,
-        color: colorScheme.tertiary,
-      ),
+      child: Icon(Icons.shopping_bag, size: 18, color: colorScheme.tertiary),
     );
   }
 
@@ -1036,7 +1052,8 @@ class _PackageCardState extends State<PackageCard> {
       mainAxisSize: MainAxisSize.min,
       children: [
         _buildExpandedHeader(context),
-        if (widget.package.description != null && widget.package.description!.isNotEmpty)
+        if (widget.package.description != null &&
+            widget.package.description!.isNotEmpty)
           _buildExpandedDescription(context),
         if (_hasAuthorInfo())
           _buildExpandedAuthorSection(context)
@@ -1046,8 +1063,7 @@ class _PackageCardState extends State<PackageCard> {
             padding: EdgeInsets.only(top: AppTheme.spacing12),
             child: _buildVersionOnlyCard(context),
           ),
-        if (!_isLoading && _categories.isNotEmpty)
-          _buildCategoryChips(context),
+        if (!_isLoading && _categories.isNotEmpty) _buildCategoryChips(context),
       ],
     );
 
@@ -1087,9 +1103,7 @@ class _PackageCardState extends State<PackageCard> {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          _buildVersionAndItemCount(context),
-        ],
+        children: [_buildVersionAndItemCount(context)],
       ),
     );
   }
@@ -1110,13 +1124,11 @@ class _PackageCardState extends State<PackageCard> {
           _buildBrowseItemsButton(context, l10n),
           SizedBox(width: AppTheme.spacing8),
           // Delete button (right - visible for all packages)
-          if (widget.onDelete != null)
-            _buildDeleteButton(context),
+          if (widget.onDelete != null) _buildDeleteButton(context),
         ],
       ),
     );
   }
-
 
   Widget _buildBrowseItemsButton(BuildContext context, AppLocalizations l10n) {
     return FloatingActionButton.small(
@@ -1135,25 +1147,25 @@ class _PackageCardState extends State<PackageCard> {
     );
   }
 
-  Widget _buildTrainingRallyButton(BuildContext context, AppLocalizations l10n) {
+  Widget _buildTrainingRallyButton(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
     return FloatingActionButton.small(
       heroTag: 'training_${widget.package.id}',
       onPressed: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => TrainingSettingsPage(
-              package: widget.package,
-            ),
+            builder: (context) => TrainingSettingsPage(package: widget.package),
           ),
         );
       },
       backgroundColor: Theme.of(context).colorScheme.tertiaryContainer,
       foregroundColor: Theme.of(context).colorScheme.onTertiaryContainer,
       tooltip: l10n.trainingRally,
-      child: const Icon(Icons.psychology , size: 20),
+      child: const Icon(Icons.psychology, size: 20),
     );
   }
-
 
   Widget _buildDeleteButton(BuildContext context) {
     return FloatingActionButton.small(
@@ -1180,7 +1192,8 @@ class _PackageCardState extends State<PackageCard> {
         ],
         if (widget.package.isPurchased) _buildExpandedPurchasedBadge(context),
         if (widget.showToggleButton) SizedBox(width: AppTheme.spacing4),
-        if (widget.showToggleButton) _buildToggleButton(context, isExpanded: true),
+        if (widget.showToggleButton)
+          _buildToggleButton(context, isExpanded: true),
       ],
     );
   }
@@ -1190,10 +1203,7 @@ class _PackageCardState extends State<PackageCard> {
 
     return Tooltip(
       message: BadgeHelper.getBadgeDisplayName(_highestBadgeId!),
-      child: BadgeWidget(
-        badgeId: _highestBadgeId!,
-        size: 64,
-      ),
+      child: BadgeWidget(badgeId: _highestBadgeId!, size: 64),
     );
   }
 
@@ -1217,7 +1227,10 @@ class _PackageCardState extends State<PackageCard> {
     );
   }
 
-  Widget _buildAuthorInfoWithVersion(BuildContext context, LanguagePackage package) {
+  Widget _buildAuthorInfoWithVersion(
+    BuildContext context,
+    LanguagePackage package,
+  ) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Container(
@@ -1237,11 +1250,19 @@ class _PackageCardState extends State<PackageCard> {
                 if (package.authorName != null)
                   _buildAuthorName(context, package.authorName!),
                 if (package.authorEmail != null)
-                  _buildAuthorEmail(context, package.authorEmail!,
-                      hasNameAbove: package.authorName != null),
+                  _buildAuthorEmail(
+                    context,
+                    package.authorEmail!,
+                    hasNameAbove: package.authorName != null,
+                  ),
                 if (package.authorWebpage != null)
-                  _buildAuthorWebpage(context, package.authorWebpage!,
-                      hasContentAbove: package.authorName != null || package.authorEmail != null),
+                  _buildAuthorWebpage(
+                    context,
+                    package.authorWebpage!,
+                    hasContentAbove:
+                        package.authorName != null ||
+                        package.authorEmail != null,
+                  ),
               ],
             ),
           ),
@@ -1278,11 +1299,7 @@ class _PackageCardState extends State<PackageCard> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          Icons.info_outline,
-          size: 14,
-          color: colorScheme.onSurfaceVariant,
-        ),
+        Icon(Icons.info_outline, size: 14, color: colorScheme.onSurfaceVariant),
         SizedBox(width: AppTheme.spacing4),
         Text(
           '${l10n.versionLabel} ${widget.package.version}',
@@ -1302,11 +1319,7 @@ class _PackageCardState extends State<PackageCard> {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          Icons.format_list_numbered,
-          size: 14,
-          color: colorScheme.primary,
-        ),
+        Icon(Icons.format_list_numbered, size: 14, color: colorScheme.primary),
         SizedBox(width: AppTheme.spacing4),
         Text(
           '$_itemCount ${l10n.items}',
@@ -1329,7 +1342,9 @@ class _PackageCardState extends State<PackageCard> {
         spacing: AppTheme.spacing8,
         runSpacing: AppTheme.spacing8,
         children: [
-          ...displayCategories.map((category) => _buildCategoryChip(context, category)),
+          ...displayCategories.map(
+            (category) => _buildCategoryChip(context, category),
+          ),
           if (hasMore) _buildMoreCategoriesChip(context),
         ],
       ),
@@ -1340,11 +1355,10 @@ class _PackageCardState extends State<PackageCard> {
     final theme = Theme.of(context);
 
     return Chip(
-      label: Text(
-        category.name,
-        style: theme.textTheme.bodySmall,
+      label: Text(category.name, style: theme.textTheme.bodySmall),
+      backgroundColor: theme.colorScheme.primaryContainer.withValues(
+        alpha: 0.5,
       ),
-      backgroundColor: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
       side: BorderSide.none,
       padding: EdgeInsets.symmetric(horizontal: AppTheme.spacing8),
       materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -1364,10 +1378,7 @@ class _PackageCardState extends State<PackageCard> {
           ),
         ),
         backgroundColor: theme.colorScheme.surfaceContainerHighest,
-        side: BorderSide(
-          color: theme.colorScheme.outline,
-          width: 1,
-        ),
+        side: BorderSide(color: theme.colorScheme.outline, width: 1),
         padding: EdgeInsets.symmetric(horizontal: AppTheme.spacing8),
         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
@@ -1398,7 +1409,10 @@ class _PackageCardState extends State<PackageCard> {
       ..sort((a, b) => a.name.toUpperCase().compareTo(b.name.toUpperCase()));
   }
 
-  Widget _buildAllCategoriesContent(BuildContext context, List<Category> sortedCategories) {
+  Widget _buildAllCategoriesContent(
+    BuildContext context,
+    List<Category> sortedCategories,
+  ) {
     return SizedBox(
       width: double.maxFinite,
       child: SingleChildScrollView(
@@ -1413,17 +1427,12 @@ class _PackageCardState extends State<PackageCard> {
     );
   }
 
-
   Widget _buildExpandedPurchasedBadge(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Tooltip(
       message: AppLocalizations.of(context)!.purchased,
-      child: Icon(
-        Icons.shopping_bag,
-        size: 28,
-        color: colorScheme.tertiary,
-      ),
+      child: Icon(Icons.shopping_bag, size: 28, color: colorScheme.tertiary),
     );
   }
 
@@ -1454,10 +1463,7 @@ class _PackageCardState extends State<PackageCard> {
   }
 
   Widget _buildPackageIcon({required double size}) {
-    return PackageIcon(
-      iconPath: widget.package.icon,
-      size: size,
-    );
+    return PackageIcon(iconPath: widget.package.icon, size: size);
   }
 
   Widget _buildLanguageInfo(BuildContext context, {required bool isCompact}) {
@@ -1479,30 +1485,31 @@ class _PackageCardState extends State<PackageCard> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
+            widget.package.packageName ??
+                '${widget.package.languageName1} → ${widget.package.languageName2}',
+            style:
+                (isCompact
+                        ? theme.textTheme.titleSmall
+                        : theme.textTheme.titleSmall)
+                    ?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.primary,
+                    ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+          Text(
             shortCodeDisplay,
-            style: (isCompact
-                    ? theme.textTheme.titleSmall
-                    : theme.textTheme.titleSmall)
-                ?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: colorScheme.primary,
-            ),
+            style:
+                (isCompact
+                        ? theme.textTheme.labelLarge
+                        : theme.textTheme.bodySmall)
+                    ?.copyWith(color: colorScheme.onSurfaceVariant),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
           if (!isCompact) SizedBox(height: AppTheme.spacing4),
           // Always show package name (fallback to language names if null)
-          Text(
-            widget.package.packageName ?? '${widget.package.languageName1} → ${widget.package.languageName2}',
-            style: (isCompact
-                    ? theme.textTheme.labelLarge
-                    : theme.textTheme.bodySmall)
-                ?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
         ],
       ),
     );
@@ -1512,10 +1519,7 @@ class _PackageCardState extends State<PackageCard> {
     final l10n = AppLocalizations.of(context)!;
 
     return IconButton(
-      icon: Icon(
-        isExpanded ? Icons.unfold_less : Icons.unfold_more,
-        size: 20,
-      ),
+      icon: Icon(isExpanded ? Icons.unfold_less : Icons.unfold_more, size: 20),
       onPressed: widget.onToggleCompact,
       tooltip: isExpanded ? l10n.compactView : l10n.expand,
       visualDensity: VisualDensity.compact,
@@ -1523,7 +1527,6 @@ class _PackageCardState extends State<PackageCard> {
       constraints: BoxConstraints(minWidth: 32, minHeight: 32),
     );
   }
-
 
   Widget _buildAuthorName(BuildContext context, String name) {
     final theme = Theme.of(context);
@@ -1549,7 +1552,11 @@ class _PackageCardState extends State<PackageCard> {
     );
   }
 
-  Widget _buildAuthorEmail(BuildContext context, String email, {required bool hasNameAbove}) {
+  Widget _buildAuthorEmail(
+    BuildContext context,
+    String email, {
+    required bool hasNameAbove,
+  }) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -1560,11 +1567,7 @@ class _PackageCardState extends State<PackageCard> {
           onTap: () => _launchEmail(email),
           child: Row(
             children: [
-              Icon(
-                Icons.email_outlined,
-                size: 14,
-                color: colorScheme.primary,
-              ),
+              Icon(Icons.email_outlined, size: 14, color: colorScheme.primary),
               SizedBox(width: AppTheme.spacing4),
               Expanded(
                 child: Text(
@@ -1583,7 +1586,11 @@ class _PackageCardState extends State<PackageCard> {
     );
   }
 
-  Widget _buildAuthorWebpage(BuildContext context, String webpage, {required bool hasContentAbove}) {
+  Widget _buildAuthorWebpage(
+    BuildContext context,
+    String webpage, {
+    required bool hasContentAbove,
+  }) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -1594,11 +1601,7 @@ class _PackageCardState extends State<PackageCard> {
           onTap: () => _launchUrl(webpage),
           child: Row(
             children: [
-              Icon(
-                Icons.link,
-                size: 14,
-                color: colorScheme.primary,
-              ),
+              Icon(Icons.link, size: 14, color: colorScheme.primary),
               SizedBox(width: AppTheme.spacing4),
               Expanded(
                 child: Text(
@@ -1631,4 +1634,3 @@ class _PackageCardState extends State<PackageCard> {
     }
   }
 }
-

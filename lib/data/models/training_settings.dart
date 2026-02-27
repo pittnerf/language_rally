@@ -3,24 +3,17 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'training_settings.g.dart';
 
-enum ItemScope {
-  all,
-  lastN,
-  onlyUnknown,
-  onlyImportant,
-  onlyFavourite,
-}
+enum ItemScope { all, lastN, onlyUnknown, onlyImportant, onlyFavourite }
 
-enum ItemOrder {
-  random,
-  sequential,
-}
+enum ItemOrder { random, sequential }
 
 enum DisplayLanguage {
   motherTongue, // language1
   targetLanguage, // language2
   random,
 }
+
+enum ItemType { dictionaryItems, examples }
 
 @JsonSerializable()
 class TrainingSettings extends Equatable {
@@ -36,6 +29,9 @@ class TrainingSettings extends Equatable {
   // Display
   final DisplayLanguage displayLanguage;
 
+  // Item type
+  final ItemType itemType;
+
   // Category filters
   final List<String> selectedCategoryIds; // Empty list means no filter
 
@@ -48,6 +44,7 @@ class TrainingSettings extends Equatable {
     this.lastNItems = 20,
     this.itemOrder = ItemOrder.random,
     this.displayLanguage = DisplayLanguage.random,
+    this.itemType = ItemType.dictionaryItems,
     this.selectedCategoryIds = const [],
     this.dontKnowThreshold = 3,
   });
@@ -63,27 +60,29 @@ class TrainingSettings extends Equatable {
     int? lastNItems,
     ItemOrder? itemOrder,
     DisplayLanguage? displayLanguage,
+    ItemType? itemType,
     List<String>? selectedCategoryIds,
     int? dontKnowThreshold,
-  }) =>
-      TrainingSettings(
-        packageId: packageId ?? this.packageId,
-        itemScope: itemScope ?? this.itemScope,
-        lastNItems: lastNItems ?? this.lastNItems,
-        itemOrder: itemOrder ?? this.itemOrder,
-        displayLanguage: displayLanguage ?? this.displayLanguage,
-        selectedCategoryIds: selectedCategoryIds ?? this.selectedCategoryIds,
-        dontKnowThreshold: dontKnowThreshold ?? this.dontKnowThreshold,
-      );
+  }) => TrainingSettings(
+    packageId: packageId ?? this.packageId,
+    itemScope: itemScope ?? this.itemScope,
+    lastNItems: lastNItems ?? this.lastNItems,
+    itemOrder: itemOrder ?? this.itemOrder,
+    displayLanguage: displayLanguage ?? this.displayLanguage,
+    itemType: itemType ?? this.itemType,
+    selectedCategoryIds: selectedCategoryIds ?? this.selectedCategoryIds,
+    dontKnowThreshold: dontKnowThreshold ?? this.dontKnowThreshold,
+  );
 
   @override
   List<Object?> get props => [
-        packageId,
-        itemScope,
-        lastNItems,
-        itemOrder,
-        displayLanguage,
-        selectedCategoryIds,
-        dontKnowThreshold,
-      ];
+    packageId,
+    itemScope,
+    lastNItems,
+    itemOrder,
+    displayLanguage,
+    itemType,
+    selectedCategoryIds,
+    dontKnowThreshold,
+  ];
 }

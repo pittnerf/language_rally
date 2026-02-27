@@ -28,19 +28,16 @@ import 'training_rally_page.dart';
 class TrainingSettingsPage extends ConsumerStatefulWidget {
   final LanguagePackage? package;
 
-  const TrainingSettingsPage({
-    super.key,
-    this.package,
-  });
+  const TrainingSettingsPage({super.key, this.package});
 
   @override
-  ConsumerState<TrainingSettingsPage> createState() => _TrainingSettingsPageState();
+  ConsumerState<TrainingSettingsPage> createState() =>
+      _TrainingSettingsPageState();
 }
 
 class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
   final _trainingSettingsRepo = TrainingSettingsRepository();
   final _categoryRepo = CategoryRepository();
-  final _categoryScrollController = ScrollController();
   final _appSettingsRepo = AppSettingsRepository();
   final _packageRepo = LanguagePackageRepository();
 
@@ -53,6 +50,7 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
   late int _lastNItems;
   late ItemOrder _itemOrder;
   late DisplayLanguage _displayLanguage;
+  late ItemType _itemType;
   late List<String> _selectedCategoryIds;
   late int _dontKnowThreshold;
 
@@ -63,12 +61,6 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
   void initState() {
     super.initState();
     _loadSettings();
-  }
-
-  @override
-  void dispose() {
-    _categoryScrollController.dispose();
-    super.dispose();
   }
 
   Future<void> _loadSettings() async {
@@ -91,7 +83,9 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
         if (appSettings.lastTrainedPackageId != null) {
           packageToUse = packages.firstWhere(
             (p) => p.id == appSettings.lastTrainedPackageId,
-            orElse: () => packages.isNotEmpty ? packages.first : throw Exception('No packages available'),
+            orElse: () => packages.isNotEmpty
+                ? packages.first
+                : throw Exception('No packages available'),
           );
         } else {
           // No last trained package, use first available
@@ -107,10 +101,14 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
       }
 
       // Load saved settings or create default
-      final settings = await _trainingSettingsRepo.getSettingsForPackage(packageToUse.id);
+      final settings = await _trainingSettingsRepo.getSettingsForPackage(
+        packageToUse.id,
+      );
 
       // Load categories
-      final categories = await _categoryRepo.getCategoriesForPackage(packageToUse.id);
+      final categories = await _categoryRepo.getCategoriesForPackage(
+        packageToUse.id,
+      );
 
       if (mounted) {
         setState(() {
@@ -122,6 +120,7 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
             _lastNItems = settings.lastNItems;
             _itemOrder = settings.itemOrder;
             _displayLanguage = settings.displayLanguage;
+            _itemType = settings.itemType;
             _selectedCategoryIds = List.from(settings.selectedCategoryIds);
             _dontKnowThreshold = settings.dontKnowThreshold;
           } else {
@@ -130,6 +129,7 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
             _lastNItems = 20;
             _itemOrder = ItemOrder.random;
             _displayLanguage = DisplayLanguage.random;
+            _itemType = ItemType.dictionaryItems;
             _selectedCategoryIds = [];
             _dontKnowThreshold = 3;
           }
@@ -155,10 +155,14 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
   Future<void> _reloadSettingsForPackage(LanguagePackage package) async {
     try {
       // Load saved settings or create default
-      final settings = await _trainingSettingsRepo.getSettingsForPackage(package.id);
+      final settings = await _trainingSettingsRepo.getSettingsForPackage(
+        package.id,
+      );
 
       // Load categories
-      final categories = await _categoryRepo.getCategoriesForPackage(package.id);
+      final categories = await _categoryRepo.getCategoriesForPackage(
+        package.id,
+      );
 
       if (mounted) {
         setState(() {
@@ -169,6 +173,7 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
             _lastNItems = settings.lastNItems;
             _itemOrder = settings.itemOrder;
             _displayLanguage = settings.displayLanguage;
+            _itemType = settings.itemType;
             _selectedCategoryIds = List.from(settings.selectedCategoryIds);
             _dontKnowThreshold = settings.dontKnowThreshold;
           } else {
@@ -177,6 +182,7 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
             _lastNItems = 20;
             _itemOrder = ItemOrder.random;
             _displayLanguage = DisplayLanguage.random;
+            _itemType = ItemType.dictionaryItems;
             _selectedCategoryIds = [];
             _dontKnowThreshold = 3;
           }
@@ -205,6 +211,7 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
       lastNItems: _lastNItems,
       itemOrder: _itemOrder,
       displayLanguage: _displayLanguage,
+      itemType: _itemType,
       selectedCategoryIds: _selectedCategoryIds,
       dontKnowThreshold: _dontKnowThreshold,
     );
@@ -274,6 +281,7 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
               lastNItems: _lastNItems,
               itemOrder: _itemOrder,
               displayLanguage: _displayLanguage,
+              itemType: _itemType,
               selectedCategoryIds: _selectedCategoryIds,
               dontKnowThreshold: _dontKnowThreshold,
             ),
@@ -291,21 +299,14 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
 
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text(l10n.trainingSettings),
-        ),
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        appBar: AppBar(title: Text(l10n.trainingSettings)),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          l10n.trainingSettings,
-          style: theme.textTheme.titleSmall,
-        ),
+        title: Text(l10n.trainingSettings, style: theme.textTheme.titleSmall),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -319,112 +320,141 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                     left: AppTheme.spacing8,
                     right: AppTheme.spacing8,
                     top: AppTheme.spacing8,
-                    bottom: 80 + bottomPadding, // Space for floating buttons + system navigation
+                    bottom:
+                        80 +
+                        bottomPadding, // Space for floating buttons + system navigation
                   ),
                   child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // Package info
-                  _buildPackageInfo(theme, l10n),
-                  const SizedBox(height: AppTheme.spacing8),
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      // Package info
+                      _buildPackageInfo(theme, l10n),
+                      //const SizedBox(height: AppTheme.spacing8),
 
-                  // Main settings in landscape: side by side
-                  if (isLandscape) ...[
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(child: _buildItemScopeSection(theme, l10n)),
-                        const SizedBox(width: AppTheme.spacing8),
-                        Expanded(child: _buildItemOrderSection(theme, l10n)),
-                        const SizedBox(width: AppTheme.spacing8),
-                        Expanded(child: _buildDisplayLanguageSection(theme, l10n)),
+                      // Main settings in landscape: side by side
+                      if (isLandscape) ...[
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: _buildItemScopeSection(theme, l10n),
+                            ),
+                            //const SizedBox(width: AppTheme.spacing8),
+                            Expanded(
+                              child: Column(
+                                children: [
+                                  _buildItemTypeSection(theme, l10n),
+                                  //const SizedBox(height: AppTheme.spacing8),
+                                  _buildItemOrderSection(theme, l10n),
+                                ],
+                              ),
+                            ),
+                            //const SizedBox(width: AppTheme.spacing8),
+                            Expanded(
+                              child: _buildDisplayLanguageSection(theme, l10n),
+                            ),
+                          ],
+                        ),
+                        //const SizedBox(height: AppTheme.spacing8),
+                      ] else ...[
+                        // Portrait mode: stacked
+                        _buildItemScopeSection(theme, l10n),
+                        //const SizedBox(height: AppTheme.spacing8),
+                        _buildItemTypeSection(theme, l10n),
+                        //const SizedBox(height: AppTheme.spacing8),
+                        _buildItemOrderSection(theme, l10n),
+                        //const SizedBox(height: AppTheme.spacing8),
+                        _buildDisplayLanguageSection(theme, l10n),
+                        //const SizedBox(height: AppTheme.spacing8),
                       ],
-                    ),
-                    const SizedBox(height: AppTheme.spacing8),
-                  ] else ...[
-                    // Portrait mode: stacked
-                    _buildItemScopeSection(theme, l10n),
-                    const SizedBox(height: AppTheme.spacing8),
-                    _buildItemOrderSection(theme, l10n),
-                    const SizedBox(height: AppTheme.spacing8),
-                    _buildDisplayLanguageSection(theme, l10n),
-                    const SizedBox(height: AppTheme.spacing8),
-                  ],
 
-
-                  // Category filter
-                  _buildCategoryFilterSection(theme, l10n),
-                ],
+                      // Category filter
+                      _buildCategoryFilterSection(theme, l10n),
+                    ],
+                  ),
+                ),
               ),
-            ),
-          ),
-          // Floating action buttons at bottom - left and right
-          Positioned(
-            left: 8,
-            right: 8,
-            bottom: 8 + bottomPadding, // Add bottom padding for Android navigation
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Clear Settings button on the left
-                Flexible(
-                  child: ElevatedButton.icon(
-                    onPressed: _clearSettings,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.errorContainer,
-                      foregroundColor: theme.colorScheme.onErrorContainer,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: isLandscape ? 12 : 8,
-                        vertical: isLandscape ? 6 : 4,
-                      ),
-                      elevation: 6,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
+              // Floating action buttons at bottom - left and right
+              Positioned(
+                left: 8,
+                right: 8,
+                bottom:
+                    8 +
+                    bottomPadding, // Add bottom padding for Android navigation
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Clear Settings button on the left
+                    Flexible(
+                      child: ElevatedButton.icon(
+                        onPressed: _clearSettings,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.colorScheme.errorContainer,
+                          foregroundColor: theme.colorScheme.onErrorContainer,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isLandscape ? 12 : 8,
+                            vertical: isLandscape ? 6 : 4,
+                          ),
+                          elevation: 6,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        icon: Icon(
+                          Icons.clear_all,
+                          size: isLandscape ? 14 : 12,
+                        ),
+                        label: Text(
+                          l10n.clearTrainingSettings,
+                          style: (isLandscape
+                              ? theme.textTheme.bodySmall
+                              : theme.textTheme.labelSmall),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ),
-                    icon: Icon(Icons.clear_all, size: isLandscape ? 14 : 12),
-                    label: Text(
-                      l10n.clearTrainingSettings,
-                      style: (isLandscape ? theme.textTheme.bodySmall : theme.textTheme.labelSmall),
-                      overflow: TextOverflow.ellipsis,
+                    //const SizedBox(width: 8),
+                    // Start Training button on the right
+                    Flexible(
+                      child: ElevatedButton.icon(
+                        onPressed: _startTraining,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: theme.colorScheme.primary,
+                          foregroundColor: theme.colorScheme.onPrimary,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isLandscape ? 12 : 8,
+                            vertical: isLandscape ? 6 : 4,
+                          ),
+                          elevation: 6,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                        icon: Icon(
+                          Icons.play_arrow,
+                          size: isLandscape ? 16 : 14,
+                        ),
+                        label: Text(
+                          l10n.startTrainingRally,
+                          style:
+                              (isLandscape
+                                      ? theme.textTheme.bodySmall
+                                      : theme.textTheme.labelSmall)
+                                  ?.copyWith(
+                                    color: theme.colorScheme.onPrimary,
+                                  ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                // Start Training button on the right
-                Flexible(
-                  child: ElevatedButton.icon(
-                    onPressed: _startTraining,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: theme.colorScheme.onPrimary,
-                      padding: EdgeInsets.symmetric(
-                        horizontal: isLandscape ? 12 : 8,
-                        vertical: isLandscape ? 6 : 4,
-                      ),
-                      elevation: 6,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                    ),
-                    icon: Icon(Icons.play_arrow, size: isLandscape ? 16 : 14),
-                    label: Text(
-                      l10n.startTrainingRally,
-                      style: (isLandscape ? theme.textTheme.bodySmall : theme.textTheme.labelSmall)?.copyWith(
-                        color: theme.colorScheme.onPrimary,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      );
-    },
-  ),
-);
+              ),
+            ],
+          );
+        },
+      ),
+    );
   }
 
   Widget _buildPackageInfo(ThemeData theme, AppLocalizations l10n) {
@@ -455,12 +485,16 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                 children: [
                   Text(
                     l10n.selectPackage,
-                    style: (isSmallScreen ? theme.textTheme.bodyMedium : theme.textTheme.titleSmall)?.copyWith(
-                      color: theme.colorScheme.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style:
+                        (isSmallScreen
+                                ? theme.textTheme.bodyMedium
+                                : theme.textTheme.titleSmall)
+                            ?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
                   ),
-                  const SizedBox(height: AppTheme.spacing8),
+                  //const SizedBox(height: AppTheme.spacing8),
                   Row(
                     children: [
                       Expanded(
@@ -469,8 +503,12 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                           decoration: InputDecoration(
                             border: const OutlineInputBorder(),
                             contentPadding: EdgeInsets.symmetric(
-                              horizontal: isSmallScreen ? AppTheme.spacing4 : AppTheme.spacing8,
-                              vertical: isSmallScreen ? AppTheme.spacing4 : AppTheme.spacing8,
+                              horizontal: isSmallScreen
+                                  ? AppTheme.spacing4
+                                  : AppTheme.spacing8,
+                              vertical: isSmallScreen
+                                  ? AppTheme.spacing4
+                                  : AppTheme.spacing8,
                             ),
                             isDense: isSmallScreen,
                           ),
@@ -479,14 +517,18 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                             return DropdownMenuItem<String>(
                               value: package.id,
                               child: Text(
-                                package.packageName ?? '${package.languageName1} - ${package.languageName2}',
-                                style: isSmallScreen ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium,
+                                package.packageName ??
+                                    '${package.languageName1} - ${package.languageName2}',
+                                style: isSmallScreen
+                                    ? theme.textTheme.bodySmall
+                                    : theme.textTheme.bodyMedium,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             );
                           }).toList(),
                           onChanged: (String? newValue) async {
-                            if (newValue != null && newValue != _currentPackage!.id) {
+                            if (newValue != null &&
+                                newValue != _currentPackage!.id) {
                               final newPackage = _availablePackages.firstWhere(
                                 (p) => p.id == newValue,
                               );
@@ -500,9 +542,13 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                       Flexible(
                         child: Text(
                           '${_currentPackage!.languageCode1.split('-')[0].toUpperCase()} → ${_currentPackage!.languageCode2.split('-')[0].toUpperCase()}',
-                          style: (isSmallScreen ? theme.textTheme.labelSmall : theme.textTheme.bodySmall)?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
+                          style:
+                              (isSmallScreen
+                                      ? theme.textTheme.labelSmall
+                                      : theme.textTheme.bodySmall)
+                                  ?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -514,20 +560,29 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                 children: [
                   Expanded(
                     child: Text(
-                      _currentPackage!.packageName ?? '${_currentPackage!.languageName1} - ${_currentPackage!.languageName2}',
-                      style: (isSmallScreen ? theme.textTheme.titleSmall : theme.textTheme.titleMedium)?.copyWith(
-                        color: theme.colorScheme.primary,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      _currentPackage!.packageName ??
+                          '${_currentPackage!.languageName1} - ${_currentPackage!.languageName2}',
+                      style:
+                          (isSmallScreen
+                                  ? theme.textTheme.titleSmall
+                                  : theme.textTheme.titleMedium)
+                              ?.copyWith(
+                                color: theme.colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  const SizedBox(width: AppTheme.spacing8),
+                  //const SizedBox(width: AppTheme.spacing8),
                   Text(
                     '${_currentPackage!.languageCode1.split('-')[0].toUpperCase()} → ${_currentPackage!.languageCode2.split('-')[0].toUpperCase()}',
-                    style: (isSmallScreen ? theme.textTheme.labelSmall : theme.textTheme.bodySmall)?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                    style:
+                        (isSmallScreen
+                                ? theme.textTheme.labelSmall
+                                : theme.textTheme.bodySmall)
+                            ?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
                   ),
                 ],
               ),
@@ -567,7 +622,7 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
             ),
             // Show lastNItems value control only when lastN is selected
             if (_itemScope == ItemScope.lastN) ...[
-              const SizedBox(height: AppTheme.spacing8),
+              //const SizedBox(height: AppTheme.spacing8),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32.0),
                 child: Column(
@@ -655,7 +710,6 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
     );
   }
 
-
   Widget _buildItemOrderSection(ThemeData theme, AppLocalizations l10n) {
     return Card(
       elevation: 1,
@@ -685,6 +739,42 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
               ItemOrder.sequential,
               _itemOrder,
               (value) => setState(() => _itemOrder = value),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildItemTypeSection(ThemeData theme, AppLocalizations l10n) {
+    return Card(
+      elevation: 1,
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.spacing8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.itemType,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: AppTheme.spacing4),
+            _buildRadioOption<ItemType>(
+              theme,
+              l10n.dictionaryItems,
+              ItemType.dictionaryItems,
+              _itemType,
+              (value) => setState(() => _itemType = value),
+            ),
+            _buildRadioOption<ItemType>(
+              theme,
+              l10n.examplesType,
+              ItemType.examples,
+              _itemType,
+              (value) => setState(() => _itemType = value),
             ),
           ],
         ),
@@ -736,6 +826,8 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
   }
 
   Widget _buildCategoryFilterSection(ThemeData theme, AppLocalizations l10n) {
+    final selectedCount = _selectedCategoryIds.length;
+
     return Card(
       elevation: 1,
       child: Padding(
@@ -768,7 +860,7 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                 ),
               ],
             ),
-            const SizedBox(height: AppTheme.spacing8),
+            //const SizedBox(height: AppTheme.spacing8),
             if (_allCategories.isEmpty)
               Text(
                 l10n.noCategories,
@@ -777,45 +869,35 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                 ),
               )
             else
-              ConstrainedBox(
-                constraints: const BoxConstraints(
-                  maxHeight: 200, // Limit height to 200 pixels
+              OutlinedButton.icon(
+                icon: Icon(
+                  Icons.label_outline,
+                  size: 18,
+                  color: selectedCount > 0 ? theme.colorScheme.primary : null,
                 ),
-                child: Scrollbar(
-                  controller: _categoryScrollController,
-                  thumbVisibility: true,
-                  child: SingleChildScrollView(
-                    controller: _categoryScrollController,
-                    child: Wrap(
-                      spacing: AppTheme.spacing8,
-                      runSpacing: AppTheme.spacing4,
-                      children: _allCategories.map((category) {
-                        final isSelected = _selectedCategoryIds.contains(category.id);
-                        return FilterChip(
-                          selected: isSelected,
-                          label: Text(
-                            category.name,
-                            style: theme.textTheme.bodySmall,
-                          ),
-                          avatar: Icon(
-                            isSelected ? Icons.check_circle : Icons.label_outline,
-                            size: 16,
-                            color: isSelected ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
-                          ),
-                          onSelected: (selected) {
-                            setState(() {
-                              if (selected) {
-                                _selectedCategoryIds.add(category.id);
-                              } else {
-                                _selectedCategoryIds.remove(category.id);
-                              }
-                            });
-                          },
-                        );
-                      }).toList(),
-                    ),
+                label: Text(
+                  selectedCount > 0
+                      ? '${l10n.categories} ($selectedCount)'
+                      : l10n.categories,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: selectedCount > 0 ? theme.colorScheme.primary : null,
+                    fontWeight: selectedCount > 0 ? FontWeight.bold : null,
                   ),
                 ),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppTheme.spacing8,
+                    vertical: AppTheme.spacing8,
+                  ),
+                  minimumSize: Size.zero,
+                  side: BorderSide(
+                    color: selectedCount > 0
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.outline,
+                    width: selectedCount > 0 ? 2 : 1,
+                  ),
+                ),
+                onPressed: () => _showCategoryFilterDialog(theme, l10n),
               ),
           ],
         ),
@@ -823,6 +905,161 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
     );
   }
 
+  /// Show category multiselect filter dialog
+  Future<void> _showCategoryFilterDialog(
+    ThemeData theme,
+    AppLocalizations l10n,
+  ) async {
+    final screenWidth = MediaQuery.of(context).size.width;
+
+    // Create a copy of current selections
+    final tempSelectedIds = List<String>.from(_selectedCategoryIds);
+
+    // Sort categories alphabetically (case-insensitive)
+    final sortedCategories = List<Category>.from(_allCategories)
+      ..sort((a, b) => a.name.toUpperCase().compareTo(b.name.toUpperCase()));
+
+    await showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          titlePadding: const EdgeInsets.fromLTRB(
+            AppTheme.spacing12,
+            AppTheme.spacing12,
+            AppTheme.spacing8,
+            AppTheme.spacing8,
+          ),
+          contentPadding: const EdgeInsets.fromLTRB(
+            AppTheme.spacing12,
+            AppTheme.spacing8,
+            AppTheme.spacing12,
+            AppTheme.spacing8,
+          ),
+          actionsPadding: const EdgeInsets.fromLTRB(
+            AppTheme.spacing12,
+            AppTheme.spacing8,
+            AppTheme.spacing12,
+            AppTheme.spacing12,
+          ),
+          title: Row(
+            children: [
+              const Icon(Icons.label_outline, size: 18),
+              const SizedBox(width: AppTheme.spacing4),
+              Text(l10n.categoryFilter, style: theme.textTheme.titleSmall),
+              const Spacer(),
+              if (tempSelectedIds.isNotEmpty)
+                TextButton(
+                  onPressed: () {
+                    setDialogState(() {
+                      tempSelectedIds.clear();
+                    });
+                  },
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppTheme.spacing8,
+                      vertical: AppTheme.spacing4,
+                    ),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(
+                    l10n.clearFilters,
+                    style: theme.textTheme.bodySmall,
+                  ),
+                ),
+            ],
+          ),
+          content: SizedBox(
+            width: screenWidth * 0.25, // 25% of screen width
+            child: sortedCategories.isEmpty
+                ? Padding(
+                    padding: const EdgeInsets.all(AppTheme.spacing8),
+                    child: Text(
+                      l10n.noCategories,
+                      textAlign: TextAlign.center,
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  )
+                : ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: sortedCategories.length,
+                    itemBuilder: (context, index) {
+                      final category = sortedCategories[index];
+                      final isSelected = tempSelectedIds.contains(category.id);
+
+                      return CheckboxListTile(
+                        dense: true,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: AppTheme.spacing4,
+                          vertical: 0,
+                        ),
+                        title: Text(
+                          category.name,
+                          style: theme.textTheme.bodySmall,
+                        ),
+                        subtitle: category.description != null
+                            ? Text(
+                                category.description!,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  fontSize:
+                                      (theme.textTheme.bodySmall?.fontSize ??
+                                          12) *
+                                      0.9,
+                                ),
+                              )
+                            : null,
+                        value: isSelected,
+                        onChanged: (bool? value) {
+                          setDialogState(() {
+                            if (value == true) {
+                              tempSelectedIds.add(category.id);
+                            } else {
+                              tempSelectedIds.remove(category.id);
+                            }
+                          });
+                        },
+                        secondary: Icon(
+                          Icons.label,
+                          size: 18,
+                          color: isSelected
+                              ? theme.colorScheme.primary
+                              : theme.colorScheme.onSurfaceVariant,
+                        ),
+                      );
+                    },
+                  ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppTheme.spacing12,
+                  vertical: AppTheme.spacing8,
+                ),
+              ),
+              child: Text(l10n.cancel, style: theme.textTheme.bodySmall),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _selectedCategoryIds = tempSelectedIds;
+                });
+                Navigator.of(context).pop();
+              },
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppTheme.spacing12,
+                  vertical: AppTheme.spacing8,
+                ),
+              ),
+              child: Text(l10n.ok, style: theme.textTheme.bodySmall),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   /// Helper method to build a radio option without using deprecated RadioListTile
   Widget _buildRadioOption<T>(
@@ -864,17 +1101,11 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                     )
                   : null,
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                label,
-                style: theme.textTheme.bodySmall,
-              ),
-            ),
+            const SizedBox(width: 4),
+            Expanded(child: Text(label, style: theme.textTheme.bodySmall)),
           ],
         ),
       ),
     );
   }
 }
-

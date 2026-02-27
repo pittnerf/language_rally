@@ -27,6 +27,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get packageDetails => 'Package Details';
 
   @override
+  String get packageName => 'Package Name';
+
+  @override
+  String get packageNameHint => 'e.g., Spanish Essentials, German Basics';
+
+  @override
   String get languageCode1 => 'Source Language Code';
 
   @override
@@ -87,6 +93,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get save => 'Save';
 
   @override
+  String get edit => 'Edit';
+
+  @override
   String get cancel => 'Cancel';
 
   @override
@@ -131,6 +140,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectLanguageCode => 'Select Language Code';
+
+  @override
+  String get typeToSearchLanguages => 'Type to search languages...';
+
+  @override
+  String get search => 'Search...';
 
   @override
   String get clearCounters => 'Clear Counters';
@@ -450,10 +465,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get known => 'Known';
 
   @override
+  String get unknown => 'Unknown';
+
+  @override
   String get important => 'Important';
 
   @override
   String get favourite => 'Favourite';
+
+  @override
+  String get badge => 'Badge';
+
+  @override
+  String get position => 'Position';
+
+  @override
+  String get stepsUntilLearned => 'Steps until learned';
 
   @override
   String get examples => 'Examples';
@@ -788,6 +815,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sequentialOrder => 'Sequential order';
 
   @override
+  String get itemType => 'Item Type';
+
+  @override
+  String get dictionaryItems => 'Dictionary items';
+
+  @override
+  String get examplesType => 'Examples';
+
+  @override
   String get displayLanguage => 'Display Language';
 
   @override
@@ -875,10 +911,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportBeforeDelete => 'Export Before Deleting?';
 
   @override
-  String get aiTextAnalysis => 'AI Text Analysis';
+  String get aiTextAnalysis => 'Import with AI';
 
   @override
-  String get aiTextAnalysisImport => 'AI Text Analysis Import';
+  String get aiTextAnalysisImport => 'Import with AI Text Analysis';
 
   @override
   String get knowledgeLevel => 'Knowledge Level';

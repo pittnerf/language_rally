@@ -51,20 +51,24 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
   int _currentItemIndex = 0;
   bool _isLoading = true;
   bool _isAnswerRevealed = false;
-  bool _displayLanguage1 = true; // true = show language1, false = show language2
+  bool _displayLanguage1 =
+      true; // true = show language1, false = show language2
   bool _userKnows = false; // Track if user clicked "I know"
   final _random = math.Random();
 
   // Training session history tracking
   int _totalGuesses = 0;
   int _successfulGuesses = 0;
-  final List<double> _historyPercentages = []; // Stores success percentage after each guess
+  final List<double> _historyPercentages =
+      []; // Stores success percentage after each guess
 
   // Badge tracking
   String? _currentBadge; // Current badge in this training session
   final List<BadgeEvent> _badgeEvents = []; // Badge events in this session
-  int _minItemsForBadges = 10; // Minimum items required for badges (loaded from settings)
-  int _itemsSinceLastBadgeEvent = 0; // Track items evaluated since last badge event
+  int _minItemsForBadges =
+      10; // Minimum items required for badges (loaded from settings)
+  int _itemsSinceLastBadgeEvent =
+      0; // Track items evaluated since last badge event
 
   // Feedback animation
   bool _showFeedbackAnimation = false;
@@ -73,6 +77,10 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
   // Answer section positioning and cover animation
   final GlobalKey _answerSectionKey = GlobalKey();
   bool _showAnswerCover = true;
+
+  // Random example selection for "examples" item type
+  final Map<String, int> _selectedExampleIndexes =
+      {}; // Map itemId to example index
 
   @override
   void initState() {
@@ -107,7 +115,9 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
     setState(() => _isLoading = true);
 
     try {
-      List<Item> allItems = await _itemRepo.getItemsForPackage(widget.package.id);
+      List<Item> allItems = await _itemRepo.getItemsForPackage(
+        widget.package.id,
+      );
 
       // Apply item scope filter
       List<Item> filteredItems = [];
@@ -122,7 +132,9 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
               : allItems;
           break;
         case ItemScope.onlyUnknown:
-          filteredItems = allItems.where((item) => item.dontKnowCounter > 0 || !item.isKnown).toList();
+          filteredItems = allItems
+              .where((item) => item.dontKnowCounter > 0 || !item.isKnown)
+              .toList();
           break;
         case ItemScope.onlyImportant:
           filteredItems = allItems.where((item) => item.isImportant).toList();
@@ -135,8 +147,17 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
       // Apply category filter if categories are selected
       if (widget.settings.selectedCategoryIds.isNotEmpty) {
         filteredItems = filteredItems.where((item) {
-          return item.categoryIds.any((catId) => widget.settings.selectedCategoryIds.contains(catId));
+          return item.categoryIds.any(
+            (catId) => widget.settings.selectedCategoryIds.contains(catId),
+          );
         }).toList();
+      }
+
+      // Apply item type filter - only include items with examples when in examples mode
+      if (widget.settings.itemType == ItemType.examples) {
+        filteredItems = filteredItems
+            .where((item) => item.examples.isNotEmpty)
+            .toList();
       }
 
       // Apply item order
@@ -185,6 +206,18 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
         _displayLanguage1 = _random.nextBool();
         break;
     }
+  }
+
+  /// Get or select a random example index for an item
+  /// Used when itemType is "examples" to consistently show the same random example
+  int _getOrSelectRandomExampleIndex(Item item) {
+    if (item.examples.isEmpty) return -1;
+
+    if (!_selectedExampleIndexes.containsKey(item.id)) {
+      _selectedExampleIndexes[item.id] = _random.nextInt(item.examples.length);
+    }
+
+    return _selectedExampleIndexes[item.id]!;
   }
 
   void _showNoItemsDialog() {
@@ -236,8 +269,11 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
 
     if (userKnows) {
       // User knows - decrease don't know counter by 1 (if > 0)
-      int newCounter = currentItem.dontKnowCounter > 0 ? currentItem.dontKnowCounter - 1 : 0;
-      bool newIsKnown = newCounter == 0; // Set isKnown to true only if counter reaches 0
+      int newCounter = currentItem.dontKnowCounter > 0
+          ? currentItem.dontKnowCounter - 1
+          : 0;
+      bool newIsKnown =
+          newCounter == 0; // Set isKnown to true only if counter reaches 0
 
       final updatedItem = currentItem.copyWith(
         dontKnowCounter: newCounter,
@@ -309,23 +345,32 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
       _itemsSinceLastBadgeEvent = 0;
 
       // Badge lost or earned
-      if (_currentBadge != null && (newBadgeId == null || BadgeHelper.badgeLevels.indexWhere((b) => b.id == newBadgeId) < BadgeHelper.badgeLevels.indexWhere((b) => b.id == _currentBadge!))) {
+      if (_currentBadge != null &&
+          (newBadgeId == null ||
+              BadgeHelper.badgeLevels.indexWhere((b) => b.id == newBadgeId) <
+                  BadgeHelper.badgeLevels.indexWhere(
+                    (b) => b.id == _currentBadge!,
+                  ))) {
         // Badge lost
-        _badgeEvents.add(BadgeEvent.lost(
-          badgeId: _currentBadge!,
-          totalAnswers: _totalGuesses,
-          accuracy: currentAccuracy,
-        ));
+        _badgeEvents.add(
+          BadgeEvent.lost(
+            badgeId: _currentBadge!,
+            totalAnswers: _totalGuesses,
+            accuracy: currentAccuracy,
+          ),
+        );
         _showBadgeLostNotification(_currentBadge!);
       }
 
       if (newBadgeId != null && newBadgeId != _currentBadge) {
         // New badge earned
-        _badgeEvents.add(BadgeEvent.earned(
-          badgeId: newBadgeId,
-          totalAnswers: _totalGuesses,
-          accuracy: currentAccuracy,
-        ));
+        _badgeEvents.add(
+          BadgeEvent.earned(
+            badgeId: newBadgeId,
+            totalAnswers: _totalGuesses,
+            accuracy: currentAccuracy,
+          ),
+        );
         _showBadgeEarnedNotification(newBadgeId);
       }
 
@@ -367,10 +412,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
         SnackBar(
           content: Row(
             children: [
-              Text(
-                badgeLevel.emoji,
-                style: const TextStyle(fontSize: 24),
-              ),
+              Text(badgeLevel.emoji, style: const TextStyle(fontSize: 24)),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
@@ -430,10 +472,11 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
     } else {
       // Reached the last item
       // Check if we should loop back or end training based on scope
-      final shouldLoop = widget.settings.itemScope == ItemScope.all ||
-                         widget.settings.itemScope == ItemScope.lastN ||
-                         widget.settings.itemScope == ItemScope.onlyImportant ||
-                         widget.settings.itemScope == ItemScope.onlyFavourite;
+      final shouldLoop =
+          widget.settings.itemScope == ItemScope.all ||
+          widget.settings.itemScope == ItemScope.lastN ||
+          widget.settings.itemScope == ItemScope.onlyImportant ||
+          widget.settings.itemScope == ItemScope.onlyFavourite;
 
       if (shouldLoop && _filteredItems.isNotEmpty) {
         // Loop back to the first item
@@ -444,7 +487,8 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
           _showAnswerCover = true; // Reset cover for next item
           _determineDisplayLanguage();
         });
-      } else if (widget.settings.itemScope == ItemScope.onlyUnknown && _filteredItems.isEmpty) {
+      } else if (widget.settings.itemScope == ItemScope.onlyUnknown &&
+          _filteredItems.isEmpty) {
         // No more unknown items - training complete
         _showTrainingCompleteDialog();
       } else {
@@ -456,15 +500,21 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
 
   Future<void> _refreshFilteredItemsForUnknown() async {
     try {
-      List<Item> allItems = await _itemRepo.getItemsForPackage(widget.package.id);
+      List<Item> allItems = await _itemRepo.getItemsForPackage(
+        widget.package.id,
+      );
 
       // Apply onlyUnknown filter
-      List<Item> filteredItems = allItems.where((item) => item.dontKnowCounter > 0 || !item.isKnown).toList();
+      List<Item> filteredItems = allItems
+          .where((item) => item.dontKnowCounter > 0 || !item.isKnown)
+          .toList();
 
       // Apply category filter if categories are selected
       if (widget.settings.selectedCategoryIds.isNotEmpty) {
         filteredItems = filteredItems.where((item) {
-          return item.categoryIds.any((catId) => widget.settings.selectedCategoryIds.contains(catId));
+          return item.categoryIds.any(
+            (catId) => widget.settings.selectedCategoryIds.contains(catId),
+          );
         }).toList();
       }
 
@@ -509,7 +559,6 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
     );
   }
 
-
   Future<void> _toggleImportant() async {
     final currentItem = _filteredItems[_currentItemIndex];
     final updatedItem = currentItem.copyWith(
@@ -539,23 +588,15 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
 
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text(l10n.trainingRally),
-        ),
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
+        appBar: AppBar(title: Text(l10n.trainingRally)),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     if (_filteredItems.isEmpty) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text(l10n.trainingRally),
-        ),
-        body: Center(
-          child: Text(l10n.noMoreItemsToDisplay),
-        ),
+        appBar: AppBar(title: Text(l10n.trainingRally)),
+        body: Center(child: Text(l10n.noMoreItemsToDisplay)),
       );
     }
 
@@ -563,10 +604,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          l10n.trainingRally,
-          style: theme.textTheme.titleSmall,
-        ),
+        title: Text(l10n.trainingRally, style: theme.textTheme.titleSmall),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
@@ -596,11 +634,11 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                 children: [
                   // Item status indicators (clickable for Important and Favourite)
                   _buildStatusIndicators(theme, currentItem),
-                  const SizedBox(height: AppTheme.spacing8),
+                  //const SizedBox(height: AppTheme.spacing8),
 
                   // Question section (always visible)
                   _buildQuestionSection(theme, l10n, currentItem),
-                  const SizedBox(height: AppTheme.spacing8),
+                  //const SizedBox(height: AppTheme.spacing8),
 
                   // Answer section (always visible, but covered when not revealed)
                   Stack(
@@ -611,12 +649,12 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           _buildAnswerSection(theme, l10n, currentItem),
-                          const SizedBox(height: AppTheme.spacing8),
+                          //const SizedBox(height: AppTheme.spacing8),
 
                           // Examples section
                           if (currentItem.examples.isNotEmpty) ...[
                             _buildExamplesSection(theme, l10n, currentItem),
-                            const SizedBox(height: AppTheme.spacing8),
+                            //const SizedBox(height: AppTheme.spacing8),
                           ],
                         ],
                       ),
@@ -628,12 +666,15 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                             duration: const Duration(milliseconds: 300),
                             child: Card(
                               elevation: 4,
-                              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 1.0),
+                              color: theme.colorScheme.surfaceContainerHighest
+                                  .withValues(alpha: 1.0),
                               child: Center(
                                 child: Icon(
                                   Icons.help_outline,
                                   size: 80,
-                                  color: theme.colorScheme.primary.withValues(alpha: 0.6),
+                                  color: theme.colorScheme.primary.withValues(
+                                    alpha: 0.6,
+                                  ),
                                 ),
                               ),
                             ),
@@ -642,7 +683,9 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                       // Feedback animation - positioned within this Stack
                       if (_showFeedbackAnimation)
                         Positioned(
-                          right: MediaQuery.of(context).size.width * 0.25 - 60, // From right edge, at 1/4 position
+                          right:
+                              MediaQuery.of(context).size.width * 0.25 -
+                              60, // From right edge, at 1/4 position
                           top: 0,
                           bottom: 0,
                           child: IgnorePointer(
@@ -684,6 +727,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
   }
 
   Widget _buildStatusIndicators(ThemeData theme, Item item) {
+    final l10n = AppLocalizations.of(context)!;
     final screenWidth = MediaQuery.of(context).size.width;
     final isNarrow = screenWidth < 400; // Very narrow screens
 
@@ -702,31 +746,41 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                   InkWell(
                     onTap: _toggleImportant,
                     borderRadius: BorderRadius.circular(8),
-                    child: _buildStatusBadge(
+                    child: _buildStatusBadgeWithLabel(
                       theme,
                       Icons.bookmark,
                       item.isImportant,
                       theme.colorScheme.secondary,
+                      l10n.important,
                     ),
                   ),
                   const SizedBox(width: 8),
                   InkWell(
                     onTap: _toggleFavourite,
                     borderRadius: BorderRadius.circular(8),
-                    child: _buildStatusBadge(
+                    child: _buildStatusBadgeWithLabel(
                       theme,
                       Icons.favorite,
                       item.isFavourite,
                       Colors.red,
+                      l10n.favourite,
                     ),
                   ),
                   const SizedBox(width: 8),
                   // isKnown is not clickable - Red exclamation for unknown, green checkmark for known
-                  _buildStatusBadge(
+                  _buildStatusBadgeWithLabel(
                     theme,
-                    (!item.isKnown || item.dontKnowCounter > 0) ? Icons.error : Icons.check_circle,
-                    item.isKnown && item.dontKnowCounter == 0,
-                    (!item.isKnown || item.dontKnowCounter > 0) ? Colors.red : Colors.green,
+                    (!item.isKnown || item.dontKnowCounter > 0)
+                        ? Icons.error
+                        : Icons.check_circle,
+                    true, // Always active to show the proper color (red/green)
+                    (!item.isKnown || item.dontKnowCounter > 0)
+                        ? Colors.red
+                        : Colors.green,
+                    (!item.isKnown || item.dontKnowCounter > 0)
+                        ? l10n.unknown
+                        : l10n.known,
+                    showBackground: false, // No background, just colored icon
                   ),
                   const SizedBox(width: 8),
                   _buildCounterBadge(
@@ -734,6 +788,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                     Icons.help_outline,
                     item.dontKnowCounter,
                     isNarrow,
+                    l10n.stepsUntilLearned,
                   ),
                 ],
               ),
@@ -749,52 +804,91 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                   // Current badge
                   if (_currentBadge != null && !isNarrow) ...[
                     Flexible(
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.tertiaryContainer,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              BadgeHelper.getBadgeLevelById(_currentBadge!)?.emoji ?? '',
-                              style: const TextStyle(fontSize: 16),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
                             ),
-                            const SizedBox(width: 2),
-                            Flexible(
-                              child: Text(
-                                BadgeHelper.getBadgeLevelById(_currentBadge!)?.name ?? '',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: theme.colorScheme.onTertiaryContainer,
-                                  fontSize: 11,
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.tertiaryContainer,
+                              borderRadius: BorderRadius.circular(16),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  BadgeHelper.getBadgeLevelById(
+                                        _currentBadge!,
+                                      )?.emoji ??
+                                      '',
+                                  style: const TextStyle(fontSize: 16),
                                 ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                                const SizedBox(width: 2),
+                                Flexible(
+                                  child: Text(
+                                    BadgeHelper.getBadgeLevelById(
+                                          _currentBadge!,
+                                        )?.name ??
+                                        '',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color:
+                                          theme.colorScheme.onTertiaryContainer,
+                                      fontSize: 11,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            l10n.badge,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              fontSize: 8,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(width: 4),
                   ],
                   // Current item counter
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primaryContainer,
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Text(
-                      '${_currentItemIndex + 1}/${_filteredItems.length}',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.onPrimaryContainer,
-                        fontSize: 11,
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.primaryContainer,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Text(
+                          '${_currentItemIndex + 1}/${_filteredItems.length}',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.onPrimaryContainer,
+                            fontSize: 11,
+                          ),
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 2),
+                      Text(
+                        l10n.position,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontSize: 8,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -805,69 +899,204 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
     );
   }
 
-  Widget _buildStatusBadge(ThemeData theme, IconData icon, bool isActive, Color activeColor) {
+  Widget _buildStatusBadgeWithLabel(
+    ThemeData theme,
+    IconData icon,
+    bool isActive,
+    Color activeColor,
+    String label, {
+    bool showBackground = true,
+  }) {
     final isErrorState = icon == Icons.error;
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: isActive
-            ? (isErrorState ? theme.colorScheme.errorContainer : activeColor.withValues(alpha: 0.1))
-            : Colors.transparent,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Icon(
-        icon,
-        color: isActive ? activeColor : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
-        size: 24,
-      ),
+    final iconWidget = Icon(
+      icon,
+      color: isActive
+          ? activeColor
+          : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+      size: 24,
     );
-  }
 
-  Widget _buildCounterBadge(ThemeData theme, IconData icon, int count, bool isNarrow) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        color: count > 0
-            ? theme.colorScheme.errorContainer
-            : theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            color: count > 0
-                ? theme.colorScheme.onErrorContainer
-                : theme.colorScheme.onSurfaceVariant,
-            size: 16,
-          ),
-          const SizedBox(width: 4),
-          Text(
-            count > 0
-                ? (isNarrow ? '$count' : '$count left')  // Shorter text on narrow screens
-                : count.toString(),
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: count > 0
-                  ? theme.colorScheme.onErrorContainer
-                  : theme.colorScheme.onSurfaceVariant,
-              fontSize: 11,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (showBackground)
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: isActive
+                  ? (isErrorState
+                        ? theme.colorScheme.errorContainer
+                        : activeColor.withValues(alpha: 0.1))
+                  : Colors.transparent,
+              borderRadius: BorderRadius.circular(8),
             ),
+            child: iconWidget,
+          )
+        else
+          Padding(padding: const EdgeInsets.all(8), child: iconWidget),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: theme.textTheme.bodySmall?.copyWith(
+            fontSize: 8,
+            color: theme.colorScheme.onSurfaceVariant,
           ),
-        ],
-      ),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 
-  Widget _buildQuestionSection(ThemeData theme, AppLocalizations l10n, Item item) {
-    final languageData = _displayLanguage1 ? item.language1Data : item.language2Data;
+  Widget _buildCounterBadge(
+    ThemeData theme,
+    IconData icon,
+    int count,
+    bool isNarrow,
+    String label,
+  ) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: count > 0
+                ? theme.colorScheme.errorContainer
+                : theme.colorScheme.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                color: count > 0
+                    ? theme.colorScheme.onErrorContainer
+                    : theme.colorScheme.onSurfaceVariant,
+                size: 16,
+              ),
+              const SizedBox(width: 4),
+              Text(
+                count > 0
+                    ? (isNarrow
+                          ? '$count'
+                          : '$count left') // Shorter text on narrow screens
+                    : count.toString(),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: count > 0
+                      ? theme.colorScheme.onErrorContainer
+                      : theme.colorScheme.onSurfaceVariant,
+                  fontSize: 11,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: theme.textTheme.bodySmall?.copyWith(
+            fontSize: 8,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuestionSection(
+    ThemeData theme,
+    AppLocalizations l10n,
+    Item item,
+  ) {
+    // Check if we're in "examples" mode
+    final isExamplesMode = widget.settings.itemType == ItemType.examples;
+
+    if (isExamplesMode && item.examples.isNotEmpty) {
+      // Show a random example in the question language
+      final exampleIndex = _getOrSelectRandomExampleIndex(item);
+      final example = item.examples[exampleIndex];
+      final exampleText = _displayLanguage1
+          ? example.textLanguage1
+          : example.textLanguage2;
+      final languageCode =
+          (_displayLanguage1
+                  ? widget.package.languageCode1
+                  : widget.package.languageCode2)
+              .split('-')[0]
+              .toUpperCase();
+
+      // Check screen width for responsive design
+      final screenWidth = MediaQuery.of(context).size.width;
+      final isPortrait = screenWidth < 900;
+
+      return Card(
+        elevation: 2,
+        color: theme.colorScheme.primaryContainer,
+        child: Padding(
+          padding: const EdgeInsets.all(AppTheme.spacing8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      '${l10n.question} - $languageCode',
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: theme.colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.volume_up,
+                      color: theme.colorScheme.onPrimaryContainer,
+                    ),
+                    tooltip: 'Speak text',
+                    onPressed: () {
+                      final languageCodeFull = _displayLanguage1
+                          ? item.language1Data.languageCode
+                          : item.language2Data.languageCode;
+                      _ttsService.speak(exampleText, languageCodeFull);
+                    },
+                  ),
+                ],
+              ),
+              //const SizedBox(height: AppTheme.spacing8),
+              Text(
+                exampleText,
+                style:
+                    (isPortrait
+                            ? theme.textTheme.titleMedium
+                            : theme.textTheme.titleMedium)
+                        ?.copyWith(
+                          color: theme.colorScheme.onPrimaryContainer,
+                          fontWeight: FontWeight.bold,
+                        ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    // Default: Dictionary items mode
+    final languageData = _displayLanguage1
+        ? item.language1Data
+        : item.language2Data;
     final preText = languageData.preItem ?? '';
     final mainText = languageData.text;
     final postText = languageData.postItem ?? '';
-    final languageCode = (_displayLanguage1 ? widget.package.languageCode1 : widget.package.languageCode2)
-        .split('-')[0]
-        .toUpperCase();
+    final languageCode =
+        (_displayLanguage1
+                ? widget.package.languageCode1
+                : widget.package.languageCode2)
+            .split('-')[0]
+            .toUpperCase();
 
     // Check screen width for responsive design
     final screenWidth = MediaQuery.of(context).size.width;
@@ -899,7 +1128,8 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                   ),
                   tooltip: 'Speak text',
                   onPressed: () {
-                    final fullText = '${preText.isNotEmpty ? "$preText " : ""}$mainText';
+                    final fullText =
+                        '${preText.isNotEmpty ? "$preText " : ""}$mainText';
                     final languageCodeFull = _displayLanguage1
                         ? item.language1Data.languageCode
                         : item.language2Data.languageCode;
@@ -908,32 +1138,46 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                 ),
               ],
             ),
-            const SizedBox(height: AppTheme.spacing8),
+            //const SizedBox(height: AppTheme.spacing8),
             if (preText.isNotEmpty) ...[
               Text(
                 preText,
-                style: (isPortrait ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium)?.copyWith(
-                  color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
-                  fontStyle: FontStyle.italic,
-                ),
+                style:
+                    (isPortrait
+                            ? theme.textTheme.bodySmall
+                            : theme.textTheme.bodyMedium)
+                        ?.copyWith(
+                          color: theme.colorScheme.onPrimaryContainer
+                              .withValues(alpha: 0.8),
+                          fontStyle: FontStyle.italic,
+                        ),
               ),
               const SizedBox(height: AppTheme.spacing4),
             ],
             Text(
               mainText,
-              style: (isPortrait ? theme.textTheme.titleMedium : theme.textTheme.titleMedium)?.copyWith(
-                color: theme.colorScheme.onPrimaryContainer,
-                fontWeight: FontWeight.bold,
-              ),
+              style:
+                  (isPortrait
+                          ? theme.textTheme.titleMedium
+                          : theme.textTheme.titleMedium)
+                      ?.copyWith(
+                        color: theme.colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.bold,
+                      ),
             ),
             if (postText.isNotEmpty) ...[
               const SizedBox(height: AppTheme.spacing4),
               Text(
                 postText,
-                style: (isPortrait ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium)?.copyWith(
-                  color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
-                  fontStyle: FontStyle.italic,
-                ),
+                style:
+                    (isPortrait
+                            ? theme.textTheme.bodySmall
+                            : theme.textTheme.bodyMedium)
+                        ?.copyWith(
+                          color: theme.colorScheme.onPrimaryContainer
+                              .withValues(alpha: 0.8),
+                          fontStyle: FontStyle.italic,
+                        ),
               ),
             ],
           ],
@@ -942,14 +1186,106 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
     );
   }
 
-  Widget _buildAnswerSection(ThemeData theme, AppLocalizations l10n, Item item) {
-    final languageData = !_displayLanguage1 ? item.language1Data : item.language2Data;
+  Widget _buildAnswerSection(
+    ThemeData theme,
+    AppLocalizations l10n,
+    Item item,
+  ) {
+    // Check if we're in "examples" mode
+    final isExamplesMode = widget.settings.itemType == ItemType.examples;
+
+    if (isExamplesMode && item.examples.isNotEmpty) {
+      // Show the answer language pair of the random example, then the full item
+      final exampleIndex = _getOrSelectRandomExampleIndex(item);
+      final example = item.examples[exampleIndex];
+      final exampleText = !_displayLanguage1
+          ? example.textLanguage1
+          : example.textLanguage2;
+      final languageCode =
+          (!_displayLanguage1
+                  ? widget.package.languageCode1
+                  : widget.package.languageCode2)
+              .split('-')[0]
+              .toUpperCase();
+
+      // Check screen width for responsive design
+      final screenWidth = MediaQuery.of(context).size.width;
+      final isPortrait = screenWidth < 900;
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // Example answer
+          Card(
+            elevation: 2,
+            color: theme.colorScheme.secondaryContainer,
+            child: Padding(
+              padding: const EdgeInsets.all(AppTheme.spacing8),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          '${l10n.answer} - $languageCode',
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            color: theme.colorScheme.onSecondaryContainer,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(
+                          Icons.volume_up,
+                          color: theme.colorScheme.onSecondaryContainer,
+                        ),
+                        tooltip: 'Speak text',
+                        onPressed: () {
+                          final languageCodeFull = !_displayLanguage1
+                              ? item.language1Data.languageCode
+                              : item.language2Data.languageCode;
+                          _ttsService.speak(exampleText, languageCodeFull);
+                        },
+                      ),
+                    ],
+                  ),
+                  //const SizedBox(height: AppTheme.spacing8),
+                  Text(
+                    exampleText,
+                    style:
+                        (isPortrait
+                                ? theme.textTheme.titleMedium
+                                : theme.textTheme.titleMedium)
+                            ?.copyWith(
+                              color: theme.colorScheme.onSecondaryContainer,
+                              fontWeight: FontWeight.bold,
+                            ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          //const SizedBox(height: AppTheme.spacing8),
+          // Full item details (dictionary item)
+          _buildFullItemCard(theme, l10n, item, isPortrait),
+        ],
+      );
+    }
+
+    // Default: Dictionary items mode
+    final languageData = !_displayLanguage1
+        ? item.language1Data
+        : item.language2Data;
     final preText = languageData.preItem ?? '';
     final mainText = languageData.text;
     final postText = languageData.postItem ?? '';
-    final languageCode = (!_displayLanguage1 ? widget.package.languageCode1 : widget.package.languageCode2)
-        .split('-')[0]
-        .toUpperCase();
+    final languageCode =
+        (!_displayLanguage1
+                ? widget.package.languageCode1
+                : widget.package.languageCode2)
+            .split('-')[0]
+            .toUpperCase();
 
     // Check screen width for responsive design
     final screenWidth = MediaQuery.of(context).size.width;
@@ -981,7 +1317,8 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                   ),
                   tooltip: 'Speak text',
                   onPressed: () {
-                    final fullText = '${preText.isNotEmpty ? "$preText " : ""}$mainText';
+                    final fullText =
+                        '${preText.isNotEmpty ? "$preText " : ""}$mainText';
                     final languageCodeFull = !_displayLanguage1
                         ? item.language1Data.languageCode
                         : item.language2Data.languageCode;
@@ -990,32 +1327,46 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                 ),
               ],
             ),
-            const SizedBox(height: AppTheme.spacing8),
+            //const SizedBox(height: AppTheme.spacing8),
             if (preText.isNotEmpty) ...[
               Text(
                 preText,
-                style: (isPortrait ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium)?.copyWith(
-                  color: theme.colorScheme.onSecondaryContainer.withValues(alpha: 0.8),
-                  fontStyle: FontStyle.italic,
-                ),
+                style:
+                    (isPortrait
+                            ? theme.textTheme.bodySmall
+                            : theme.textTheme.bodyMedium)
+                        ?.copyWith(
+                          color: theme.colorScheme.onSecondaryContainer
+                              .withValues(alpha: 0.8),
+                          fontStyle: FontStyle.italic,
+                        ),
               ),
               const SizedBox(height: AppTheme.spacing4),
             ],
             Text(
               mainText,
-              style: (isPortrait ? theme.textTheme.titleMedium : theme.textTheme.titleMedium)?.copyWith(
-                color: theme.colorScheme.onSecondaryContainer,
-                fontWeight: FontWeight.bold,
-              ),
+              style:
+                  (isPortrait
+                          ? theme.textTheme.titleMedium
+                          : theme.textTheme.titleMedium)
+                      ?.copyWith(
+                        color: theme.colorScheme.onSecondaryContainer,
+                        fontWeight: FontWeight.bold,
+                      ),
             ),
             if (postText.isNotEmpty) ...[
               const SizedBox(height: AppTheme.spacing4),
               Text(
                 postText,
-                style: (isPortrait ? theme.textTheme.bodySmall : theme.textTheme.bodyMedium)?.copyWith(
-                  color: theme.colorScheme.onSecondaryContainer.withValues(alpha: 0.8),
-                  fontStyle: FontStyle.italic,
-                ),
+                style:
+                    (isPortrait
+                            ? theme.textTheme.bodySmall
+                            : theme.textTheme.bodyMedium)
+                        ?.copyWith(
+                          color: theme.colorScheme.onSecondaryContainer
+                              .withValues(alpha: 0.8),
+                          fontStyle: FontStyle.italic,
+                        ),
               ),
             ],
           ],
@@ -1024,7 +1375,175 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
     );
   }
 
-  Widget _buildExamplesSection(ThemeData theme, AppLocalizations l10n, Item item) {
+  /// Build full item card showing both languages (used in examples mode)
+  Widget _buildFullItemCard(
+    ThemeData theme,
+    AppLocalizations l10n,
+    Item item,
+    bool isPortrait,
+  ) {
+    return Card(
+      elevation: 1,
+      color: theme.colorScheme.surfaceContainerHighest,
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.spacing8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Language 1
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.package.languageCode1
+                            .split('-')[0]
+                            .toUpperCase(),
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: AppTheme.spacing4),
+                      if (item.language1Data.preItem?.isNotEmpty ?? false) ...[
+                        Text(
+                          item.language1Data.preItem!,
+                          style:
+                              (isPortrait
+                                      ? theme.textTheme.bodySmall
+                                      : theme.textTheme.bodyMedium)
+                                  ?.copyWith(
+                                    fontStyle: FontStyle.italic,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                        ),
+                        const SizedBox(height: 2),
+                      ],
+                      Text(
+                        item.language1Data.text,
+                        style:
+                            (isPortrait
+                                    ? theme.textTheme.bodyMedium
+                                    : theme.textTheme.bodyLarge)
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      if (item.language1Data.postItem?.isNotEmpty ?? false) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          item.language1Data.postItem!,
+                          style:
+                              (isPortrait
+                                      ? theme.textTheme.bodySmall
+                                      : theme.textTheme.bodyMedium)
+                                  ?.copyWith(
+                                    fontStyle: FontStyle.italic,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.volume_up, size: 20),
+                  tooltip: 'Speak',
+                  onPressed: () {
+                    final fullText =
+                        '${item.language1Data.preItem?.isNotEmpty ?? false ? "${item.language1Data.preItem} " : ""}${item.language1Data.text}';
+                    _ttsService.speak(
+                      fullText,
+                      item.language1Data.languageCode,
+                    );
+                  },
+                ),
+              ],
+            ),
+            //const SizedBox(height: AppTheme.spacing8),
+            Divider(color: theme.colorScheme.outlineVariant),
+            //const SizedBox(height: AppTheme.spacing8),
+            // Language 2
+            Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        widget.package.languageCode2
+                            .split('-')[0]
+                            .toUpperCase(),
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: AppTheme.spacing4),
+                      if (item.language2Data.preItem?.isNotEmpty ?? false) ...[
+                        Text(
+                          item.language2Data.preItem!,
+                          style:
+                              (isPortrait
+                                      ? theme.textTheme.bodySmall
+                                      : theme.textTheme.bodyMedium)
+                                  ?.copyWith(
+                                    fontStyle: FontStyle.italic,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                        ),
+                        const SizedBox(height: 2),
+                      ],
+                      Text(
+                        item.language2Data.text,
+                        style:
+                            (isPortrait
+                                    ? theme.textTheme.bodyMedium
+                                    : theme.textTheme.bodyLarge)
+                                ?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                      if (item.language2Data.postItem?.isNotEmpty ?? false) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          item.language2Data.postItem!,
+                          style:
+                              (isPortrait
+                                      ? theme.textTheme.bodySmall
+                                      : theme.textTheme.bodyMedium)
+                                  ?.copyWith(
+                                    fontStyle: FontStyle.italic,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.volume_up, size: 20),
+                  tooltip: 'Speak',
+                  onPressed: () {
+                    final fullText =
+                        '${item.language2Data.preItem?.isNotEmpty ?? false ? "${item.language2Data.preItem} " : ""}${item.language2Data.text}';
+                    _ttsService.speak(
+                      fullText,
+                      item.language2Data.languageCode,
+                    );
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExamplesSection(
+    ThemeData theme,
+    AppLocalizations l10n,
+    Item item,
+  ) {
     return Card(
       elevation: 1,
       child: Padding(
@@ -1039,7 +1558,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: AppTheme.spacing8),
+            //const SizedBox(height: AppTheme.spacing8),
             ...item.examples.map((example) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: AppTheme.spacing8),
@@ -1110,16 +1629,21 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.green,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: AppTheme.spacing8, horizontal: AppTheme.spacing8),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppTheme.spacing8,
+                          horizontal: AppTheme.spacing8,
+                        ),
                         minimumSize: const Size.fromHeight(48),
                         elevation: 4,
                       ),
                       icon: const Icon(Icons.check, size: 20),
                       label: Text(
                         l10n.iKnow,
-                        style: (isPortrait ? theme.textTheme.titleSmall : theme.textTheme.titleMedium)?.copyWith(
-                          color: Colors.white,
-                        ),
+                        style:
+                            (isPortrait
+                                    ? theme.textTheme.titleSmall
+                                    : theme.textTheme.titleMedium)
+                                ?.copyWith(color: Colors.white),
                       ),
                     ),
                   ),
@@ -1130,82 +1654,102 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orange,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: AppTheme.spacing8, horizontal: AppTheme.spacing8),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppTheme.spacing8,
+                          horizontal: AppTheme.spacing8,
+                        ),
                         minimumSize: const Size.fromHeight(48),
                         elevation: 4,
                       ),
                       icon: const Icon(Icons.quiz, size: 20),
                       label: Text(
                         l10n.iDontKnow,
-                        style: (isPortrait ? theme.textTheme.titleSmall : theme.textTheme.titleMedium)?.copyWith(
-                          color: Colors.white,
-                        ),
+                        style:
+                            (isPortrait
+                                    ? theme.textTheme.titleSmall
+                                    : theme.textTheme.titleMedium)
+                                ?.copyWith(color: Colors.white),
                       ),
                     ),
                   ),
                 ],
               )
             : _userKnows
-                ? Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: _moveToNextItem,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: theme.colorScheme.primary,
-                            foregroundColor: theme.colorScheme.onPrimary,
-                            padding: const EdgeInsets.symmetric(vertical: AppTheme.spacing8, horizontal: AppTheme.spacing8),
-                            minimumSize: const Size.fromHeight(48),
-                            elevation: 4,
-                          ),
-                          icon: const Icon(Icons.arrow_forward, size: 20),
-                          label: Text(
-                            l10n.nextItem,
-                            style: (isPortrait ? theme.textTheme.titleSmall : theme.textTheme.titleMedium)?.copyWith(
-                              color: theme.colorScheme.onPrimary,
-                            ),
-                          ),
+            ? Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: _moveToNextItem,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: theme.colorScheme.primary,
+                        foregroundColor: theme.colorScheme.onPrimary,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppTheme.spacing8,
+                          horizontal: AppTheme.spacing8,
                         ),
+                        minimumSize: const Size.fromHeight(48),
+                        elevation: 4,
                       ),
-                      const SizedBox(width: AppTheme.spacing8),
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: _handleDidNotKnowEither,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: AppTheme.spacing8, horizontal: AppTheme.spacing8),
-                            minimumSize: const Size.fromHeight(48),
-                            elevation: 4,
-                          ),
-                          icon: const Icon(Icons.close, size: 20),
-                          label: Text(
-                            l10n.iDidNotKnowEither,
-                            style: (isPortrait ? theme.textTheme.titleSmall : theme.textTheme.titleMedium)?.copyWith(
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  )
-                : ElevatedButton.icon(
-                    onPressed: _moveToNextItem,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      foregroundColor: theme.colorScheme.onPrimary,
-                      padding: const EdgeInsets.symmetric(vertical: AppTheme.spacing8, horizontal: AppTheme.spacing8),
-                      minimumSize: const Size.fromHeight(48),
-                      elevation: 4,
-                    ),
-                    icon: const Icon(Icons.arrow_forward, size: 20),
-                    label: Text(
-                      l10n.nextItem,
-                      style: (isPortrait ? theme.textTheme.titleSmall : theme.textTheme.titleMedium)?.copyWith(
-                        color: theme.colorScheme.onPrimary,
+                      icon: const Icon(Icons.arrow_forward, size: 20),
+                      label: Text(
+                        l10n.nextItem,
+                        style:
+                            (isPortrait
+                                    ? theme.textTheme.titleSmall
+                                    : theme.textTheme.titleMedium)
+                                ?.copyWith(color: theme.colorScheme.onPrimary),
                       ),
                     ),
                   ),
+                  const SizedBox(width: AppTheme.spacing8),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: _handleDidNotKnowEither,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                          vertical: AppTheme.spacing8,
+                          horizontal: AppTheme.spacing8,
+                        ),
+                        minimumSize: const Size.fromHeight(48),
+                        elevation: 4,
+                      ),
+                      icon: const Icon(Icons.close, size: 20),
+                      label: Text(
+                        l10n.iDidNotKnowEither,
+                        style:
+                            (isPortrait
+                                    ? theme.textTheme.titleSmall
+                                    : theme.textTheme.titleMedium)
+                                ?.copyWith(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            : ElevatedButton.icon(
+                onPressed: _moveToNextItem,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: AppTheme.spacing8,
+                    horizontal: AppTheme.spacing8,
+                  ),
+                  minimumSize: const Size.fromHeight(48),
+                  elevation: 4,
+                ),
+                icon: const Icon(Icons.arrow_forward, size: 20),
+                label: Text(
+                  l10n.nextItem,
+                  style:
+                      (isPortrait
+                              ? theme.textTheme.titleSmall
+                              : theme.textTheme.titleMedium)
+                          ?.copyWith(color: theme.colorScheme.onPrimary),
+                ),
+              ),
       ),
     );
   }
@@ -1234,7 +1778,10 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.primaryContainer,
                     borderRadius: BorderRadius.circular(16),
@@ -1252,14 +1799,29 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
             const SizedBox(height: AppTheme.spacing4),
             Row(
               children: [
-                _buildStatChip(theme, l10n.iKnow, _successfulGuesses, Colors.green),
+                _buildStatChip(
+                  theme,
+                  l10n.iKnow,
+                  _successfulGuesses,
+                  Colors.green,
+                ),
                 const SizedBox(width: 8),
-                _buildStatChip(theme, l10n.iDontKnow, _totalGuesses - _successfulGuesses, Colors.orange),
+                _buildStatChip(
+                  theme,
+                  l10n.iDontKnow,
+                  _totalGuesses - _successfulGuesses,
+                  Colors.orange,
+                ),
                 const SizedBox(width: 8),
-                _buildStatChip(theme, l10n.total, _totalGuesses, theme.colorScheme.primary),
+                _buildStatChip(
+                  theme,
+                  l10n.total,
+                  _totalGuesses,
+                  theme.colorScheme.primary,
+                ),
               ],
             ),
-            const SizedBox(height: AppTheme.spacing8),
+            //const SizedBox(height: AppTheme.spacing8),
             SizedBox(
               height: 150,
               child: LineChart(
@@ -1311,7 +1873,10 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 30,
-                        interval: math.max(1, (_historyPercentages.length / 5).ceil().toDouble()),
+                        interval: math.max(
+                          1,
+                          (_historyPercentages.length / 5).ceil().toDouble(),
+                        ),
                         getTitlesWidget: (value, meta) {
                           if (value.toInt() < _historyPercentages.length) {
                             return Padding(
@@ -1340,7 +1905,9 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                     horizontalInterval: 25,
                     getDrawingHorizontalLine: (value) {
                       return FlLine(
-                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+                        color: theme.colorScheme.outlineVariant.withValues(
+                          alpha: 0.3,
+                        ),
                         strokeWidth: 1,
                       );
                     },
@@ -1349,8 +1916,14 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                   borderData: FlBorderData(
                     show: true,
                     border: Border(
-                      left: BorderSide(color: theme.colorScheme.outline, width: 1),
-                      bottom: BorderSide(color: theme.colorScheme.outline, width: 1),
+                      left: BorderSide(
+                        color: theme.colorScheme.outline,
+                        width: 1,
+                      ),
+                      bottom: BorderSide(
+                        color: theme.colorScheme.outline,
+                        width: 1,
+                      ),
                     ),
                   ),
                 ),
@@ -1383,19 +1956,21 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
             Flexible(
               child: Text(
                 '$label: ',
-                style: (isPortrait ? theme.textTheme.labelSmall : theme.textTheme.bodySmall)?.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.w500,
-                ),
+                style:
+                    (isPortrait
+                            ? theme.textTheme.labelSmall
+                            : theme.textTheme.bodySmall)
+                        ?.copyWith(color: color, fontWeight: FontWeight.w500),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
             Text(
               value.toString(),
-              style: (isPortrait ? theme.textTheme.labelSmall : theme.textTheme.bodySmall)?.copyWith(
-                color: color,
-                fontWeight: FontWeight.bold,
-              ),
+              style:
+                  (isPortrait
+                          ? theme.textTheme.labelSmall
+                          : theme.textTheme.bodySmall)
+                      ?.copyWith(color: color, fontWeight: FontWeight.bold),
             ),
           ],
         ),
@@ -1403,9 +1978,3 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
     );
   }
 }
-
-
-
-
-
-
