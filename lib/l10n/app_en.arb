@@ -57,7 +57,7 @@
   "selectExportLocation": "Select Export Location",
   "packageExported": "Package exported successfully",
   "errorExportingPackage": "Error exporting package",
-  "importItems": "Import Items",
+  "importItems": "Import Items (JSON)",
   "selectImportFile": "Select Import File",
   "importFormat": "Import Format",
   "importFormatDescription": "Import items from a text file. Each line should contain an item in the following format:",
@@ -92,7 +92,7 @@
   "createFirstPackage": "Create your first language package",
   "versionLabel": "Version",
   "purchased": "Purchased",
-  "compactView": "Compact view",
+  "compactView": "compact",
   "expand": "Expand",
   "allCategories": "All Categories",
   "categoriesInPackage": "Categories in this package",
@@ -137,6 +137,9 @@
   "searchLanguage2": "Search in {language}",
   "caseSensitive": "Case sensitive",
   "knownStatus": "Known status",
+  "filterStatusAll": "all",
+  "filterStatusKnown": "known",
+  "filterStatusUnknown": "unknown",
   "allItems": "All items",
   "itemsIKnew": "Items I knew",
   "itemsIDidNotKnow": "Items I did not know",
@@ -154,7 +157,7 @@
   "ttsError": "Text-to-speech not available",
   "noItemsFound": "No items found",
   "noItemsInPackage": "No items in this package yet",
-  "clearFilters": "Clear Filters",
+  "clearFilters": "Clear",
   "itemCount": "{count} items",
   "filteredItemCount": "{filtered} of {total} items",
   "trainingRally": "Training Rally",
@@ -382,5 +385,80 @@
   "canAddExamplesManually": "You can add examples manually later",
   "databaseError": "Database error occurred",
   "checkStorageSpace": "Check available storage space",
-  "restartApp": "Try restarting the app"
+  "restartApp": "Try restarting the app",
+  "groupLabel": "Group:",
+  "amendGroups": "Amend",
+  "exportItemsJson": "Export Items (JSON)",
+  "exportItemsJsonTooltip": "Export all items as JSON file",
+  "noCategoriesInPackage": "No categories found in this package",
+  "noItemsToExport": "No items found to export",
+  "itemsExportedSuccessfully": "Successfully exported {count} items to:\n{path}",
+  "@itemsExportedSuccessfully": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "errorExportingItems": "Error exporting items",
+  "languageMismatch": "Language Mismatch",
+  "languageMismatchDescription": "The languages in the JSON file do not match the package languages:",
+  "packageLanguages": "Package: {lang1} → {lang2}",
+  "@packageLanguages": {
+    "placeholders": {
+      "lang1": {
+        "type": "String"
+      },
+      "lang2": {
+        "type": "String"
+      }
+    }
+  },
+  "jsonFileLanguages": "JSON file: {lang1} → {lang2}",
+  "@jsonFileLanguages": {
+    "placeholders": {
+      "lang1": {
+        "type": "String"
+      },
+      "lang2": {
+        "type": "String"
+      }
+    }
+  },
+  "continueImportQuestion": "Do you want to continue importing anyway?",
+  "continueImport": "Continue Import",
+  "pleaseSelectPackageGroup": "Please select a package group",
+  "customIconLabel": "Custom",
+  "defaultIconLabel": "Default",
+  "icon1Label": "Icon 1",
+  "icon2Label": "Icon 2",
+  "icon3Label": "Icon 3",
+  "customIconFile": "Custom Icon",
+  "importedIconFile": "Imported Icon",
+  "unableToReadImageFile": "Unable to read image file. Please select a valid image.",
+  "iconDimensionsTooLarge": "Icon dimensions are too large ({width}x{height}). Maximum allowed is 512x512 pixels.",
+  "@iconDimensionsTooLarge": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "iconFileTooLarge": "Icon file is too large. Maximum size is 1MB.",
+  "failedToUploadIcon": "Failed to upload icon: {error}",
+  "@failedToUploadIcon": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectValidLanguage": "Please select a valid language from the list"
 }
+

@@ -13,6 +13,7 @@ import '../../../data/repositories/category_repository.dart';
 import '../../../data/repositories/item_repository.dart';
 import '../../../data/repositories/import_export_repository.dart';
 import '../../../data/repositories/training_statistics_repository.dart';
+import '../../../data/repositories/app_settings_repository.dart';
 import '../../widgets/package_icon.dart';
 import '../../widgets/badge_widget.dart';
 import '../../providers/package_order_provider.dart';
@@ -41,6 +42,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
   final _groupRepo = LanguagePackageGroupRepository();
   final _categoryRepo = CategoryRepository();
   final _itemRepo = ItemRepository();
+  final _appSettingsRepo = AppSettingsRepository();
   late final ImportExportRepository _importExportRepo;
 
   @override
@@ -80,6 +82,9 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
       // Load all groups
       final groups = await _groupRepo.getAllGroups();
 
+      // Load saved selected group ID
+      final savedGroupId = await _appSettingsRepo.loadSelectedGroupId();
+
       setState(() {
         _groups = groups;
 
@@ -98,8 +103,19 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
             );
           }
         } else {
-          // No group selected yet, select first group by default if available
-          if (_groups.isNotEmpty) {
+          // No group selected yet, try to load from saved preference
+          if (savedGroupId != null && _groups.isNotEmpty) {
+            // Try to find the saved group
+            try {
+              _selectedGroup = _groups.firstWhere(
+                (g) => g.id == savedGroupId,
+              );
+            } catch (e) {
+              // Saved group doesn't exist anymore, select first group
+              _selectedGroup = _groups.first;
+            }
+          } else if (_groups.isNotEmpty) {
+            // No saved preference, select first group by default
             _selectedGroup = _groups.first;
           }
         }
@@ -145,6 +161,8 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
       setState(() {
         _selectedGroup = newGroup;
       });
+      // Save the selected group ID for next time
+      _appSettingsRepo.saveSelectedGroupId(newGroup.id);
       _loadPackages();
     }
   }
@@ -252,6 +270,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
   Widget _buildGroupFilter(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = AppLocalizations.of(context)!;
 
     return Container(
       padding: EdgeInsets.all(AppTheme.spacing12),
@@ -270,7 +289,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
           ),
           SizedBox(width: AppTheme.spacing8),
           Text(
-            'Group:',
+            l10n.groupLabel,
             style: theme.textTheme.titleSmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
               fontWeight: FontWeight.w600,
@@ -296,7 +315,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
           ElevatedButton.icon(
             onPressed: _openGroupAdminPage,
             icon: Icon(Icons.settings, size: 18),
-            label: Text('Amend'),
+            label: Text(l10n.amendGroups),
             style: ElevatedButton.styleFrom(
               backgroundColor: colorScheme.primaryContainer,
               foregroundColor: colorScheme.onPrimaryContainer,

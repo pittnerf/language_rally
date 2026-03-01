@@ -187,7 +187,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get errorExportingPackage => 'Hiba a csomag exportálása során';
 
   @override
-  String get importItems => 'Elemek importálása';
+  String get importItems => 'Elemek importálása (JSON)';
 
   @override
   String get selectImportFile => 'Importálandó fájl kiválasztása';
@@ -302,7 +302,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get purchased => 'Megvásárolt';
 
   @override
-  String get compactView => 'Kompakt nézet';
+  String get compactView => 'kompakt';
 
   @override
   String get expand => 'Kibontás';
@@ -455,6 +455,15 @@ class AppLocalizationsHu extends AppLocalizations {
   String get knownStatus => 'Tudás állapota';
 
   @override
+  String get filterStatusAll => 'all';
+
+  @override
+  String get filterStatusKnown => 'known';
+
+  @override
+  String get filterStatusUnknown => 'unknown';
+
+  @override
   String get allItems => 'Minden elem';
 
   @override
@@ -507,7 +516,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get noItemsInPackage => 'Még nincs elem ebben a csomagban';
 
   @override
-  String get clearFilters => 'Szűrők törlése';
+  String get clearFilters => 'Törlés';
 
   @override
   String itemCount(Object count) {
@@ -1241,4 +1250,100 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get restartApp => 'Próbáld újraindítani az alkalmazást';
+
+  @override
+  String get groupLabel => 'Csoport:';
+
+  @override
+  String get amendGroups => 'Módosítás';
+
+  @override
+  String get exportItemsJson => 'Elemek exportálása (JSON)';
+
+  @override
+  String get exportItemsJsonTooltip => 'Összes elem exportálása JSON fájlba';
+
+  @override
+  String get noCategoriesInPackage =>
+      'Nem található kategória ebben a csomagban';
+
+  @override
+  String get noItemsToExport => 'Nincs exportálható elem';
+
+  @override
+  String itemsExportedSuccessfully(int count, String path) {
+    return 'Sikeresen exportálva $count elem ide:\n$path';
+  }
+
+  @override
+  String get errorExportingItems => 'Hiba az elemek exportálása során';
+
+  @override
+  String get languageMismatch => 'Nyelvi eltérés';
+
+  @override
+  String get languageMismatchDescription =>
+      'A JSON fájlban található nyelvek nem egyeznek a csomag nyelveivel:';
+
+  @override
+  String packageLanguages(String lang1, String lang2) {
+    return 'Csomag: $lang1 → $lang2';
+  }
+
+  @override
+  String jsonFileLanguages(String lang1, String lang2) {
+    return 'JSON fájl: $lang1 → $lang2';
+  }
+
+  @override
+  String get continueImportQuestion =>
+      'Szeretnéd mindenképpen folytatni az importálást?';
+
+  @override
+  String get continueImport => 'Importálás folytatása';
+
+  @override
+  String get pleaseSelectPackageGroup => 'Kérjük válasszon csomag csoportot';
+
+  @override
+  String get customIconLabel => 'Egyéni';
+
+  @override
+  String get defaultIconLabel => 'Alapértelmezett';
+
+  @override
+  String get icon1Label => '1. ikon';
+
+  @override
+  String get icon2Label => '2. ikon';
+
+  @override
+  String get icon3Label => '3. ikon';
+
+  @override
+  String get customIconFile => 'Egyéni ikon';
+
+  @override
+  String get importedIconFile => 'Importált ikon';
+
+  @override
+  String get unableToReadImageFile =>
+      'Nem sikerült beolvasni a képfájlt. Kérjük válasszon érvényes képet.';
+
+  @override
+  String iconDimensionsTooLarge(int width, int height) {
+    return 'Az ikon mérete túl nagy (${width}x$height). Maximum megengedett: 512x512 pixel.';
+  }
+
+  @override
+  String get iconFileTooLarge => 'Az ikon fájl túl nagy. Maximum méret: 1MB.';
+
+  @override
+  String failedToUploadIcon(String error) {
+    return 'Nem sikerült feltölteni az ikont: $error';
+  }
+
+  @override
+  String get pleaseSelectValidLanguage =>
+      'Kérjük válasszon érvényes nyelvet a listából';
 }

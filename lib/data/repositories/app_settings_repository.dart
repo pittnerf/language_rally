@@ -15,6 +15,7 @@ class AppSettingsRepository {
   static const String _keyAiKnowledgeLevel = 'ai_knowledge_level';
   static const String _keyMinItemsForBadges = 'min_items_for_badges';
   static const String _keyLastTrainedPackageId = 'last_trained_package_id';
+  static const String _keySelectedGroupId = 'selected_group_id';
 
   /// Load app settings from SharedPreferences
   Future<AppSettings> loadSettings() async {
@@ -114,6 +115,22 @@ class AppSettingsRepository {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_keyDeeplApiKey);
     await prefs.remove(_keyOpenaiApiKey);
+  }
+
+  /// Save selected group ID for package list filter
+  Future<void> saveSelectedGroupId(String? groupId) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (groupId == null || groupId.isEmpty) {
+      await prefs.remove(_keySelectedGroupId);
+    } else {
+      await prefs.setString(_keySelectedGroupId, groupId);
+    }
+  }
+
+  /// Load selected group ID for package list filter
+  Future<String?> loadSelectedGroupId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keySelectedGroupId);
   }
 }
 

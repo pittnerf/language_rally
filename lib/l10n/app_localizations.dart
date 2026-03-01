@@ -449,7 +449,7 @@ abstract class AppLocalizations {
   /// No description provided for @importItems.
   ///
   /// In en, this message translates to:
-  /// **'Import Items'**
+  /// **'Import Items (JSON)'**
   String get importItems;
 
   /// No description provided for @selectImportFile.
@@ -659,7 +659,7 @@ abstract class AppLocalizations {
   /// No description provided for @compactView.
   ///
   /// In en, this message translates to:
-  /// **'Compact view'**
+  /// **'compact'**
   String get compactView;
 
   /// No description provided for @expand.
@@ -926,6 +926,24 @@ abstract class AppLocalizations {
   /// **'Known status'**
   String get knownStatus;
 
+  /// No description provided for @filterStatusAll.
+  ///
+  /// In en, this message translates to:
+  /// **'all'**
+  String get filterStatusAll;
+
+  /// No description provided for @filterStatusKnown.
+  ///
+  /// In en, this message translates to:
+  /// **'known'**
+  String get filterStatusKnown;
+
+  /// No description provided for @filterStatusUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'unknown'**
+  String get filterStatusUnknown;
+
   /// No description provided for @allItems.
   ///
   /// In en, this message translates to:
@@ -1031,7 +1049,7 @@ abstract class AppLocalizations {
   /// No description provided for @clearFilters.
   ///
   /// In en, this message translates to:
-  /// **'Clear Filters'**
+  /// **'Clear'**
   String get clearFilters;
 
   /// No description provided for @itemCount.
@@ -2359,6 +2377,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Try restarting the app'**
   String get restartApp;
+
+  /// No description provided for @groupLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Group:'**
+  String get groupLabel;
+
+  /// No description provided for @amendGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Amend'**
+  String get amendGroups;
+
+  /// No description provided for @exportItemsJson.
+  ///
+  /// In en, this message translates to:
+  /// **'Export Items (JSON)'**
+  String get exportItemsJson;
+
+  /// No description provided for @exportItemsJsonTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Export all items as JSON file'**
+  String get exportItemsJsonTooltip;
+
+  /// No description provided for @noCategoriesInPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'No categories found in this package'**
+  String get noCategoriesInPackage;
+
+  /// No description provided for @noItemsToExport.
+  ///
+  /// In en, this message translates to:
+  /// **'No items found to export'**
+  String get noItemsToExport;
+
+  /// No description provided for @itemsExportedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully exported {count} items to:\n{path}'**
+  String itemsExportedSuccessfully(int count, String path);
+
+  /// No description provided for @errorExportingItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Error exporting items'**
+  String get errorExportingItems;
+
+  /// No description provided for @languageMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Language Mismatch'**
+  String get languageMismatch;
+
+  /// No description provided for @languageMismatchDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'The languages in the JSON file do not match the package languages:'**
+  String get languageMismatchDescription;
+
+  /// No description provided for @packageLanguages.
+  ///
+  /// In en, this message translates to:
+  /// **'Package: {lang1} → {lang2}'**
+  String packageLanguages(String lang1, String lang2);
+
+  /// No description provided for @jsonFileLanguages.
+  ///
+  /// In en, this message translates to:
+  /// **'JSON file: {lang1} → {lang2}'**
+  String jsonFileLanguages(String lang1, String lang2);
+
+  /// No description provided for @continueImportQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to continue importing anyway?'**
+  String get continueImportQuestion;
+
+  /// No description provided for @continueImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue Import'**
+  String get continueImport;
+
+  /// No description provided for @pleaseSelectPackageGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a package group'**
+  String get pleaseSelectPackageGroup;
+
+  /// No description provided for @customIconLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get customIconLabel;
+
+  /// No description provided for @defaultIconLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get defaultIconLabel;
+
+  /// No description provided for @icon1Label.
+  ///
+  /// In en, this message translates to:
+  /// **'Icon 1'**
+  String get icon1Label;
+
+  /// No description provided for @icon2Label.
+  ///
+  /// In en, this message translates to:
+  /// **'Icon 2'**
+  String get icon2Label;
+
+  /// No description provided for @icon3Label.
+  ///
+  /// In en, this message translates to:
+  /// **'Icon 3'**
+  String get icon3Label;
+
+  /// No description provided for @customIconFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Icon'**
+  String get customIconFile;
+
+  /// No description provided for @importedIconFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Imported Icon'**
+  String get importedIconFile;
+
+  /// No description provided for @unableToReadImageFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to read image file. Please select a valid image.'**
+  String get unableToReadImageFile;
+
+  /// No description provided for @iconDimensionsTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Icon dimensions are too large ({width}x{height}). Maximum allowed is 512x512 pixels.'**
+  String iconDimensionsTooLarge(int width, int height);
+
+  /// No description provided for @iconFileTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Icon file is too large. Maximum size is 1MB.'**
+  String get iconFileTooLarge;
+
+  /// No description provided for @failedToUploadIcon.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload icon: {error}'**
+  String failedToUploadIcon(String error);
+
+  /// No description provided for @pleaseSelectValidLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a valid language from the list'**
+  String get pleaseSelectValidLanguage;
 }
 
 class _AppLocalizationsDelegate

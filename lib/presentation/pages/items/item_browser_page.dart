@@ -18,7 +18,6 @@
 // - Uses theme system (no hardcoded colors/fonts)
 //
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
@@ -36,10 +35,7 @@ import 'item_edit_page.dart';
 class ItemBrowserPage extends ConsumerStatefulWidget {
   final LanguagePackage package;
 
-  const ItemBrowserPage({
-    super.key,
-    required this.package,
-  });
+  const ItemBrowserPage({super.key, required this.package});
 
   @override
   ConsumerState<ItemBrowserPage> createState() => _ItemBrowserPageState();
@@ -60,9 +56,10 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
   final _language2Controller = TextEditingController();
   bool _caseSensitive = false;
   bool _onlyImportant = false;
-  String _knownStatus = 'all'; // 'all', 'known', 'unknown'
+  String _knownStatus = ''; // Will be initialized in initState with localization
   List<String> _selectedCategoryIds = []; // Multi-select category filter
   bool _isFilterPanelExpanded = false; // Start collapsed to save screen space
+  bool _isCompactView = false; // Compact view shows only language1.text
 
   @override
   void initState() {
@@ -80,6 +77,16 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Initialize filter status with localized value (only once)
+    if (_knownStatus.isEmpty) {
+      final l10n = AppLocalizations.of(context)!;
+      _knownStatus = l10n.filterStatusAll;
+    }
+  }
+
+  @override
   void dispose() {
     _ttsService.stop();
     _language1Controller.dispose();
@@ -91,7 +98,15 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
     setState(() => _isLoading = true);
     try {
       final items = await _itemRepo.getItemsForPackage(widget.package.id);
-      final categories = await _categoryRepo.getCategoriesForPackage(widget.package.id);
+      final categories = await _categoryRepo.getCategoriesForPackage(
+        widget.package.id,
+      );
+
+      // Sort items by language1.text in ascending order
+      items.sort((a, b) =>
+        a.language1Data.text.toLowerCase().compareTo(b.language1Data.text.toLowerCase())
+      );
+
       setState(() {
         _allItems = items;
         _filteredItems = items;
@@ -107,7 +122,11 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
     }
   }
 
-  void _applyFilters({bool clearSelectionIfFiltered = true, bool autoSelectFirst = false}) {
+  void _applyFilters({
+    bool clearSelectionIfFiltered = true,
+    bool autoSelectFirst = false,
+  }) {
+    final l10n = AppLocalizations.of(context)!;
     final query1 = _language1Controller.text;
     final query2 = _language2Controller.text;
 
@@ -135,8 +154,8 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
         if (_onlyImportant && !item.isImportant) return false;
 
         // Apply known status filter
-        if (_knownStatus == 'known' && !item.isKnown) return false;
-        if (_knownStatus == 'unknown' && item.isKnown) return false;
+        if (_knownStatus == l10n.filterStatusKnown && !item.isKnown) return false;
+        if (_knownStatus == l10n.filterStatusUnknown && item.isKnown) return false;
 
         // Apply category filter (if any categories selected)
         if (_selectedCategoryIds.isNotEmpty) {
@@ -150,8 +169,15 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
         return true;
       }).toList();
 
+      // Sort by language1.text in ascending order
+      _filteredItems.sort((a, b) =>
+        a.language1Data.text.toLowerCase().compareTo(b.language1Data.text.toLowerCase())
+      );
+
       // Clear selected item if it's no longer in the filtered results (only when filter changes)
-      if (clearSelectionIfFiltered && _selectedItem != null && !_filteredItems.contains(_selectedItem)) {
+      if (clearSelectionIfFiltered &&
+          _selectedItem != null &&
+          !_filteredItems.contains(_selectedItem)) {
         _selectedItem = null;
       }
 
@@ -163,15 +189,80 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
   }
 
   void _clearFilters() {
+    final l10n = AppLocalizations.of(context)!;
     setState(() {
       _language1Controller.clear();
       _language2Controller.clear();
       _caseSensitive = false;
       _onlyImportant = false;
-      _knownStatus = 'all';
+      _knownStatus = l10n.filterStatusAll;
       _selectedCategoryIds = []; // Clear category filter
       _applyFilters(autoSelectFirst: true);
     });
+  }
+
+  /// Toggle favourite status for an item
+  Future<void> _toggleFavourite(Item item) async {
+    try {
+      final updatedItem = item.copyWith(isFavourite: !item.isFavourite);
+      await _itemRepo.updateItem(updatedItem);
+
+      // Update local state
+      final index = _allItems.indexWhere((i) => i.id == item.id);
+      if (index != -1) {
+        setState(() {
+          _allItems[index] = updatedItem;
+          if (_selectedItem?.id == item.id) {
+            _selectedItem = updatedItem;
+          }
+          _applyFilters(
+            clearSelectionIfFiltered: false,
+            autoSelectFirst: false,
+          );
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error toggling favourite: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
+  /// Toggle important status for an item
+  Future<void> _toggleImportant(Item item) async {
+    try {
+      final updatedItem = item.copyWith(isImportant: !item.isImportant);
+      await _itemRepo.updateItem(updatedItem);
+
+      // Update local state
+      final index = _allItems.indexWhere((i) => i.id == item.id);
+      if (index != -1) {
+        setState(() {
+          _allItems[index] = updatedItem;
+          if (_selectedItem?.id == item.id) {
+            _selectedItem = updatedItem;
+          }
+          _applyFilters(
+            clearSelectionIfFiltered: false,
+            autoSelectFirst: false,
+          );
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error toggling important: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
   }
 
   void _pronounce(String text, String languageCode) async {
@@ -206,7 +297,8 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
 
     return Scaffold(
       // appBar: AppBar(
@@ -229,51 +321,28 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                     ],
                   ),
           ),
-          // Add back button since AppBar is hidden
-          Positioned(
-            top: AppTheme.spacing8,
-            left: AppTheme.spacing8,
-            child: SafeArea(
-              child: Material(
-                elevation: 4,
-                borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                color: theme.colorScheme.surface,
-                child: InkWell(
-                  onTap: () => Navigator.of(context).pop(),
-                  borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppTheme.spacing8),
-                    child: Icon(
-                      Icons.arrow_back,
-                      color: theme.colorScheme.onSurface,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
+
         ],
       ),
     );
   }
 
   Widget _buildFilterPanel(AppLocalizations l10n, ThemeData theme) {
-    final isPortrait = MediaQuery.of(context).orientation == Orientation.portrait;
-    final hasActiveFilters = _language1Controller.text.isNotEmpty ||
+    final isPortrait =
+        MediaQuery.of(context).orientation == Orientation.portrait;
+    final hasActiveFilters =
+        _language1Controller.text.isNotEmpty ||
         _language2Controller.text.isNotEmpty ||
         _caseSensitive ||
         _onlyImportant ||
-        _knownStatus != 'all' ||
+        _knownStatus != l10n.filterStatusAll ||
         _selectedCategoryIds.isNotEmpty;
 
     return Container(
       decoration: BoxDecoration(
         color: theme.colorScheme.primaryContainer.withValues(alpha: 0.1),
         border: Border(
-          bottom: BorderSide(
-            color: theme.colorScheme.outlineVariant,
-            width: 1,
-          ),
+          bottom: BorderSide(color: theme.colorScheme.outlineVariant, width: 1),
         ),
       ),
       child: Column(
@@ -287,11 +356,28 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
               });
             },
             child: Padding(
-              padding: const EdgeInsets.all(AppTheme.spacing12),
+              padding: const EdgeInsets.all(AppTheme.spacing8),
               child: Row(
                 children: [
+                  // Back button
+                  InkWell(
+                    onTap: () => Navigator.of(context).pop(),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                    child: Padding(
+                      padding: const EdgeInsets.all(AppTheme.spacing4),
+                      child: Icon(
+                        Icons.arrow_back,
+                        size: 24,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppTheme.spacing8),
+
                   Icon(
-                    _isFilterPanelExpanded ? Icons.expand_less : Icons.expand_more,
+                    _isFilterPanelExpanded
+                        ? Icons.expand_less
+                        : Icons.expand_more,
                     size: 24,
                     color: theme.colorScheme.primary,
                   ),
@@ -317,7 +403,9 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                       ),
                       decoration: BoxDecoration(
                         color: theme.colorScheme.primary,
-                        borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                        borderRadius: BorderRadius.circular(
+                          AppTheme.radiusSmall,
+                        ),
                       ),
                       child: Text(
                         '●',
@@ -327,32 +415,60 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                       ),
                     ),
                   const Spacer(),
+                  // Compact view checkbox
+                  InkWell(
+                    onTap: () {
+                      setState(() {
+                        _isCompactView = !_isCompactView;
+                      });
+                    },
+                    borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppTheme.spacing4,
+                        vertical: AppTheme.spacing4,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: Checkbox(
+                              value: _isCompactView,
+                              onChanged: (value) {
+                                setState(() {
+                                  _isCompactView = value ?? false;
+                                });
+                              },
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                              visualDensity: VisualDensity.compact,
+                            ),
+                          ),
+                          const SizedBox(width: AppTheme.spacing4),
+                          Text(
+                            l10n.compactView,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: AppTheme.spacing4),
                   Text(
                     _filteredItems.length == _allItems.length
                         ? l10n.itemCount(_allItems.length)
-                        : l10n.filteredItemCount(_filteredItems.length, _allItems.length),
+                        : l10n.filteredItemCount(
+                            _filteredItems.length,
+                            _allItems.length,
+                          ),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
-                  if (_isFilterPanelExpanded) ...[
-                    const SizedBox(width: AppTheme.spacing8),
-                    TextButton(
-                      onPressed: _clearFilters,
-                      style: TextButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppTheme.spacing8,
-                          vertical: AppTheme.spacing4,
-                        ),
-                        minimumSize: Size.zero,
-                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      child: Text(
-                        l10n.clearFilters,
-                        style: theme.textTheme.bodySmall,
-                      ),
-                    ),
-                  ],
                 ],
               ),
             ),
@@ -362,9 +478,9 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
             firstChild: const SizedBox.shrink(),
             secondChild: Padding(
               padding: const EdgeInsets.only(
-                left: AppTheme.spacing12,
-                right: AppTheme.spacing12,
-                bottom: AppTheme.spacing12,
+                left: AppTheme.spacing8,
+                right: AppTheme.spacing8,
+                bottom: AppTheme.spacing8,
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -377,7 +493,9 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                           controller: _language1Controller,
                           style: theme.textTheme.bodySmall,
                           decoration: InputDecoration(
-                            labelText: l10n.searchLanguage1(widget.package.languageName1),
+                            labelText: l10n.searchLanguage1(
+                              widget.package.languageName1,
+                            ),
                             labelStyle: theme.textTheme.bodySmall,
                             prefixIcon: const Icon(Icons.search, size: 18),
                             suffixIcon: _language1Controller.text.isNotEmpty
@@ -390,18 +508,20 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                                 : null,
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: AppTheme.spacing8,
-                              vertical: AppTheme.spacing8,
+                              vertical: AppTheme.spacing4,
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(width: AppTheme.spacing8),
+                      //const SizedBox(width: AppTheme.spacing8),
                       Expanded(
                         child: TextField(
                           controller: _language2Controller,
                           style: theme.textTheme.bodySmall,
                           decoration: InputDecoration(
-                            labelText: l10n.searchLanguage2(widget.package.languageName2),
+                            labelText: l10n.searchLanguage2(
+                              widget.package.languageName2,
+                            ),
                             labelStyle: theme.textTheme.bodySmall,
                             prefixIcon: const Icon(Icons.search, size: 18),
                             suffixIcon: _language2Controller.text.isNotEmpty
@@ -414,14 +534,14 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                                 : null,
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: AppTheme.spacing8,
-                              vertical: AppTheme.spacing8,
+                              vertical: AppTheme.spacing4,
                             ),
                           ),
                         ),
                       ),
                     ],
                   ),
-                  const SizedBox(height: AppTheme.spacing8),
+                  //const SizedBox(height: AppTheme.spacing8),
                   // Filter options
                   if (isPortrait) ...[
                     // Portrait mode: FilterChips in first row
@@ -429,7 +549,10 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         FilterChip(
-                          label: Text(l10n.caseSensitive, style: theme.textTheme.bodySmall),
+                          label: Text(
+                            l10n.caseSensitive,
+                            style: theme.textTheme.bodySmall,
+                          ),
                           selected: _caseSensitive,
                           onSelected: (value) {
                             setState(() {
@@ -438,9 +561,12 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                             });
                           },
                         ),
-                        const SizedBox(width: AppTheme.spacing8),
+                        //const SizedBox(width: AppTheme.spacing8),
                         FilterChip(
-                          label: Text(l10n.onlyImportant, style: theme.textTheme.bodySmall),
+                          label: Text(
+                            l10n.onlyImportant,
+                            style: theme.textTheme.bodySmall,
+                          ),
                           selected: _onlyImportant,
                           onSelected: (value) {
                             setState(() {
@@ -458,9 +584,27 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                         DropdownButton<String>(
                           value: _knownStatus,
                           items: [
-                            DropdownMenuItem(value: 'all', child: Text(l10n.allItems, style: theme.textTheme.bodySmall)),
-                            DropdownMenuItem(value: 'known', child: Text(l10n.itemsIKnew, style: theme.textTheme.bodySmall)),
-                            DropdownMenuItem(value: 'unknown', child: Text(l10n.itemsIDidNotKnow, style: theme.textTheme.bodySmall)),
+                            DropdownMenuItem(
+                              value: l10n.filterStatusAll,
+                              child: Text(
+                                l10n.allItems,
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: l10n.filterStatusKnown,
+                              child: Text(
+                                l10n.itemsIKnew,
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: l10n.filterStatusUnknown,
+                              child: Text(
+                                l10n.itemsIDidNotKnow,
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ),
                           ],
                           onChanged: widget.package.isReadonly
                               ? null
@@ -473,6 +617,31 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                                   }
                                 },
                         ),
+                        //const SizedBox(width: AppTheme.spacing8),
+                        // Category multiselect filter
+                        _buildCategoryMultiSelectButton(theme),
+                      ],
+                    ),
+                    const SizedBox(height: AppTheme.spacing8),
+                    // Clear filters button in separate row to prevent overlap
+                    Row(
+                      children: [
+                        TextButton.icon(
+                          onPressed: _clearFilters,
+                          icon: const Icon(Icons.clear_all, size: 16),
+                          label: Text(
+                            l10n.clearFilters,
+                            style: theme.textTheme.bodySmall,
+                          ),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppTheme.spacing8,
+                              vertical: AppTheme.spacing4,
+                            ),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                        ),
                       ],
                     ),
                   ] else
@@ -481,7 +650,10 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         FilterChip(
-                          label: Text(l10n.caseSensitive, style: theme.textTheme.bodySmall),
+                          label: Text(
+                            l10n.caseSensitive,
+                            style: theme.textTheme.bodySmall,
+                          ),
                           selected: _caseSensitive,
                           onSelected: (value) {
                             setState(() {
@@ -492,7 +664,10 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                         ),
                         const SizedBox(width: AppTheme.spacing8),
                         FilterChip(
-                          label: Text(l10n.onlyImportant, style: theme.textTheme.bodySmall),
+                          label: Text(
+                            l10n.onlyImportant,
+                            style: theme.textTheme.bodySmall,
+                          ),
                           selected: _onlyImportant,
                           onSelected: (value) {
                             setState(() {
@@ -505,9 +680,27 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                         DropdownButton<String>(
                           value: _knownStatus,
                           items: [
-                            DropdownMenuItem(value: 'all', child: Text(l10n.allItems, style: theme.textTheme.bodySmall)),
-                            DropdownMenuItem(value: 'known', child: Text(l10n.itemsIKnew, style: theme.textTheme.bodySmall)),
-                            DropdownMenuItem(value: 'unknown', child: Text(l10n.itemsIDidNotKnow, style: theme.textTheme.bodySmall)),
+                            DropdownMenuItem(
+                              value: l10n.filterStatusAll,
+                              child: Text(
+                                l10n.allItems,
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: l10n.filterStatusKnown,
+                              child: Text(
+                                l10n.itemsIKnew,
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ),
+                            DropdownMenuItem(
+                              value: l10n.filterStatusUnknown,
+                              child: Text(
+                                l10n.itemsIDidNotKnow,
+                                style: theme.textTheme.bodySmall,
+                              ),
+                            ),
                           ],
                           onChanged: widget.package.isReadonly
                               ? null
@@ -523,6 +716,24 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                         const SizedBox(width: AppTheme.spacing8),
                         // Category multiselect filter
                         _buildCategoryMultiSelectButton(theme),
+                        const SizedBox(width: AppTheme.spacing8),
+                        // Clear filters button
+                        TextButton.icon(
+                          onPressed: _clearFilters,
+                          icon: const Icon(Icons.clear_all, size: 16),
+                          label: Text(
+                            l10n.clearFilters,
+                            style: theme.textTheme.bodySmall,
+                          ),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppTheme.spacing8,
+                              vertical: AppTheme.spacing4,
+                            ),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                        ),
                       ],
                     ),
                 ],
@@ -539,14 +750,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
   }
 
   Widget _buildPortraitLayout(AppLocalizations l10n, ThemeData theme) {
-    return Stack(
-      children: [
-        _buildItemList(l10n, theme),
-        // Floating Add button (only for non-readonly packages)
-        if (!widget.package.isReadonly)
-          _buildPortraitFloatingButton(theme, l10n),
-      ],
-    );
+    return _buildItemList(l10n, theme);
   }
 
   Widget _buildLandscapeLayout(AppLocalizations l10n, ThemeData theme) {
@@ -556,17 +760,12 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
 
     return Row(
       children: [
-        Expanded(
-          flex: 1,
-          child: _buildItemList(l10n, theme),
-        ),
-        Container(
-          width: 1,
-          color: theme.colorScheme.outlineVariant,
-        ),
+        Expanded(flex: 1, child: _buildItemList(l10n, theme)),
+        Container(width: 1, color: theme.colorScheme.outlineVariant),
         Expanded(
           flex: 1,
           child: Stack(
+            clipBehavior: Clip.none,
             children: [
               // Item details or placeholder
               _selectedItem == null
@@ -579,11 +778,11 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                       ),
                     )
                   : isTablet
-                      ? _buildItemDetails(l10n, theme, _selectedItem!)
-                      : _buildItemDetailsCompact(l10n, theme, _selectedItem!),
+                  ? _buildItemDetails(l10n, theme, _selectedItem!)
+                  : _buildItemDetailsCompact(l10n, theme, _selectedItem!),
 
               // Floating action buttons (only for non-readonly packages)
-              if (!widget.package.isReadonly)
+              if (!widget.package.isReadonly && _selectedItem != null)
                 _buildLandscapeFloatingButtons(theme, l10n),
             ],
           ),
@@ -691,17 +890,20 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                             isSelected
                                 ? theme.colorScheme.onPrimaryContainer
                                 : theme.colorScheme.onSurface,
-
                           ),
-
                         ),
                         const SizedBox(width: 4),
                         InkWell(
                           onTap: () {
-                            final preText = item.language1Data.preItem?.trim() ?? '';
+                            final preText =
+                                item.language1Data.preItem?.trim() ?? '';
                             final mainText = item.language1Data.text;
-                            final fullText = '${preText.isNotEmpty ? "$preText " : ""}$mainText';
-                            _ttsService.speak(fullText, item.language1Data.languageCode);
+                            final fullText =
+                                '${preText.isNotEmpty ? "$preText " : ""}$mainText';
+                            _ttsService.speak(
+                              fullText,
+                              item.language1Data.languageCode,
+                            );
                           },
                           borderRadius: BorderRadius.circular(4),
                           child: Padding(
@@ -717,75 +919,63 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 1),
-                    // Language 2 with speaker icon
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: _buildLanguageText(
-                            theme,
-                            item.language2Data,
-                            isSelected
-                                ? theme.colorScheme.onPrimaryContainer
-                                : theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        InkWell(
-                          onTap: () {
-                            final preText = item.language2Data.preItem?.trim() ?? '';
-                            final mainText = item.language2Data.text;
-                            final fullText = '${preText.isNotEmpty ? "$preText " : ""}$mainText';
-                            _ttsService.speak(fullText, item.language2Data.languageCode);
-                          },
-                          borderRadius: BorderRadius.circular(4),
-                          child: Padding(
-                            padding: const EdgeInsets.all(4),
-                            child: Icon(
-                              Icons.volume_up,
-                              size: 16,
-                              color: isSelected
+                    if (!_isCompactView) ...[
+                      const SizedBox(height: 1),
+                      // Language 2 with speaker icon
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: _buildLanguageText(
+                              theme,
+                              item.language2Data,
+                              isSelected
                                   ? theme.colorScheme.onPrimaryContainer
-                                  : theme.colorScheme.primary,
+                                  : theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
-                        ),
-                      ],
-                    ),
+                          const SizedBox(width: 4),
+                          InkWell(
+                            onTap: () {
+                              final preText =
+                                  item.language2Data.preItem?.trim() ?? '';
+                              final mainText = item.language2Data.text;
+                              final fullText =
+                                  '${preText.isNotEmpty ? "$preText " : ""}$mainText';
+                              _ttsService.speak(
+                                fullText,
+                                item.language2Data.languageCode,
+                              );
+                            },
+                            borderRadius: BorderRadius.circular(4),
+                            child: Padding(
+                              padding: const EdgeInsets.all(4),
+                              child: Icon(
+                                Icons.volume_up,
+                                size: 16,
+                                color: isSelected
+                                    ? theme.colorScheme.onPrimaryContainer
+                                    : theme.colorScheme.primary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),
-              const SizedBox(width: AppTheme.spacing8),
+              //const SizedBox(width: AppTheme.spacing8),
               // Status icons
               Column(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (item.isKnown && item.dontKnowCounter == 0)
-                    Icon(
-                      Icons.check_circle,
-                      size: 18,
-                      color: Colors.green,
-                    ),
+                    Icon(Icons.check_circle, size: 18, color: Colors.green),
                   if (!item.isKnown || item.dontKnowCounter > 0)
-                    Icon(
-                      Icons.error,
-                      size: 18,
-                      color: Colors.red,
-                    ),
-                  if (item.isFavourite)
-                    Icon(
-                      Icons.star,
-                      size: 18,
-                      color: theme.colorScheme.tertiary,
-                    ),
-                  if (item.isImportant)
-                    Icon(
-                      Icons.bookmark,
-                      size: 18,
-                      color: theme.colorScheme.secondary,
-                    ),
+                    Icon(Icons.error, size: 18, color: Colors.red),
+
                 ],
               ),
             ],
@@ -795,7 +985,11 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
     );
   }
 
-  Widget _buildLanguageText(ThemeData theme, dynamic languageData, Color color) {
+  Widget _buildLanguageText(
+    ThemeData theme,
+    dynamic languageData,
+    Color color,
+  ) {
     final preItem = languageData.preItem?.trim() ?? '';
     final text = languageData.text;
     final postItem = languageData.postItem?.trim() ?? '';
@@ -815,7 +1009,11 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
     );
   }
 
-  void _showItemDetailsDialog(AppLocalizations l10n, ThemeData theme, Item item) {
+  void _showItemDetailsDialog(
+    AppLocalizations l10n,
+    ThemeData theme,
+    Item item,
+  ) {
     showDialog(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
@@ -828,7 +1026,12 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
           return Dialog(
             child: Container(
               constraints: const BoxConstraints(maxWidth: 600, maxHeight: 800),
-              child: _buildItemDetailsForDialog(l10n, theme, currentItem, setDialogState),
+              child: _buildItemDetailsForDialog(
+                l10n,
+                theme,
+                currentItem,
+                setDialogState,
+              ),
             ),
           );
         },
@@ -837,176 +1040,218 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
   }
 
   // Separate method for dialog to ensure proper context handling
-  Widget _buildItemDetailsForDialog(AppLocalizations l10n, ThemeData theme, Item item, StateSetter setDialogState) {
+  Widget _buildItemDetailsForDialog(
+    AppLocalizations l10n,
+    ThemeData theme,
+    Item item,
+    StateSetter setDialogState,
+  ) {
     // Helper to reduce font size by 25%
     TextStyle? reduceFontSize(TextStyle? style) {
       if (style == null) return null;
-      return style.copyWith(
-        fontSize: (style.fontSize ?? 14) * 0.75,
-      );
+      return style.copyWith(fontSize: (style.fontSize ?? 14) * 0.75);
     }
 
     return Stack(
       children: [
         SingleChildScrollView(
-      padding: const EdgeInsets.all(AppTheme.spacing12),
-      physics: const AlwaysScrollableScrollPhysics(),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Title
-          Text(
-            l10n.itemDetails,
-            style: reduceFontSize(theme.textTheme.headlineSmall),
-          ),
-          const SizedBox(height: AppTheme.spacing8),
-
-          // Language 1
-          _buildLanguageSectionForDialog(
-            l10n,
-            theme,
-            widget.package.languageName1,
-            item.language1Data,
-            item.language1Data.languageCode,
-            reduceFontSize,
-          ),
-          const SizedBox(height: AppTheme.spacing8),
-
-          // Language 2
-          _buildLanguageSectionForDialog(
-            l10n,
-            theme,
-            widget.package.languageName2,
-            item.language2Data,
-            item.language2Data.languageCode,
-            reduceFontSize,
-          ),
-          const SizedBox(height: AppTheme.spacing8),
-
-          // Status indicators
-          Wrap(
-            spacing: AppTheme.spacing8,
-            runSpacing: AppTheme.spacing8,
+          padding: const EdgeInsets.all(AppTheme.spacing8),
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (item.isKnown && item.dontKnowCounter == 0)
-                Chip(
-                  avatar: Icon(
-                    Icons.check_circle,
-                    size: 15, // 25% smaller than 20
-                    color: Colors.green,
-                  ),
-                  label: Text(
-                    l10n.known,
-                    style: reduceFontSize(theme.textTheme.bodyMedium),
-                  ),
-                ),
-              if (!item.isKnown || item.dontKnowCounter > 0)
-                Chip(
-                  avatar: Icon(
-                    Icons.error,
-                    size: 15, // 25% smaller than 20
-                    color: Colors.red,
-                  ),
-                  label: Text(
-                    '${item.dontKnowCounter} until learned',
-                    style: reduceFontSize(theme.textTheme.bodyMedium),
-                  ),
-                  backgroundColor: theme.colorScheme.errorContainer,
-                ),
-              if (item.isFavourite)
-                Chip(
-                  avatar: Icon(
-                    Icons.star,
-                    size: 15, // 25% smaller than 20
-                    color: theme.colorScheme.tertiary,
-                  ),
-                  label: Text(
-                    l10n.favourite,
-                    style: reduceFontSize(theme.textTheme.bodyMedium),
-                  ),
-                ),
-              if (item.isImportant)
-                Chip(
-                  avatar: Icon(
-                    Icons.bookmark,
-                    size: 15, // 25% smaller than 20
-                    color: theme.colorScheme.secondary,
-                  ),
-                  label: Text(
-                    l10n.important,
-                    style: reduceFontSize(theme.textTheme.bodyMedium),
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: AppTheme.spacing8),
-
-          // Examples
-          Text(
-            l10n.examples,
-            style: reduceFontSize(theme.textTheme.titleMedium)?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.primary,
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacing8),
-          if (item.examples.isEmpty)
-            Text(
-              l10n.noExamples,
-              style: reduceFontSize(theme.textTheme.bodySmall)?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-                fontStyle: FontStyle.italic,
+              // Title
+              Text(
+                l10n.itemDetails,
+                style: reduceFontSize(theme.textTheme.headlineSmall),
               ),
-            )
-          else
-            ...item.examples.map((example) {
-              final hasLanguage2 = example.textLanguage2.trim().isNotEmpty;
-              return Padding(
-                padding: const EdgeInsets.only(bottom: AppTheme.spacing8),
-                child: Card(
-                  elevation: 1,
-                  color: theme.colorScheme.surfaceContainerHighest,
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppTheme.spacing12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (example.textLanguage1.trim().isNotEmpty)
-                          Text(
-                            example.textLanguage1,
-                            style: reduceFontSize(theme.textTheme.bodyMedium),
-                          ),
-                        if (hasLanguage2) ...[
-                          const SizedBox(height: AppTheme.spacing8),
-                          Divider(
-                            height: 1,
-                            color: theme.colorScheme.outlineVariant,
-                          ),
-                          const SizedBox(height: AppTheme.spacing8),
-                          Text(
-                            example.textLanguage2,
-                            style: reduceFontSize(theme.textTheme.bodyMedium)?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ],
+              const SizedBox(height: AppTheme.spacing4),
+
+              // Language 1
+              _buildLanguageSectionForDialog(
+                l10n,
+                theme,
+                widget.package.languageName1,
+                item.language1Data,
+                item.language1Data.languageCode,
+                reduceFontSize,
+              ),
+              const SizedBox(height: AppTheme.spacing4),
+
+              // Language 2
+              _buildLanguageSectionForDialog(
+                l10n,
+                theme,
+                widget.package.languageName2,
+                item.language2Data,
+                item.language2Data.languageCode,
+                reduceFontSize,
+              ),
+              const SizedBox(height: AppTheme.spacing8),
+
+              // Status indicators
+              Wrap(
+                spacing: AppTheme.spacing8,
+                runSpacing: AppTheme.spacing8,
+                children: [
+                  if (item.isKnown && item.dontKnowCounter == 0)
+                    Chip(
+                      avatar: Icon(
+                        Icons.check_circle,
+                        size: 15, // 25% smaller than 20
+                        color: Colors.green,
+                      ),
+                      label: Text(
+                        l10n.known,
+                        style: reduceFontSize(theme.textTheme.bodyMedium),
+                      ),
+                    ),
+                  if (!item.isKnown || item.dontKnowCounter > 0)
+                    Chip(
+                      avatar: Icon(
+                        Icons.error,
+                        size: 15, // 25% smaller than 20
+                        color: Colors.red,
+                      ),
+                      label: Text(
+                        '${item.dontKnowCounter} until learned',
+                        style: reduceFontSize(theme.textTheme.bodyMedium),
+                      ),
+                      backgroundColor: theme.colorScheme.errorContainer,
+                    ),
+                  // Favourite - Interactive (clickable)
+                  InkWell(
+                    onTap: widget.package.isReadonly
+                        ? null
+                        : () async {
+                            await _toggleFavourite(item);
+                            setDialogState(() {});
+                          },
+                    borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                    child: Chip(
+                      avatar: Icon(
+                        item.isFavourite ? Icons.star : Icons.star_outline,
+                        size: 15, // 25% smaller than 20
+                        color: item.isFavourite
+                            ? theme.colorScheme.tertiary
+                            : theme.colorScheme.onSurfaceVariant,
+                      ),
+                      label: Text(
+                        l10n.favourite,
+                        style: reduceFontSize(theme.textTheme.bodyMedium),
+                      ),
+                      backgroundColor: item.isFavourite
+                          ? theme.colorScheme.tertiaryContainer.withValues(alpha: 0.3)
+                          : null,
                     ),
                   ),
+                  // Important - Interactive (clickable)
+                  InkWell(
+                    onTap: widget.package.isReadonly
+                        ? null
+                        : () async {
+                            await _toggleImportant(item);
+                            setDialogState(() {});
+                          },
+                    borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                    child: Chip(
+                      avatar: Icon(
+                        item.isImportant ? Icons.bookmark : Icons.bookmark_border,
+                        size: 15, // 25% smaller than 20
+                        color: item.isImportant
+                            ? theme.colorScheme.secondary
+                            : theme.colorScheme.onSurfaceVariant,
+                      ),
+                      label: Text(
+                        l10n.important,
+                        style: reduceFontSize(theme.textTheme.bodyMedium),
+                      ),
+                      backgroundColor: item.isImportant
+                          ? theme.colorScheme.secondaryContainer.withValues(alpha: 0.3)
+                          : null,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppTheme.spacing8),
+
+              // Examples
+              Text(
+                l10n.examples,
+                style: reduceFontSize(theme.textTheme.titleMedium)?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.primary,
                 ),
-              );
-            }),
+              ),
+              const SizedBox(height: AppTheme.spacing8),
+              if (item.examples.isEmpty)
+                Text(
+                  l10n.noExamples,
+                  style: reduceFontSize(theme.textTheme.bodySmall)?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontStyle: FontStyle.italic,
+                  ),
+                )
+              else
+                ...item.examples.map((example) {
+                  final hasLanguage2 = example.textLanguage2.trim().isNotEmpty;
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: AppTheme.spacing8),
+                    child: Card(
+                      elevation: 1,
+                      color: theme.colorScheme.surfaceContainerHighest,
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppTheme.spacing8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (example.textLanguage1.trim().isNotEmpty)
+                              Text(
+                                example.textLanguage1,
+                                style: reduceFontSize(
+                                  theme.textTheme.bodyMedium,
+                                ),
+                              ),
+                            if (hasLanguage2) ...[
+                              const SizedBox(height: AppTheme.spacing8),
+                              Divider(
+                                height: 1,
+                                color: theme.colorScheme.outlineVariant,
+                              ),
+                              const SizedBox(height: AppTheme.spacing8),
+                              Text(
+                                example.textLanguage2,
+                                style:
+                                    reduceFontSize(
+                                      theme.textTheme.bodyMedium,
+                                    )?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }),
 
-          // Categories section
-          const SizedBox(height: AppTheme.spacing8),
-          _buildCategoryChipsForDialog(item, theme, setDialogState, reduceFontSize),
+              // Categories section
+              const SizedBox(height: AppTheme.spacing8),
+              _buildCategoryChipsForDialog(
+                item,
+                theme,
+                setDialogState,
+                reduceFontSize,
+              ),
 
-          // Bottom padding to prevent content from being hidden behind floating buttons
-          const SizedBox(height: AppTheme.spacing24),
-        ],
-      ),
-    ),
-        // Floating buttons - Edit and Delete
+              // Bottom padding to prevent content from being hidden behind floating buttons
+              const SizedBox(height: AppTheme.spacing24),
+
+            ],
+          ),
+        ),
+        // Floating buttons - Add, Delete, and Edit
         if (!widget.package.isReadonly)
           Positioned(
             top: AppTheme.spacing8,
@@ -1014,6 +1259,21 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
+                // Add button
+                FloatingActionButton.small(
+                  heroTag: 'add_item_dialog_${item.id}',
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close current dialog
+                    _showAddItemDialog(); // Open add item dialog
+                  },
+                  backgroundColor: theme.colorScheme.secondaryContainer,
+                  child: Icon(
+                    Icons.add,
+                    size: 18,
+                    color: theme.colorScheme.onSecondaryContainer,
+                  ),
+                ),
+                const SizedBox(width: AppTheme.spacing8),
                 // Delete button
                 FloatingActionButton.small(
                   heroTag: 'delete_item_${item.id}',
@@ -1064,9 +1324,9 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
           children: [
             Text(
               languageName,
-              style: reduceFontSize(theme.textTheme.titleMedium)?.copyWith(
-                color: theme.colorScheme.primary,
-              ),
+              style: reduceFontSize(
+                theme.textTheme.titleMedium,
+              )?.copyWith(color: theme.colorScheme.primary),
             ),
             const Spacer(),
             IconButton(
@@ -1076,7 +1336,8 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
               onPressed: () async {
                 // Call pronunciation directly without relying on dialog context for errors
                 try {
-                  final fullText = '${preItem.isNotEmpty ? "$preItem " : ""}$text';
+                  final fullText =
+                      '${preItem.isNotEmpty ? "$preItem " : ""}$text';
                   await _ttsService.speak(fullText, languageCode);
                 } catch (e) {
                   // Errors are logged in the service
@@ -1107,9 +1368,9 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                 ),
               Text(
                 text,
-                style: reduceFontSize(theme.textTheme.titleMedium)?.copyWith(
-                  color: theme.colorScheme.onSurface,
-                ),
+                style: reduceFontSize(
+                  theme.textTheme.titleMedium,
+                )?.copyWith(color: theme.colorScheme.onSurface),
               ),
               if (postItem.isNotEmpty)
                 Text(
@@ -1127,20 +1388,23 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
   }
 
   Widget _buildItemDetails(AppLocalizations l10n, ThemeData theme, Item item) {
-    return Stack(
-      children: [
-        SingleChildScrollView(
-          padding: const EdgeInsets.all(AppTheme.spacing8),
-          physics: const AlwaysScrollableScrollPhysics(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Title
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(
+        left: AppTheme.spacing8,
+        right: AppTheme.spacing8,
+        top: 60, // Space for floating buttons (48px button height + 12px margin)
+        bottom: AppTheme.spacing8,
+      ),
+      physics: const AlwaysScrollableScrollPhysics(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+              // Title with language codes for compact display
               Text(
-                l10n.itemDetails,
+                '${l10n.itemDetails} (${item.language1Data.languageCode.split('-').first.toUpperCase()}-${item.language2Data.languageCode.split('-').first.toUpperCase()})',
                 style: theme.textTheme.titleMedium,
               ),
-               const SizedBox(height: AppTheme.spacing8),
+              const SizedBox(height: AppTheme.spacing16),
 
               // Language 1
               _buildLanguageSection(
@@ -1150,7 +1414,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                 item.language1Data,
                 item.language1Data.languageCode,
               ),
-               const SizedBox(height: AppTheme.spacing8),
+              const SizedBox(height: AppTheme.spacing8),
 
               // Language 2
               _buildLanguageSection(
@@ -1160,7 +1424,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                 item.language2Data,
                 item.language2Data.languageCode,
               ),
-               const SizedBox(height: AppTheme.spacing8),
+              const SizedBox(height: AppTheme.spacing8),
 
               // Status indicators
               Wrap(
@@ -1178,42 +1442,69 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                     ),
                   if (!item.isKnown || item.dontKnowCounter > 0)
                     Chip(
-                      avatar: Icon(
-                        Icons.error,
-                        size: 20,
-                        color: Colors.red,
-                      ),
+                      avatar: Icon(Icons.error, size: 20, color: Colors.red),
                       label: Text('${item.dontKnowCounter} until learned'),
                       backgroundColor: theme.colorScheme.errorContainer,
                     ),
-                  if (item.isFavourite)
-                    Chip(
+                  // Favourite button - always shown, interactive
+                  const SizedBox(width: AppTheme.spacing4),
+                  InkWell(
+                    onTap: widget.package.isReadonly
+                        ? null
+                        : () {
+                            _toggleFavourite(item);
+                          },
+                    borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                    child: Chip(
                       avatar: Icon(
-                        Icons.star,
-                        size: 20,
-                        color: theme.colorScheme.tertiary,
+                        item.isFavourite ? Icons.star : Icons.star_outline,
+                        size: 15, // 25% smaller than 20
+                        color: item.isFavourite
+                            ? theme.colorScheme.tertiary
+                            : theme.colorScheme.onSurfaceVariant,
                       ),
-                      label: Text(l10n.favourite),
+                      label: Text(
+                        l10n.favourite,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                      backgroundColor: item.isFavourite
+                          ? theme.colorScheme.tertiaryContainer.withValues(alpha: 0.3)
+                          : null,
                     ),
-                  if (item.isImportant)
-                    Chip(
+                  ),
+                  // Important button - always shown, interactive
+                  InkWell(
+                    onTap: widget.package.isReadonly
+                        ? null
+                        : () {
+                            _toggleImportant(item);
+                          },
+                    borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                    child: Chip(
                       avatar: Icon(
-                        Icons.bookmark,
-                        size: 20,
-                        color: theme.colorScheme.secondary,
+                        item.isImportant ? Icons.bookmark : Icons.bookmark_border,
+                        size: 15, // 25% smaller than 20
+                        color: item.isImportant
+                            ? theme.colorScheme.secondary
+                            : theme.colorScheme.onSurfaceVariant,
                       ),
-                      label: Text(l10n.important),
+                      label: Text(
+                        l10n.important,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                      backgroundColor: item.isImportant
+                          ? theme.colorScheme.secondaryContainer.withValues(alpha: 0.3)
+                          : null,
                     ),
+                  ),
                 ],
               ),
-              const SizedBox(height: AppTheme.spacing8),
+
+              const SizedBox(height: AppTheme.spacing4),
 
               // Examples
-              Text(
-                l10n.examples,
-                style: theme.textTheme.titleMedium,
-              ),
-              const SizedBox(height: AppTheme.spacing8),
+              Text(l10n.examples, style: theme.textTheme.titleMedium),
+              // const SizedBox(height: AppTheme.spacing8),
               if (item.examples.isEmpty)
                 Text(
                   l10n.noExamples,
@@ -1222,39 +1513,39 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                   ),
                 )
               else
-                ...item.examples.map((example) => Padding(
-                      padding: const EdgeInsets.only(bottom: AppTheme.spacing8),
-                      child: Card(
-                        child: Padding(
-                          padding: const EdgeInsets.all(AppTheme.spacing8),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                example.textLanguage1,
-                                style: theme.textTheme.bodySmall,
+                ...item.examples.map(
+                  (example) => Padding(
+                    padding: const EdgeInsets.only(bottom: 0),
+                    child: Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppTheme.spacing8),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              example.textLanguage1,
+                              style: theme.textTheme.bodySmall,
+                            ),
+                            const SizedBox(height: AppTheme.spacing4),
+                            Text(
+                              example.textLanguage2,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
-                              const SizedBox(height: AppTheme.spacing4),
-                              Text(
-                                example.textLanguage2,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                    )),
+                    ),
+                  ),
+                ),
 
               // Categories section (chips with add button)
-              const SizedBox(height: AppTheme.spacing8),
+              //const SizedBox(height: AppTheme.spacing8),
               _buildCategoryChips(item, theme),
             ],
           ),
-        ),
-      ],
-    );
+        );
   }
 
   Widget _buildLanguageSection(
@@ -1271,26 +1562,6 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(
-              languageName,
-              style: theme.textTheme.titleSmall?.copyWith(
-                color: theme.colorScheme.primary,
-              ),
-            ),
-            const Spacer(),
-            IconButton(
-              icon: const Icon(Icons.volume_up),
-              tooltip: l10n.pronounce,
-              onPressed: () {
-                final fullText = '${preItem.isNotEmpty ? "$preItem " : ""}$text';
-                _pronounce(fullText, languageCode);
-              },
-            ),
-          ],
-        ),
-        const SizedBox(height: AppTheme.spacing4),
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(AppTheme.spacing8),
@@ -1298,31 +1569,47 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
             color: theme.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
           ),
-          child: Column(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (preItem.isNotEmpty)
-                Text(
-                  preItem,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              Text(
-                text,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: theme.colorScheme.onSurface,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (preItem.isNotEmpty)
+                      Text(
+                        preItem,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    Text(
+                      text,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    if (postItem.isNotEmpty)
+                      Text(
+                        postItem,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                  ],
                 ),
               ),
-              if (postItem.isNotEmpty)
-                Text(
-                  postItem,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
+              IconButton(
+                icon: const Icon(Icons.volume_up),
+                tooltip: l10n.pronounce,
+                onPressed: () {
+                  final fullText =
+                      '${preItem.isNotEmpty ? "$preItem " : ""}$text';
+                  _pronounce(fullText, languageCode);
+                },
+              ),
             ],
           ),
         ),
@@ -1331,9 +1618,18 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
   }
 
   // Compact version for phones in landscape mode (half fonts and spacing)
-  Widget _buildItemDetailsCompact(AppLocalizations l10n, ThemeData theme, Item item) {
+  Widget _buildItemDetailsCompact(
+    AppLocalizations l10n,
+    ThemeData theme,
+    Item item,
+  ) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(AppTheme.spacing4), // Half of spacing8
+      padding: const EdgeInsets.only(
+        left: AppTheme.spacing4,
+        right: AppTheme.spacing4,
+        top: 60, // Space for floating buttons
+        bottom: AppTheme.spacing4,
+      ),
       physics: const AlwaysScrollableScrollPhysics(),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1345,8 +1641,11 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
           //    fontSize: (theme.textTheme.titleSmall?.fontSize ?? 14) * 0.75,
           //  ),
           //),
+          Text(
+            '${l10n.itemDetails} (${item.language1Data.languageCode.split('-').first.toUpperCase()}-${item.language2Data.languageCode.split('-').first.toUpperCase()})',
+            style: theme.textTheme.titleMedium,
+          ),
           const SizedBox(height: AppTheme.spacing4), // Half of spacing8
-
           // Language 1
           _buildLanguageSectionCompact(
             l10n,
@@ -1356,7 +1655,6 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
             item.language1Data.languageCode,
           ),
           const SizedBox(height: AppTheme.spacing4), // Half of spacing8
-
           // Language 2
           _buildLanguageSectionCompact(
             l10n,
@@ -1366,7 +1664,6 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
             item.language2Data.languageCode,
           ),
           const SizedBox(height: AppTheme.spacing4), // Half of spacing8
-
           // Status indicators (compact)
           Wrap(
             spacing: AppTheme.spacing4, // Half of spacing8
@@ -1387,29 +1684,52 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                   Colors.red,
                   backgroundColor: theme.colorScheme.errorContainer,
                 ),
-              if (item.isFavourite)
-                _buildCompactChip(
-                  theme,
-                  Icons.star,
-                  l10n.favourite,
-                  theme.colorScheme.tertiary,
+              // Favourite button - always shown, interactive (compact size)
+              InkWell(
+                onTap: widget.package.isReadonly
+                    ? null
+                    : () {
+                        _toggleFavourite(item);
+                      },
+                borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                child: Padding(
+                  padding: const EdgeInsets.all(AppTheme.spacing4),
+                  child: Icon(
+                    Icons.star,
+                    size: 16,
+                    color: item.isFavourite
+                        ? theme.colorScheme.tertiary
+                        : theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
-              if (item.isImportant)
-                _buildCompactChip(
-                  theme,
-                  Icons.bookmark,
-                  l10n.important,
-                  theme.colorScheme.secondary,
+              ),
+              // Important button - always shown, interactive (compact size)
+              InkWell(
+                onTap: widget.package.isReadonly
+                    ? null
+                    : () {
+                        _toggleImportant(item);
+                      },
+                borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                child: Padding(
+                  padding: const EdgeInsets.all(AppTheme.spacing4),
+                  child: Icon(
+                    Icons.bookmark,
+                    size: 16,
+                    color: item.isImportant
+                        ? theme.colorScheme.secondary
+                        : theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
+              ),
             ],
           ),
           const SizedBox(height: AppTheme.spacing4), // Half of spacing8
-
           // Examples
           Text(
             l10n.examples,
             style: theme.textTheme.titleSmall?.copyWith(
-              fontSize: (theme.textTheme.titleSmall?.fontSize ?? 14) ,
+              fontSize: (theme.textTheme.titleSmall?.fontSize ?? 14),
             ),
           ),
           const SizedBox(height: AppTheme.spacing4), // Half of spacing8
@@ -1417,44 +1737,58 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
             Text(
               l10n.noExamples,
               style: theme.textTheme.bodySmall?.copyWith(
-                fontSize: (theme.textTheme.bodySmall?.fontSize ?? 12) ,
+                fontSize: (theme.textTheme.bodySmall?.fontSize ?? 12),
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             )
           else
-            ...item.examples.map((example) => Padding(
-                  padding: const EdgeInsets.only(bottom: AppTheme.spacing4), // Half of spacing8
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(AppTheme.spacing4), // Half of spacing8
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            example.textLanguage1,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              fontSize: (theme.textTheme.bodySmall?.fontSize ?? 12) ,
-                            ),
+            ...item.examples.map(
+              (example) => Padding(
+                padding: const EdgeInsets.only(
+                  bottom: AppTheme.spacing4,
+                ), // Half of spacing8
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(
+                      AppTheme.spacing4,
+                    ), // Half of spacing8
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          example.textLanguage1,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontSize:
+                                (theme.textTheme.bodySmall?.fontSize ?? 12),
                           ),
-                          const SizedBox(height: 2.0), // Half of spacing4
-                          Text(
-                            example.textLanguage2,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              fontSize: (theme.textTheme.bodySmall?.fontSize ?? 12) ,
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
+                        ),
+                        const SizedBox(height: 2.0), // Half of spacing4
+                        Text(
+                          example.textLanguage2,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontSize:
+                                (theme.textTheme.bodySmall?.fontSize ?? 12),
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
-                )),
+                ),
+              ),
+            ),
         ],
       ),
     );
   }
 
-  Widget _buildCompactChip(ThemeData theme, IconData icon, String label, Color color, {Color? backgroundColor}) {
+  Widget _buildCompactChip(
+    ThemeData theme,
+    IconData icon,
+    String label,
+    Color color, {
+    Color? backgroundColor,
+  }) {
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: AppTheme.spacing4,
@@ -1463,10 +1797,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
       decoration: BoxDecoration(
         color: backgroundColor ?? color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-        border: Border.all(
-          color: color.withValues(alpha: 0.3),
-          width: 0.5,
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.3), width: 0.5),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -1499,68 +1830,54 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Text(
-              languageName,
-              style: theme.textTheme.labelMedium?.copyWith(
-                fontSize: (theme.textTheme.titleSmall?.fontSize ?? 14) ,
-                color: theme.colorScheme.primary,
-              ),
-            ),
-            const Spacer(),
-            IconButton(
-              icon: const Icon(Icons.volume_up),
-              iconSize: 16, // Smaller icon
-              padding: const EdgeInsets.all(AppTheme.spacing4),
-              constraints: const BoxConstraints(
-                minWidth: 28,
-                minHeight: 28,
-              ),
-              tooltip: l10n.pronounce,
-              onPressed: () {
-                final fullText = '${preItem.isNotEmpty ? "$preItem " : ""}$text';
-                _pronounce(fullText, languageCode);
-              },
-            ),
-          ],
-        ),
-        const SizedBox(height: 2.0), // Half of spacing4
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(AppTheme.spacing4), // Half of spacing8
+          padding: const EdgeInsets.all(AppTheme.spacing8),
           decoration: BoxDecoration(
             color: theme.colorScheme.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+            borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
           ),
-          child: Column(
+          child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (preItem.isNotEmpty)
-                Text(
-                  preItem,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontSize: (theme.textTheme.titleSmall?.fontSize ?? 14),
-                    color: theme.colorScheme.onSurfaceVariant,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              Text(
-                text,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontSize: (theme.textTheme.titleSmall?.fontSize ?? 14) ,
-                  color: theme.colorScheme.onSurface,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (preItem.isNotEmpty)
+                      Text(
+                        preItem,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    Text(
+                      text,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    if (postItem.isNotEmpty)
+                      Text(
+                        postItem,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                  ],
                 ),
               ),
-              if (postItem.isNotEmpty)
-                Text(
-                  postItem,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontSize: (theme.textTheme.titleSmall?.fontSize ?? 14) ,
-                    color: theme.colorScheme.onSurfaceVariant,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
+              IconButton(
+                icon: const Icon(Icons.volume_up),
+                tooltip: l10n.pronounce,
+                onPressed: () {
+                  final fullText =
+                      '${preItem.isNotEmpty ? "$preItem " : ""}$text';
+                  _pronounce(fullText, languageCode);
+                },
+              ),
             ],
           ),
         ),
@@ -1591,18 +1908,16 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                 color: theme.colorScheme.primary,
               ),
               label: Text(category.name),
-              backgroundColor: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+              backgroundColor: theme.colorScheme.primaryContainer.withValues(
+                alpha: 0.5,
+              ),
             ),
           );
         }),
         // Add category button (shown after all chips)
         if (!widget.package.isReadonly)
           ActionChip(
-            avatar: Icon(
-              Icons.add,
-              size: 18,
-              color: theme.colorScheme.primary,
-            ),
+            avatar: Icon(Icons.add, size: 18, color: theme.colorScheme.primary),
             label: const Text(''),
             padding: const EdgeInsets.all(0),
             labelPadding: const EdgeInsets.all(0),
@@ -1634,7 +1949,11 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
           return GestureDetector(
             onTap: widget.package.isReadonly
                 ? null
-                : () => _confirmRemoveCategoryFromDialog(item, category, setDialogState),
+                : () => _confirmRemoveCategoryFromDialog(
+                    item,
+                    category,
+                    setDialogState,
+                  ),
             child: Chip(
               avatar: Icon(
                 Icons.label,
@@ -1645,7 +1964,9 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                 category.name,
                 style: reduceFontSize(theme.textTheme.bodyMedium),
               ),
-              backgroundColor: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+              backgroundColor: theme.colorScheme.primaryContainer.withValues(
+                alpha: 0.5,
+              ),
             ),
           );
         }),
@@ -1662,14 +1983,18 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
             labelPadding: const EdgeInsets.all(0),
             visualDensity: VisualDensity.compact,
             backgroundColor: theme.colorScheme.primaryContainer,
-            onPressed: () => _showAddCategoryDialogFromDialog(item, setDialogState),
+            onPressed: () =>
+                _showAddCategoryDialogFromDialog(item, setDialogState),
           ),
       ],
     );
   }
 
   /// Show add category dialog from within item details dialog
-  Future<void> _showAddCategoryDialogFromDialog(Item item, StateSetter setDialogState) async {
+  Future<void> _showAddCategoryDialogFromDialog(
+    Item item,
+    StateSetter setDialogState,
+  ) async {
     await _showAddCategoryDialog(item);
     // Refresh the dialog after adding category
     setDialogState(() {});
@@ -1730,29 +2055,28 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
           titlePadding: const EdgeInsets.fromLTRB(
-            AppTheme.spacing12,
-            AppTheme.spacing12,
-            AppTheme.spacing12,
+            AppTheme.spacing8,
+            AppTheme.spacing8,
+            AppTheme.spacing8,
             AppTheme.spacing8,
           ),
           contentPadding: const EdgeInsets.fromLTRB(
-            AppTheme.spacing12,
             AppTheme.spacing8,
-            AppTheme.spacing12,
+            AppTheme.spacing8,
+            AppTheme.spacing8,
             AppTheme.spacing8,
           ),
           actionsPadding: const EdgeInsets.fromLTRB(
-            AppTheme.spacing12,
             AppTheme.spacing8,
-            AppTheme.spacing12,
-            AppTheme.spacing12,
+            AppTheme.spacing8,
+            AppTheme.spacing8,
+            AppTheme.spacing8,
           ),
-          title: Text(
-            'Add Category',
-            style: theme.textTheme.titleSmall,
-          ),
+          title: Text('Add Category', style: theme.textTheme.titleSmall),
           content: SizedBox(
-            width: screenWidth * 0.25, // 50% of default dialog width (~50% of screen)
+            width:
+                screenWidth *
+                0.25, // 50% of default dialog width (~50% of screen)
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1770,43 +2094,54 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                       return availableCategories;
                     }
                     return availableCategories.where((category) {
-                      return category.name
-                          .toLowerCase()
-                          .contains(textEditingValue.text.toLowerCase());
+                      return category.name.toLowerCase().contains(
+                        textEditingValue.text.toLowerCase(),
+                      );
                     });
                   },
                   displayStringForOption: (Category option) => option.name,
-                  fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
-                    categoryController.text = textEditingController.text;
-                    textEditingController.addListener(() {
-                      categoryController.text = textEditingController.text;
-                    });
+                  fieldViewBuilder:
+                      (
+                        context,
+                        textEditingController,
+                        focusNode,
+                        onFieldSubmitted,
+                      ) {
+                        categoryController.text = textEditingController.text;
+                        textEditingController.addListener(() {
+                          categoryController.text = textEditingController.text;
+                        });
 
-                    return TextField(
-                      controller: textEditingController,
-                      focusNode: focusNode,
-                      style: theme.textTheme.bodySmall,
-                      decoration: InputDecoration(
-                        hintText: 'Type to search or create new...',
-                        hintStyle: theme.textTheme.bodySmall,
-                        prefixIcon: const Icon(Icons.search, size: 18),
-                        contentPadding: const EdgeInsets.symmetric(
-                          horizontal: AppTheme.spacing8,
-                          vertical: AppTheme.spacing8,
-                        ),
-                        isDense: true,
-                      ),
-                      onSubmitted: (_) => onFieldSubmitted(),
-                    );
-                  },
+                        return TextField(
+                          controller: textEditingController,
+                          focusNode: focusNode,
+                          style: theme.textTheme.bodySmall,
+                          decoration: InputDecoration(
+                            hintText: 'Type to search or create new...',
+                            hintStyle: theme.textTheme.bodySmall,
+                            prefixIcon: const Icon(Icons.search, size: 18),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: AppTheme.spacing8,
+                              vertical: AppTheme.spacing8,
+                            ),
+                            isDense: true,
+                          ),
+                          onSubmitted: (_) => onFieldSubmitted(),
+                        );
+                      },
                   optionsViewBuilder: (context, onSelected, options) {
                     return Align(
                       alignment: Alignment.topLeft,
                       child: Material(
                         elevation: 4.0,
-                        borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                        borderRadius: BorderRadius.circular(
+                          AppTheme.radiusSmall,
+                        ),
                         child: ConstrainedBox(
-                          constraints: const BoxConstraints(maxHeight: 150, maxWidth: 150),
+                          constraints: const BoxConstraints(
+                            maxHeight: 150,
+                            maxWidth: 150,
+                          ),
                           child: ListView.builder(
                             padding: EdgeInsets.zero,
                             shrinkWrap: true,
@@ -1819,7 +2154,10 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                                   horizontal: AppTheme.spacing8,
                                   vertical: AppTheme.spacing4,
                                 ),
-                                leading: const Icon(Icons.label_outline, size: 18),
+                                leading: const Icon(
+                                  Icons.label_outline,
+                                  size: 18,
+                                ),
                                 title: Text(
                                   option.name,
                                   style: theme.textTheme.bodySmall,
@@ -1827,9 +2165,16 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                                 subtitle: option.description != null
                                     ? Text(
                                         option.description!,
-                                        style: theme.textTheme.bodySmall?.copyWith(
-                                          fontSize: (theme.textTheme.bodySmall?.fontSize ?? 12) * 0.9,
-                                        ),
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(
+                                              fontSize:
+                                                  (theme
+                                                          .textTheme
+                                                          .bodySmall
+                                                          ?.fontSize ??
+                                                      12) *
+                                                  0.9,
+                                            ),
                                       )
                                     : null,
                                 onTap: () => onSelected(option),
@@ -1863,14 +2208,11 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
               onPressed: () => Navigator.of(context).pop(),
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: AppTheme.spacing12,
+                  horizontal: AppTheme.spacing8,
                   vertical: AppTheme.spacing8,
                 ),
               ),
-              child: Text(
-                l10n.cancel,
-                style: theme.textTheme.bodySmall,
-              ),
+              child: Text(l10n.cancel, style: theme.textTheme.bodySmall),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -1883,7 +2225,8 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
 
                 // Check if we're creating new or using existing
                 Category categoryToAdd;
-                if (selectedCategory != null && selectedCategory!.name == categoryName) {
+                if (selectedCategory != null &&
+                    selectedCategory!.name == categoryName) {
                   categoryToAdd = selectedCategory!;
                 } else {
                   // Create new category
@@ -1905,14 +2248,11 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
               },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: AppTheme.spacing12,
+                  horizontal: AppTheme.spacing8,
                   vertical: AppTheme.spacing8,
                 ),
               ),
-              child: Text(
-                'Add',
-                style: theme.textTheme.bodySmall,
-              ),
+              child: Text('Add', style: theme.textTheme.bodySmall),
             ),
           ],
         ),
@@ -1934,7 +2274,10 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
         setState(() {
           _allItems[index] = updatedItem;
           // Keep selection when modifying item categories
-          _applyFilters(clearSelectionIfFiltered: false, autoSelectFirst: false);
+          _applyFilters(
+            clearSelectionIfFiltered: false,
+            autoSelectFirst: false,
+          );
           if (_selectedItem?.id == item.id) {
             _selectedItem = updatedItem;
           }
@@ -1994,7 +2337,9 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
   /// Remove a category from an item
   Future<void> _removeCategoryFromItem(Item item, Category category) async {
     try {
-      final updatedCategoryIds = item.categoryIds.where((id) => id != category.id).toList();
+      final updatedCategoryIds = item.categoryIds
+          .where((id) => id != category.id)
+          .toList();
       final updatedItem = item.copyWith(categoryIds: updatedCategoryIds);
 
       await _itemRepo.updateItem(updatedItem);
@@ -2005,7 +2350,10 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
         setState(() {
           _allItems[index] = updatedItem;
           // Keep selection when modifying item categories
-          _applyFilters(clearSelectionIfFiltered: false, autoSelectFirst: false);
+          _applyFilters(
+            clearSelectionIfFiltered: false,
+            autoSelectFirst: false,
+          );
           if (_selectedItem?.id == item.id) {
             _selectedItem = updatedItem;
           }
@@ -2083,31 +2431,28 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
           titlePadding: const EdgeInsets.fromLTRB(
-            AppTheme.spacing12,
-            AppTheme.spacing12,
+            AppTheme.spacing8,
+            AppTheme.spacing8,
             AppTheme.spacing8,
             AppTheme.spacing8,
           ),
           contentPadding: const EdgeInsets.fromLTRB(
-            AppTheme.spacing12,
             AppTheme.spacing8,
-            AppTheme.spacing12,
+            AppTheme.spacing8,
+            AppTheme.spacing8,
             AppTheme.spacing8,
           ),
           actionsPadding: const EdgeInsets.fromLTRB(
-            AppTheme.spacing12,
             AppTheme.spacing8,
-            AppTheme.spacing12,
-            AppTheme.spacing12,
+            AppTheme.spacing8,
+            AppTheme.spacing8,
+            AppTheme.spacing8,
           ),
           title: Row(
             children: [
               Icon(Icons.label_outline, size: 18),
               const SizedBox(width: AppTheme.spacing4),
-              Text(
-                'Filter by Categories',
-                style: theme.textTheme.titleSmall,
-              ),
+              Text('Filter by Categories', style: theme.textTheme.titleSmall),
               const Spacer(),
               if (tempSelectedIds.isNotEmpty)
                 TextButton(
@@ -2124,15 +2469,14 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                     minimumSize: Size.zero,
                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   ),
-                  child: Text(
-                    'Clear All',
-                    style: theme.textTheme.bodySmall,
-                  ),
+                  child: Text('Clear All', style: theme.textTheme.bodySmall),
                 ),
             ],
           ),
           content: SizedBox(
-            width: screenWidth * 0.25, // 50% smaller than default (was ~50%, now 25%)
+            width:
+                screenWidth *
+                0.25, // 50% smaller than default (was ~50%, now 25%)
             child: sortedCategories.isEmpty
                 ? Padding(
                     padding: const EdgeInsets.all(AppTheme.spacing8),
@@ -2163,7 +2507,10 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                             ? Text(
                                 category.description!,
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                  fontSize: (theme.textTheme.bodySmall?.fontSize ?? 12) * 0.9,
+                                  fontSize:
+                                      (theme.textTheme.bodySmall?.fontSize ??
+                                          12) *
+                                      0.9,
                                 ),
                               )
                             : null,
@@ -2193,14 +2540,11 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
               onPressed: () => Navigator.of(context).pop(),
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: AppTheme.spacing12,
+                  horizontal: AppTheme.spacing8,
                   vertical: AppTheme.spacing8,
                 ),
               ),
-              child: Text(
-                'Cancel',
-                style: theme.textTheme.bodySmall,
-              ),
+              child: Text('Cancel', style: theme.textTheme.bodySmall),
             ),
             ElevatedButton(
               onPressed: () {
@@ -2212,14 +2556,11 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
               },
               style: ElevatedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
-                  horizontal: AppTheme.spacing12,
+                  horizontal: AppTheme.spacing8,
                   vertical: AppTheme.spacing8,
                 ),
               ),
-              child: Text(
-                'Apply',
-                style: theme.textTheme.bodySmall,
-              ),
+              child: Text('Apply', style: theme.textTheme.bodySmall),
             ),
           ],
         ),
@@ -2235,7 +2576,9 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Delete Item'),
-        content: Text('Are you sure you want to delete this item?\n\n"${item.language1Data.text}" / "${item.language2Data.text}"\n\nThis action cannot be undone.'),
+        content: Text(
+          'Are you sure you want to delete this item?\n\n"${item.language1Data.text}" / "${item.language2Data.text}"\n\nThis action cannot be undone.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -2296,17 +2639,17 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
 
   /// Show edit item dialog
   /// Show edit item page (portrait mode) - navigates to full-screen page
-  Future<void> _showEditItemDialog(Item item, StateSetter parentDialogState) async {
+  Future<void> _showEditItemDialog(
+    Item item,
+    StateSetter parentDialogState,
+  ) async {
     // Close the details dialog first
     Navigator.of(context).pop();
 
     // Navigate to edit page
     final updated = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (context) => ItemEditPage(
-          item: item,
-          package: widget.package,
-        ),
+        builder: (context) => ItemEditPage(item: item, package: widget.package),
       ),
     );
 
@@ -2320,7 +2663,10 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
   }
 
   /// Build floating action buttons for landscape mode (Edit, Add, Delete)
-  Widget _buildLandscapeFloatingButtons(ThemeData theme, AppLocalizations l10n) {
+  Widget _buildLandscapeFloatingButtons(
+    ThemeData theme,
+    AppLocalizations l10n,
+  ) {
     return Positioned(
       top: AppTheme.spacing8,
       right: AppTheme.spacing8,
@@ -2367,37 +2713,21 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                 color: theme.colorScheme.onErrorContainer,
               ),
             ),
+            const SizedBox(width: AppTheme.spacing24),
           ],
+
         ],
+
       ),
     );
   }
 
-  /// Build floating action button for portrait mode (Add only)
-  Widget _buildPortraitFloatingButton(ThemeData theme, AppLocalizations l10n) {
-    return Positioned(
-      right: AppTheme.spacing16,
-      bottom: AppTheme.spacing16,
-      child: FloatingActionButton(
-        heroTag: 'add_portrait',
-        onPressed: _showAddItemDialog,
-        backgroundColor: theme.colorScheme.secondaryContainer,
-        child: Icon(
-          Icons.add,
-          color: theme.colorScheme.onSecondaryContainer,
-        ),
-      ),
-    );
-  }
 
   /// Show edit item page in landscape mode (full screen)
   Future<void> _showEditItemDialogLandscape(Item item) async {
     final updated = await Navigator.of(context).push<bool>(
       MaterialPageRoute(
-        builder: (context) => ItemEditPage(
-          item: item,
-          package: widget.package,
-        ),
+        builder: (context) => ItemEditPage(item: item, package: widget.package),
       ),
     );
 
@@ -2422,7 +2752,9 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(l10n.deleteItem),
-        content: Text('${l10n.confirmDeleteItem}\n\n"${item.language1Data.text}" / "${item.language2Data.text}"\n\n${l10n.thisActionCannotBeUndone}'),
+        content: Text(
+          '${l10n.confirmDeleteItem}\n\n"${item.language1Data.text}" / "${item.language2Data.text}"\n\n${l10n.thisActionCannotBeUndone}',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -2511,8 +2843,3 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
     }
   }
 }
-
-
-
-
-

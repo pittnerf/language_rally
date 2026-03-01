@@ -879,44 +879,38 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
                   },
                 ),
                 // Favourite status
-                FilterChip(
-                  selected: _isFavourite,
-                  label: Text(
-                    l10n.favourite,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontSize: (theme.textTheme.bodySmall?.fontSize ?? 12) * 0.85,
-                    ),
-                  ),
-                  avatar: Icon(
-                    _isFavourite ? Icons.star : Icons.star_outline,
-                    size: 18,
-                    color: _isFavourite ? theme.colorScheme.tertiary : theme.colorScheme.onSurfaceVariant,
-                  ),
-                  onSelected: (value) {
+                InkWell(
+                  onTap: () {
                     setState(() {
-                      _isFavourite = value;
+                      _isFavourite = !_isFavourite;
                     });
                   },
+                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppTheme.spacing8),
+                    child: Icon(
+                      _isFavourite ? Icons.star : Icons.star_outline,
+                      size: 24,
+                      color: _isFavourite ? theme.colorScheme.tertiary : theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                 ),
                 // Important status
-                FilterChip(
-                  selected: _isImportant,
-                  label: Text(
-                    l10n.important,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontSize: (theme.textTheme.bodySmall?.fontSize ?? 12) * 0.85,
-                    ),
-                  ),
-                  avatar: Icon(
-                    _isImportant ? Icons.bookmark : Icons.bookmark_border,
-                    size: 18,
-                    color: _isImportant ? theme.colorScheme.secondary : theme.colorScheme.onSurfaceVariant,
-                  ),
-                  onSelected: (value) {
+                InkWell(
+                  onTap: () {
                     setState(() {
-                      _isImportant = value;
+                      _isImportant = !_isImportant;
                     });
                   },
+                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                  child: Padding(
+                    padding: const EdgeInsets.all(AppTheme.spacing8),
+                    child: Icon(
+                      _isImportant ? Icons.bookmark : Icons.bookmark_border,
+                      size: 24,
+                      color: _isImportant ? theme.colorScheme.secondary : theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
                 ),
               ],
             ),

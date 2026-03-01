@@ -186,7 +186,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get errorExportingPackage => 'Error exporting package';
 
   @override
-  String get importItems => 'Import Items';
+  String get importItems => 'Import Items (JSON)';
 
   @override
   String get selectImportFile => 'Select Import File';
@@ -300,7 +300,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get purchased => 'Purchased';
 
   @override
-  String get compactView => 'Compact view';
+  String get compactView => 'compact';
 
   @override
   String get expand => 'Expand';
@@ -453,6 +453,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get knownStatus => 'Known status';
 
   @override
+  String get filterStatusAll => 'all';
+
+  @override
+  String get filterStatusKnown => 'known';
+
+  @override
+  String get filterStatusUnknown => 'unknown';
+
+  @override
   String get allItems => 'All items';
 
   @override
@@ -505,7 +514,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noItemsInPackage => 'No items in this package yet';
 
   @override
-  String get clearFilters => 'Clear Filters';
+  String get clearFilters => 'Clear';
 
   @override
   String itemCount(Object count) {
@@ -1234,4 +1243,99 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get restartApp => 'Try restarting the app';
+
+  @override
+  String get groupLabel => 'Group:';
+
+  @override
+  String get amendGroups => 'Amend';
+
+  @override
+  String get exportItemsJson => 'Export Items (JSON)';
+
+  @override
+  String get exportItemsJsonTooltip => 'Export all items as JSON file';
+
+  @override
+  String get noCategoriesInPackage => 'No categories found in this package';
+
+  @override
+  String get noItemsToExport => 'No items found to export';
+
+  @override
+  String itemsExportedSuccessfully(int count, String path) {
+    return 'Successfully exported $count items to:\n$path';
+  }
+
+  @override
+  String get errorExportingItems => 'Error exporting items';
+
+  @override
+  String get languageMismatch => 'Language Mismatch';
+
+  @override
+  String get languageMismatchDescription =>
+      'The languages in the JSON file do not match the package languages:';
+
+  @override
+  String packageLanguages(String lang1, String lang2) {
+    return 'Package: $lang1 → $lang2';
+  }
+
+  @override
+  String jsonFileLanguages(String lang1, String lang2) {
+    return 'JSON file: $lang1 → $lang2';
+  }
+
+  @override
+  String get continueImportQuestion =>
+      'Do you want to continue importing anyway?';
+
+  @override
+  String get continueImport => 'Continue Import';
+
+  @override
+  String get pleaseSelectPackageGroup => 'Please select a package group';
+
+  @override
+  String get customIconLabel => 'Custom';
+
+  @override
+  String get defaultIconLabel => 'Default';
+
+  @override
+  String get icon1Label => 'Icon 1';
+
+  @override
+  String get icon2Label => 'Icon 2';
+
+  @override
+  String get icon3Label => 'Icon 3';
+
+  @override
+  String get customIconFile => 'Custom Icon';
+
+  @override
+  String get importedIconFile => 'Imported Icon';
+
+  @override
+  String get unableToReadImageFile =>
+      'Unable to read image file. Please select a valid image.';
+
+  @override
+  String iconDimensionsTooLarge(int width, int height) {
+    return 'Icon dimensions are too large (${width}x$height). Maximum allowed is 512x512 pixels.';
+  }
+
+  @override
+  String get iconFileTooLarge => 'Icon file is too large. Maximum size is 1MB.';
+
+  @override
+  String failedToUploadIcon(String error) {
+    return 'Failed to upload icon: $error';
+  }
+
+  @override
+  String get pleaseSelectValidLanguage =>
+      'Please select a valid language from the list';
 }

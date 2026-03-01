@@ -1,0 +1,86 @@
+[
+  {
+    "source_language": "EN",
+    "target_language": "DE",
+    "source_pre": "",
+    "source_expression": "flower",
+    "source_post": "",
+    "target_pre": "die",
+    "target_expression": "Blume",
+    "target_post": "pl. Blumen",
+    "examples": [
+      {
+        "source": "The garden is full of colorful flowers.",
+        "target": "Der Garten ist voller bunter Blumen."
+      },
+      {
+        "source": "She picked a flower for her mother.",
+        "target": "Sie pflückte eine Blume für ihre Mutter."
+      },
+      {
+        "source": "Flowers bloom in spring.",
+        "target": "Blumen blühen im Frühling."
+      }
+    ],
+    "categories": [
+      "Hobby",
+      "Garten"
+    ]
+  },
+  {
+    "source_language": "EN",
+    "target_language": "DE",
+    "source_pre": "",
+    "source_expression": "book",
+    "source_post": "",
+    "target_pre": "das",
+    "target_expression": "Buch",
+    "target_post": "pl. Bücher",
+    "examples": [
+      {
+        "source": "I borrowed a book from the library.",
+        "target": "Ich habe ein Buch aus der Bibliothek ausgeliehen."
+      },
+      {
+        "source": "This book is very interesting.",
+        "target": "Dieses Buch ist sehr interessant."
+      },
+      {
+        "source": "She reads a book every night before bed.",
+        "target": "Sie liest jede Nacht vor dem Schlafengehen ein Buch."
+      }
+    ],
+    "categories": [
+      "Education",
+      "Hobby"
+    ]
+  },
+  {
+    "source_language": "EN",
+    "target_language": "DE",
+    "source_pre": "",
+    "source_expression": "apple",
+    "source_post": "",
+    "target_pre": "der",
+    "target_expression": "Apfel",
+    "target_post": "pl. Äpfel",
+    "examples": [
+      {
+        "source": "I eat an apple every morning.",
+        "target": "Ich esse jeden Morgen einen Apfel."
+      },
+      {
+        "source": "The apple is sweet and juicy.",
+        "target": "Der Apfel ist süß und saftig."
+      },
+      {
+        "source": "She bought a bag of apples from the market.",
+        "target": "Sie hat einen Beutel Äpfel vom Markt gekauft."
+      }
+    ],
+    "categories": [
+      "Food",
+      "Fruit"
+    ]
+  }
+]

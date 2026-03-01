@@ -1,4 +1,5 @@
 // lib/presentation/pages/packages/package_form_page.dart
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -64,6 +65,10 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
 
   // Helper method to determine if fields should be enabled
   bool get _fieldsEnabled => !_isPurchased && _isEditingEnabled;
+
+  // Helper method to determine if export buttons should be enabled
+  // Export buttons are always enabled for non-purchased packages, regardless of edit status
+  bool get _exportEnabled => !_isPurchased;
 
   // Package groups
   List<LanguagePackageGroup> _groups = [];
@@ -700,7 +705,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                             : null,
                         validator: (value) {
                           if (value == null) {
-                            return 'Please select a package group';
+                            return l10n.pleaseSelectPackageGroup;
                           }
                           return null;
                         },
@@ -759,7 +764,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                       : null,
                   validator: (value) {
                     if (value == null) {
-                      return 'Please select a package group';
+                      return l10n.pleaseSelectPackageGroup;
                     }
                     return null;
                   },
@@ -811,7 +816,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   child: PackageIcon(iconPath: _selectedIcon, size: 20),
                 ),
                 Text(
-                  'Custom',
+                  l10n.customIconLabel,
                   style: theme.textTheme.bodyMedium,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -832,7 +837,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
               ),
               Flexible(
                 child: Text(
-                  iconPath == null ? 'Default' : _getIconLabel(iconPath),
+                  iconPath == null ? l10n.defaultIconLabel : _getIconLabel(iconPath),
                   style: theme.textTheme.bodyMedium,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -852,23 +857,24 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
   }
 
   String _getIconLabel(String iconPath) {
+    final l10n = AppLocalizations.of(context)!;
     // Extract a friendly name from the path
     final fileName = path.basenameWithoutExtension(iconPath);
 
     // Handle asset icons
-    if (fileName == 'default_package_icon') return 'Default';
-    if (fileName == 'package_icon_v1') return 'Icon 1';
-    if (fileName == 'package_icon_v2') return 'Icon 2';
-    if (fileName == 'package_icon_v3') return 'Icon 3';
+    if (fileName == 'default_package_icon') return l10n.defaultIconLabel;
+    if (fileName == 'package_icon_v1') return l10n.icon1Label;
+    if (fileName == 'package_icon_v2') return l10n.icon2Label;
+    if (fileName == 'package_icon_v3') return l10n.icon3Label;
 
     // Handle custom icons - show "Custom Icon" for uploaded ones
     if (iconPath.contains('custom_package_icons') ||
         fileName.startsWith('custom_icon_')) {
-      return 'Custom Icon';
+      return l10n.customIconFile;
     }
     if (iconPath.contains('custom_package_icons') ||
         fileName.startsWith('imported_icon_')) {
-      return 'Imported Icon';
+      return l10n.importedIconFile;
     }
 
     return fileName;
@@ -919,7 +925,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         if (!mounted) return;
         _showErrorDialog(
           AppLocalizations.of(context)!,
-          'Unable to read image file. Please select a valid image.',
+          AppLocalizations.of(context)!.unableToReadImageFile,
         );
         return;
       }
@@ -929,7 +935,10 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         if (!mounted) return;
         _showErrorDialog(
           AppLocalizations.of(context)!,
-          'Icon dimensions are too large (${decodedImage.width}x${decodedImage.height}). Maximum allowed is 512x512 pixels.',
+          AppLocalizations.of(context)!.iconDimensionsTooLarge(
+            decodedImage.width,
+            decodedImage.height,
+          ),
         );
         return;
       }
@@ -941,7 +950,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         if (!mounted) return;
         _showErrorDialog(
           AppLocalizations.of(context)!,
-          'Icon file is too large. Maximum size is 1MB.',
+          AppLocalizations.of(context)!.iconFileTooLarge,
         );
         return;
       }
@@ -982,7 +991,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
       if (!mounted) return;
       _showErrorDialog(
         AppLocalizations.of(context)!,
-        'Failed to upload icon: $e',
+        AppLocalizations.of(context)!.failedToUploadIcon(e.toString()),
       );
     }
   }
@@ -1057,7 +1066,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   orElse: () => const MapEntry('', ''),
                 );
                 if (matchingLanguage.key.isEmpty) {
-                  return 'Please select a valid language from the list';
+                  return l10n.pleaseSelectValidLanguage;
                 }
                 return null;
               },
@@ -1203,9 +1212,32 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   children: [
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: _fieldsEnabled ? _exportPackage : null,
+                        onPressed: _exportEnabled ? _exportPackage : null,
                         icon: const Icon(Icons.file_download),
                         label: Text(l10n.exportPackage),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.tertiary,
+                          foregroundColor: Theme.of(
+                            context,
+                          ).colorScheme.onTertiary,
+                          disabledBackgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.surfaceContainerHighest,
+                          disabledForegroundColor: Theme.of(context)
+                              .colorScheme
+                              .onSurfaceVariant
+                              .withValues(alpha: 0.38),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: AppTheme.spacing8),
+                    Expanded(
+                      child: ElevatedButton.icon(
+                        onPressed: _exportEnabled ? _exportItemsJson : null,
+                        icon: const Icon(Icons.download),
+                        label: Text(l10n.exportItemsJson),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Theme.of(
                             context,
@@ -1246,6 +1278,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                         ),
                       ),
                     ),
+
                     SizedBox(width: AppTheme.spacing8),
                     Expanded(
                       child: ElevatedButton.icon(
@@ -1279,7 +1312,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                       children: [
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: _fieldsEnabled ? _exportPackage : null,
+                            onPressed: _exportEnabled ? _exportPackage : null,
                             icon: const Icon(Icons.file_download),
                             label: Text(l10n.exportPackage),
                             style: ElevatedButton.styleFrom(
@@ -1304,6 +1337,38 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                           ),
                         ),
                         SizedBox(width: AppTheme.spacing8),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: _exportEnabled ? _exportItemsJson : null,
+                            icon: const Icon(Icons.download),
+                            label: Text(l10n.exportItemsJson),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.tertiary,
+                              foregroundColor: Theme.of(
+                                context,
+                              ).colorScheme.onTertiary,
+                              disabledBackgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
+                              disabledForegroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant
+                                  .withValues(alpha: 0.38),
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 6,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                      ],
+                    ),
+                    SizedBox(height: AppTheme.spacing8),
+                    Row(
+                      children: [
                         Expanded(
                           child: ElevatedButton.icon(
                             onPressed: _fieldsEnabled ? _importItems : null,
@@ -1929,10 +1994,10 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
 
     final l10n = AppLocalizations.of(context)!;
 
-    // Let user select text file
+    // Let user select JSON file
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
-      allowedExtensions: ['txt', 'csv'],
+      allowedExtensions: ['json'],
       dialogTitle: l10n.selectImportFile,
     );
 
@@ -1948,19 +2013,50 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     try {
       final file = File(result.files.single.path!);
       final content = await file.readAsString();
-      final lines = content
-          .split('\n')
-          .where((line) => line.trim().isNotEmpty)
+
+      // Parse JSON
+      final dynamic jsonData = jsonDecode(content);
+
+      if (jsonData is! List) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${l10n.errorImportingItems}: JSON must be an array'),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
+        return;
+      }
+
+      final List<Map<String, dynamic>> items = jsonData
+          .whereType<Map<String, dynamic>>()
           .toList();
 
-      if (lines.isEmpty) {
-        _showImportFormatDialog(l10n);
+      if (items.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${l10n.errorImportingItems}: No valid items found in JSON'),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
         return;
+      }
+
+      // Check for language mismatch (only once)
+      bool shouldContinue = true;
+      if (items.isNotEmpty) {
+        shouldContinue = await _checkLanguageMismatch(items.first);
+        if (!shouldContinue) {
+          return;
+        }
       }
 
       // Create a ValueNotifier for progress updates
       final progressNotifier = ValueNotifier<_ImportProgress>(
-        _ImportProgress(current: 0, total: lines.length),
+        _ImportProgress(current: 0, total: items.length),
       );
 
       // Show progress dialog
@@ -1973,8 +2069,8 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         );
       }
 
-      final importResult = await _processImportLines(
-        lines,
+      final importResult = await _processJsonImportItems(
+        items,
         onProgress: (current, total) {
           progressNotifier.value = _ImportProgress(
             current: current,
@@ -2014,24 +2110,242 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     }
   }
 
-  Future<void> _openAITextAnalysis() async {
+  Future<void> _exportItemsJson() async {
     if (widget.package == null) return;
 
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => AITextAnalysisPage(package: widget.package!),
-      ),
-    );
+    final package = widget.package!;
+    final l10n = AppLocalizations.of(context)!;
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      // Get all categories for the package
+      final categories = await _categoryRepo.getCategoriesForPackage(package.id);
+
+      if (categories.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.noCategoriesInPackage),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
+        return;
+      }
+
+      // Get all items from all categories
+      final categoryIds = categories.map((c) => c.id).toList();
+      final items = await _itemRepo.getItemsForCategories(categoryIds);
+
+      if (items.isEmpty) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.noItemsToExport),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
+        return;
+      }
+
+      // Create category map for lookups
+      final categoryMap = <String, Category>{};
+      for (final cat in categories) {
+        categoryMap[cat.id] = cat;
+      }
+
+      // Convert items to JSON format
+      final List<Map<String, dynamic>> jsonItems = [];
+
+      // Normalize language codes to 2-letter format (e.g., "en-US" -> "EN")
+      String normalizeLanguageCodeForExport(String code) {
+        return code.split('-').first.toUpperCase();
+      }
+
+      final sourceLang = normalizeLanguageCodeForExport(package.languageCode1);
+      final targetLang = normalizeLanguageCodeForExport(package.languageCode2);
+
+      for (final item in items) {
+        final Map<String, dynamic> jsonItem = {};
+
+        // Add language codes
+        jsonItem['source_language'] = sourceLang;
+        jsonItem['target_language'] = targetLang;
+
+        // Add source fields
+        jsonItem['source_pre'] = item.language1Data.preItem ?? '';
+        jsonItem['source_expression'] = item.language1Data.text;
+        jsonItem['source_post'] = item.language1Data.postItem ?? '';
+
+        // Add target fields
+        jsonItem['target_pre'] = item.language2Data.preItem ?? '';
+        jsonItem['target_expression'] = item.language2Data.text;
+        jsonItem['target_post'] = item.language2Data.postItem ?? '';
+
+        // Add examples
+        if (item.examples.isNotEmpty) {
+          jsonItem['examples'] = item.examples
+              .map((ex) => {
+                    'source': ex.textLanguage1,
+                    'target': ex.textLanguage2,
+                  })
+              .toList();
+        } else {
+          jsonItem['examples'] = [];
+        }
+
+        // Add categories
+        final itemCategories = item.categoryIds
+            .where((id) => categoryMap.containsKey(id))
+            .map((id) => categoryMap[id]!.name)
+            .toList();
+        jsonItem['categories'] = itemCategories;
+
+        jsonItems.add(jsonItem);
+      }
+
+      // Convert to pretty JSON
+      const encoder = JsonEncoder.withIndent('  ');
+      final jsonString = encoder.convert(jsonItems);
+
+      // Let user select destination folder and filename
+      String? outputPath = await FilePicker.platform.saveFile(
+        dialogTitle: 'Export Items as JSON',
+        fileName: '${package.packageName ?? "items"}_export.json',
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+      );
+
+      if (outputPath == null) {
+        // User cancelled
+        return;
+      }
+
+      // Ensure .json extension
+      if (!outputPath.toLowerCase().endsWith('.json')) {
+        outputPath = '$outputPath.json';
+      }
+
+      // Write JSON to file
+      final file = File(outputPath);
+      await file.writeAsString(jsonString);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.itemsExportedSuccessfully(items.length, outputPath)),
+            duration: const Duration(seconds: 5),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${l10n.errorExportingItems}: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
-  Future<_ImportResult> _processImportLines(
-    List<String> lines, {
+  /// Check if JSON languages differ from package languages and warn user
+  Future<bool> _checkLanguageMismatch(Map<String, dynamic> firstItem) async {
+    final package = widget.package!;
+    final l10n = AppLocalizations.of(context)!;
+
+    // Extract language codes from JSON (if present)
+    final jsonSourceLang = firstItem['source_language'] as String?;
+    final jsonTargetLang = firstItem['target_language'] as String?;
+
+    if (jsonSourceLang == null || jsonTargetLang == null) {
+      // No language info in JSON, proceed without warning
+      return true;
+    }
+
+    // Normalize language codes for comparison (e.g., "EN" -> "en", "en-US" -> "en")
+    String normalizeLanguageCode(String code) {
+      return code.toLowerCase().split('-').first;
+    }
+
+    final packageLang1 = normalizeLanguageCode(package.languageCode1);
+    final packageLang2 = normalizeLanguageCode(package.languageCode2);
+    final jsonLang1 = normalizeLanguageCode(jsonSourceLang);
+    final jsonLang2 = normalizeLanguageCode(jsonTargetLang);
+
+    // Check if languages match
+    if (packageLang1 != jsonLang1 || packageLang2 != jsonLang2) {
+      // Show warning dialog
+      final result = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Row(
+            children: [
+              Icon(
+                Icons.warning_amber_rounded,
+                color: Theme.of(context).colorScheme.error,
+              ),
+              const SizedBox(width: AppTheme.spacing8),
+              Text(l10n.languageMismatch),
+            ],
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.languageMismatchDescription,
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: AppTheme.spacing16),
+              Text(l10n.packageLanguages(packageLang1, packageLang2)),
+              Text(l10n.jsonFileLanguages(jsonLang1, jsonLang2)),
+              const SizedBox(height: AppTheme.spacing16),
+              Text(l10n.continueImportQuestion),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: Text(l10n.cancel),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+              ),
+              child: Text(l10n.continueImport),
+            ),
+          ],
+        ),
+      );
+
+      return result ?? false;
+    }
+
+    return true;
+  }
+
+  /// Process JSON import items
+  Future<_ImportResult> _processJsonImportItems(
+    List<Map<String, dynamic>> jsonItems, {
     void Function(int current, int total)? onProgress,
   }) async {
     final successfulItems = <String>[];
     final failedItems = <String>[];
     final package = widget.package!;
-    final l10n = AppLocalizations.of(context)!;
 
     // Get existing items to check for duplicates
     final existingCategories = await _categoryRepo.getCategoriesForPackage(
@@ -2055,98 +2369,81 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
       existingItemKeys.add(key);
     }
 
-    for (int lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-      final line = lines[lineIndex];
+    for (int itemIndex = 0; itemIndex < jsonItems.length; itemIndex++) {
+      final jsonItem = jsonItems[itemIndex];
 
       // Report progress
-      onProgress?.call(lineIndex + 1, lines.length);
+      onProgress?.call(itemIndex + 1, jsonItems.length);
 
       try {
-        // Split by main delimiter
-        final parts = line.split('---');
+        // Extract fields from JSON
+        final sourceExpression = jsonItem['source_expression'] as String?;
 
-        // Parse fields
-        String? lang1Text;
-        String? lang1Pre;
-        String? lang1Post;
-        String? lang2Text;
-        String? lang2Pre;
-        String? lang2Post;
-        final examples = <Map<String, String>>[];
-        final categories = <String>[];
+        // Validate: source_expression is mandatory
+        if (sourceExpression == null || sourceExpression.trim().isEmpty) {
+          failedItems.add(
+            'Item ${itemIndex + 1}: Missing mandatory field "source_expression"',
+          );
+          continue;
+        }
 
-        for (final part in parts) {
-          final trimmedPart = part.trim();
-          if (trimmedPart.isEmpty) continue;
+        // Optional fields
+        final sourcePre = (jsonItem['source_pre'] as String?)?.trim();
+        final sourcePost = (jsonItem['source_post'] as String?)?.trim();
+        final targetExpression = (jsonItem['target_expression'] as String?)?.trim();
+        final targetPre = (jsonItem['target_pre'] as String?)?.trim();
+        final targetPost = (jsonItem['target_post'] as String?)?.trim();
 
-          if (trimmedPart.startsWith('L1=')) {
-            lang1Text = trimmedPart.substring(3).trim();
-          } else if (trimmedPart.startsWith('L1pre=')) {
-            lang1Pre = trimmedPart.substring(6).trim();
-          } else if (trimmedPart.startsWith('L1post=')) {
-            lang1Post = trimmedPart.substring(7).trim();
-          } else if (trimmedPart.startsWith('L2=')) {
-            lang2Text = trimmedPart.substring(3).trim();
-          } else if (trimmedPart.startsWith('L2pre=')) {
-            lang2Pre = trimmedPart.substring(6).trim();
-          } else if (trimmedPart.startsWith('L2post=')) {
-            lang2Post = trimmedPart.substring(7).trim();
-          } else if (trimmedPart.startsWith('EX=')) {
-            final exampleContent = trimmedPart.substring(3).trim();
-            final exampleParts = exampleContent.split(':::');
-            if (exampleParts.length == 2) {
-              examples.add({
-                'language1': exampleParts[0].trim(),
-                'language2': exampleParts[1].trim(),
-              });
+        // Examples (optional)
+        final examplesJson = jsonItem['examples'] as List<dynamic>?;
+        final examples = <ExampleSentence>[];
+        if (examplesJson != null) {
+          for (final exJson in examplesJson) {
+            if (exJson is Map<String, dynamic>) {
+              final sourceText = exJson['source'] as String? ?? '';
+              final targetText = exJson['target'] as String? ?? '';
+              examples.add(
+                ExampleSentence(
+                  id: const Uuid().v4(),
+                  textLanguage1: sourceText,
+                  textLanguage2: targetText,
+                ),
+              );
             }
-          } else if (trimmedPart.startsWith('CAT=')) {
-            final catContent = trimmedPart.substring(4).trim();
-            categories.addAll(
-              catContent
-                  .split(':::')
-                  .map((c) => c.trim())
-                  .where((c) => c.isNotEmpty),
-            );
-          } else {
-            // Unknown field prefix - this is an error
-            failedItems.add(
-              '${l10n.invalidImportLine} ${lineIndex + 1}: ${l10n.unknownField} "$trimmedPart"',
-            );
-            throw Exception(l10n.unknownField);
           }
         }
 
-        // Validate: at least L1 or L2 must be present
-        if ((lang1Text == null || lang1Text.isEmpty) &&
-            (lang2Text == null || lang2Text.isEmpty)) {
-          failedItems.add(
-            '${l10n.invalidImportLine} ${lineIndex + 1}: ${l10n.missingRequiredFields}',
-          );
-          continue;
+        // Categories (optional)
+        final categoriesJson = jsonItem['categories'] as List<dynamic>?;
+        final categoryNames = <String>[];
+        if (categoriesJson != null) {
+          for (final catName in categoriesJson) {
+            if (catName is String && catName.trim().isNotEmpty) {
+              categoryNames.add(catName.trim());
+            }
+          }
         }
 
-        // Use empty string if one is missing
-        lang1Text = lang1Text ?? '';
-        lang2Text = lang2Text ?? '';
+        // If no categories specified, add to default "Imported" category
+        if (categoryNames.isEmpty) {
+          categoryNames.add('Imported');
+        }
+
+        // Use empty string for target if not provided
+        final targetText = targetExpression ?? '';
 
         // Check for duplicate
-        final itemKey = '${lang1Text.toLowerCase()}|${lang2Text.toLowerCase()}';
+        final itemKey = '${sourceExpression.toLowerCase()}|${targetText.toLowerCase()}';
         if (existingItemKeys.contains(itemKey)) {
           failedItems.add(
-            '${l10n.invalidImportLine} ${lineIndex + 1}: Duplicate item',
+            'Item ${itemIndex + 1}: Duplicate item "$sourceExpression | $targetText"',
           );
           continue;
-        }
-
-        // If no categories specified, add to a default "Imported" category
-        if (categories.isEmpty) {
-          categories.add('Imported');
         }
 
         // Create/get categories
         final itemCategoryIds = <String>[];
-        for (final catName in categories) {
+        for (final catName in categoryNames) {
           final catKey = catName.toLowerCase();
 
           if (!categoryMap.containsKey(catKey)) {
@@ -2164,17 +2461,6 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
           itemCategoryIds.add(categoryMap[catKey]!.id);
         }
 
-        // Convert examples to ExampleSentence objects
-        final exampleSentences = examples
-            .map(
-              (ex) => ExampleSentence(
-                id: const Uuid().v4(),
-                textLanguage1: ex['language1'] ?? '',
-                textLanguage2: ex['language2'] ?? '',
-              ),
-            )
-            .toList();
-
         // Create item
         final item = Item(
           id: const Uuid().v4(),
@@ -2182,17 +2468,17 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
           categoryIds: itemCategoryIds,
           language1Data: ItemLanguageData(
             languageCode: package.languageCode1,
-            text: lang1Text,
-            preItem: lang1Pre?.isNotEmpty == true ? lang1Pre : null,
-            postItem: lang1Post?.isNotEmpty == true ? lang1Post : null,
+            text: sourceExpression.trim(),
+            preItem: sourcePre?.isNotEmpty == true ? sourcePre : null,
+            postItem: sourcePost?.isNotEmpty == true ? sourcePost : null,
           ),
           language2Data: ItemLanguageData(
             languageCode: package.languageCode2,
-            text: lang2Text,
-            preItem: lang2Pre?.isNotEmpty == true ? lang2Pre : null,
-            postItem: lang2Post?.isNotEmpty == true ? lang2Post : null,
+            text: targetText,
+            preItem: targetPre?.isNotEmpty == true ? targetPre : null,
+            postItem: targetPost?.isNotEmpty == true ? targetPost : null,
           ),
-          examples: exampleSentences,
+          examples: examples,
           isKnown: false,
           isFavourite: false,
           isImportant: false,
@@ -2203,110 +2489,28 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         await _itemRepo.insertItem(item);
         existingItemKeys.add(itemKey);
 
-        final displayText = lang1Text.isNotEmpty && lang2Text.isNotEmpty
-            ? '$lang1Text | $lang2Text'
-            : (lang1Text.isNotEmpty ? lang1Text : lang2Text);
-        successfulItems.add('$displayText (${categories.join(", ")})');
+        final displayText = targetText.isNotEmpty
+            ? '$sourceExpression | $targetText'
+            : sourceExpression;
+        successfulItems.add('$displayText (${categoryNames.join(", ")})');
       } catch (e) {
-        // Only add to failed if not already added
-        if (!failedItems.any(
-          (f) => f.startsWith('${l10n.invalidImportLine} ${lineIndex + 1}'),
-        )) {
-          failedItems.add('${l10n.invalidImportLine} ${lineIndex + 1}: $e');
-        }
+        failedItems.add('Item ${itemIndex + 1}: $e');
       }
     }
 
     return _ImportResult(successful: successfulItems, failed: failedItems);
   }
 
-  void _showImportFormatDialog(AppLocalizations l10n) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.importFormat),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(l10n.importFormatNewDescription),
-              const SizedBox(height: AppTheme.spacing8),
-              Text(
-                'Format:',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: AppTheme.spacing8),
-              Container(
-                padding: const EdgeInsets.all(AppTheme.spacing8),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-                ),
-                child: const Text(
-                  'L1pre=<prefix>---L1=<main text>---L1post=<suffix>---'
-                  'L2pre=<prefix>---L2=<main text>---L2post=<suffix>---'
-                  'EX=<L1 example>:::<L2 example>---'
-                  'EX=<L1 example2>:::<L2 example2>---'
-                  'CAT=<category1>:::<category2>:::<category3>',
-                  style: TextStyle(fontFamily: 'monospace', fontSize: 11),
-                ),
-              ),
-              const SizedBox(height: AppTheme.spacing8),
-              Text(
-                'Example:',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: AppTheme.spacing8),
-              Container(
-                padding: const EdgeInsets.all(AppTheme.spacing8),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-                ),
-                child: const Text(
-                  'L1pre=the---L1=Be on a lookout for sensitive data---L1post=---'
-                  'L2pre=---L2=Legyen résen az érzékeny adatokkal kapcsolatban---'
-                  'L2Post=---EX=Be careful when sharing files:::Legyen óvatos fájlmegosztáskor---'
-                  'EX=Always check before upload:::Mindig ellenőrizze feltöltés előtt---'
-                  'CAT=Security:::Awareness:::Data Protection',
-                  style: TextStyle(fontFamily: 'monospace', fontSize: 10),
-                ),
-              ),
-              const SizedBox(height: AppTheme.spacing8),
-              Text(
-                l10n.importFormatNotes,
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: AppTheme.spacing8),
-              Text(l10n.importFormatNewLine1),
-              Text(l10n.importFormatNewLine2),
-              Text(l10n.importFormatNewLine3),
-              Text(l10n.importFormatNewLine4),
-              Text(l10n.importFormatNewLine5),
-              Text(l10n.importFormatNewLine6),
-              Text(l10n.importFormatNewLine7),
-              Text(l10n.importFormatNewLine8),
-              Text(l10n.importFormatNewLine9),
-              Text(l10n.importFormatNewLine10),
-              Text(l10n.importFormatNewLine11),
-              Text(l10n.importFormatNewLine12),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(l10n.close),
-          ),
-        ],
+  Future<void> _openAITextAnalysis() async {
+    if (widget.package == null) return;
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => AITextAnalysisPage(package: widget.package!),
       ),
     );
   }
+
 
   void _showImportResultDialog(AppLocalizations l10n, _ImportResult result) {
     showDialog(
@@ -2537,3 +2741,4 @@ class _LanguageCodePickerDialogState extends State<_LanguageCodePickerDialog> {
     );
   }
 }
+
