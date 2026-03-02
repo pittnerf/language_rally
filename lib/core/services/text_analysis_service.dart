@@ -40,10 +40,11 @@ Response (only the 2-letter code):''';
     required String knowledgeLevel,
     required bool extractWords,
     required bool extractExpressions,
+    bool extractFullItems = false,
     required String sourceLanguage,
     int? maxItems,
   }) async {
-    if (!extractWords && !extractExpressions) {
+    if (!extractWords && !extractExpressions && !extractFullItems) {
       throw Exception('At least one extraction type must be selected');
     }
 
@@ -51,33 +52,48 @@ Response (only the 2-letter code):''';
     final textWordCount = text.split(RegExp(r'\s+')).length;
     final estimatedInputTokens = _estimateTokens(text);
 
-    // For texts with many words, we need to use chunking to extract comprehensively
-    // Since GPT-3.5-turbo output is limited to ~4000 tokens, large texts need multiple passes
-    const maxWordsPerRequest = 400; // Process in smaller chunks to extract more items
+    // Count sentences in the text for better chunking decision
+    final sentenceCount = _countSentences(text);
 
-    if (textWordCount > maxWordsPerRequest) {
-      // Text is large, need to chunk for comprehensive extraction
+    // For texts with many sentences, use sentence-based chunking
+    // This preserves context better than word-based splitting
+    const maxSentencesPerRequest = 20; // More than 20 sentences → use chunking
+
+    if (sentenceCount > maxSentencesPerRequest) {
+      print('Text has $sentenceCount sentences (>${maxSentencesPerRequest}), using sentence-based chunking');
       return await _extractItemsInChunks(
         text: text,
         knowledgeLevel: knowledgeLevel,
         extractWords: extractWords,
         extractExpressions: extractExpressions,
+        extractFullItems: extractFullItems,
         sourceLanguage: sourceLanguage,
         maxItems: maxItems,
       );
     }
 
-    // If text is too large for single request, need to chunk
-    const maxContextTokens = 12000; // GPT-3.5-turbo-16k safe limit
+    // If text is too large for single request based on tokens, use chunking
+    const maxContextTokens = 12000; // GPT safe limit
     const promptOverhead = 2000; // Tokens for our instructions
 
     if (estimatedInputTokens > maxContextTokens - promptOverhead) {
-      // Text is too large, need to chunk
+      print('Text has ${estimatedInputTokens} estimated tokens (too large), using sentence-based chunking');
       return await _extractItemsInChunks(
         text: text,
         knowledgeLevel: knowledgeLevel,
         extractWords: extractWords,
         extractExpressions: extractExpressions,
+        extractFullItems: extractFullItems,
+        sourceLanguage: sourceLanguage,
+        maxItems: maxItems,
+      );
+    }
+
+    // If extractFullItems mode is enabled, use a different approach
+    // Translate each non-empty line individually
+    if (extractFullItems) {
+      return await _extractFullItemsLineByLine(
+        text: text,
         sourceLanguage: sourceLanguage,
         maxItems: maxItems,
       );
@@ -85,23 +101,27 @@ Response (only the 2-letter code):''';
 
     final types = <String>[];
     if (extractWords) types.add('individual words');
-    if (extractExpressions) types.add('expressions/phrases (2-8 words)');
+    if (extractExpressions) types.add('expressions/phrases (2-12 words, prefer longer meaningful expressions)');
 
     // Define what each level should focus on
     final levelGuidance = _getKnowledgeLevelGuidance(knowledgeLevel);
 
     // Calculate dynamic maxTokens for response based on expected output
-    // Each item needs ~50 tokens in JSON format
+    // Each item needs ~60 tokens in JSON format (increased for longer expressions)
     // For long texts, allow more items to be extracted
-    final expectedItems = maxItems ?? (textWordCount ~/ 8).clamp(30, 500);
-    // gpt-3.5-turbo max tokens: 4096 total (input + output)
-    // With ~2000 token prompt + text, safe output limit is ~2000 tokens
+    // Use more aggressive ratio to extract more comprehensively
+    final expectedItems = maxItems ?? (textWordCount ~/ 5).clamp(50, 600);
     // Allow up to 4000 tokens for response but will be clamped to safe limit in _makeRequest
-    final dynamicMaxTokens = (expectedItems * 50).clamp(1000, 4000);
+    final dynamicMaxTokens = (expectedItems * 60).clamp(1500, 4000);
 
-    final prompt = '''You are a language learning expert. Analyze the following text in $sourceLanguage and extract important vocabulary ${types.join(' and ')} suitable for CEFR $knowledgeLevel level learners.
+    final prompt = '''You are a language learning expert. Analyze the following text in $sourceLanguage and extract ALL important vocabulary ${types.join(' and ')} suitable for CEFR $knowledgeLevel level learners.
 
-CRITICAL - KNOWLEDGE LEVEL: $knowledgeLevel
+⚠️ CRITICAL REQUIREMENTS:
+1. EXTRACT COMPREHENSIVELY - aim to extract ALL relevant vocabulary from the text
+2. DO NOT stop early - continue until you have extracted every suitable item
+3. PRIORITIZE QUALITY - focus on meaningful, useful vocabulary for learners
+
+KNOWLEDGE LEVEL: $knowledgeLevel
 You MUST extract ONLY vocabulary that is appropriate for $knowledgeLevel level learners. DO NOT extract advanced vocabulary that is beyond this level.
 
 Text to analyze:
@@ -112,21 +132,50 @@ $text
 IMPORTANT - Knowledge Level Requirements for $knowledgeLevel:
 $levelGuidance
 
-Extraction Requirements:
-1. ⚠️ STRICTLY adhere to $knowledgeLevel vocabulary level - this is CRITICAL
-2. Extract COMPREHENSIVELY: aim to identify ALL relevant vocabulary from the text that matches $knowledgeLevel level
-3. Extract vocabulary that students at $knowledgeLevel level would be learning or practicing
-4. AVOID words and expressions that are too advanced for $knowledgeLevel level
-5. ${extractWords && !extractExpressions ? 'Extract ONLY single words (one word per item)' : ''}${!extractWords && extractExpressions ? 'Extract ONLY expressions/phrases (2-8 words, NO single words)' : ''}${extractWords && extractExpressions ? 'Extract both single words AND multi-word expressions/phrases (2-8 words)' : ''}
-6. For expressions: Include idioms, phrasal verbs, collocations, and common phrases (2-8 words) appropriate for $knowledgeLevel level
-7. Mark each item with "type": "word" for single words OR "type": "expression" for multi-word phrases
-8. In case of words for nouns in languages like German, include the article (der/die/das) in preItem and plural form in postItem
-9. In case of verbs include the past version into postItem (e.g., machte, h. gemacht)
-10. For other languages with articles/prepositions, include them in preItem
-${maxItems != null ? '11. Limit to maximum $maxItems items\n' : ''}
-12. Avoid extracting duplicates
-13. IMPORTANT: Extract as many relevant items as possible - do NOT stop early
-14. Return ONLY a JSON array with this exact format:
+🎯 EXTRACTION REQUIREMENTS - READ CAREFULLY:
+
+COMPREHENSIVENESS (CRITICAL):
+- Extract ALL relevant vocabulary that matches $knowledgeLevel level
+- DO NOT be conservative - extract generously
+- Aim for MAXIMUM coverage of useful vocabulary in the text
+- If you're unsure whether to include an item, INCLUDE it
+
+VOCABULARY SELECTION:
+- ${extractWords && !extractExpressions ? 'Extract ONLY single words (one word per item)' : ''}${!extractWords && extractExpressions ? 'Extract ONLY expressions/phrases (2-12 words, NO single words)' : ''}${extractWords && extractExpressions ? 'Extract both single words AND multi-word expressions/phrases (2-12 words)' : ''}
+- For EXPRESSIONS, prioritize longer, more meaningful phrases (5-12 words preferred)
+- Include: phrasal verbs, idioms, collocations, common expressions, verb phrases
+- Strictly adhere to $knowledgeLevel vocabulary level
+
+EXPRESSION EXAMPLES (PRIORITIZE THESE TYPES):
+✅ GOOD - Longer, meaningful expressions:
+  - "have a long-term impact on" (5 words)
+  - "play a key role in shaping" (6 words)
+  - "be perceived as less worthy" (5 words)
+  - "adverse childhood experiences" (3 words)
+  - "respond to a child's failures" (5 words)
+  - "psychological well-being and quality of life" (6 words)
+
+⚠️ ACCEPTABLE - Shorter but still useful:
+  - "such as" (2 words)
+  - "may have" (2 words)
+  - "in adulthood" (2 words)
+
+FROM YOUR EXAMPLE SENTENCE:
+"Adverse childhood experiences, such as criticism, neglect, or harsh responses from caregivers, may have a long-term impact on psychological well-being and quality of life in adulthood."
+
+EXPECTED EXTRACTION (showing comprehensive approach):
+Words: adverse, childhood, experiences, criticism, neglect, harsh, responses, caregivers, long-term, impact, psychological, well-being, quality, adulthood
+Expressions: "adverse childhood experiences", "such as", "harsh responses from caregivers", "may have a long-term impact on", "have a long-term impact on", "psychological well-being and quality of life", "quality of life", "in adulthood"
+
+FORMATTING RULES:
+1. Mark each item with "type": "word" for single words OR "type": "expression" for multi-word phrases
+2. For nouns in languages like German: include article (der/die/das) in preItem, plural in postItem
+3. For verbs: include past version in postItem (e.g., machte, h. gemacht)
+4. For other languages with articles/prepositions: include them in preItem
+${maxItems != null ? '5. Limit to maximum $maxItems items (but extract comprehensively up to this limit)\n' : ''}
+6. Avoid exact duplicates
+7. CRITICAL: Extract as MANY relevant items as possible - use the full available token space
+8. Return ONLY a JSON array with this exact format:
 
 [
   {
@@ -142,6 +191,7 @@ Examples for German:
 {"text": "sich freuen", "type": "expression", "preItem": null, "postItem": "freute, h.s. gefreut"}
 {"text": "auf etwas achten", "type": "expression", "preItem": null, "postItem": null}
 {"text": "in Betracht ziehen", "type": "expression", "preItem": null, "postItem": null}
+{"text": "einen großen Einfluss haben auf", "type": "expression", "preItem": null, "postItem": null}
 
 Examples for English:
 {"text": "cat", "type": "word", "preItem": null, "postItem": "pl: cats"}
@@ -149,14 +199,20 @@ Examples for English:
 {"text": "take into account", "type": "expression", "preItem": null, "postItem": null}
 {"text": "be on the lookout for", "type": "expression", "preItem": null, "postItem": null}
 {"text": "as far as I'm concerned", "type": "expression", "preItem": null, "postItem": null}
+{"text": "have a long-term impact on", "type": "expression", "preItem": null, "postItem": null}
+{"text": "play a crucial role in determining", "type": "expression", "preItem": null, "postItem": null}
 
-IMPORTANT: Expressions can be 2-8 words long. Extract idioms, phrasal verbs, and common collocations.
+⚠️ IMPORTANT: 
+- Expressions should be 2-12 words long (longer is better for meaningful phrases)
+- PRIORITIZE longer expressions (5-12 words) that capture complete meanings
+- Extract idioms, phrasal verbs, verb phrases, and common collocations
+- Include both the complete phrase AND useful sub-phrases if applicable
 
 CRITICAL: If extracting only expressions, DO NOT include any single-word items in the result.
 
 Do not include any explanation, only the JSON array.''';
 
-    // DEBUG: Print the full prompt to console
+    // DEBUG: Print analysis details to console
     print('═══════════════════════════════════════════════════════════');
     print('AI TEXT ANALYSIS - PROMPT SENT TO OPENAI');
     print('═══════════════════════════════════════════════════════════');
@@ -167,21 +223,32 @@ Do not include any explanation, only the JSON array.''';
     print('Dynamic Max Tokens: $dynamicMaxTokens');
     print('Text Word Count: $textWordCount');
     print('───────────────────────────────────────────────────────────');
-    print('FULL PROMPT:');
-    print(prompt);
+    print('INPUT TEXT DETAILS:');
+    print('  Character count: ${text.length}');
+    print('  First 100 chars: ${text.substring(0, text.length > 100 ? 100 : text.length)}');
+    print('  Last 100 chars: ${text.length > 100 ? text.substring(text.length - 100) : "[text too short]"}');
+    print('───────────────────────────────────────────────────────────');
+    print('PROMPT DETAILS:');
+    print('  Prompt character count: ${prompt.length}');
+    print('  Prompt word count: ${prompt.split(RegExp(r'\s+')).length}');
+    print('  Estimated tokens: ${_estimateTokens(prompt)}');
+    print('───────────────────────────────────────────────────────────');
+    // Note: Not printing full prompt to avoid logcat truncation issues
+    // On Android, logcat truncates at ~4000 characters per line
+    print('NOTE: Full prompt not displayed due to logcat character limits');
+    print('      but the COMPLETE text is being sent to OpenAI API');
     print('═══════════════════════════════════════════════════════════');
 
     try {
       final response = await _makeRequest(prompt, maxTokens: dynamicMaxTokens);
 
-      // DEBUG: Print the response
+      // DEBUG: Print the response details
       print('───────────────────────────────────────────────────────────');
-      print('OPENAI RESPONSE (first 500 chars):');
-      print(response.substring(0, response.length > 500 ? 500 : response.length));
-      if (response.length > 500) {
-        print('... (truncated, total length: ${response.length} chars)');
-      }
-      print('═══════════════════════════════════════════════════════════');
+      print('OPENAI RESPONSE RECEIVED:');
+      print('  Response length: ${response.length} characters');
+      print('  Response starts with: ${response.substring(0, response.length > 80 ? 80 : response.length)}...');
+      print('  Response ends with: ...${response.length > 80 ? response.substring(response.length - 80) : response}');
+      print('───────────────────────────────────────────────────────────');
 
       // Extract JSON from response
       String jsonContent = response;
@@ -231,6 +298,19 @@ Do not include any explanation, only the JSON array.''';
     return (wordCount * 1.4).ceil(); // Conservative estimate
   }
 
+  /// Count sentences in text
+  /// Uses sentence delimiters (. ! ?) followed by space/newline and capital letter
+  int _countSentences(String text) {
+    // Pattern matches: . ! ? followed by space/newline
+    final sentencePattern = RegExp(
+      r'[.!?](?:\s+[A-Z]|\n+)',
+      multiLine: true,
+    );
+    final matches = sentencePattern.allMatches(text);
+    // Add 1 because the last sentence may not have a delimiter after it
+    return matches.length + 1;
+  }
+
   /// Remove surrounding quotation marks from text
   /// Handles both single (') and double (") quotes
   String _removeQuotes(String? text) {
@@ -260,26 +340,63 @@ Do not include any explanation, only the JSON array.''';
   }
 
   /// Extract items from large text by processing in chunks
+  /// Uses sentence-based chunking to preserve context and avoid cutting mid-sentence
   Future<List<ExtractedItem>> _extractItemsInChunks({
     required String text,
     required String knowledgeLevel,
     required bool extractWords,
     required bool extractExpressions,
+    bool extractFullItems = false,
     required String sourceLanguage,
     int? maxItems,
   }) async {
-    // Split text into manageable chunks (around 400 words per chunk for comprehensive extraction)
-    final words = text.split(RegExp(r'\s+'));
-    const chunkSize = 400; // Smaller chunks = more comprehensive extraction
-    final chunks = <String>[];
+    // Split text into sentences using multiple delimiters
+    // This regex handles: . ! ? followed by space/newline, and also handles abbreviations
+    final sentencePattern = RegExp(
+      r'(?<=[.!?])\s+(?=[A-Z])|(?<=[.!?])\n+',
+      multiLine: true,
+    );
 
-    for (int i = 0; i < words.length; i += chunkSize) {
-      final end = (i + chunkSize < words.length) ? i + chunkSize : words.length;
-      chunks.add(words.sublist(i, end).join(' '));
+    var sentences = text.split(sentencePattern)
+        .map((s) => s.trim())
+        .where((s) => s.isNotEmpty)
+        .toList();
+
+    // If splitting didn't work well (very few sentences), fall back to splitting by newlines
+    if (sentences.length < 3) {
+      sentences = text.split(RegExp(r'\n+'))
+          .map((s) => s.trim())
+          .where((s) => s.isNotEmpty)
+          .toList();
     }
 
     print('───────────────────────────────────────────────────────────');
-    print('CHUNKING: Text has ${words.length} words, splitting into ${chunks.length} chunks of ~$chunkSize words each');
+    print('SENTENCE-BASED CHUNKING: Detected ${sentences.length} sentences in text');
+
+    // Group sentences into chunks (5-10 sentences per chunk)
+    const minSentencesPerChunk = 5;
+    const maxSentencesPerChunk = 10;
+    final chunks = <String>[];
+
+    for (int i = 0; i < sentences.length; i += maxSentencesPerChunk) {
+      final end = (i + maxSentencesPerChunk < sentences.length)
+          ? i + maxSentencesPerChunk
+          : sentences.length;
+      final chunkSentences = sentences.sublist(i, end);
+      chunks.add(chunkSentences.join(' '));
+    }
+
+    print('Creating ${chunks.length} chunks with $minSentencesPerChunk-$maxSentencesPerChunk sentences each');
+    print('───────────────────────────────────────────────────────────');
+
+    for (int i = 0; i < chunks.length; i++) {
+      final chunkSentenceCount = i + maxSentencesPerChunk <= sentences.length
+          ? maxSentencesPerChunk
+          : sentences.length - i * maxSentencesPerChunk;
+      final chunkWordCount = chunks[i].split(RegExp(r'\s+')).length;
+      final chunkCharCount = chunks[i].length;
+      print('  Chunk ${i + 1}: $chunkSentenceCount sentences, $chunkWordCount words, $chunkCharCount chars');
+    }
     print('───────────────────────────────────────────────────────────');
 
     // Process each chunk
@@ -291,6 +408,7 @@ Do not include any explanation, only the JSON array.''';
         knowledgeLevel: knowledgeLevel,
         extractWords: extractWords,
         extractExpressions: extractExpressions,
+        extractFullItems: extractFullItems,
         sourceLanguage: sourceLanguage,
         maxItems: null, // Don't limit individual chunks
       );
@@ -681,5 +799,51 @@ Do not include any explanation, only the JSON array.''';
       }
       throw Exception('Network error: $e');
     }
+  }
+
+  /// Extract full items line by line - each non-empty line becomes an item
+  /// This mode translates each line as a complete item without extraction
+  Future<List<ExtractedItem>> _extractFullItemsLineByLine({
+    required String text,
+    required String sourceLanguage,
+    int? maxItems,
+  }) async {
+    print('═══════════════════════════════════════════════════════════');
+    print('EXTRACT FULL ITEMS MODE - Line by Line Translation');
+    print('═══════════════════════════════════════════════════════════');
+
+    // Split text into non-empty lines
+    final lines = text.split('\n')
+        .map((line) => line.trim())
+        .where((line) => line.isNotEmpty)
+        .toList();
+
+    print('Total lines to process: ${lines.length}');
+
+    // Apply maxItems limit if specified
+    final linesToProcess = maxItems != null && lines.length > maxItems
+        ? lines.take(maxItems).toList()
+        : lines;
+
+    print('Processing ${linesToProcess.length} lines');
+
+    // Each line becomes an ExtractedItem with just the text
+    // Translation will happen in the next step (AI Items Selection Page)
+    final items = linesToProcess.map((line) {
+      return ExtractedItem(
+        text: line,
+        type: 'expression', // Treat full items as expressions
+        preItem: null,
+        postItem: null,
+        translatedText: null, // Will be filled in during next step
+        translatedPreItem: null,
+        translatedPostItem: null,
+      );
+    }).toList();
+
+    print('Created ${items.length} full items from lines');
+    print('═══════════════════════════════════════════════════════════');
+
+    return items;
   }
 }

@@ -399,6 +399,7 @@ class ImportExportRepository {
       'exported_at': DateTime.now().toIso8601String(),
       'package': {
         'id': package.id,
+        'name': package.packageName,
         'group_id': package.groupId,
         'group_name': groupName,
         'language_code1': package.languageCode1,
@@ -855,6 +856,7 @@ class ImportExportRepository {
     final package = LanguagePackage(
       id: packageId,
       groupId: groupId,
+      packageName: packageData['name'] as String?,
       languageCode1: packageData['language_code1'] as String,
       languageName1: packageData['language_name1'] as String,
       languageCode2: packageData['language_code2'] as String,

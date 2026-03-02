@@ -957,7 +957,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get extractExpressions => 'Kifejezések kinyerése';
 
   @override
-  String get maxItems => 'Maximum elemszám';
+  String get maxItems => 'Max új elem';
 
   @override
   String get maxItemsHint => 'Hagyja üresen korlát nélkül';
@@ -972,7 +972,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get analyzeText => 'Szöveg elemzése';
 
   @override
-  String get configureAnalysis => 'Elemzés Beállítása';
+  String get configureAnalysis => 'Kinyerendő Elemek Típusai';
 
   @override
   String get openaiModel => 'AI Modell';
@@ -1346,4 +1346,35 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get pleaseSelectValidLanguage =>
       'Kérjük válasszon érvényes nyelvet a listából';
+
+  @override
+  String get status => 'Állapot';
+
+  @override
+  String get addExample => 'Példa hozzáadása';
+
+  @override
+  String get noExamplesYet =>
+      'Még nincsenek példák. Kattintson a + gombra hozzáadáshoz.';
+
+  @override
+  String get removeCategory => 'Kategória eltávolítása';
+
+  @override
+  String removeCategoryConfirm(String categoryName) {
+    return 'Eltávolítja a(z) \"$categoryName\" kategóriát erről az elemről?';
+  }
+
+  @override
+  String get remove => 'Eltávolítás';
+
+  @override
+  String get extractFullItems => 'Teljes elemek kinyerése';
+
+  @override
+  String get pasteFromClipboard => 'Beillesztés vágólapról';
+
+  @override
+  String get noItemsFoundOrAllDuplicates =>
+      'Nem található elem a szövegben, vagy minden elem már létezik a csomagban';
 }

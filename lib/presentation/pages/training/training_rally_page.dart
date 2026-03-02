@@ -606,17 +606,45 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
       appBar: AppBar(
         title: Text(l10n.trainingRally, style: theme.textTheme.titleSmall),
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16.0),
-            child: Center(
-              child: Text(
-                '${_filteredItems.length} items',
-                style: theme.textTheme.titleSmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+          if (_currentBadge != null)
+            Padding(
+              padding: const EdgeInsets.only(right: AppTheme.spacing8),
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.tertiaryContainer,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(width: AppTheme.spacing8),
+                      Text(
+                        BadgeHelper.getBadgeLevelById(_currentBadge!)?.emoji ?? '',
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const SizedBox(width: AppTheme.spacing8),
+                      Text(
+                        BadgeHelper.getBadgeLevelById(_currentBadge!)?.name ?? '',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onTertiaryContainer,
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(width: AppTheme.spacing8),
+
+                    ],
+
+                  ),
+
                 ),
               ),
             ),
-          ),
         ],
       ),
       body: Stack(
@@ -737,11 +765,13 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
         padding: const EdgeInsets.all(AppTheme.spacing8),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Flexible(
-              flex: 2,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
+            Expanded(
+              child: Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
                   InkWell(
                     onTap: _toggleImportant,
@@ -754,7 +784,6 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                       l10n.important,
                     ),
                   ),
-                  const SizedBox(width: 8),
                   InkWell(
                     onTap: _toggleFavourite,
                     borderRadius: BorderRadius.circular(8),
@@ -766,7 +795,6 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                       l10n.favourite,
                     ),
                   ),
-                  const SizedBox(width: 8),
                   // isKnown is not clickable - Red exclamation for unknown, green checkmark for known
                   _buildStatusBadgeWithLabel(
                     theme,
@@ -782,7 +810,6 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                         : l10n.known,
                     showBackground: false, // No background, just colored icon
                   ),
-                  const SizedBox(width: 8),
                   _buildCounterBadge(
                     theme,
                     Icons.help_outline,
@@ -794,104 +821,37 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
               ),
             ),
             const SizedBox(width: 8),
-            // Current item badge and current training badge
-            Flexible(
-              flex: 1,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  // Current badge
-                  if (_currentBadge != null && !isNarrow) ...[
-                    Flexible(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 4,
-                            ),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.tertiaryContainer,
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  BadgeHelper.getBadgeLevelById(
-                                        _currentBadge!,
-                                      )?.emoji ??
-                                      '',
-                                  style: const TextStyle(fontSize: 16),
-                                ),
-                                const SizedBox(width: 2),
-                                Flexible(
-                                  child: Text(
-                                    BadgeHelper.getBadgeLevelById(
-                                          _currentBadge!,
-                                        )?.name ??
-                                        '',
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color:
-                                          theme.colorScheme.onTertiaryContainer,
-                                      fontSize: 11,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 2),
-                          Text(
-                            l10n.badge,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              fontSize: 8,
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                  ],
-                  // Current item counter
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.primaryContainer,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Text(
-                          '${_currentItemIndex + 1}/${_filteredItems.length}',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.onPrimaryContainer,
-                            fontSize: 11,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        l10n.position,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontSize: 8,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
+            // Current item counter
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
                   ),
-                ],
-              ),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Text(
+                    '${_currentItemIndex + 1}/${_filteredItems.length}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onPrimaryContainer,
+                      fontSize: 11,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  l10n.position,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontSize: 8,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
             ),
           ],
         ),
@@ -1152,7 +1112,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                           fontStyle: FontStyle.italic,
                         ),
               ),
-              const SizedBox(height: AppTheme.spacing4),
+              const SizedBox(height: 2),
             ],
             Text(
               mainText,
@@ -1341,7 +1301,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                           fontStyle: FontStyle.italic,
                         ),
               ),
-              const SizedBox(height: AppTheme.spacing4),
+              const SizedBox(height: 2),
             ],
             Text(
               mainText,

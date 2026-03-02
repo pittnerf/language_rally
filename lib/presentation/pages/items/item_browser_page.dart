@@ -513,7 +513,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                           ),
                         ),
                       ),
-                      //const SizedBox(width: AppTheme.spacing8),
+                      const SizedBox(width: AppTheme.spacing4),
                       Expanded(
                         child: TextField(
                           controller: _language2Controller,
@@ -541,7 +541,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                       ),
                     ],
                   ),
-                  //const SizedBox(height: AppTheme.spacing8),
+                  const SizedBox(height: AppTheme.spacing4),
                   // Filter options
                   if (isPortrait) ...[
                     // Portrait mode: FilterChips in first row
@@ -554,6 +554,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                             style: theme.textTheme.bodySmall,
                           ),
                           selected: _caseSensitive,
+                          showCheckmark: false,
                           onSelected: (value) {
                             setState(() {
                               _caseSensitive = value;
@@ -561,13 +562,14 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                             });
                           },
                         ),
-                        //const SizedBox(width: AppTheme.spacing8),
+                        const SizedBox(width: AppTheme.spacing4),
                         FilterChip(
                           label: Text(
                             l10n.onlyImportant,
                             style: theme.textTheme.bodySmall,
                           ),
                           selected: _onlyImportant,
+                          showCheckmark: false,
                           onSelected: (value) {
                             setState(() {
                               _onlyImportant = value;
@@ -583,26 +585,36 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                       children: [
                         DropdownButton<String>(
                           value: _knownStatus,
+                          isDense: true,
                           items: [
                             DropdownMenuItem(
                               value: l10n.filterStatusAll,
-                              child: Text(
-                                l10n.allItems,
-                                style: theme.textTheme.bodySmall,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                child: Text(
+                                  l10n.allItems,
+                                  style: theme.textTheme.bodySmall,
+                                ),
                               ),
                             ),
                             DropdownMenuItem(
                               value: l10n.filterStatusKnown,
-                              child: Text(
-                                l10n.itemsIKnew,
-                                style: theme.textTheme.bodySmall,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                child: Text(
+                                  l10n.itemsIKnew,
+                                  style: theme.textTheme.bodySmall,
+                                ),
                               ),
                             ),
                             DropdownMenuItem(
                               value: l10n.filterStatusUnknown,
-                              child: Text(
-                                l10n.itemsIDidNotKnow,
-                                style: theme.textTheme.bodySmall,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                child: Text(
+                                  l10n.itemsIDidNotKnow,
+                                  style: theme.textTheme.bodySmall,
+                                ),
                               ),
                             ),
                           ],
@@ -617,7 +629,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                                   }
                                 },
                         ),
-                        //const SizedBox(width: AppTheme.spacing8),
+                        const SizedBox(width: AppTheme.spacing4),
                         // Category multiselect filter
                         _buildCategoryMultiSelectButton(theme),
                       ],
@@ -645,96 +657,111 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                       ],
                     ),
                   ] else
-                    // Landscape mode: All filter options in one row
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        FilterChip(
-                          label: Text(
-                            l10n.caseSensitive,
-                            style: theme.textTheme.bodySmall,
+                    // Landscape mode: All filter options in one row with horizontal scroll
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          FilterChip(
+                            label: Text(
+                              l10n.caseSensitive,
+                              style: theme.textTheme.bodySmall,
+                            ),
+                            selected: _caseSensitive,
+                            showCheckmark: false,
+                            onSelected: (value) {
+                              setState(() {
+                                _caseSensitive = value;
+                                _applyFilters(autoSelectFirst: true);
+                              });
+                            },
                           ),
-                          selected: _caseSensitive,
-                          onSelected: (value) {
-                            setState(() {
-                              _caseSensitive = value;
-                              _applyFilters(autoSelectFirst: true);
-                            });
-                          },
-                        ),
-                        const SizedBox(width: AppTheme.spacing8),
-                        FilterChip(
-                          label: Text(
-                            l10n.onlyImportant,
-                            style: theme.textTheme.bodySmall,
+                          const SizedBox(width: AppTheme.spacing8),
+                          FilterChip(
+                            label: Text(
+                              l10n.onlyImportant,
+                              style: theme.textTheme.bodySmall,
+                            ),
+                            selected: _onlyImportant,
+                            showCheckmark: false,
+                            onSelected: (value) {
+                              setState(() {
+                                _onlyImportant = value;
+                                _applyFilters(autoSelectFirst: true);
+                              });
+                            },
                           ),
-                          selected: _onlyImportant,
-                          onSelected: (value) {
-                            setState(() {
-                              _onlyImportant = value;
-                              _applyFilters(autoSelectFirst: true);
-                            });
-                          },
-                        ),
-                        const SizedBox(width: AppTheme.spacing8),
-                        DropdownButton<String>(
-                          value: _knownStatus,
-                          items: [
-                            DropdownMenuItem(
-                              value: l10n.filterStatusAll,
-                              child: Text(
-                                l10n.allItems,
-                                style: theme.textTheme.bodySmall,
+                          const SizedBox(width: AppTheme.spacing8),
+                          DropdownButton<String>(
+                            value: _knownStatus,
+                            isDense: true,
+                            items: [
+                              DropdownMenuItem(
+                                value: l10n.filterStatusAll,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                  child: Text(
+                                    l10n.allItems,
+                                    style: theme.textTheme.bodySmall,
+                                  ),
+                                ),
                               ),
-                            ),
-                            DropdownMenuItem(
-                              value: l10n.filterStatusKnown,
-                              child: Text(
-                                l10n.itemsIKnew,
-                                style: theme.textTheme.bodySmall,
+                              DropdownMenuItem(
+                                value: l10n.filterStatusKnown,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                  child: Text(
+                                    l10n.itemsIKnew,
+                                    style: theme.textTheme.bodySmall,
+                                  ),
+                                ),
                               ),
-                            ),
-                            DropdownMenuItem(
-                              value: l10n.filterStatusUnknown,
-                              child: Text(
-                                l10n.itemsIDidNotKnow,
-                                style: theme.textTheme.bodySmall,
+                              DropdownMenuItem(
+                                value: l10n.filterStatusUnknown,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                  child: Text(
+                                    l10n.itemsIDidNotKnow,
+                                    style: theme.textTheme.bodySmall,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
-                          onChanged: widget.package.isReadonly
-                              ? null
-                              : (value) {
-                                  if (value != null) {
-                                    setState(() {
-                                      _knownStatus = value;
-                                      _applyFilters(autoSelectFirst: true);
-                                    });
-                                  }
-                                },
-                        ),
-                        const SizedBox(width: AppTheme.spacing8),
-                        // Category multiselect filter
-                        _buildCategoryMultiSelectButton(theme),
-                        const SizedBox(width: AppTheme.spacing8),
-                        // Clear filters button
-                        TextButton.icon(
-                          onPressed: _clearFilters,
-                          icon: const Icon(Icons.clear_all, size: 16),
-                          label: Text(
-                            l10n.clearFilters,
-                            style: theme.textTheme.bodySmall,
+                            ],
+                            onChanged: widget.package.isReadonly
+                                ? null
+                                : (value) {
+                                    if (value != null) {
+                                      setState(() {
+                                        _knownStatus = value;
+                                        _applyFilters(autoSelectFirst: true);
+                                      });
+                                    }
+                                  },
                           ),
-                          style: TextButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppTheme.spacing8,
-                              vertical: AppTheme.spacing4,
+                          const SizedBox(width: AppTheme.spacing8),
+                          // Category multiselect filter
+                          _buildCategoryMultiSelectButton(theme),
+                          const SizedBox(width: AppTheme.spacing8),
+                          // Clear filters button
+                          TextButton.icon(
+                            onPressed: _clearFilters,
+                            icon: const Icon(Icons.clear_all, size: 16),
+                            label: Text(
+                              l10n.clearFilters,
+                              style: theme.textTheme.bodySmall,
                             ),
-                            minimumSize: Size.zero,
-                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppTheme.spacing8,
+                                vertical: AppTheme.spacing4,
+                              ),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                 ],
               ),

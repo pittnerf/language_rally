@@ -1282,7 +1282,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                     SizedBox(width: AppTheme.spacing8),
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: _fieldsEnabled ? _openAITextAnalysis : null,
+                        onPressed: _exportEnabled ? _openAITextAnalysis : null,
                         icon: const Icon(Icons.psychology),
                         label: Text(l10n.aiTextAnalysis),
                         style: ElevatedButton.styleFrom(
@@ -1401,7 +1401,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: _fieldsEnabled ? _openAITextAnalysis : null,
+                        onPressed: _exportEnabled ? _openAITextAnalysis : null,
                         icon: const Icon(Icons.psychology),
                         label: Text(l10n.aiTextAnalysis),
                         style: ElevatedButton.styleFrom(

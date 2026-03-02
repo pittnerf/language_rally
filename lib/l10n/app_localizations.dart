@@ -1853,7 +1853,7 @@ abstract class AppLocalizations {
   /// No description provided for @maxItems.
   ///
   /// In en, this message translates to:
-  /// **'Maximum Items'**
+  /// **'Maximum New Items'**
   String get maxItems;
 
   /// No description provided for @maxItemsHint.
@@ -1883,7 +1883,7 @@ abstract class AppLocalizations {
   /// No description provided for @configureAnalysis.
   ///
   /// In en, this message translates to:
-  /// **'Configure Analysis'**
+  /// **'Configure Items To Extract'**
   String get configureAnalysis;
 
   /// No description provided for @openaiModel.
@@ -2539,6 +2539,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please select a valid language from the list'**
   String get pleaseSelectValidLanguage;
+
+  /// No description provided for @status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get status;
+
+  /// No description provided for @addExample.
+  ///
+  /// In en, this message translates to:
+  /// **'Add example'**
+  String get addExample;
+
+  /// No description provided for @noExamplesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No examples yet. Click + to add.'**
+  String get noExamplesYet;
+
+  /// No description provided for @removeCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Category'**
+  String get removeCategory;
+
+  /// No description provided for @removeCategoryConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove category \"{categoryName}\" from this item?'**
+  String removeCategoryConfirm(String categoryName);
+
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// No description provided for @extractFullItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Extract Full Items'**
+  String get extractFullItems;
+
+  /// No description provided for @pasteFromClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste from clipboard'**
+  String get pasteFromClipboard;
+
+  /// No description provided for @noItemsFoundOrAllDuplicates.
+  ///
+  /// In en, this message translates to:
+  /// **'No items found in the text, or all items already exist in the package'**
+  String get noItemsFoundOrAllDuplicates;
 }
 
 class _AppLocalizationsDelegate

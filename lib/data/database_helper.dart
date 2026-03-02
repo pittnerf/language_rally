@@ -1,5 +1,6 @@
 // lib/data/database_helper.dart
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
@@ -31,8 +32,24 @@ class DatabaseHelper {
   }
 
   Future<Database> get database async {
-    if (_database != null) return _database!;
-    
+    // Check if existing connection is still valid
+    if (_database != null) {
+      try {
+        // Test the connection with a simple query
+        await _database!.rawQuery('SELECT 1');
+        return _database!;
+      } catch (e) {
+        // Connection is stale, close it and create a new one
+        debugPrint('Database connection is stale, recreating: $e');
+        try {
+          await _database!.close();
+        } catch (_) {
+          // Ignore errors when closing stale connection
+        }
+        _database = null;
+      }
+    }
+
     // Ensure database factory is initialized for desktop
     initializeDatabaseFactory();
     

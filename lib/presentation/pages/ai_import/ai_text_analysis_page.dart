@@ -9,6 +9,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/text_analysis_service.dart';
 import '../../../data/models/language_package.dart';
+import '../../../data/models/item.dart';
+import '../../../data/models/extracted_item.dart';
+import '../../../data/repositories/category_repository.dart';
+import '../../../data/repositories/item_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../providers/app_settings_provider.dart';
 import 'ai_items_selection_page.dart';
@@ -31,6 +35,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
   String _selectedModel = 'gpt-4-turbo';
   bool _extractWords = true;
   bool _extractExpressions = true;
+  bool _extractFullItems = false;
   bool _generateExamples = false;
   bool _isAnalyzing = false;
   bool _cancelRequested = false;
@@ -397,7 +402,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.content_paste, size: 20),
-                  tooltip: 'Paste from clipboard',
+                  tooltip: l10n.pasteFromClipboard,
                   onPressed: _pasteFromClipboard,
                   padding: EdgeInsets.zero,
                   constraints: const BoxConstraints(),
@@ -450,7 +455,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
                     children: [
                       // Checkboxes - Top
                       Transform.translate(
-                        offset: const Offset(0, 4),
+                        offset: const Offset(0, 0),
                         child: CheckboxListTile(
                           title: Text(
                             l10n.extractWords,
@@ -460,6 +465,9 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
                           onChanged: (value) {
                             setState(() {
                               _extractWords = value ?? false;
+                              if (_extractWords && _extractFullItems) {
+                                _extractFullItems = false;
+                              }
                             });
                           },
                           controlAffinity: ListTileControlAffinity.leading,
@@ -472,7 +480,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
                         ),
                       ),
                       Transform.translate(
-                        offset: const Offset(0, -4),
+                        offset: const Offset(0, -8),
                         child: CheckboxListTile(
                           title: Text(
                             l10n.extractExpressions,
@@ -482,6 +490,9 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
                           onChanged: (value) {
                             setState(() {
                               _extractExpressions = value ?? false;
+                              if (_extractExpressions && _extractFullItems) {
+                                _extractFullItems = false;
+                              }
                             });
                           },
                           controlAffinity: ListTileControlAffinity.leading,
@@ -494,7 +505,34 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
                         ),
                       ),
                       Transform.translate(
-                        offset: const Offset(0, -12),
+                        offset: const Offset(0, -16),
+                        child: CheckboxListTile(
+                          title: Text(
+                            l10n.extractFullItems,
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                          value: _extractFullItems,
+                          onChanged: (value) {
+                            setState(() {
+                              _extractFullItems = value ?? false;
+                              if (_extractFullItems) {
+                                // Auto-deselect words and expressions
+                                _extractWords = false;
+                                _extractExpressions = false;
+                              }
+                            });
+                          },
+                          controlAffinity: ListTileControlAffinity.leading,
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
+                          visualDensity: const VisualDensity(
+                            horizontal: 0,
+                            vertical: -4,
+                          ),
+                        ),
+                      ),
+                      Transform.translate(
+                        offset: const Offset(0, -24),
                         child: CheckboxListTile(
                           title: Text(
                             l10n.generateExamples,
@@ -515,7 +553,6 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: AppTheme.spacing12),
                       // Max Items - Bottom
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -566,11 +603,18 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
                               onChanged: (value) {
                                 setState(() {
                                   _extractWords = value ?? false;
+                                  if (_extractWords && _extractFullItems) {
+                                    _extractFullItems = false;
+                                  }
                                 });
                               },
                               controlAffinity: ListTileControlAffinity.leading,
                               contentPadding: EdgeInsets.zero,
                               dense: true,
+                              visualDensity: const VisualDensity(
+                                horizontal: 0,
+                                vertical: -4,
+                              ),
                             ),
                             CheckboxListTile(
                               title: Text(
@@ -581,11 +625,42 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
                               onChanged: (value) {
                                 setState(() {
                                   _extractExpressions = value ?? false;
+                                  if (_extractExpressions && _extractFullItems) {
+                                    _extractFullItems = false;
+                                  }
                                 });
                               },
                               controlAffinity: ListTileControlAffinity.leading,
                               contentPadding: EdgeInsets.zero,
                               dense: true,
+                              visualDensity: const VisualDensity(
+                                horizontal: 0,
+                                vertical: -4,
+                              ),
+                            ),
+                            CheckboxListTile(
+                              title: Text(
+                                l10n.extractFullItems,
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                              value: _extractFullItems,
+                              onChanged: (value) {
+                                setState(() {
+                                  _extractFullItems = value ?? false;
+                                  if (_extractFullItems) {
+                                    // Auto-deselect words and expressions
+                                    _extractWords = false;
+                                    _extractExpressions = false;
+                                  }
+                                });
+                              },
+                              controlAffinity: ListTileControlAffinity.leading,
+                              contentPadding: EdgeInsets.zero,
+                              dense: true,
+                              visualDensity: const VisualDensity(
+                                horizontal: 0,
+                                vertical: -4,
+                              ),
                             ),
                             CheckboxListTile(
                               title: Text(
@@ -601,6 +676,10 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
                               controlAffinity: ListTileControlAffinity.leading,
                               contentPadding: EdgeInsets.zero,
                               dense: true,
+                              visualDensity: const VisualDensity(
+                                horizontal: 0,
+                                vertical: -4,
+                              ),
                             ),
                           ],
                         ),
@@ -685,10 +764,28 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
       return;
     }
 
-    if (!_extractWords && !_extractExpressions) {
+    if (!_extractWords && !_extractExpressions && !_extractFullItems) {
       _showError(l10n.selectAtLeastOneType);
       return;
     }
+
+    // Log text details BEFORE processing to verify no truncation
+    print('═══════════════════════════════════════════════════════════');
+    print('🚀 STARTING AI TEXT ANALYSIS');
+    print('═══════════════════════════════════════════════════════════');
+    print('TEXT INPUT VERIFICATION:');
+    print('  Total characters: ${text.length}');
+    print('  Total words: ${text.split(RegExp(r'\s+')).length}');
+    print('  First 100 chars: ${text.substring(0, text.length > 100 ? 100 : text.length)}');
+    print('  Last 100 chars: ${text.length > 100 ? text.substring(text.length - 100) : "[text too short]"}');
+    print('───────────────────────────────────────────────────────────');
+    print('SETTINGS:');
+    print('  Knowledge Level: $_selectedLevel');
+    print('  Extract Words: $_extractWords');
+    print('  Extract Expressions: $_extractExpressions');
+    print('  Extract Full Items: $_extractFullItems');
+    print('  Max Items: ${_maxItemsController.text.isEmpty ? "unlimited" : _maxItemsController.text}');
+    print('═══════════════════════════════════════════════════════════');
 
     // Check text size and warn user if it's very large
     final wordCount = text.split(RegExp(r'\s+')).length;
@@ -711,6 +808,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
     print('Knowledge Level: $_selectedLevel');
     print('Extract Words: $_extractWords');
     print('Extract Expressions: $_extractExpressions');
+    print('Extract Full Items: $_extractFullItems');
     print('Generate Examples: $_generateExamples');
     print('Model: $_selectedModel');
 
@@ -819,16 +917,21 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
 
       print('  Max Items: $maxItems');
 
-      final extractedItems = await analysisService.extractItems(
+      // Extract items with accounting for potential duplicates
+      final extractedItems = await _extractItemsWithDuplicateCheck(
+        analysisService: analysisService,
         text: text,
         knowledgeLevel: _selectedLevel,
         extractWords: _extractWords,
         extractExpressions: _extractExpressions,
+        extractFullItems: _extractFullItems,
         sourceLanguage: sourceLanguage,
+        targetLanguage: targetLanguage,
+        detectedLang: detectedLang,
         maxItems: maxItems,
       );
 
-      print('  Extracted ${extractedItems.length} items');
+      print('  Extracted ${extractedItems.length} unique items');
 
       // Check for cancellation
       if (_cancelRequested) {
@@ -851,7 +954,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
           setState(() {
             _isAnalyzing = false;
           });
-          _showError('No items found in the text');
+          _showError(l10n.noItemsFoundOrAllDuplicates);
         }
         return;
       }
@@ -875,10 +978,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
           ),
         );
 
-        // If navigation was successful, go back to previous page
-        if (mounted) {
-          Navigator.of(context).pop();
-        }
+        // Don't pop - allow user to stay on AI text analysis page to import more items
       }
     } catch (e) {
       print('\n❌ ERROR DURING ANALYSIS:');
@@ -1085,4 +1185,109 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
       ),
     );
   }
+
+  /// Extract items with duplicate checking against existing items in the package
+  /// If maxItems is specified, ensures we get that many unique items (not counting duplicates)
+  Future<List<ExtractedItem>> _extractItemsWithDuplicateCheck({
+    required TextAnalysisService analysisService,
+    required String text,
+    required String knowledgeLevel,
+    required bool extractWords,
+    required bool extractExpressions,
+    required bool extractFullItems,
+    required String sourceLanguage,
+    required String targetLanguage,
+    required String detectedLang,
+    int? maxItems,
+  }) async {
+    // Get existing items in the package to check for duplicates
+    final categories = await CategoryRepository().getCategoriesForPackage(widget.package.id);
+    final categoryIds = categories.map((c) => c.id).toList();
+    final existingItems = categoryIds.isNotEmpty
+        ? await ItemRepository().getItemsForCategories(categoryIds)
+        : <Item>[];
+
+    print('  Existing items in package: ${existingItems.length}');
+
+    // Determine which language code to check for duplicates
+    final lang1Code = widget.package.languageCode1.split('-')[0].toLowerCase();
+    final detectedCode = detectedLang.toLowerCase();
+    final isLang1Source = detectedCode == lang1Code;
+
+    // Create a set of existing item texts for quick lookup
+    final existingTexts = existingItems.map((item) {
+      final text = isLang1Source
+          ? item.language1Data.text.toLowerCase().trim()
+          : item.language2Data.text.toLowerCase().trim();
+      return text;
+    }).toSet();
+
+    print('  Existing unique texts: ${existingTexts.length}');
+
+    // If no maxItems specified, extract with a reasonable limit and filter duplicates
+    if (maxItems == null) {
+      final extracted = await analysisService.extractItems(
+        text: text,
+        knowledgeLevel: knowledgeLevel,
+        extractWords: extractWords,
+        extractExpressions: extractExpressions,
+        extractFullItems: extractFullItems,
+        sourceLanguage: sourceLanguage,
+        maxItems: null,
+      );
+
+      // Filter out duplicates
+      final uniqueItems = extracted.where((item) {
+        return !existingTexts.contains(item.text.toLowerCase().trim());
+      }).toList();
+
+      print('  Extracted: ${extracted.length}, After filtering duplicates: ${uniqueItems.length}');
+      return uniqueItems;
+    }
+
+    // If maxItems is specified, we need to ensure we get that many UNIQUE items
+    // Request more items initially to account for potential duplicates
+    final requestMultiplier = 1.5; // Request 50% more to account for duplicates
+    final initialRequest = (maxItems * requestMultiplier).ceil();
+
+    print('  Requesting $initialRequest items initially (target: $maxItems unique)');
+
+    final extracted = await analysisService.extractItems(
+      text: text,
+      knowledgeLevel: knowledgeLevel,
+      extractWords: extractWords,
+      extractExpressions: extractExpressions,
+      extractFullItems: extractFullItems,
+      sourceLanguage: sourceLanguage,
+      maxItems: initialRequest,
+    );
+
+    print('  Extracted: ${extracted.length} items');
+
+    // Filter out duplicates
+    final uniqueItems = <ExtractedItem>[];
+    for (final item in extracted) {
+      final itemText = item.text.toLowerCase().trim();
+      if (!existingTexts.contains(itemText)) {
+        uniqueItems.add(item);
+        // Stop when we reach the desired number
+        if (uniqueItems.length >= maxItems) {
+          break;
+        }
+      }
+    }
+
+    final duplicateCount = extracted.length - uniqueItems.length;
+    print('  Unique items: ${uniqueItems.length}, Duplicates filtered: $duplicateCount');
+
+    // If we still don't have enough unique items, inform the user but return what we have
+    if (uniqueItems.length < maxItems) {
+      print('  ⚠️ Warning: Only found ${uniqueItems.length} unique items (requested $maxItems)');
+      print('  This might be because the text doesn\'t contain enough unique items at this knowledge level');
+    }
+
+    return uniqueItems;
+  }
 }
+
+

@@ -291,13 +291,13 @@
   "pasteTextHere": "Paste your text here...",
   "extractWords": "Extract Words",
   "extractExpressions": "Extract Expressions",
-  "maxItems": "Maximum Items",
+  "maxItems": "Maximum New Items",
   "maxItemsHint": "Leave empty for no limit",
   "generateExamples": "Generate Examples",
   "categoryName": "Category Name",
   "categoryNameHint": "Name for imported items category",
   "analyzeText": "Analyze Text",
-  "configureAnalysis": "Configure Analysis",
+  "configureAnalysis": "Configure Items To Extract",
   "openaiModel": "AI Model",
   "openaiModelDescription": "Select ChatGPT model",
   "modelGpt35Turbo": "GPT-3.5 Turbo",
@@ -459,6 +459,23 @@
       }
     }
   },
-  "pleaseSelectValidLanguage": "Please select a valid language from the list"
+  "pleaseSelectValidLanguage": "Please select a valid language from the list",
+  "status": "Status",
+  "addExample": "Add example",
+  "noExamplesYet": "No examples yet. Click + to add.",
+  "speakText": "Speak text",
+  "removeCategory": "Remove Category",
+  "removeCategoryConfirm": "Remove category \"{categoryName}\" from this item?",
+  "@removeCategoryConfirm": {
+    "placeholders": {
+      "categoryName": {
+        "type": "String"
+      }
+    }
+  },
+  "remove": "Remove",
+  "extractFullItems": "Extract Full Items",
+  "pasteFromClipboard": "Paste from clipboard",
+  "noItemsFoundOrAllDuplicates": "No items found in the text, or all items already exist in the package"
 }
 

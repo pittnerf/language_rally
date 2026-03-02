@@ -108,7 +108,8 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
   late TextEditingController _postItem2Controller;
 
   // Examples controller
-  late TextEditingController _examplesController;
+  // Example management - each example has two controllers (language1 and language2)
+  final List<Map<String, TextEditingController>> _exampleControllers = [];
 
   bool _isSaving = false;
   bool _isTranslating = false;
@@ -170,12 +171,14 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
     _text2Controller = TextEditingController(text: widget.item.language2Data.text);
     _postItem2Controller = TextEditingController(text: widget.item.language2Data.postItem ?? '');
 
-    // Initialize examples controller with existing examples as text
-    // Convert ExampleSentence list to text format
-    final examplesText = widget.item.examples
-        .map((ex) => '${ex.textLanguage1} | ${ex.textLanguage2}')
-        .join('\n');
-    _examplesController = TextEditingController(text: examplesText);
+    // Initialize example controllers from existing examples
+    _exampleControllers.clear();
+    for (final example in widget.item.examples) {
+      _exampleControllers.add({
+        'language1': TextEditingController(text: example.textLanguage1),
+        'language2': TextEditingController(text: example.textLanguage2),
+      });
+    }
   }
 
   Future<void> _loadCategories() async {
@@ -200,7 +203,13 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
     _preItem2Controller.dispose();
     _text2Controller.dispose();
     _postItem2Controller.dispose();
-    _examplesController.dispose();
+
+    // Dispose all example controllers
+    for (final controllers in _exampleControllers) {
+      controllers['language1']?.dispose();
+      controllers['language2']?.dispose();
+    }
+    _exampleControllers.clear();
 
     // Stop and dispose speech recognition
     if (_isListening) {
@@ -245,19 +254,24 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
                 child: CircularProgressIndicator(strokeWidth: 2),
               ),
             )
-          else
+          else ...[
+
             IconButton(
-              icon: const Icon(Icons.save),
+              icon: const Icon(Icons.save, size: 28),
               onPressed: _saveItem,
               tooltip: l10n.save,
+              color: theme.colorScheme.primary,
+              iconSize: 28,
             ),
+            const SizedBox(width: AppTheme.spacing24),
+          ],
         ],
       ),
       body: SafeArea(
         child: Form(
           key: _formKey,
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(AppTheme.spacing16),
+            padding: const EdgeInsets.all(AppTheme.spacing8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -268,12 +282,12 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
                   // Phone layout - vertical
                   ..._buildPhoneLayout(theme),
 
-                const SizedBox(height: AppTheme.spacing24),
+                const SizedBox(height: AppTheme.spacing8),
 
                 // AI Example Generation Section
                 _buildExampleGenerationSection(theme),
 
-                const SizedBox(height: AppTheme.spacing16),
+                const SizedBox(height: AppTheme.spacing8),
 
                 // API Key Information Message
                 _buildApiKeyInfoMessage(theme, appSettings),
@@ -302,10 +316,10 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
               textController: _text1Controller,
               postItemController: _postItem1Controller,
               isLanguage1: true,
-              minLines: 3,
+              minLines: 2,
             ),
           ),
-          const SizedBox(width: AppTheme.spacing16),
+          const SizedBox(width: AppTheme.spacing8),
           Expanded(
             child: _buildLanguageSection(
               theme: theme,
@@ -315,17 +329,17 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
               textController: _text2Controller,
               postItemController: _postItem2Controller,
               isLanguage1: false,
-              minLines: 3,
+              minLines: 2,
             ),
           ),
         ],
       ),
-      const SizedBox(height: AppTheme.spacing16),
+      const SizedBox(height: AppTheme.spacing8),
 
       // Translation buttons in a row
       _buildTranslationButtonsTablet(theme),
 
-      const SizedBox(height: AppTheme.spacing16),
+      const SizedBox(height: AppTheme.spacing8),
 
       // Status and Categories in one row
       Row(
@@ -335,14 +349,14 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
             flex: 1,
             child: _buildStatusIndicators(theme, l10n),
           ),
-          const SizedBox(width: AppTheme.spacing16),
+          const SizedBox(width: AppTheme.spacing8),
           Expanded(
             flex: 1,
             child: _buildCategoriesSection(theme, l10n),
           ),
         ],
       ),
-      const SizedBox(height: AppTheme.spacing16),
+      const SizedBox(height: AppTheme.spacing8),
 
       // Examples field
       _buildExamplesField(theme, l10n),
@@ -364,11 +378,11 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
         isLanguage1: true,
         minLines: 2,
       ),
-      const SizedBox(height: AppTheme.spacing16),
+      const SizedBox(height: AppTheme.spacing8),
 
       // Translation buttons in a row (compact)
       _buildTranslationButtonsPhone(theme),
-      const SizedBox(height: AppTheme.spacing16),
+      const SizedBox(height: AppTheme.spacing8),
 
       // Language 2 section
       _buildLanguageSection(
@@ -382,7 +396,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
         minLines: 2,
       ),
 
-      const SizedBox(height: AppTheme.spacing16),
+      const SizedBox(height: AppTheme.spacing8),
 
       // Status and Categories in one row
       Row(
@@ -400,7 +414,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
         ],
       ),
 
-      const SizedBox(height: AppTheme.spacing16),
+      const SizedBox(height: AppTheme.spacing8),
 
       // Examples field
       _buildExamplesField(theme, l10n),
@@ -422,7 +436,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
     return Card(
       elevation: 2,
       child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacing12),
+        padding: const EdgeInsets.all(AppTheme.spacing8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -441,7 +455,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
                 const Spacer(),
                 IconButton(
                   icon: Icon(Icons.volume_up, size: 20, color: theme.colorScheme.primary),
-                  tooltip: 'Speak text',
+                  tooltip: l10n.speakText,
                   onPressed: () {
                     final preText = preItemController.text.trim();
                     final mainText = textController.text.trim();
@@ -458,7 +472,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
                 ),
               ],
             ),
-            const SizedBox(height: AppTheme.spacing12),
+            //const SizedBox(height: AppTheme.spacing12),
 
             // PreItem field
             TextFormField(
@@ -515,10 +529,12 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
   Widget _buildTranslationButtonsTablet(ThemeData theme) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Row(
-      children: [
-        Expanded(
-          child: OutlinedButton.icon(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacing8),
+      child: Row(
+        children: [
+          Expanded(
+            child: OutlinedButton.icon(
             onPressed: _isTranslating ? null : () => _translate(true),
             icon: _isTranslating
                 ? const SizedBox(
@@ -569,16 +585,19 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
           ),
         ),
       ],
+    ),
     );
   }
 
   Widget _buildTranslationButtonsPhone(ThemeData theme) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Row(
-      children: [
-        Expanded(
-          child: OutlinedButton.icon(
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacing8),
+      child: Row(
+        children: [
+          Expanded(
+            child: OutlinedButton.icon(
             onPressed: _isTranslating ? null : () => _translate(true),
             icon: _isTranslating
                 ? const SizedBox(
@@ -629,6 +648,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
           ),
         ),
       ],
+    ),
     );
   }
 
@@ -638,7 +658,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
 
     return Card(
       elevation: 1,
-      color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.1),
+      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.9),
       child: Padding(
         padding: const EdgeInsets.all(AppTheme.spacing12),
         child: Column(
@@ -663,9 +683,10 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
                   : l10n.searchExamplesOnInternet(currentText),
               style: theme.textTheme.bodySmall,
             ),
-            const SizedBox(height: AppTheme.spacing12),
+            const SizedBox(height: AppTheme.spacing8),
             SizedBox(
               width: double.infinity,
+
               child: OutlinedButton.icon(
                 onPressed: _isGeneratingExamples || currentText.isEmpty
                     ? null
@@ -682,6 +703,8 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
                   style: theme.textTheme.bodySmall,
                 ),
                 style: OutlinedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.secondaryContainer,
+                  foregroundColor: theme.colorScheme.onSecondaryContainer,
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppTheme.spacing12,
                     vertical: AppTheme.spacing12,
@@ -708,7 +731,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
 
     return Card(
       elevation: 1,
-      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.9),
       child: Padding(
         padding: const EdgeInsets.all(AppTheme.spacing12),
         child: Row(
@@ -748,6 +771,40 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
                         'OpenAI',
                         hasOpenAI,
                       ),
+                      // Settings button at the end
+                      InkWell(
+                        onTap: () {
+                          // Navigate to settings
+                          Navigator.of(context).pushNamed('/settings');
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppTheme.spacing8,
+                            vertical: AppTheme.spacing4,
+                          ),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.settings,
+                                size: 14,
+                                color: theme.colorScheme.primary,
+                              ),
+                              const SizedBox(width: AppTheme.spacing4),
+                              Text(
+                                l10n.settings,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                   if (!hasAnyKey) ...[
@@ -760,31 +817,6 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
                       ),
                     ),
                   ],
-                  const SizedBox(height: AppTheme.spacing8),
-                  InkWell(
-                    onTap: () {
-                      // Navigate to settings
-                      Navigator.of(context).pushNamed('/settings');
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.settings,
-                          size: 14,
-                          color: theme.colorScheme.primary,
-                        ),
-                        const SizedBox(width: AppTheme.spacing4),
-                        Text(
-                          l10n.settings,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
@@ -838,82 +870,218 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
   }
 
   Widget _buildStatusIndicators(ThemeData theme, AppLocalizations l10n) {
+    // Determine if we're in portrait mode on non-tablet
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isPortraitNonTablet = screenWidth < 600;
+
     return Card(
       elevation: 1,
       child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacing12),
+        padding: const EdgeInsets.all(AppTheme.spacing8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Status',
+              l10n.status,
               style: theme.textTheme.titleSmall?.copyWith(
                 fontSize: (theme.textTheme.titleSmall?.fontSize ?? 14) * 0.85,
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: AppTheme.spacing8),
-            Wrap(
-              spacing: AppTheme.spacing8,
-              runSpacing: AppTheme.spacing8,
-              children: [
-                // Known status
-                FilterChip(
-                  selected: _isKnown,
-                  label: Text(
-                    l10n.known,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontSize: (theme.textTheme.bodySmall?.fontSize ?? 12) * 0.85,
+            // const SizedBox(height: AppTheme.spacing8),
+            if (isPortraitNonTablet)
+              // Portrait mode on non-tablet: Use Column
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Known status
+                  FilterChip(
+                    selected: _isKnown,
+                    label: Text(
+                      l10n.known,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontSize: (theme.textTheme.bodySmall?.fontSize ?? 12) * 0.85,
+                      ),
                     ),
-                  ),
-                  avatar: Icon(
-                    _isKnown ? Icons.check_circle : Icons.error,
-                    size: 18,
-                    color: _isKnown ? Colors.green : Colors.red,
-                  ),
-                  onSelected: (value) {
-                    setState(() {
-                      _isKnown = value;
-                    });
-                  },
-                ),
-                // Favourite status
-                InkWell(
-                  onTap: () {
-                    setState(() {
-                      _isFavourite = !_isFavourite;
-                    });
-                  },
-                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppTheme.spacing8),
-                    child: Icon(
-                      _isFavourite ? Icons.star : Icons.star_outline,
-                      size: 24,
-                      color: _isFavourite ? theme.colorScheme.tertiary : theme.colorScheme.onSurfaceVariant,
+                    avatar: Icon(
+                      _isKnown ? Icons.check_circle : Icons.error,
+                      size: 18,
+                      color: _isKnown ? Colors.green : Colors.red,
                     ),
+                    onSelected: (value) {
+                      setState(() {
+                        _isKnown = value;
+                      });
+                    },
                   ),
-                ),
-                // Important status
-                InkWell(
-                  onTap: () {
-                    setState(() {
-                      _isImportant = !_isImportant;
-                    });
-                  },
-                  borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppTheme.spacing8),
-                    child: Icon(
-                      _isImportant ? Icons.bookmark : Icons.bookmark_border,
-                      size: 24,
-                      color: _isImportant ? theme.colorScheme.secondary : theme.colorScheme.onSurfaceVariant,
+                  const SizedBox(height: AppTheme.spacing8),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Favourite status with label
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            _isFavourite = !_isFavourite;
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppTheme.spacing8,
+                            vertical: AppTheme.spacing4,
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                _isFavourite ? Icons.star : Icons.star_outline,
+                                size: 24,
+                                color: _isFavourite ? theme.colorScheme.tertiary : theme.colorScheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                l10n.favourite,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  fontSize: 10,
+                                  color: _isFavourite ? theme.colorScheme.tertiary : theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppTheme.spacing4),
+                      // Important status with label
+                      InkWell(
+                        onTap: () {
+                          setState(() {
+                            _isImportant = !_isImportant;
+                          });
+                        },
+                        borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppTheme.spacing8,
+                            vertical: AppTheme.spacing4,
+                          ),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                _isImportant ? Icons.bookmark : Icons.bookmark_border,
+                                size: 24,
+                                color: _isImportant ? theme.colorScheme.secondary : theme.colorScheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                l10n.important,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  fontSize: 10,
+                                  color: _isImportant ? theme.colorScheme.secondary : theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              )
+            else
+              // Landscape or tablet: Use horizontal Row with scroll
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Known status
+                    FilterChip(
+                      selected: _isKnown,
+                      label: Text(
+                        l10n.known,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontSize: (theme.textTheme.bodySmall?.fontSize ?? 12) * 0.85,
+                        ),
+                      ),
+                      avatar: Icon(
+                        _isKnown ? Icons.check_circle : Icons.error,
+                        size: 18,
+                        color: _isKnown ? Colors.green : Colors.red,
+                      ),
+                      onSelected: (value) {
+                        setState(() {
+                          _isKnown = value;
+                        });
+                      },
                     ),
-                  ),
+                    const SizedBox(width: AppTheme.spacing8),
+                    // Favourite status with label
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          _isFavourite = !_isFavourite;
+                        });
+                      },
+                      borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppTheme.spacing8),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              _isFavourite ? Icons.star : Icons.star_outline,
+                              size: 24,
+                              color: _isFavourite ? theme.colorScheme.tertiary : theme.colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              l10n.favourite,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                fontSize: 10,
+                                color: _isFavourite ? theme.colorScheme.tertiary : theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: AppTheme.spacing8),
+                    // Important status with label
+                    InkWell(
+                      onTap: () {
+                        setState(() {
+                          _isImportant = !_isImportant;
+                        });
+                      },
+                      borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                      child: Padding(
+                        padding: const EdgeInsets.all(AppTheme.spacing8),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              _isImportant ? Icons.bookmark : Icons.bookmark_border,
+                              size: 24,
+                              color: _isImportant ? theme.colorScheme.secondary : theme.colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              l10n.important,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                fontSize: 10,
+                                color: _isImportant ? theme.colorScheme.secondary : theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
           ],
         ),
       ),
@@ -943,7 +1111,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
             const SizedBox(height: AppTheme.spacing8),
             Wrap(
               spacing: AppTheme.spacing8,
-              runSpacing: AppTheme.spacing8,
+              runSpacing: AppTheme.spacing4, // Reduced vertical spacing
               children: [
                 // Category chips
                 ...itemCategories.map((category) {
@@ -993,37 +1161,131 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
     return Card(
       elevation: 1,
       child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacing12),
+        padding: const EdgeInsets.all(AppTheme.spacing8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              l10n.examples,
-              style: theme.textTheme.titleSmall?.copyWith(
-                fontSize: (theme.textTheme.titleSmall?.fontSize ?? 14) * 0.85,
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.bold,
-              ),
+            // Header with title
+            Row(
+              children: [
+                Text(
+                  l10n.examples,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontSize: (theme.textTheme.titleSmall?.fontSize ?? 14) * 0.85,
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Spacer(),
+                // Add example button
+                IconButton(
+                  icon: const Icon(Icons.add_circle_outline, size: 20),
+                  tooltip: l10n.addExample,
+                  onPressed: _addNewExample,
+                  color: theme.colorScheme.primary,
+                ),
+              ],
             ),
-            const SizedBox(height: AppTheme.spacing8),
+            // const SizedBox(height: AppTheme.spacing8),
+
+            // List of example cards
+            if (_exampleControllers.isEmpty)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(AppTheme.spacing16),
+                  child: Text(
+                    l10n.noExamplesYet,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              )
+            else
+              ...List.generate(_exampleControllers.length, (index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: AppTheme.spacing8),
+                  child: _buildExampleCard(theme, l10n, index),
+                );
+              }),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExampleCard(ThemeData theme, AppLocalizations l10n, int index) {
+    final controllers = _exampleControllers[index];
+
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.spacing8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Language 1 input with delete button
             TextFormField(
-              controller: _examplesController,
+              controller: controllers['language1'],
+              style: theme.textTheme.bodySmall,
               decoration: InputDecoration(
-                hintText: l10n.examplesHint,
+                labelText: widget.package.languageCode1.substring(0, 2).toUpperCase(),
+                labelStyle: theme.textTheme.bodySmall,
                 contentPadding: const EdgeInsets.symmetric(
-                  horizontal: AppTheme.spacing12,
-                  vertical: AppTheme.spacing12,
+                  horizontal: AppTheme.spacing8,
+                  vertical: AppTheme.spacing8,
+                ),
+                isDense: true,
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.delete_outline, size: 18),
+                  tooltip: l10n.delete,
+                  onPressed: () => _deleteExample(index),
+                  color: theme.colorScheme.error,
                 ),
               ),
-              style: theme.textTheme.bodyMedium,
-              maxLines: null,
-              minLines: 3,
-              keyboardType: TextInputType.multiline,
+              maxLines: 2,
+              minLines: 1,
+            ),
+            const SizedBox(height: AppTheme.spacing8),
+
+            // Language 2 input
+            TextFormField(
+              controller: controllers['language2'],
+              style: theme.textTheme.bodySmall,
+              decoration: InputDecoration(
+                labelText: widget.package.languageCode2.substring(0, 2).toUpperCase(),
+                labelStyle: theme.textTheme.bodySmall,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: AppTheme.spacing8,
+                  vertical: AppTheme.spacing8,
+                ),
+                isDense: true,
+              ),
+              maxLines: 2,
+              minLines: 1,
             ),
           ],
         ),
       ),
     );
+  }
+
+  void _addNewExample() {
+    setState(() {
+      _exampleControllers.add({
+        'language1': TextEditingController(),
+        'language2': TextEditingController(),
+      });
+    });
+  }
+
+  void _deleteExample(int index) {
+    setState(() {
+      // Dispose controllers before removing
+      _exampleControllers[index]['language1']?.dispose();
+      _exampleControllers[index]['language2']?.dispose();
+      _exampleControllers.removeAt(index);
+    });
   }
 
   Future<void> _confirmRemoveCategory(Category category) async {
@@ -1032,8 +1294,8 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Remove Category'),
-        content: Text('Remove category "${category.name}" from this item?'),
+        title: Text(l10n.removeCategory),
+        content: Text(l10n.removeCategoryConfirm(category.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -1044,7 +1306,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Remove'),
+            child: Text(l10n.remove),
           ),
         ],
       ),
@@ -1277,43 +1539,56 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
     try {
       await _speech.listen(
         onResult: (result) {
-          if (result.finalResult) {
-            setState(() {
-              controller.text = result.recognizedWords;
-              _isListening = false;
-            });
-
-            // Hide the listening snackbar
-            if (mounted) {
-              ScaffoldMessenger.of(context).hideCurrentSnackBar();
-
-              // Show success message
-              if (result.recognizedWords.isNotEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('✓ ${result.recognizedWords}'),
-                    backgroundColor: Colors.green,
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(l10n.speechNotRecognized),
-                    duration: const Duration(seconds: 2),
-                  ),
-                );
+          // Schedule state updates for the next frame to avoid assertion errors
+          if (!result.finalResult) {
+            // Update text with partial results for better user feedback
+            Future.microtask(() {
+              if (mounted) {
+                setState(() {
+                  controller.text = result.recognizedWords;
+                });
               }
-            }
+            });
+          } else {
+            // Final result - stop listening
+            Future.microtask(() {
+              if (mounted) {
+                setState(() {
+                  controller.text = result.recognizedWords;
+                  _isListening = false;
+                });
+
+                // Hide the listening snackbar
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+                // Show success message
+                if (result.recognizedWords.isNotEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('✓ ${result.recognizedWords}'),
+                      backgroundColor: Colors.green,
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(l10n.speechNotRecognized),
+                      duration: const Duration(seconds: 2),
+                    ),
+                  );
+                }
+              }
+            });
           }
         },
         localeId: languageCode,
-        listenFor: const Duration(seconds: 30),
-        pauseFor: const Duration(seconds: 3),
+        listenFor: const Duration(seconds: 60), // Increased from 30 to 60 seconds
+        pauseFor: const Duration(seconds: 4), // Increased from 3 to 4 seconds
         listenOptions: stt.SpeechListenOptions(
-          partialResults: false,
+          partialResults: true, // Changed to true for live feedback
           cancelOnError: true,
-          listenMode: stt.ListenMode.confirmation,
+          listenMode: stt.ListenMode.dictation, // Changed from confirmation to dictation
         ),
       );
 
@@ -1446,12 +1721,15 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
         final selectedExamples = await _showExampleSelectionDialog(examples);
 
         if (selectedExamples != null && selectedExamples.isNotEmpty) {
-          // Add selected examples to the item
-          final updatedExamples = [...widget.item.examples, ...selectedExamples];
-
-          // Update the item with new examples
-          final updatedItem = widget.item.copyWith(examples: updatedExamples);
-          await _itemRepo.updateItem(updatedItem);
+          // Add selected examples to the controller list
+          setState(() {
+            for (final example in selectedExamples) {
+              _exampleControllers.add({
+                'language1': TextEditingController(text: example.textLanguage1),
+                'language2': TextEditingController(text: example.textLanguage2),
+              });
+            }
+          });
 
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -1496,23 +1774,55 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
       context: context,
       builder: (context) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
+          titlePadding: const EdgeInsets.fromLTRB(
+            AppTheme.spacing12,
+            AppTheme.spacing12,
+            AppTheme.spacing12,
+            AppTheme.spacing8,
+          ),
+          contentPadding: const EdgeInsets.fromLTRB(
+            AppTheme.spacing12,
+            0,
+            AppTheme.spacing12,
+            AppTheme.spacing8,
+          ),
+          actionsPadding: const EdgeInsets.fromLTRB(
+            AppTheme.spacing8,
+            0,
+            AppTheme.spacing8,
+            AppTheme.spacing8,
+          ),
           title: Row(
             children: [
-              Icon(Icons.lightbulb_outline, color: theme.colorScheme.secondary),
-              const SizedBox(width: AppTheme.spacing8),
-              Text(l10n.selectExamplesToAdd),
+              Icon(
+                Icons.lightbulb_outline,
+                color: theme.colorScheme.secondary,
+                size: 18, // Reduced icon size
+              ),
+              const SizedBox(width: AppTheme.spacing4),
+              Expanded(
+                child: Text(
+                  l10n.selectExamplesToAdd,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontSize: 16, // Reduced title font size
+                  ),
+                ),
+              ),
             ],
           ),
           content: SizedBox(
             width: double.maxFinite,
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   l10n.selectWhichExamples,
-                  style: theme.textTheme.bodySmall,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontSize: 11, // Reduced description font size
+                  ),
                 ),
-                const SizedBox(height: AppTheme.spacing12),
+                const SizedBox(height: AppTheme.spacing8),
                 Flexible(
                   child: ListView.builder(
                     shrinkWrap: true,
@@ -1522,30 +1832,39 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
                       final isSelected = selectedExamples[index] ?? false;
 
                       return Card(
-                        margin: const EdgeInsets.only(bottom: AppTheme.spacing8),
+                        margin: const EdgeInsets.only(bottom: AppTheme.spacing4), // Reduced margin
                         color: isSelected
                             ? theme.colorScheme.primaryContainer.withValues(alpha: 0.3)
                             : null,
                         child: CheckboxListTile(
                           dense: true,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: AppTheme.spacing8, // Reduced horizontal padding
+                            vertical: 0, // Reduced vertical padding
+                          ),
+                          visualDensity: VisualDensity.compact,
                           value: isSelected,
                           onChanged: (value) {
-                            setDialogState(() {
-                              selectedExamples[index] = value ?? false;
+                            Future.microtask(() {
+                              setDialogState(() {
+                                selectedExamples[index] = value ?? false;
+                              });
                             });
                           },
                           title: Text(
                             example.textLanguage1,
                             style: theme.textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.bold,
+                              fontSize: 12, // Reduced font size
                             ),
                           ),
                           subtitle: Padding(
-                            padding: const EdgeInsets.only(top: AppTheme.spacing4),
+                            padding: const EdgeInsets.only(top: 2), // Reduced padding
                             child: Text(
                               example.textLanguage2,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
+                                fontSize: 11, // Reduced font size
                               ),
                             ),
                           ),
@@ -1559,22 +1878,45 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
             ),
           ),
           actions: [
+            // Compact buttons
             TextButton(
               onPressed: () => Navigator.of(context).pop(null),
-              child: Text(l10n.cancel),
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppTheme.spacing8,
+                  vertical: AppTheme.spacing4,
+                ),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: Text(
+                l10n.cancel,
+                style: const TextStyle(fontSize: 12), // Reduced button text size
+              ),
             ),
             TextButton(
               onPressed: () {
                 // Select/Deselect all
                 final allSelected = selectedExamples.values.every((v) => v);
-                setDialogState(() {
-                  for (int i = 0; i < examples.length; i++) {
-                    selectedExamples[i] = !allSelected;
-                  }
+                Future.microtask(() {
+                  setDialogState(() {
+                    for (int i = 0; i < examples.length; i++) {
+                      selectedExamples[i] = !allSelected;
+                    }
+                  });
                 });
               },
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppTheme.spacing8,
+                  vertical: AppTheme.spacing4,
+                ),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
               child: Text(
                 selectedExamples.values.every((v) => v) ? l10n.deselectAll : l10n.selectAll,
+                style: const TextStyle(fontSize: 12), // Reduced button text size
               ),
             ),
             ElevatedButton.icon(
@@ -1597,8 +1939,19 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
                   Navigator.of(context).pop(selected);
                 }
               },
-              icon: const Icon(Icons.add, size: 18),
-              label: Text('${l10n.addSelected} (${selectedExamples.values.where((v) => v).length})'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppTheme.spacing8,
+                  vertical: AppTheme.spacing4,
+                ),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              icon: const Icon(Icons.add, size: 14), // Reduced icon size
+              label: Text(
+                '${l10n.addSelected} (${selectedExamples.values.where((v) => v).length})',
+                style: const TextStyle(fontSize: 12), // Reduced button text size
+              ),
             ),
           ],
         ),
@@ -1616,36 +1969,22 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
     setState(() => _isSaving = true);
 
     try {
-      // Parse examples from text field
-      final examplesText = _examplesController.text.trim();
+      // Collect examples from individual controllers
       final List<ExampleSentence> parsedExamples = [];
 
-      if (examplesText.isNotEmpty) {
-        final lines = examplesText.split('\n');
-        for (final line in lines) {
-          final trimmedLine = line.trim();
-          if (trimmedLine.isNotEmpty) {
-            // Split by | to separate language1 and language2
-            final parts = trimmedLine.split('|');
-            if (parts.length >= 2) {
-              parsedExamples.add(
-                ExampleSentence(
-                  id: const Uuid().v4(),
-                  textLanguage1: parts[0].trim(),
-                  textLanguage2: parts[1].trim(),
-                ),
-              );
-            } else {
-              // If no separator, only save language1 text, leave language2 empty
-              parsedExamples.add(
-                ExampleSentence(
-                  id: const Uuid().v4(),
-                  textLanguage1: trimmedLine,
-                  textLanguage2: '',
-                ),
-              );
-            }
-          }
+      for (final controllers in _exampleControllers) {
+        final lang1Text = controllers['language1']?.text.trim() ?? '';
+        final lang2Text = controllers['language2']?.text.trim() ?? '';
+
+        // Only add if both fields have text
+        if (lang1Text.isNotEmpty && lang2Text.isNotEmpty) {
+          parsedExamples.add(
+            ExampleSentence(
+              id: const Uuid().v4(),
+              textLanguage1: lang1Text,
+              textLanguage2: lang2Text,
+            ),
+          );
         }
       }
 

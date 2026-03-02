@@ -34,13 +34,64 @@ class LanguageRallyApp extends ConsumerStatefulWidget {
   ConsumerState<LanguageRallyApp> createState() => _LanguageRallyAppState();
 }
 
-class _LanguageRallyAppState extends ConsumerState<LanguageRallyApp> {
+class _LanguageRallyAppState extends ConsumerState<LanguageRallyApp>
+    with WidgetsBindingObserver {
   bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _initializeApp();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
+    switch (state) {
+      case AppLifecycleState.resumed:
+        // App came back to foreground - reinitialize if needed
+        debugPrint('App resumed - checking database connection');
+        _checkAndReinitialize();
+        break;
+      case AppLifecycleState.paused:
+        // App going to background
+        debugPrint('App paused');
+        break;
+      case AppLifecycleState.inactive:
+        // App is inactive (e.g., phone call)
+        debugPrint('App inactive');
+        break;
+      case AppLifecycleState.detached:
+        // App is detached
+        debugPrint('App detached');
+        break;
+      case AppLifecycleState.hidden:
+        // App is hidden
+        debugPrint('App hidden');
+        break;
+    }
+  }
+
+  Future<void> _checkAndReinitialize() async {
+    // Check if database connection is still valid
+    try {
+      final db = await DatabaseHelper.instance.database;
+      // Try a simple query to verify connection
+      await db.rawQuery('SELECT 1');
+      debugPrint('Database connection is healthy');
+    } catch (e) {
+      debugPrint('Database connection issue detected: $e');
+      // Force re-initialization
+      await _initializeApp();
+    }
   }
 
   Future<void> _initializeApp() async {

@@ -956,7 +956,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get extractExpressions => 'Extract Expressions';
 
   @override
-  String get maxItems => 'Maximum Items';
+  String get maxItems => 'Maximum New Items';
 
   @override
   String get maxItemsHint => 'Leave empty for no limit';
@@ -971,7 +971,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get analyzeText => 'Analyze Text';
 
   @override
-  String get configureAnalysis => 'Configure Analysis';
+  String get configureAnalysis => 'Configure Items To Extract';
 
   @override
   String get openaiModel => 'AI Model';
@@ -1338,4 +1338,34 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get pleaseSelectValidLanguage =>
       'Please select a valid language from the list';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get addExample => 'Add example';
+
+  @override
+  String get noExamplesYet => 'No examples yet. Click + to add.';
+
+  @override
+  String get removeCategory => 'Remove Category';
+
+  @override
+  String removeCategoryConfirm(String categoryName) {
+    return 'Remove category \"$categoryName\" from this item?';
+  }
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String get extractFullItems => 'Extract Full Items';
+
+  @override
+  String get pasteFromClipboard => 'Paste from clipboard';
+
+  @override
+  String get noItemsFoundOrAllDuplicates =>
+      'No items found in the text, or all items already exist in the package';
 }

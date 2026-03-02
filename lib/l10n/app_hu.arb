@@ -292,13 +292,13 @@
   "pasteTextHere": "Illessze be ide a szöveget...",
   "extractWords": "Szavak kinyerése",
   "extractExpressions": "Kifejezések kinyerése",
-  "maxItems": "Maximum elemszám",
+  "maxItems": "Max új elem",
   "maxItemsHint": "Hagyja üresen korlát nélkül",
   "generateExamples": "Példák generálása",
   "categoryName": "Kategória neve",
   "categoryNameHint": "Név az importált elemek kategóriájához",
   "analyzeText": "Szöveg elemzése",
-  "configureAnalysis": "Elemzés Beállítása",
+  "configureAnalysis": "Kinyerendő Elemek Típusai",
   "openaiModel": "AI Modell",
   "openaiModelDescription": "ChatGPT modell kiválasztása",
   "modelGpt35Turbo": "GPT-3.5 Turbo",
@@ -413,6 +413,16 @@
   "iconDimensionsTooLarge": "Az ikon mérete túl nagy ({width}x{height}). Maximum megengedett: 512x512 pixel.",
   "iconFileTooLarge": "Az ikon fájl túl nagy. Maximum méret: 1MB.",
   "failedToUploadIcon": "Nem sikerült feltölteni az ikont: {error}",
-  "pleaseSelectValidLanguage": "Kérjük válasszon érvényes nyelvet a listából"
+  "pleaseSelectValidLanguage": "Kérjük válasszon érvényes nyelvet a listából",
+  "status": "Állapot",
+  "addExample": "Példa hozzáadása",
+  "noExamplesYet": "Még nincsenek példák. Kattintson a + gombra hozzáadáshoz.",
+  "speakText": "Szöveg felolvasása",
+  "removeCategory": "Kategória eltávolítása",
+  "removeCategoryConfirm": "Eltávolítja a(z) \"{categoryName}\" kategóriát erről az elemről?",
+  "remove": "Eltávolítás",
+  "extractFullItems": "Teljes elemek kinyerése",
+  "pasteFromClipboard": "Beillesztés vágólapról",
+  "noItemsFoundOrAllDuplicates": "Nem található elem a szövegben, vagy minden elem már létezik a csomagban"
 }
 

@@ -23,6 +23,7 @@ import 'package_form_page.dart';
 import 'package_group_admin_page.dart';
 import '../items/item_browser_page.dart';
 import '../training/training_settings_page.dart';
+import '../ai_import/ai_text_analysis_page.dart';
 import '../../../l10n/app_localizations.dart';
 
 /// Package list page displaying all language packages as cards
@@ -245,24 +246,37 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
           ],
         ),
       ),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            heroTag: 'createPackage',
-            onPressed: _createNewPackage,
-            tooltip: l10n.createNewPackage,
-            child: const Icon(Icons.add),
-          ),
-          SizedBox(width: AppTheme.spacing8),
-          FloatingActionButton.extended(
-            heroTag: 'importPackage',
-            onPressed: _importPackageFromZip,
-            icon: const Icon(Icons.file_upload),
-            label: Text(l10n.importPackage),
-            tooltip: l10n.importPackageTooltip,
-          ),
-        ],
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(bottom: AppTheme.spacing12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            FloatingActionButton.small(
+              heroTag: 'createPackage',
+              onPressed: _createNewPackage,
+              tooltip: l10n.createNewPackage,
+              child: const Icon(Icons.add, size: 20),
+            ),
+            SizedBox(width: AppTheme.spacing8),
+            SizedBox(
+              height: 40,
+              child: FloatingActionButton.extended(
+                heroTag: 'importPackage',
+                onPressed: _importPackageFromZip,
+                icon: const Icon(Icons.file_upload, size: 18),
+                label: Text(
+                  l10n.importPackage,
+                  style: const TextStyle(fontSize: 12),
+                ),
+                tooltip: l10n.importPackageTooltip,
+                extendedPadding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 0,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -320,7 +334,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
               backgroundColor: colorScheme.primaryContainer,
               foregroundColor: colorScheme.onPrimaryContainer,
               padding: EdgeInsets.symmetric(
-                horizontal: AppTheme.spacing12,
+                horizontal: AppTheme.spacing8,
                 vertical: AppTheme.spacing8,
               ),
             ),
@@ -416,24 +430,42 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
         crossAxisCount: crossAxisCount,
         crossAxisSpacing: AppTheme.spacing8,
         mainAxisSpacing: AppTheme.spacing8,
-        childAspectRatio: 1.2, // Adjusted for content that may expand
+        childAspectRatio: 2.2, // Base ratio - will be overridden per card
       ),
       itemCount: _packages.length,
       onReorder: _onReorder,
       itemBuilder: (context, index) {
         final package = _packages[index];
+        final cardKey = ValueKey(package.id);
 
-        return PackageCard(
-          key: ValueKey(package.id),
+        // Create card with a unique key (real key for reordering goes on AspectRatio wrapper)
+        final card = PackageCard(
+          key: UniqueKey(),
           package: package,
           index: index,
-          isCompact: package.isCompactView, // Use saved compact view state
+          isCompact: package.isCompactView,
           onTap: () => _onPackageTap(package),
           onToggleCompact: () => _toggleCompactMode(package),
           onDelete: () => _deletePackage(package),
           isInGrid: true,
-          showToggleButton: true, // Show toggle button in landscape/grid mode
+          showToggleButton: true,
         );
+
+        // Use different aspect ratios for compact vs expanded cards
+        // Key must be on the AspectRatio widget for ReorderableGridView
+        if (package.isCompactView) {
+          return AspectRatio(
+            key: cardKey,
+            aspectRatio: 3.5, // Compact cards are wider/shorter
+            child: card,
+          );
+        } else {
+          return AspectRatio(
+            key: cardKey,
+            aspectRatio: 1.2, // Expanded cards are taller
+            child: card,
+          );
+        }
       },
     );
   }
@@ -992,7 +1024,7 @@ class _PackageCardState extends State<PackageCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    final cardWidget = Card(
       margin: widget.isInGrid
           ? EdgeInsets.zero
           : EdgeInsets.only(bottom: AppTheme.spacing8),
@@ -1004,6 +1036,16 @@ class _PackageCardState extends State<PackageCard> {
             : _buildExpandedCard(context),
       ),
     );
+
+    // In grid mode, allow compact cards to take less vertical space
+    if (widget.isInGrid && widget.isCompact) {
+      return Align(
+        alignment: Alignment.topCenter,
+        child: cardWidget,
+      );
+    }
+
+    return cardWidget;
   }
 
   Widget _buildCompactCard(BuildContext context) {
@@ -1087,9 +1129,11 @@ class _PackageCardState extends State<PackageCard> {
     );
 
     final mainContent = widget.isInGrid
-        ? SingleChildScrollView(
+        ? Padding(
             padding: EdgeInsets.all(AppTheme.spacing8),
-            child: content,
+            child: SingleChildScrollView(
+              child: content,
+            ),
           )
         : Padding(
             // Add extra bottom padding in portrait mode to ensure floating buttons are visible
@@ -1139,6 +1183,9 @@ class _PackageCardState extends State<PackageCard> {
           // Training Rally button (left)
           _buildTrainingRallyButton(context, l10n),
           SizedBox(width: AppTheme.spacing8),
+          // AI Import button
+          _buildAIButton(context, l10n),
+          SizedBox(width: AppTheme.spacing8),
           // Browse Items button (middle)
           _buildBrowseItemsButton(context, l10n),
           SizedBox(width: AppTheme.spacing8),
@@ -1183,6 +1230,32 @@ class _PackageCardState extends State<PackageCard> {
       foregroundColor: Theme.of(context).colorScheme.onTertiaryContainer,
       tooltip: l10n.trainingRally,
       child: const Icon(Icons.psychology, size: 20),
+    );
+  }
+
+  Widget _buildAIButton(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
+    return FloatingActionButton.small(
+      heroTag: 'ai_${widget.package.id}',
+      onPressed: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => AITextAnalysisPage(package: widget.package),
+          ),
+        );
+      },
+      backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
+      foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
+      tooltip: l10n.aiTextAnalysisImport,
+      child: const Text(
+        'AI',
+        style: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 

@@ -110,10 +110,21 @@ class _AIItemsSelectionPageState extends ConsumerState<AIItemsSelectionPage> {
     final selectedCount = widget.extractedItems.where((i) => i.isSelected).length;
     final duplicateCount = widget.extractedItems.where((i) => i.isDuplicate).length;
 
+    // Determine if we should show compact view (portrait mode on non-tablet)
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isCompactView = screenWidth < 600;
+
+    // Extract 2-letter language code from sourceLanguage (e.g., "English" -> "EN")
+    String languageDisplay = widget.sourceLanguage;
+    if (isCompactView) {
+      // Try to extract from detectedLangCode first (it's already in format like "en")
+      languageDisplay = widget.detectedLangCode.split('-')[0].toUpperCase();
+    }
+
     return Card(
       margin: const EdgeInsets.all(AppTheme.spacing8),
       child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacing12),
+        padding: const EdgeInsets.all(AppTheme.spacing8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -121,10 +132,13 @@ class _AIItemsSelectionPageState extends ConsumerState<AIItemsSelectionPage> {
               children: [
                 Icon(Icons.language, size: 20, color: theme.colorScheme.primary),
                 const SizedBox(width: AppTheme.spacing8),
-                Text(
-                  '${l10n.languageDetected}: ${widget.sourceLanguage}',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
+                Flexible(
+                  child: Text(
+                    '${l10n.languageDetected}: $languageDisplay',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],
@@ -249,7 +263,7 @@ class _AIItemsSelectionPageState extends ConsumerState<AIItemsSelectionPage> {
         ),
         dense: true,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppTheme.spacing12,
+          horizontal: AppTheme.spacing8,
           vertical: 4,
         ),
       ),
@@ -260,7 +274,7 @@ class _AIItemsSelectionPageState extends ConsumerState<AIItemsSelectionPage> {
     final selectedCount = widget.extractedItems.where((i) => i.isSelected).length;
 
     return Container(
-      padding: const EdgeInsets.all(AppTheme.spacing12),
+      padding: const EdgeInsets.all(AppTheme.spacing8),
       child: ElevatedButton(
         onPressed: (_isImporting || selectedCount == 0) ? null : _importItems,
         style: ElevatedButton.styleFrom(
@@ -612,12 +626,12 @@ class _AIItemsSelectionPageState extends ConsumerState<AIItemsSelectionPage> {
             LinearProgressIndicator(
               value: total > 0 ? current / total : 0,
             ),
-            const SizedBox(height: AppTheme.spacing12),
+            const SizedBox(height: AppTheme.spacing8),
             Text(
               '${l10n.importing} $current / $total',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-            const SizedBox(height: AppTheme.spacing12),
+            const SizedBox(height: AppTheme.spacing8),
             ElevatedButton(
               onPressed: () {
                 setState(() {
