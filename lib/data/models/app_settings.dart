@@ -31,6 +31,12 @@ class AppSettings extends Equatable {
   /// Last trained package ID (hidden setting to remember last training session)
   final String? lastTrainedPackageId;
 
+  /// Show examples card in training rally page (hidden setting)
+  final bool showTrainingExamples;
+
+  /// Show training statistics chart in training rally page (hidden setting)
+  final bool showTrainingStatistics;
+
   const AppSettings({
     this.userLanguageCode = 'en-US',
     this.userLanguageName = 'English (United States)',
@@ -40,6 +46,8 @@ class AppSettings extends Equatable {
     this.aiKnowledgeLevel = 'B1',
     this.minItemsForBadges = 10,
     this.lastTrainedPackageId,
+    this.showTrainingExamples = true,
+    this.showTrainingStatistics = true,
   });
 
   AppSettings copyWith({
@@ -51,6 +59,8 @@ class AppSettings extends Equatable {
     String? aiKnowledgeLevel,
     int? minItemsForBadges,
     String? lastTrainedPackageId,
+    bool? showTrainingExamples,
+    bool? showTrainingStatistics,
   }) {
     return AppSettings(
       userLanguageCode: userLanguageCode ?? this.userLanguageCode,
@@ -61,6 +71,8 @@ class AppSettings extends Equatable {
       aiKnowledgeLevel: aiKnowledgeLevel ?? this.aiKnowledgeLevel,
       minItemsForBadges: minItemsForBadges ?? this.minItemsForBadges,
       lastTrainedPackageId: lastTrainedPackageId ?? this.lastTrainedPackageId,
+      showTrainingExamples: showTrainingExamples ?? this.showTrainingExamples,
+      showTrainingStatistics: showTrainingStatistics ?? this.showTrainingStatistics,
     );
   }
 
@@ -74,6 +86,8 @@ class AppSettings extends Equatable {
         aiKnowledgeLevel,
         minItemsForBadges,
         lastTrainedPackageId,
+        showTrainingExamples,
+        showTrainingStatistics,
       ];
 }
 

@@ -45,4 +45,14 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
     await _repository.saveAiKnowledgeLevel(level);
     state = state.copyWith(aiKnowledgeLevel: level);
   }
+
+  Future<void> setShowTrainingExamples(bool show) async {
+    await _repository.saveShowTrainingExamples(show);
+    state = state.copyWith(showTrainingExamples: show);
+  }
+
+  Future<void> setShowTrainingStatistics(bool show) async {
+    await _repository.saveShowTrainingStatistics(show);
+    state = state.copyWith(showTrainingStatistics: show);
+  }
 }

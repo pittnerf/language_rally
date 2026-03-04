@@ -60,7 +60,7 @@ Response (only the 2-letter code):''';
     const maxSentencesPerRequest = 20; // More than 20 sentences → use chunking
 
     if (sentenceCount > maxSentencesPerRequest) {
-      print('Text has $sentenceCount sentences (>${maxSentencesPerRequest}), using sentence-based chunking');
+      print('Text has $sentenceCount sentences (>$maxSentencesPerRequest), using sentence-based chunking');
       return await _extractItemsInChunks(
         text: text,
         knowledgeLevel: knowledgeLevel,
@@ -77,7 +77,7 @@ Response (only the 2-letter code):''';
     const promptOverhead = 2000; // Tokens for our instructions
 
     if (estimatedInputTokens > maxContextTokens - promptOverhead) {
-      print('Text has ${estimatedInputTokens} estimated tokens (too large), using sentence-based chunking');
+      print('Text has $estimatedInputTokens estimated tokens (too large), using sentence-based chunking');
       return await _extractItemsInChunks(
         text: text,
         knowledgeLevel: knowledgeLevel,

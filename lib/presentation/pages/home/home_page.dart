@@ -3,16 +3,28 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:language_rally/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../providers/theme_provider.dart';
-import '../font_test_page.dart';
-import '../design_system_showcase.dart';
 import '../packages/package_list_page.dart';
 import '../packages/package_form_page.dart';
 import '../training/training_settings_page.dart';
 import '../dev/test_data_page.dart';
 import '../settings/app_settings_page.dart';
+import '../app_tour/app_tour_page.dart';
 
-class HomePage extends ConsumerWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
+
+  @override
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends ConsumerState<HomePage> {
+  final ScrollController _welcomePanelScrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _welcomePanelScrollController.dispose();
+    super.dispose();
+  }
 
   void _showThemeSelector(BuildContext context, WidgetRef ref) {
     showDialog(
@@ -101,174 +113,489 @@ class HomePage extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final localizations = AppLocalizations.of(context)!;
     final themeConfig = ref.watch(themeProvider);
+    final theme = Theme.of(context);
+    final mediaQuery = MediaQuery.of(context);
+    final isTabletLandscape = mediaQuery.size.width >= 900 &&
+                               mediaQuery.orientation == Orientation.landscape;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(localizations.appTitle),
-        actions: [
-          // Settings button
-          IconButton(
-            icon: const Icon(Icons.settings),
-            tooltip: localizations.settings,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const AppSettingsPage()),
-              );
-            },
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: themeConfig.isDarkMode
+                ? [
+                    theme.colorScheme.surface,
+                    theme.colorScheme.surfaceContainerHighest,
+                  ]
+                : [
+                    theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+                    theme.colorScheme.surface,
+                    theme.colorScheme.secondaryContainer.withValues(alpha: 0.2),
+                  ],
           ),
-          // Theme brightness toggle button
-          IconButton(
-            icon: Icon(themeConfig.isDarkMode ? Icons.light_mode : Icons.dark_mode),
-            tooltip: 'Toggle brightness',
-            onPressed: () {
-              ref.read(themeProvider.notifier).toggleBrightness();
-            },
+        ),
+        child: isTabletLandscape
+            ? _buildTabletLandscapeLayout(context, ref, localizations, theme, themeConfig)
+            : _buildPhonePortraitLayout(context, ref, localizations, theme, themeConfig),
+      ),
+    );
+  }
+
+  Widget _buildTabletLandscapeLayout(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations localizations,
+    ThemeData theme,
+    ThemeConfig themeConfig,
+  ) {
+    return SafeArea(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Left side - Main content (buttons vertically centered)
+          SizedBox(
+            width: 450, // Fixed width for button area
+            child: Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(AppTheme.spacing24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _buildHeader(context, ref, localizations, theme, themeConfig),
+                    const SizedBox(height: AppTheme.spacing32),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 400),
+                      child: _buildMainButtons(context, localizations, theme),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-          // Theme selector button
-          IconButton(
-            icon: const Icon(Icons.palette),
-            tooltip: 'Change theme',
-            onPressed: () => _showThemeSelector(context, ref),
+          // Right side - Welcome panel (fixed height card with internal scrolling)
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(AppTheme.spacing24),
+              child: _buildWelcomePanel(context, localizations, theme),
+            ),
           ),
         ],
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(AppTheme.spacing24),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
+    );
+  }
+
+  Widget _buildPhonePortraitLayout(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations localizations,
+    ThemeData theme,
+    ThemeConfig themeConfig,
+  ) {
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(AppTheme.spacing24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildHeader(context, ref, localizations, theme, themeConfig),
+            const SizedBox(height: AppTheme.spacing32),
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: _buildMainButtons(context, localizations, theme),
+              ),
+            ),
+            const SizedBox(height: AppTheme.spacing32),
+            _buildWelcomePanel(context, localizations, theme),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations localizations,
+    ThemeData theme,
+    ThemeConfig themeConfig,
+  ) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                localizations.appTitle,
+                style: theme.textTheme.headlineLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+              const SizedBox(height: AppTheme.spacing8),
               Text(
                 localizations.welcome,
-                style: Theme.of(context).textTheme.headlineLarge,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: AppTheme.spacing32),
-
-              // Start Training Rally Button
-              FilledButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const TrainingSettingsPage()),
-                  );
-                },
-                icon: const Icon(Icons.school),
-                label: Text(localizations.startTrainingRally),
-                style: FilledButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppTheme.spacing24,
-                    vertical: AppTheme.spacing16,
-                  ),
-                ),
-              ),
-              const SizedBox(height: AppTheme.spacing16),
-
-              // Font Test Button
-              FilledButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const FontTestPage()),
-                  );
-                },
-                icon: const Icon(Icons.font_download),
-                label: Text(localizations.testInterFonts),
-              ),
-              const SizedBox(height: AppTheme.spacing16),
-
-              // Package List Button
-              FilledButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const PackageListPage()),
-                  );
-                },
-                icon: const Icon(Icons.library_books),
-                label: Text(localizations.viewPackages),
-              ),
-              const SizedBox(height: AppTheme.spacing16),
-
-              // Create Package Button
-              ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const PackageFormPage()),
-                  );
-                },
-                icon: const Icon(Icons.add_circle_outline),
-                label: Text(localizations.createNewPackage),
-              ),
-              const SizedBox(height: AppTheme.spacing16),
-
-              // Test Data Generator Button (Dev Tool)
-              ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const TestDataPage()),
-                  );
-                },
-                icon: const Icon(Icons.science),
-                label: Text(localizations.generateTestData),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
-                  foregroundColor: Theme.of(context).colorScheme.onSecondaryContainer,
-                ),
-              ),
-              const SizedBox(height: AppTheme.spacing16),
-
-              // Design System Showcase Button
-              OutlinedButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const DesignSystemShowcase()),
-                  );
-                },
-                icon: const Icon(Icons.palette),
-                label: Text(localizations.designSystemShowcase),
-              ),
-
-              const SizedBox(height: AppTheme.spacing32),
-
-              // Info card
-              Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(AppTheme.spacing16),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        color: Theme.of(context).colorScheme.primary,
-                        size: 32,
-                      ),
-                      const SizedBox(height: AppTheme.spacing8),
-                      Text(
-                        'Design System Ready',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: AppTheme.spacing8),
-                      Text(
-                        'Your app is configured with a complete Material 3 design system including Inter fonts, calm colors, and themed components.',
-                        style: Theme.of(context).textTheme.bodySmall,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
           ),
         ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Theme brightness toggle button
+            IconButton(
+              icon: Icon(themeConfig.isDarkMode ? Icons.light_mode : Icons.dark_mode),
+              tooltip: 'Toggle brightness',
+              onPressed: () {
+                ref.read(themeProvider.notifier).toggleBrightness();
+              },
+            ),
+            // Theme selector button
+            IconButton(
+              icon: const Icon(Icons.palette),
+              tooltip: 'Change theme',
+              onPressed: () => _showThemeSelector(context, ref),
+            ),
+          ],
         ),
+      ],
+    );
+  }
+
+  Widget _buildMainButtons(
+    BuildContext context,
+    AppLocalizations localizations,
+    ThemeData theme,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // Package List Button (First - Primary Action)
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const PackageListPage()),
+            );
+          },
+          icon: const Icon(Icons.library_books, size: 24),
+          label: Text(localizations.viewPackages),
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppTheme.spacing24,
+              vertical: AppTheme.spacing16,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppTheme.spacing12),
+
+        // Start Training Rally Button (Second)
+        FilledButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const TrainingSettingsPage()),
+            );
+          },
+          icon: const Icon(Icons.school, size: 24),
+          label: Text(
+            localizations.startTrainingRally,
+            style: const TextStyle(fontSize: 16),
+          ),
+          style: FilledButton.styleFrom(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppTheme.spacing24,
+              vertical: AppTheme.spacing16,
+            ),
+            elevation: 4,
+          ),
+        ),
+        const SizedBox(height: AppTheme.spacing12),
+
+        // Create Package Button
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const PackageFormPage()),
+            );
+          },
+          icon: const Icon(Icons.add_circle_outline, size: 24),
+          label: Text(localizations.createNewPackage),
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppTheme.spacing24,
+              vertical: AppTheme.spacing16,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppTheme.spacing12),
+
+        // Browse Store Button
+        ElevatedButton.icon(
+          onPressed: () {
+            // TODO: Navigate to package store page when implemented
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('${localizations.browseStore} - Coming soon!'),
+                duration: const Duration(seconds: 2),
+              ),
+            );
+          },
+          icon: const Icon(Icons.storefront, size: 24),
+          label: Text(localizations.browseStore),
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppTheme.spacing24,
+              vertical: AppTheme.spacing16,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppTheme.spacing12),
+
+        // Settings Button
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AppSettingsPage()),
+            );
+          },
+          icon: const Icon(Icons.settings, size: 24),
+          label: Text(localizations.settings),
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppTheme.spacing24,
+              vertical: AppTheme.spacing16,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppTheme.spacing12),
+
+        // Test Data Generator Button (Dev Tool)
+        OutlinedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const TestDataPage()),
+            );
+          },
+          icon: const Icon(Icons.science, size: 24),
+          label: Text(localizations.generateTestData),
+          style: OutlinedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppTheme.spacing24,
+              vertical: AppTheme.spacing16,
+            ),
+            side: BorderSide(
+              color: theme.colorScheme.secondary,
+              width: 2,
+            ),
+            foregroundColor: theme.colorScheme.secondary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildWelcomePanel(
+    BuildContext context,
+    AppLocalizations localizations,
+    ThemeData theme,
+  ) {
+    // Get screen height to calculate card height
+    final screenHeight = MediaQuery.of(context).size.height;
+    final cardHeight = screenHeight - 48.0; // Account for SafeArea padding
+
+    return Card(
+      elevation: 4,
+      child: SizedBox(
+        height: cardHeight,
+        child: Scrollbar(
+          controller: _welcomePanelScrollController,
+          thumbVisibility: true,
+          thickness: 8,
+          radius: const Radius.circular(4),
+          child: SingleChildScrollView(
+            controller: _welcomePanelScrollController,
+            padding: const EdgeInsets.all(AppTheme.spacing24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Title
+                Text(
+                  localizations.welcomeTitle,
+                  style: theme.textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(height: AppTheme.spacing8),
+                // Subtitle
+                Text(
+                  localizations.welcomeSubtitle,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(height: AppTheme.spacing12),
+                // Intro
+                Text(
+                  localizations.welcomeIntro,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: AppTheme.spacing24),
+                const Divider(),
+                const SizedBox(height: AppTheme.spacing24),
+
+                // Section: Play Your Game
+                _buildWelcomeSection(
+                  theme,
+                  localizations.sectionPlayYourGame,
+                  localizations.sectionPlayYourGameDesc,
+                ),
+                const SizedBox(height: AppTheme.spacing24),
+                const Divider(),
+                const SizedBox(height: AppTheme.spacing24),
+
+                // Section: AI Teammate
+                _buildWelcomeSection(
+                  theme,
+                  localizations.sectionAITeammate,
+                  localizations.sectionAITeammateDesc,
+                ),
+                const SizedBox(height: AppTheme.spacing24),
+                const Divider(),
+                const SizedBox(height: AppTheme.spacing24),
+
+                // Section: Train Smart
+                _buildWelcomeSection(
+                  theme,
+                  localizations.sectionTrainSmart,
+                  localizations.sectionTrainSmartDesc,
+                ),
+                const SizedBox(height: AppTheme.spacing24),
+                const Divider(),
+                const SizedBox(height: AppTheme.spacing24),
+
+                // Section: Real Examples
+                _buildWelcomeSection(
+                  theme,
+                  localizations.sectionRealExamples,
+                  localizations.sectionRealExamplesDesc,
+                ),
+                const SizedBox(height: AppTheme.spacing24),
+                const Divider(),
+                const SizedBox(height: AppTheme.spacing24),
+
+                // Section: Teachers Welcome
+                _buildWelcomeSection(
+                  theme,
+                  localizations.sectionTeachersWelcome,
+                  localizations.sectionTeachersWelcomeDesc,
+                ),
+                const SizedBox(height: AppTheme.spacing24),
+                const Divider(),
+                const SizedBox(height: AppTheme.spacing24),
+
+                // Section: Unlock AI Power
+                _buildWelcomeSection(
+                  theme,
+                  localizations.sectionUnlockAI,
+                  localizations.sectionUnlockAIDesc,
+                ),
+                const SizedBox(height: AppTheme.spacing24),
+                const Divider(),
+                const SizedBox(height: AppTheme.spacing24),
+
+                // Ready to start
+                Center(
+                  child: Text(
+                    localizations.readyToStart,
+                    style: theme.textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.primary,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: AppTheme.spacing16),
+
+                // Start App Tour button
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    onPressed: () {
+                      _showAppTour(context, localizations, theme);
+                    },
+                    icon: const Icon(Icons.tour),
+                    label: Text(localizations.startAppTour),
+                    style: FilledButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppTheme.spacing16,
+                      ),
+                      backgroundColor: theme.colorScheme.secondary,
+                      foregroundColor: theme.colorScheme.onSecondary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildWelcomeSection(
+    ThemeData theme,
+    String title,
+    String description,
+  ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.primary,
+          ),
+        ),
+        const SizedBox(height: AppTheme.spacing8),
+        Text(
+          description,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            height: 1.6,
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showAppTour(
+    BuildContext context,
+    AppLocalizations localizations,
+    ThemeData theme,
+  ) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => const AppTourPage(),
+        fullscreenDialog: true,
       ),
     );
   }

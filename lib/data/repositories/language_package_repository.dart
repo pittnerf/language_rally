@@ -95,7 +95,7 @@ class LanguagePackageRepository {
   }
 
   /// Clear all training counters for a package
-  /// Resets dont_know_counter for all items in the package's categories
+  /// Resets dont_know_counter to 0 and sets isKnown to true for all items in the package's categories
   /// and resets training statistics
   Future<void> clearPackageCounters(String id) async {
     final db = await _dbHelper.database;
@@ -121,12 +121,12 @@ class LanguagePackageRepository {
 
         final itemIds = itemAssociations.map((row) => row['item_id'] as String).toList();
 
-        // Reset dont_know_counter for all items
+        // Reset dont_know_counter and set isKnown=true for all items
         if (itemIds.isNotEmpty) {
           final itemPlaceholders = List.filled(itemIds.length, '?').join(',');
           await txn.rawUpdate('''
             UPDATE items
-            SET dont_know_counter = 0
+            SET dont_know_counter = 0, is_known = 1
             WHERE id IN ($itemPlaceholders)
           ''', itemIds);
         }

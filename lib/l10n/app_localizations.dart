@@ -2153,7 +2153,7 @@ abstract class AppLocalizations {
   /// No description provided for @trainingSessionProgress.
   ///
   /// In en, this message translates to:
-  /// **'Training Session Progress'**
+  /// **'Training Session Stats'**
   String get trainingSessionProgress;
 
   /// No description provided for @total.
@@ -2593,6 +2593,378 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No items found in the text, or all items already exist in the package'**
   String get noItemsFoundOrAllDuplicates;
+
+  /// No description provided for @aboutLanguageRally.
+  ///
+  /// In en, this message translates to:
+  /// **'About Language Rally'**
+  String get aboutLanguageRally;
+
+  /// No description provided for @welcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'🚀 Welcome to Language Rally'**
+  String get welcomeTitle;
+
+  /// No description provided for @welcomeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Level up your language skills — the smart and playful way.'**
+  String get welcomeSubtitle;
+
+  /// No description provided for @welcomeIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn vocabulary and expressions efficiently by practicing what you actually care about. No boring lists. No wasted time.'**
+  String get welcomeIntro;
+
+  /// No description provided for @sectionPlayYourGame.
+  ///
+  /// In en, this message translates to:
+  /// **'🎮 Play Your Own Game'**
+  String get sectionPlayYourGame;
+
+  /// No description provided for @sectionPlayYourGameDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your own vocabulary packages. Train only the words and expressions you want to master. Already know it? It will be marked and skipped!'**
+  String get sectionPlayYourGameDesc;
+
+  /// No description provided for @sectionAITeammate.
+  ///
+  /// In en, this message translates to:
+  /// **'🤖 AI as Your Teammate'**
+  String get sectionAITeammate;
+
+  /// No description provided for @sectionAITeammateDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste any text and let AI:\n• Extract useful vocabulary\n• Pick expressions that match your level\n• Build ready-to-train packages in seconds'**
+  String get sectionAITeammateDesc;
+
+  /// No description provided for @sectionTrainSmart.
+  ///
+  /// In en, this message translates to:
+  /// **'🔁 Train Smart'**
+  String get sectionTrainSmart;
+
+  /// No description provided for @sectionTrainSmartDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Our spaced repetition system shows items exactly when your brain needs them. Maximum progress. Minimum effort.'**
+  String get sectionTrainSmartDesc;
+
+  /// No description provided for @sectionRealExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'🌍 Real Examples. Great Translations.'**
+  String get sectionRealExamples;
+
+  /// No description provided for @sectionRealExamplesDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Get real-world usage examples. Translate with premium quality via DeepL. Practice pronunciation and sound confident.'**
+  String get sectionRealExamplesDesc;
+
+  /// No description provided for @sectionTeachersWelcome.
+  ///
+  /// In en, this message translates to:
+  /// **'👩‍🏫 Teachers Welcome'**
+  String get sectionTeachersWelcome;
+
+  /// No description provided for @sectionTeachersWelcomeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a package → Copy & Paste items or extract,  translate, add examples with the AI → Export → Upload/Send → Done. Your students import it and start practicing instantly.'**
+  String get sectionTeachersWelcomeDesc;
+
+  /// No description provided for @sectionUnlockAI.
+  ///
+  /// In en, this message translates to:
+  /// **'🔑 Unlock Full AI Power'**
+  String get sectionUnlockAI;
+
+  /// No description provided for @sectionUnlockAIDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'For high-quality translation and AI features, simply:\n1. Create your DeepL API key\n   https://www.deepl.com/pro-api\n2. Create your OpenAI API key\n   https://platform.openai.com/api-keys\n3. Paste both keys into Settings\n\nA small investment unlocks powerful, professional-grade language tools.\n(We recommend using paid API access for best results.)'**
+  String get sectionUnlockAIDesc;
+
+  /// No description provided for @readyToStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to start your rally? 🏁'**
+  String get readyToStart;
+
+  /// No description provided for @welcomeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Language Rally is your comprehensive language learning companion. Create custom vocabulary packages, organize items by categories, and train with an intelligent spaced repetition system.'**
+  String get welcomeDescription;
+
+  /// No description provided for @browseStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse Store'**
+  String get browseStore;
+
+  /// No description provided for @featureInteractiveTraining.
+  ///
+  /// In en, this message translates to:
+  /// **'Interactive Training'**
+  String get featureInteractiveTraining;
+
+  /// No description provided for @featureInteractiveTrainingDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice with adaptive learning algorithms'**
+  String get featureInteractiveTrainingDesc;
+
+  /// No description provided for @featureSmartOrganization.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Organization'**
+  String get featureSmartOrganization;
+
+  /// No description provided for @featureSmartOrganizationDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Categorize and filter your vocabulary'**
+  String get featureSmartOrganizationDesc;
+
+  /// No description provided for @featureTrackProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Track Progress'**
+  String get featureTrackProgress;
+
+  /// No description provided for @featureTrackProgressDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Monitor your learning with detailed statistics'**
+  String get featureTrackProgressDesc;
+
+  /// No description provided for @featureImportExport.
+  ///
+  /// In en, this message translates to:
+  /// **'Import & Export'**
+  String get featureImportExport;
+
+  /// No description provided for @featureImportExportDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Share packages and sync across devices'**
+  String get featureImportExportDesc;
+
+  /// No description provided for @startAppTour.
+  ///
+  /// In en, this message translates to:
+  /// **'Start App Tour'**
+  String get startAppTour;
+
+  /// No description provided for @quickStartGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Start Guide'**
+  String get quickStartGuide;
+
+  /// No description provided for @tourStep1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Create or Import Packages'**
+  String get tourStep1Title;
+
+  /// No description provided for @tourStep1Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Start by creating a new language package or import an existing one from a file.'**
+  String get tourStep1Desc;
+
+  /// No description provided for @tourStep2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Vocabulary Items'**
+  String get tourStep2Title;
+
+  /// No description provided for @tourStep2Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse your packages and add words, phrases, or expressions with examples and categories.'**
+  String get tourStep2Desc;
+
+  /// No description provided for @tourStep3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure Training'**
+  String get tourStep3Title;
+
+  /// No description provided for @tourStep3Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose which items to practice, set difficulty levels, and customize your learning experience.'**
+  String get tourStep3Desc;
+
+  /// No description provided for @tourStep4Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Learning'**
+  String get tourStep4Title;
+
+  /// No description provided for @tourStep4Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Begin your training session and mark items as known or unknown to track your progress.'**
+  String get tourStep4Desc;
+
+  /// No description provided for @tourStep5Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Review Statistics'**
+  String get tourStep5Title;
+
+  /// No description provided for @tourStep5Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your learning progress with detailed statistics and achievement badges.'**
+  String get tourStep5Desc;
+
+  /// No description provided for @gotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it!'**
+  String get gotIt;
+
+  /// No description provided for @appTourTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Language Rally'**
+  String get appTourTitle;
+
+  /// No description provided for @appTourSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your smart, playful, and fully personalized language learning companion.'**
+  String get appTourSubtitle;
+
+  /// No description provided for @tourPage1Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn and Practice What You Want and What You Need'**
+  String get tourPage1Title;
+
+  /// No description provided for @tourPage1Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Our adaptive learning system ensures you review items at the perfect moment — maximizing retention and minimizing effort.\n\nLearn with the help of the built-in automation.\nStop wasting time on words you already know.\n\nPractice only the vocabulary and expressions that interest you. Create and train your own items — fully tailored to your goals and level.'**
+  String get tourPage1Desc;
+
+  /// No description provided for @tourPage2Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Your Own Language Package'**
+  String get tourPage2Title;
+
+  /// No description provided for @tourPage2Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Build personalized vocabulary collections that match your interests and learning goals.\n\nOrganize words and expressions by topic, difficulty, or context.\n\nComplete control over what you learn and when.'**
+  String get tourPage2Desc;
+
+  /// No description provided for @tourPage3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'AI-Powered Items Creation'**
+  String get tourPage3Title;
+
+  /// No description provided for @tourPage3Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Build your own learning packages in the blink of an eye:\n\n• Paste any text and let AI extract relevant vocabulary automatically\n• Identify words and expressions perfectly suited to your level\n• Let the AI do the translation for you\n• Let the AI search real-time examples\n• Create packages ready for training quickly'**
+  String get tourPage3Desc;
+
+  /// No description provided for @tourPage4Title.
+  ///
+  /// In en, this message translates to:
+  /// **'AI-Powered Real-World Examples & Premium Translation'**
+  String get tourPage4Title;
+
+  /// No description provided for @tourPage4Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'• Instantly search for authentic usage examples\n• Translate words, expressions, and full sentences with high-quality DeepL integration\n• Get accurate, context-aware results'**
+  String get tourPage4Desc;
+
+  /// No description provided for @tourPage5Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Package Organization'**
+  String get tourPage5Title;
+
+  /// No description provided for @tourPage5Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'• Organize vocabulary into custom categories\n• Filter and focus on specific topics\n• Import & export packages across devices\n• Share packages easily with others'**
+  String get tourPage5Desc;
+
+  /// No description provided for @tourPage6Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Training Your Pronunciation'**
+  String get tourPage6Title;
+
+  /// No description provided for @tourPage6Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Test and improve your pronunciation with interactive practice tools.\n\nBuild confidence in speaking — not just reading.'**
+  String get tourPage6Desc;
+
+  /// No description provided for @tourPage7Title.
+  ///
+  /// In en, this message translates to:
+  /// **'For Teachers'**
+  String get tourPage7Title;
+
+  /// No description provided for @tourPage7Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Create ready-to-use vocabulary packages for your students in just a few clicks.\n\nExport them, send them to your class — and once imported, they\'re instantly ready for practice on each student\'s device.\n\nSimple. Fast. Effective.'**
+  String get tourPage7Desc;
+
+  /// No description provided for @tourPage8Title.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock High-Quality AI Support'**
+  String get tourPage8Title;
+
+  /// No description provided for @tourPage8Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'For premium translations and advanced AI features, simply:\n\n1. Create your own DeepL API key\n2. Create your own OpenAI API key\n3. Paste both keys into the Settings section\n\nThis requires only a small budget (a few dollars), but gives you access to powerful, professional-grade language tools.\n\nNote: We recommend using paid API access for best results. It costs only a few dollars.\n\n🔑 DeepL API Key:\nhttps://www.deepl.com/pro-api\n\n🔑 OpenAI API Key:\nhttps://platform.openai.com/api-keys'**
+  String get tourPage8Desc;
+
+  /// No description provided for @previousPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get previousPage;
+
+  /// No description provided for @nextPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get nextPage;
+
+  /// No description provided for @endTour.
+  ///
+  /// In en, this message translates to:
+  /// **'End Tour'**
+  String get endTour;
+
+  /// No description provided for @pageIndicator.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {current} of {total}'**
+  String pageIndicator(int current, int total);
 }
 
 class _AppLocalizationsDelegate

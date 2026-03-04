@@ -1126,7 +1126,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get speakText => 'Speak text';
 
   @override
-  String get trainingSessionProgress => 'Training Session Progress';
+  String get trainingSessionProgress => 'Training Session Stats';
 
   @override
   String get total => 'Total';
@@ -1368,4 +1368,221 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get noItemsFoundOrAllDuplicates =>
       'No items found in the text, or all items already exist in the package';
+
+  @override
+  String get aboutLanguageRally => 'About Language Rally';
+
+  @override
+  String get welcomeTitle => '🚀 Welcome to Language Rally';
+
+  @override
+  String get welcomeSubtitle =>
+      'Level up your language skills — the smart and playful way.';
+
+  @override
+  String get welcomeIntro =>
+      'Learn vocabulary and expressions efficiently by practicing what you actually care about. No boring lists. No wasted time.';
+
+  @override
+  String get sectionPlayYourGame => '🎮 Play Your Own Game';
+
+  @override
+  String get sectionPlayYourGameDesc =>
+      'Create your own vocabulary packages. Train only the words and expressions you want to master. Already know it? It will be marked and skipped!';
+
+  @override
+  String get sectionAITeammate => '🤖 AI as Your Teammate';
+
+  @override
+  String get sectionAITeammateDesc =>
+      'Paste any text and let AI:\n• Extract useful vocabulary\n• Pick expressions that match your level\n• Build ready-to-train packages in seconds';
+
+  @override
+  String get sectionTrainSmart => '🔁 Train Smart';
+
+  @override
+  String get sectionTrainSmartDesc =>
+      'Our spaced repetition system shows items exactly when your brain needs them. Maximum progress. Minimum effort.';
+
+  @override
+  String get sectionRealExamples => '🌍 Real Examples. Great Translations.';
+
+  @override
+  String get sectionRealExamplesDesc =>
+      'Get real-world usage examples. Translate with premium quality via DeepL. Practice pronunciation and sound confident.';
+
+  @override
+  String get sectionTeachersWelcome => '👩‍🏫 Teachers Welcome';
+
+  @override
+  String get sectionTeachersWelcomeDesc =>
+      'Create a package → Copy & Paste items or extract,  translate, add examples with the AI → Export → Upload/Send → Done. Your students import it and start practicing instantly.';
+
+  @override
+  String get sectionUnlockAI => '🔑 Unlock Full AI Power';
+
+  @override
+  String get sectionUnlockAIDesc =>
+      'For high-quality translation and AI features, simply:\n1. Create your DeepL API key\n   https://www.deepl.com/pro-api\n2. Create your OpenAI API key\n   https://platform.openai.com/api-keys\n3. Paste both keys into Settings\n\nA small investment unlocks powerful, professional-grade language tools.\n(We recommend using paid API access for best results.)';
+
+  @override
+  String get readyToStart => 'Ready to start your rally? 🏁';
+
+  @override
+  String get welcomeDescription =>
+      'Language Rally is your comprehensive language learning companion. Create custom vocabulary packages, organize items by categories, and train with an intelligent spaced repetition system.';
+
+  @override
+  String get browseStore => 'Browse Store';
+
+  @override
+  String get featureInteractiveTraining => 'Interactive Training';
+
+  @override
+  String get featureInteractiveTrainingDesc =>
+      'Practice with adaptive learning algorithms';
+
+  @override
+  String get featureSmartOrganization => 'Smart Organization';
+
+  @override
+  String get featureSmartOrganizationDesc =>
+      'Categorize and filter your vocabulary';
+
+  @override
+  String get featureTrackProgress => 'Track Progress';
+
+  @override
+  String get featureTrackProgressDesc =>
+      'Monitor your learning with detailed statistics';
+
+  @override
+  String get featureImportExport => 'Import & Export';
+
+  @override
+  String get featureImportExportDesc =>
+      'Share packages and sync across devices';
+
+  @override
+  String get startAppTour => 'Start App Tour';
+
+  @override
+  String get quickStartGuide => 'Quick Start Guide';
+
+  @override
+  String get tourStep1Title => 'Create or Import Packages';
+
+  @override
+  String get tourStep1Desc =>
+      'Start by creating a new language package or import an existing one from a file.';
+
+  @override
+  String get tourStep2Title => 'Add Vocabulary Items';
+
+  @override
+  String get tourStep2Desc =>
+      'Browse your packages and add words, phrases, or expressions with examples and categories.';
+
+  @override
+  String get tourStep3Title => 'Configure Training';
+
+  @override
+  String get tourStep3Desc =>
+      'Choose which items to practice, set difficulty levels, and customize your learning experience.';
+
+  @override
+  String get tourStep4Title => 'Start Learning';
+
+  @override
+  String get tourStep4Desc =>
+      'Begin your training session and mark items as known or unknown to track your progress.';
+
+  @override
+  String get tourStep5Title => 'Review Statistics';
+
+  @override
+  String get tourStep5Desc =>
+      'Check your learning progress with detailed statistics and achievement badges.';
+
+  @override
+  String get gotIt => 'Got it!';
+
+  @override
+  String get appTourTitle => 'Welcome to Language Rally';
+
+  @override
+  String get appTourSubtitle =>
+      'Your smart, playful, and fully personalized language learning companion.';
+
+  @override
+  String get tourPage1Title =>
+      'Learn and Practice What You Want and What You Need';
+
+  @override
+  String get tourPage1Desc =>
+      'Our adaptive learning system ensures you review items at the perfect moment — maximizing retention and minimizing effort.\n\nLearn with the help of the built-in automation.\nStop wasting time on words you already know.\n\nPractice only the vocabulary and expressions that interest you. Create and train your own items — fully tailored to your goals and level.';
+
+  @override
+  String get tourPage2Title => 'Create Your Own Language Package';
+
+  @override
+  String get tourPage2Desc =>
+      'Build personalized vocabulary collections that match your interests and learning goals.\n\nOrganize words and expressions by topic, difficulty, or context.\n\nComplete control over what you learn and when.';
+
+  @override
+  String get tourPage3Title => 'AI-Powered Items Creation';
+
+  @override
+  String get tourPage3Desc =>
+      'Build your own learning packages in the blink of an eye:\n\n• Paste any text and let AI extract relevant vocabulary automatically\n• Identify words and expressions perfectly suited to your level\n• Let the AI do the translation for you\n• Let the AI search real-time examples\n• Create packages ready for training quickly';
+
+  @override
+  String get tourPage4Title =>
+      'AI-Powered Real-World Examples & Premium Translation';
+
+  @override
+  String get tourPage4Desc =>
+      '• Instantly search for authentic usage examples\n• Translate words, expressions, and full sentences with high-quality DeepL integration\n• Get accurate, context-aware results';
+
+  @override
+  String get tourPage5Title => 'Smart Package Organization';
+
+  @override
+  String get tourPage5Desc =>
+      '• Organize vocabulary into custom categories\n• Filter and focus on specific topics\n• Import & export packages across devices\n• Share packages easily with others';
+
+  @override
+  String get tourPage6Title => 'Training Your Pronunciation';
+
+  @override
+  String get tourPage6Desc =>
+      'Test and improve your pronunciation with interactive practice tools.\n\nBuild confidence in speaking — not just reading.';
+
+  @override
+  String get tourPage7Title => 'For Teachers';
+
+  @override
+  String get tourPage7Desc =>
+      'Create ready-to-use vocabulary packages for your students in just a few clicks.\n\nExport them, send them to your class — and once imported, they\'re instantly ready for practice on each student\'s device.\n\nSimple. Fast. Effective.';
+
+  @override
+  String get tourPage8Title => 'Unlock High-Quality AI Support';
+
+  @override
+  String get tourPage8Desc =>
+      'For premium translations and advanced AI features, simply:\n\n1. Create your own DeepL API key\n2. Create your own OpenAI API key\n3. Paste both keys into the Settings section\n\nThis requires only a small budget (a few dollars), but gives you access to powerful, professional-grade language tools.\n\nNote: We recommend using paid API access for best results. It costs only a few dollars.\n\n🔑 DeepL API Key:\nhttps://www.deepl.com/pro-api\n\n🔑 OpenAI API Key:\nhttps://platform.openai.com/api-keys';
+
+  @override
+  String get previousPage => 'Previous';
+
+  @override
+  String get nextPage => 'Next';
+
+  @override
+  String get endTour => 'End Tour';
+
+  @override
+  String pageIndicator(int current, int total) {
+    return 'Page $current of $total';
+  }
 }

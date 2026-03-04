@@ -1127,7 +1127,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get speakText => 'Szöveg felolvasása';
 
   @override
-  String get trainingSessionProgress => 'Gyakorlás Előrehaladása';
+  String get trainingSessionProgress => 'Gyakorlási Statisztika';
 
   @override
   String get total => 'Összesen';
@@ -1377,4 +1377,220 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get noItemsFoundOrAllDuplicates =>
       'Nem található elem a szövegben, vagy minden elem már létezik a csomagban';
+
+  @override
+  String get aboutLanguageRally => 'A Language Rally-ról';
+
+  @override
+  String get welcomeTitle => '🚀 Üdvözöljük a Language Rally-ban';
+
+  @override
+  String get welcomeSubtitle =>
+      'Fejlessze nyelvi készségeit — okosan és játékosan.';
+
+  @override
+  String get welcomeIntro =>
+      'Tanulja meg hatékonyan a szókincset és kifejezéseket azáltal, hogy azt gyakorolja, ami valóban fontos önnek. Nincsenek unalmas listák. Nincs pazarolt idő.';
+
+  @override
+  String get sectionPlayYourGame => '🎮 Játssza a saját játékát';
+
+  @override
+  String get sectionPlayYourGameDesc =>
+      'Hozzon létre saját szókészlet-csomagokat. Csak azokat a szavakat és kifejezéseket gyakorolja, amelyeket valóban el akar sajátítani. Már ismeri? Megjelölésre kerül és átugorja!';
+
+  @override
+  String get sectionAITeammate => '🤖 AI mint csapattárs';
+
+  @override
+  String get sectionAITeammateDesc =>
+      'Illesszen be bármilyen szöveget és hagyja, hogy az AI:\n• Kivonja a hasznos szókincset\n• Válasszon olyan kifejezéseket, amelyek megfelelnek az ön szintjének\n• Másodpercek alatt építsen gyakorlásra kész csomagokat';
+
+  @override
+  String get sectionTrainSmart => '🔁 Okos gyakorlás';
+
+  @override
+  String get sectionTrainSmartDesc =>
+      'Az időközönkénti ismétlési rendszerünk pontosan akkor mutatja meg az elemeket, amikor az agyának szüksége van rájuk. Maximális haladás. Minimális erőfeszítés.';
+
+  @override
+  String get sectionRealExamples => '🌍 Valós példák. Kiváló fordítások.';
+
+  @override
+  String get sectionRealExamplesDesc =>
+      'Szerezzen valós használati példákat. Fordítson prémium minőségben a DeepL-lel. Gyakorolja a kiejtést és legyen magabiztos.';
+
+  @override
+  String get sectionTeachersWelcome => '👩‍🏫 Tanárok örömmel fogadtatnak';
+
+  @override
+  String get sectionTeachersWelcomeDesc =>
+      'Csomag létrehozása → Exportálás → A tételek bemásolása vagy az AI-val való kinyerése, fordítása, példák keresése → Feltöltés/Küldés → Kész. A tanulók importálják és azonnal elkezdhetik a gyakorlást.';
+
+  @override
+  String get sectionUnlockAI => '🔑 Teljes AI erő feloldása';
+
+  @override
+  String get sectionUnlockAIDesc =>
+      'Kiváló minőségű fordításhoz és AI funkciókhoz egyszerűen:\n1. Hozza létre DeepL API kulcsát\n   https://www.deepl.com/pro-api\n2. Hozza létre OpenAI API kulcsát\n   https://platform.openai.com/api-keys\n3. Illessze be mindkét kulcsot a Beállításokba\n\nEgy kis befektetés erőteljes, professzionális szintű nyelvi eszközöket nyit meg.\n(Fizetős API hozzáférés használatát javasoljuk a legjobb eredményekhez.)';
+
+  @override
+  String get readyToStart => 'Készen áll, hogy elindítsa a rally-t? 🏁';
+
+  @override
+  String get welcomeDescription =>
+      'A Language Rally az ön átfogó nyelvtanuló társa. Hozzon létre egyéni szókészlet-csomagokat, rendszerezze az elemeket kategóriák szerint, és tanuljon intelligens időközönkénti ismétlési rendszerrel.';
+
+  @override
+  String get browseStore => 'Áruház böngészése';
+
+  @override
+  String get featureInteractiveTraining => 'Interaktív gyakorlás';
+
+  @override
+  String get featureInteractiveTrainingDesc =>
+      'Gyakoroljon adaptív tanulási algoritmusokkal';
+
+  @override
+  String get featureSmartOrganization => 'Intelligens rendszerezés';
+
+  @override
+  String get featureSmartOrganizationDesc =>
+      'Kategorizálja és szűrje szókincsét';
+
+  @override
+  String get featureTrackProgress => 'Haladás követése';
+
+  @override
+  String get featureTrackProgressDesc =>
+      'Kövesse nyomon tanulását részletes statisztikákkal';
+
+  @override
+  String get featureImportExport => 'Importálás és exportálás';
+
+  @override
+  String get featureImportExportDesc =>
+      'Ossza meg csomagjait és szinkronizáljon eszközök között';
+
+  @override
+  String get startAppTour => 'Alkalmazás bemutatása';
+
+  @override
+  String get quickStartGuide => 'Gyors útmutató';
+
+  @override
+  String get tourStep1Title => 'Csomag létrehozása vagy importálása';
+
+  @override
+  String get tourStep1Desc =>
+      'Kezdje egy új nyelvi csomag létrehozásával vagy egy meglévő importálásával fájlból.';
+
+  @override
+  String get tourStep2Title => 'Szókészlet elemek hozzáadása';
+
+  @override
+  String get tourStep2Desc =>
+      'Böngésszen a csomagok között és adjon hozzá szavakat, kifejezéseket példákkal és kategóriákkal.';
+
+  @override
+  String get tourStep3Title => 'Gyakorlás konfigurálása';
+
+  @override
+  String get tourStep3Desc =>
+      'Válassza ki a gyakorlandó elemeket, állítsa be a nehézségi szinteket és szabja testre a tanulási élményt.';
+
+  @override
+  String get tourStep4Title => 'Tanulás kezdése';
+
+  @override
+  String get tourStep4Desc =>
+      'Kezdje el a gyakorlási munkamenetet és jelölje meg az elemeket ismertnek vagy ismeretlennek a haladás nyomon követéséhez.';
+
+  @override
+  String get tourStep5Title => 'Statisztikák áttekintése';
+
+  @override
+  String get tourStep5Desc =>
+      'Ellenőrizze tanulási haladását részletes statisztikákkal és teljesítmény jelvényekkel.';
+
+  @override
+  String get gotIt => 'Értem!';
+
+  @override
+  String get appTourTitle => 'Üdvözöljük a Language Rally-ban';
+
+  @override
+  String get appTourSubtitle =>
+      'Az ön okos, játékos és teljesen személyre szabott nyelvtanuló társa.';
+
+  @override
+  String get tourPage1Title =>
+      'Tanulja és gyakorolja, amit akar és amire szüksége van';
+
+  @override
+  String get tourPage1Desc =>
+      'Adaptív tanulási rendszerünk biztosítja, hogy az elemeket a tökéletes pillanatban ismételje át — maximalizálva a megjegyzést és minimalizálva az erőfeszítést.\n\nTanuljon a beépített automatizálás segítségével.\nNe pazarolja az időt olyan szavakra, amelyeket már ismer.\n\nGyakorolja csak azokat a szavakat és kifejezéseket, amelyek érdeklik. Hozzon létre és gyakoroljon saját elemeket — teljesen személyre szabva céljaihoz és szintjéhez.';
+
+  @override
+  String get tourPage2Title => 'Hozzon létre saját nyelvi csomagot';
+
+  @override
+  String get tourPage2Desc =>
+      'Építsen személyre szabott szókészlet-gyűjteményeket, amelyek megfelelnek érdeklődésének és tanulási céljainak.\n\nRendszerezze a szavakat és kifejezéseket témák, nehézség vagy kontextus szerint.\n\nTeljes kontroll afelett, hogy mit tanul és mikor.';
+
+  @override
+  String get tourPage3Title => 'AI-vezérelt elemek létrehozása';
+
+  @override
+  String get tourPage3Desc =>
+      'Építse fel saját tanulási csomagjait egy szempillantás alatt:\n\n• Illesszen be bármilyen szöveget, és hagyja, hogy az AI automatikusan kivonja a releváns szókincset\n• Azonosítson olyan szavakat és kifejezéseket, amelyek tökéletesen megfelelnek az ön szintjének\n• Hagyja, hogy az AI elvégezze a fordítást\n• Hagyja, hogy az AI valós idejű példákat keressen\n• Hozzon létre gyorsan gyakorlásra kész csomagokat';
+
+  @override
+  String get tourPage4Title => 'AI-vezérelt valós példák és prémium fordítás';
+
+  @override
+  String get tourPage4Desc =>
+      '• Azonnal kereshet hiteles használati példákat\n• Fordítson szavakat, kifejezéseket és teljes mondatokat kiváló minőségű DeepL integrációval\n• Kapjon pontos, kontextustudatos eredményeket';
+
+  @override
+  String get tourPage5Title => 'Intelligens csomag szervezés';
+
+  @override
+  String get tourPage5Desc =>
+      '• Rendszerezze a szókincset egyedi kategóriákba\n• Szűrjön és összpontosítson konkrét témákra\n• Importáljon és exportáljon csomagokat eszközök között\n• Osszon meg csomagokat könnyen másokkal';
+
+  @override
+  String get tourPage6Title => 'Kiejtés gyakorlása';
+
+  @override
+  String get tourPage6Desc =>
+      'Tesztelje és javítsa kiejtését interaktív gyakorló eszközökkel.\n\nÉpítsen önbizalmat a beszédben — nemcsak az olvasásban.';
+
+  @override
+  String get tourPage7Title => 'Tanárok számára';
+
+  @override
+  String get tourPage7Desc =>
+      'Hozzon létre azonnal használható szókészlet-csomagokat diákjai számára néhány kattintással.\n\nExportálja őket, küldje el az osztályának — és az importálás után azonnal gyakorlásra készen állnak minden diák eszközén.\n\nEgyszerű. Gyors. Hatékony.';
+
+  @override
+  String get tourPage8Title => 'Oldja fel a kiváló minőségű AI támogatást';
+
+  @override
+  String get tourPage8Desc =>
+      'Prémium fordításokhoz és fejlett AI funkciókhoz egyszerűen:\n\n1. Hozza létre saját DeepL API kulcsát\n2. Hozza létre saját OpenAI API kulcsát\n3. Illessze be mindkét kulcsot a Beállítások részbe\n\nEz csak egy kis költségvetést igényel (néhány dollár), de hozzáférést biztosít erőteljes, professzionális szintű nyelvi eszközökhöz.\n\nMegjegyzés: A legjobb eredményekhez fizetős API hozzáférés használatát javasoljuk.\n\n🔑 DeepL API kulcs:\nhttps://www.deepl.com/pro-api\n\n🔑 OpenAI API kulcs:\nhttps://platform.openai.com/api-keys';
+
+  @override
+  String get previousPage => 'Előző';
+
+  @override
+  String get nextPage => 'Következő';
+
+  @override
+  String get endTour => 'Túra befejezése';
+
+  @override
+  String pageIndicator(int current, int total) {
+    return '$current. oldal a $total-ból';
+  }
 }

@@ -27,6 +27,7 @@ import '../../../data/repositories/training_statistics_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../providers/app_settings_provider.dart';
 import '../../widgets/feedback_animation.dart';
+import '../items/item_edit_page.dart';
 
 class TrainingRallyPage extends ConsumerStatefulWidget {
   final LanguagePackage package;
@@ -239,6 +240,27 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
         ],
       ),
     );
+  }
+
+  Future<void> _openItemEditPage() async {
+    if (_filteredItems.isEmpty) return;
+
+    final currentItem = _filteredItems[_currentItemIndex];
+
+    // Navigate to ItemEditPage
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ItemEditPage(
+          item: currentItem,
+          package: widget.package,
+        ),
+      ),
+    );
+
+    // Reload items if changes were made
+    if (result == true && mounted) {
+      await _loadAndFilterItems();
+    }
   }
 
   Future<void> _handleKnowResponse(bool userKnows) async {
@@ -843,7 +865,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 4),
                 Text(
                   l10n.position,
                   style: theme.textTheme.bodySmall?.copyWith(
@@ -881,7 +903,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
       children: [
         if (showBackground)
           Container(
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
             decoration: BoxDecoration(
               color: isActive
                   ? (isErrorState
@@ -893,8 +915,8 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
             child: iconWidget,
           )
         else
-          Padding(padding: const EdgeInsets.all(8), child: iconWidget),
-        const SizedBox(height: 2),
+          Padding(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4), child: iconWidget),
+
         Text(
           label,
           style: theme.textTheme.bodySmall?.copyWith(
@@ -918,7 +940,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           decoration: BoxDecoration(
             color: count > 0
                 ? theme.colorScheme.errorContainer
@@ -953,7 +975,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
             ],
           ),
         ),
-        const SizedBox(height: 2),
+        const SizedBox(height: 4),
         Text(
           label,
           style: theme.textTheme.bodySmall?.copyWith(
@@ -1504,6 +1526,9 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
     AppLocalizations l10n,
     Item item,
   ) {
+    final appSettings = ref.watch(appSettingsProvider);
+    final showExamples = appSettings.showTrainingExamples;
+
     return Card(
       elevation: 1,
       child: Padding(
@@ -1511,15 +1536,31 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              l10n.examples,
-              style: theme.textTheme.labelLarge?.copyWith(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  l10n.examples,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    color: theme.colorScheme.primary,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    showExamples ? Icons.visibility : Icons.visibility_off,
+                    size: 20,
+                  ),
+                  onPressed: () {
+                    ref.read(appSettingsProvider.notifier).setShowTrainingExamples(!showExamples);
+                  },
+                  tooltip: showExamples ? 'Hide examples' : 'Show examples',
+                ),
+              ],
             ),
-            //const SizedBox(height: AppTheme.spacing8),
-            ...item.examples.map((example) {
+            if (showExamples) ...[
+              //const SizedBox(height: AppTheme.spacing8),
+              ...item.examples.map((example) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: AppTheme.spacing8),
                 child: Row(
@@ -1556,6 +1597,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                 ),
               );
             }),
+            ],
           ],
         ),
       ),
@@ -1720,178 +1762,218 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
         ? (_successfulGuesses / _totalGuesses * 100).toStringAsFixed(1)
         : '0.0';
 
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(AppTheme.spacing8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    final appSettings = ref.watch(appSettingsProvider);
+    final showStatistics = appSettings.showTrainingStatistics;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Card(
+          elevation: 2,
+          child: Padding(
+            padding: const EdgeInsets.all(AppTheme.spacing8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Training Session Progress',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 6,
-                  ),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Text(
-                    '$currentSuccessRate%',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onPrimaryContainer,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      l10n.trainingSessionProgress,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppTheme.spacing4),
-            Row(
-              children: [
-                _buildStatChip(
-                  theme,
-                  l10n.iKnow,
-                  _successfulGuesses,
-                  Colors.green,
-                ),
-                const SizedBox(width: 8),
-                _buildStatChip(
-                  theme,
-                  l10n.iDontKnow,
-                  _totalGuesses - _successfulGuesses,
-                  Colors.orange,
-                ),
-                const SizedBox(width: 8),
-                _buildStatChip(
-                  theme,
-                  l10n.total,
-                  _totalGuesses,
-                  theme.colorScheme.primary,
-                ),
-              ],
-            ),
-            //const SizedBox(height: AppTheme.spacing8),
-            SizedBox(
-              height: 150,
-              child: LineChart(
-                LineChartData(
-                  minY: 0,
-                  maxY: 100,
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: _historyPercentages.asMap().entries.map((entry) {
-                        return FlSpot(entry.key.toDouble(), entry.value);
-                      }).toList(),
-                      isCurved: true,
-                      color: theme.colorScheme.primary,
-                      barWidth: 3,
-                      dotData: FlDotData(
-                        show: true,
-                        getDotPainter: (spot, percent, barData, index) {
-                          return FlDotCirclePainter(
-                            radius: 4,
-                            color: theme.colorScheme.primary,
-                            strokeWidth: 2,
-                            strokeColor: theme.colorScheme.surface,
-                          );
-                        },
-                      ),
-                      belowBarData: BarAreaData(
-                        show: true,
-                        color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                      ),
+                    Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(
+                            '$currentSuccessRate%',
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.onPrimaryContainer,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            showStatistics ? Icons.visibility : Icons.visibility_off,
+                            size: 20,
+                          ),
+                          onPressed: () {
+                            ref.read(appSettingsProvider.notifier).setShowTrainingStatistics(!showStatistics);
+                          },
+                          tooltip: showStatistics ? 'Hide statistics' : 'Show statistics',
+                        ),
+                      ],
                     ),
                   ],
-                  titlesData: FlTitlesData(
-                    leftTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 40,
-                        interval: 25,
-                        getTitlesWidget: (value, meta) {
-                          return Text(
-                            '${value.toInt()}%',
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                    bottomTitles: AxisTitles(
-                      sideTitles: SideTitles(
-                        showTitles: true,
-                        reservedSize: 30,
-                        interval: math.max(
-                          1,
-                          (_historyPercentages.length / 5).ceil().toDouble(),
-                        ),
-                        getTitlesWidget: (value, meta) {
-                          if (value.toInt() < _historyPercentages.length) {
-                            return Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Text(
-                                '${value.toInt() + 1}',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            );
-                          }
-                          return const SizedBox.shrink();
-                        },
-                      ),
-                    ),
-                    topTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                    rightTitles: const AxisTitles(
-                      sideTitles: SideTitles(showTitles: false),
-                    ),
-                  ),
-                  gridData: FlGridData(
-                    show: true,
-                    horizontalInterval: 25,
-                    getDrawingHorizontalLine: (value) {
-                      return FlLine(
-                        color: theme.colorScheme.outlineVariant.withValues(
-                          alpha: 0.3,
-                        ),
-                        strokeWidth: 1,
-                      );
-                    },
-                    drawVerticalLine: false,
-                  ),
-                  borderData: FlBorderData(
-                    show: true,
-                    border: Border(
-                      left: BorderSide(
-                        color: theme.colorScheme.outline,
-                        width: 1,
-                      ),
-                      bottom: BorderSide(
-                        color: theme.colorScheme.outline,
-                        width: 1,
-                      ),
-                    ),
-                  ),
                 ),
+                if (showStatistics) ...[
+                  const SizedBox(height: AppTheme.spacing4),
+                  Row(
+                    children: [
+                      _buildStatChip(
+                        theme,
+                        l10n.iKnow,
+                        _successfulGuesses,
+                        Colors.green,
+                      ),
+                      const SizedBox(width: 8),
+                      _buildStatChip(
+                        theme,
+                        l10n.iDontKnow,
+                        _totalGuesses - _successfulGuesses,
+                        Colors.orange,
+                      ),
+                      const SizedBox(width: 8),
+                      _buildStatChip(
+                        theme,
+                        l10n.total,
+                        _totalGuesses,
+                        theme.colorScheme.primary,
+                      ),
+                    ],
+                  ),
+                  //const SizedBox(height: AppTheme.spacing8),
+                  SizedBox(
+                    height: 150,
+                    child: LineChart(
+                      LineChartData(
+                        minY: 0,
+                        maxY: 100,
+                        lineBarsData: [
+                          LineChartBarData(
+                            spots: _historyPercentages.asMap().entries.map((entry) {
+                              return FlSpot(entry.key.toDouble(), entry.value);
+                            }).toList(),
+                            isCurved: true,
+                            color: theme.colorScheme.primary,
+                            barWidth: 3,
+                            dotData: FlDotData(
+                              show: true,
+                              getDotPainter: (spot, percent, barData, index) {
+                                return FlDotCirclePainter(
+                                  radius: 4,
+                                  color: theme.colorScheme.primary,
+                                  strokeWidth: 2,
+                                  strokeColor: theme.colorScheme.surface,
+                                );
+                              },
+                            ),
+                            belowBarData: BarAreaData(
+                              show: true,
+                              color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                            ),
+                          ),
+                        ],
+                        titlesData: FlTitlesData(
+                          leftTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              reservedSize: 40,
+                              interval: 25,
+                              getTitlesWidget: (value, meta) {
+                                return Text(
+                                  '${value.toInt()}%',
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                          bottomTitles: AxisTitles(
+                            sideTitles: SideTitles(
+                              showTitles: true,
+                              reservedSize: 30,
+                              interval: math.max(
+                                1,
+                                (_historyPercentages.length / 5).ceil().toDouble(),
+                              ),
+                              getTitlesWidget: (value, meta) {
+                                if (value.toInt() < _historyPercentages.length) {
+                                  return Padding(
+                                    padding: const EdgeInsets.only(top: 8.0),
+                                    child: Text(
+                                      '${value.toInt() + 1}',
+                                      style: theme.textTheme.bodySmall?.copyWith(
+                                        color: theme.colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                  );
+                                }
+                                return const SizedBox.shrink();
+                              },
+                            ),
+                          ),
+                          topTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                          rightTitles: const AxisTitles(
+                            sideTitles: SideTitles(showTitles: false),
+                          ),
+                        ),
+                        gridData: FlGridData(
+                          show: true,
+                          horizontalInterval: 25,
+                          getDrawingHorizontalLine: (value) {
+                            return FlLine(
+                              color: theme.colorScheme.outlineVariant.withValues(
+                                alpha: 0.3,
+                              ),
+                              strokeWidth: 1,
+                            );
+                          },
+                          drawVerticalLine: false,
+                        ),
+                        borderData: FlBorderData(
+                          show: true,
+                          border: Border(
+                            left: BorderSide(
+                              color: theme.colorScheme.outline,
+                              width: 1,
+                            ),
+                            bottom: BorderSide(
+                              color: theme.colorScheme.outline,
+                              width: 1,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+        // Edit item button (only for non-purchased packages)
+        if (!widget.package.isPurchased) ...[
+          const SizedBox(height: AppTheme.spacing8),
+          Padding(
+            padding: const EdgeInsets.only(right: AppTheme.spacing8),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton.icon(
+                onPressed: _openItemEditPage,
+                icon: const Icon(Icons.edit, size: 20),
+                label: Text(l10n.editItem),
               ),
             ),
-          ],
-        ),
-      ),
+          ),
+
+        ],
+      ],
     );
   }
 
