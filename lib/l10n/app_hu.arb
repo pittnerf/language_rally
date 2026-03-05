@@ -158,6 +158,7 @@
   "ttsError": "Szövegfelolvasás nem elérhető",
   "noItemsFound": "Nem található elem",
   "noItemsInPackage": "Még nincs elem ebben a csomagban",
+  "noItemsToTrain": "A jelenlegi beállításokkal nincs gyakorolható elem",
   "clearFilters": "Törlés",
   "itemCount": "{count} elem",
   "filteredItemCount": "{filtered} / {total} elem",
@@ -207,9 +208,9 @@
   "userLanguageDescription": "A nyilvi csomagok létrehozásánál preferált anyanyelv",
   "apiKeys": "API kulcsok",
   "deeplApiKey": "DeepL API kulcs",
-  "deeplApiKeyDescription": "Prémium fordítási minőséghez a tételek szerkesztésénél (opcionális)",
+  "deeplApiKeyDescription": "Prémium fordítási minőséghez a tételek szerkesztésénél. Látogasson el a https://www.deepl.com/pro-api linkre.",
   "openaiApiKey": "OpenAI API kulcs",
-  "openaiApiKeyDescription": "Jó minőségű példák generáláshoz AI segítségével (opcionális)",
+  "openaiApiKeyDescription": "Jó minőségű példák generáláshoz AI segítségével. Látogasson el a https://platform.openai.com/api-keys linkre.",
   "enterApiKey": "API kulcs megadása",
   "optional": "opcionális",
   "required": "kötelező",
@@ -481,7 +482,7 @@
   "tourPage7Title": "Tanárok számára",
   "tourPage7Desc": "Hozzon létre azonnal használható szókészlet-csomagokat diákjai számára néhány kattintással.\n\nExportálja őket, küldje el az osztályának — és az importálás után azonnal gyakorlásra készen állnak minden diák eszközén.\n\nEgyszerű. Gyors. Hatékony.",
   "tourPage8Title": "Oldja fel a kiváló minőségű AI támogatást",
-  "tourPage8Desc": "Prémium fordításokhoz és fejlett AI funkciókhoz egyszerűen:\n\n1. Hozza létre saját DeepL API kulcsát\n2. Hozza létre saját OpenAI API kulcsát\n3. Illessze be mindkét kulcsot a Beállítások részbe\n\nEz csak egy kis költségvetést igényel (néhány dollár), de hozzáférést biztosít erőteljes, professzionális szintű nyelvi eszközökhöz.\n\nMegjegyzés: A legjobb eredményekhez fizetős API hozzáférés használatát javasoljuk.\n\n🔑 DeepL API kulcs:\nhttps://www.deepl.com/pro-api\n\n🔑 OpenAI API kulcs:\nhttps://platform.openai.com/api-keys",
+  "tourPage8Desc": "Prémium fordításokhoz és fejlett AI funkciókhoz egyszerűen:\n 1. Hozza létre saját DeepL API kulcsát\n 2. Hozza létre saját OpenAI API kulcsát\n 3. Illessze be mindkét kulcsot a Beállítások részbe\nEz csak egy kis költségvetést igényel (néhány dollár), de hozzáférést biztosít erőteljes, professzionális szintű nyelvi eszközökhöz.\nMegjegyzés: A legjobb eredményekhez fizetős API hozzáférés használatát javasoljuk.\n\n🔑 DeepL API kulcs: https://www.deepl.com/pro-api\n🔑 OpenAI API kulcs: https://platform.openai.com/api-keys",
   "previousPage": "Előző",
   "nextPage": "Következő",
   "endTour": "Túra befejezése",
@@ -495,6 +496,23 @@
         "type": "int"
       }
     }
-  }
+  },
+  "practicePronunciation": "Kiejtés gyakorlása",
+  "pronunciationPractice": "Kiejtés gyakorlás",
+  "startPractice": "Gyakorlás indítása",
+  "listenToPronunciation": "Kiejtés meghallgatása",
+  "tapToRecord": "Érintse meg a felvételhez",
+  "recording": "Felvétel...",
+  "recorded": "Felvéve",
+  "pronunciationAccuracy": "Kiejtés pontossága",
+  "excellent": "Kiváló!",
+  "good": "Jó",
+  "fair": "Megfelelő",
+  "needsImprovement": "Fejlesztendő",
+  "tryAgain": "Próbálja újra",
+  "nextItem": "Következő elem",
+  "endPractice": "Gyakorlás befejezése",
+  "practiced": "Gyakorolt"
 }
+
 

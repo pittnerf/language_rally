@@ -28,9 +28,11 @@ import '../../../data/models/example_sentence.dart';
 import '../../../data/models/category.dart';
 import '../../../data/models/language_package.dart';
 import '../../../data/repositories/item_repository.dart';
+import '../../widgets/clickable_text.dart';
 import '../../../data/repositories/category_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../providers/app_settings_provider.dart';
+import '../settings/app_settings_page.dart';
 
 class ItemEditPage extends ConsumerStatefulWidget {
   final Item item;
@@ -749,8 +751,8 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    l10n.improveQualityWithApiKeys,
+                  ClickableText(
+                    text: l10n.improveQualityWithApiKeys,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -1692,7 +1694,16 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(l10n.aiServiceNotConfigured),
-            duration: const Duration(seconds: 4),
+            duration: const Duration(seconds: 6),
+            action: SnackBarAction(
+              label: l10n.settings,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AppSettingsPage()),
+                );
+              },
+            ),
           ),
         );
       }

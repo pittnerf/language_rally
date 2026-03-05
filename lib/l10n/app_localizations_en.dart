@@ -514,6 +514,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noItemsInPackage => 'No items in this package yet';
 
   @override
+  String get noItemsToTrain =>
+      'No items available for practice with current settings';
+
+  @override
   String get clearFilters => 'Clear';
 
   @override
@@ -682,14 +686,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get deeplApiKeyDescription =>
-      'For premium translation quality when editing language items (optional)';
+      'For premium translation quality when editing language items. See https://www.deepl.com/pro-api';
 
   @override
   String get openaiApiKey => 'OpenAI API Key';
 
   @override
   String get openaiApiKeyDescription =>
-      'For example generation with AI when editing language items (optional)';
+      'For example generation with AI when editing language items. See https://platform.openai.com/api-keys';
 
   @override
   String get enterApiKey => 'Enter API key';
@@ -1570,7 +1574,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tourPage8Desc =>
-      'For premium translations and advanced AI features, simply:\n\n1. Create your own DeepL API key\n2. Create your own OpenAI API key\n3. Paste both keys into the Settings section\n\nThis requires only a small budget (a few dollars), but gives you access to powerful, professional-grade language tools.\n\nNote: We recommend using paid API access for best results. It costs only a few dollars.\n\n🔑 DeepL API Key:\nhttps://www.deepl.com/pro-api\n\n🔑 OpenAI API Key:\nhttps://platform.openai.com/api-keys';
+      'For premium translations and advanced AI features, simply:\n 1. Create your own DeepL API key\n 2. Create your own OpenAI API key\n 3. Paste both keys into the Settings section\n\nThis requires only a small budget (a few dollars), but gives you access to powerful, professional-grade language tools.\nNote: We recommend using paid API access for best results. It costs only a few dollars.\n\n🔑 DeepL API Key: https://www.deepl.com/pro-api\n\n🔑 OpenAI API Key: https://platform.openai.com/api-keys';
 
   @override
   String get previousPage => 'Previous';
@@ -1585,4 +1589,49 @@ class AppLocalizationsEn extends AppLocalizations {
   String pageIndicator(int current, int total) {
     return 'Page $current of $total';
   }
+
+  @override
+  String get practicePronunciation => 'Practice Pronunciation';
+
+  @override
+  String get pronunciationPractice => 'Pronunciation Practice';
+
+  @override
+  String get startPractice => 'Start Practice';
+
+  @override
+  String get listenToPronunciation => 'Listen to pronunciation';
+
+  @override
+  String get tapToRecord => 'Tap to record';
+
+  @override
+  String get recording => 'Recording...';
+
+  @override
+  String get recorded => 'Recorded';
+
+  @override
+  String get pronunciationAccuracy => 'Pronunciation Accuracy';
+
+  @override
+  String get excellent => 'Excellent!';
+
+  @override
+  String get good => 'Good';
+
+  @override
+  String get fair => 'Fair';
+
+  @override
+  String get needsImprovement => 'Needs Improvement';
+
+  @override
+  String get tryAgain => 'Try Again';
+
+  @override
+  String get endPractice => 'End Practice';
+
+  @override
+  String get practiced => 'Practiced';
 }

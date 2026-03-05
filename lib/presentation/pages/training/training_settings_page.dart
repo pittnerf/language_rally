@@ -24,11 +24,17 @@ import '../../../data/repositories/app_settings_repository.dart';
 import '../../../data/repositories/language_package_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import 'training_rally_page.dart';
+import 'pronunciation_practice_page.dart';
 
 class TrainingSettingsPage extends ConsumerStatefulWidget {
   final LanguagePackage? package;
+  final bool isPronunciationMode;
 
-  const TrainingSettingsPage({super.key, this.package});
+  const TrainingSettingsPage({
+    super.key,
+    this.package,
+    this.isPronunciationMode = false,
+  });
 
   @override
   ConsumerState<TrainingSettingsPage> createState() =>
@@ -269,25 +275,38 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
     // Save the last trained package ID
     await _appSettingsRepo.saveLastTrainedPackageId(_currentPackage!.id);
 
-    // Navigate to training rally page
+    // Navigate to appropriate page based on mode
     if (mounted) {
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => TrainingRallyPage(
-            package: _currentPackage!,
-            settings: TrainingSettings(
-              packageId: _currentPackage!.id,
-              itemScope: _itemScope,
-              lastNItems: _lastNItems,
-              itemOrder: _itemOrder,
-              displayLanguage: _displayLanguage,
-              itemType: _itemType,
-              selectedCategoryIds: _selectedCategoryIds,
-              dontKnowThreshold: _dontKnowThreshold,
+      final settings = TrainingSettings(
+        packageId: _currentPackage!.id,
+        itemScope: _itemScope,
+        lastNItems: _lastNItems,
+        itemOrder: _itemOrder,
+        displayLanguage: _displayLanguage,
+        itemType: _itemType,
+        selectedCategoryIds: _selectedCategoryIds,
+        dontKnowThreshold: _dontKnowThreshold,
+      );
+
+      if (widget.isPronunciationMode) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => PronunciationPracticePage(
+              package: _currentPackage!,
+              settings: settings,
             ),
           ),
-        ),
-      );
+        );
+      } else {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => TrainingRallyPage(
+              package: _currentPackage!,
+              settings: settings,
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -299,14 +318,25 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
 
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(title: Text(l10n.trainingSettings)),
+        appBar: AppBar(
+          title: Text(
+            widget.isPronunciationMode
+                ? l10n.pronunciationPractice
+                : l10n.trainingSettings,
+          ),
+        ),
         body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.trainingSettings, style: theme.textTheme.titleSmall),
+        title: Text(
+          widget.isPronunciationMode
+              ? l10n.pronunciationPractice
+              : l10n.trainingSettings,
+          style: theme.textTheme.titleSmall,
+        ),
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -435,7 +465,9 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                           size: isLandscape ? 16 : 14,
                         ),
                         label: Text(
-                          l10n.startTrainingRally,
+                          widget.isPronunciationMode
+                              ? l10n.startPractice
+                              : l10n.startTrainingRally,
                           style:
                               (isLandscape
                                       ? theme.textTheme.bodySmall

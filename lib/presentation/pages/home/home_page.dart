@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:language_rally/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../providers/theme_provider.dart';
+import '../../widgets/clickable_text.dart';
 import '../packages/package_list_page.dart';
 import '../packages/package_form_page.dart';
 import '../training/training_settings_page.dart';
@@ -118,8 +119,10 @@ class _HomePageState extends ConsumerState<HomePage> {
     final themeConfig = ref.watch(themeProvider);
     final theme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
-    final isTabletLandscape = mediaQuery.size.width >= 900 &&
-                               mediaQuery.orientation == Orientation.landscape;
+    final isTablet = mediaQuery.size.width >= 900;
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+    final isTabletLandscape = isTablet && isLandscape;
+    final isTabletPortrait = isTablet && !isLandscape;
 
     return Scaffold(
       body: Container(
@@ -141,7 +144,9 @@ class _HomePageState extends ConsumerState<HomePage> {
         ),
         child: isTabletLandscape
             ? _buildTabletLandscapeLayout(context, ref, localizations, theme, themeConfig)
-            : _buildPhonePortraitLayout(context, ref, localizations, theme, themeConfig),
+            : isTabletPortrait
+                ? _buildTabletPortraitLayout(context, ref, localizations, theme, themeConfig)
+                : _buildPhoneLayout(context, ref, localizations, theme, themeConfig),
       ),
     );
   }
@@ -171,7 +176,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     const SizedBox(height: AppTheme.spacing32),
                     ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 400),
-                      child: _buildMainButtons(context, localizations, theme),
+                      child: _buildMainButtons(context, localizations, theme, isTablet: true),
                     ),
                   ],
                 ),
@@ -182,7 +187,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(AppTheme.spacing24),
-              child: _buildWelcomePanel(context, localizations, theme),
+              child: _buildWelcomePanel(context, localizations, theme, isTablet: true),
             ),
           ),
         ],
@@ -190,7 +195,36 @@ class _HomePageState extends ConsumerState<HomePage> {
     );
   }
 
-  Widget _buildPhonePortraitLayout(
+  Widget _buildPhoneLayout(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations localizations,
+    ThemeData theme,
+    ThemeConfig themeConfig,
+  ) {
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(AppTheme.spacing12), // Reduced padding for phones
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _buildHeader(context, ref, localizations, theme, themeConfig),
+            const SizedBox(height: AppTheme.spacing16), // Reduced spacing for phones
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: _buildMainButtons(context, localizations, theme, isTablet: false),
+              ),
+            ),
+            const SizedBox(height: AppTheme.spacing16), // Reduced spacing for phones
+            _buildWelcomePanel(context, localizations, theme, isTablet: false),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTabletPortraitLayout(
     BuildContext context,
     WidgetRef ref,
     AppLocalizations localizations,
@@ -208,11 +242,11 @@ class _HomePageState extends ConsumerState<HomePage> {
             Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 400),
-                child: _buildMainButtons(context, localizations, theme),
+                child: _buildMainButtons(context, localizations, theme, isTablet: true),
               ),
             ),
             const SizedBox(height: AppTheme.spacing32),
-            _buildWelcomePanel(context, localizations, theme),
+            _buildWelcomePanel(context, localizations, theme, isTablet: true),
           ],
         ),
       ),
@@ -240,13 +274,13 @@ class _HomePageState extends ConsumerState<HomePage> {
                   color: theme.colorScheme.primary,
                 ),
               ),
-              const SizedBox(height: AppTheme.spacing8),
-              Text(
-                localizations.welcome,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
+              // const SizedBox(height: AppTheme.spacing8),
+              // Text(
+              //  localizations.welcome,
+              //  style: theme.textTheme.titleMedium?.copyWith(
+              //    color: theme.colorScheme.onSurfaceVariant,
+              //  ),
+              //),
             ],
           ),
         ),
@@ -276,8 +310,23 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget _buildMainButtons(
     BuildContext context,
     AppLocalizations localizations,
-    ThemeData theme,
-  ) {
+    ThemeData theme, {
+    required bool isTablet,
+  }) {
+    // For phones: half the padding and smaller font size
+    final buttonPadding = isTablet
+        ? const EdgeInsets.symmetric(
+            horizontal: AppTheme.spacing24,
+            vertical: AppTheme.spacing16,
+          )
+        : const EdgeInsets.symmetric(
+            horizontal: AppTheme.spacing12,
+            vertical: AppTheme.spacing8,
+          );
+
+    final iconSize = isTablet ? 24.0 : 20.0;
+    final fontSize = isTablet ? 16.0 : 14.0;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -289,13 +338,13 @@ class _HomePageState extends ConsumerState<HomePage> {
               MaterialPageRoute(builder: (_) => const PackageListPage()),
             );
           },
-          icon: const Icon(Icons.library_books, size: 24),
-          label: Text(localizations.viewPackages),
+          icon: Icon(Icons.library_books, size: iconSize),
+          label: Text(
+            localizations.viewPackages,
+            style: TextStyle(fontSize: fontSize),
+          ),
           style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacing24,
-              vertical: AppTheme.spacing16,
-            ),
+            padding: buttonPadding,
           ),
         ),
         const SizedBox(height: AppTheme.spacing12),
@@ -308,17 +357,35 @@ class _HomePageState extends ConsumerState<HomePage> {
               MaterialPageRoute(builder: (_) => const TrainingSettingsPage()),
             );
           },
-          icon: const Icon(Icons.school, size: 24),
+          icon: Icon(Icons.school, size: iconSize),
           label: Text(
             localizations.startTrainingRally,
-            style: const TextStyle(fontSize: 16),
+            style: TextStyle(fontSize: fontSize),
           ),
           style: FilledButton.styleFrom(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacing24,
-              vertical: AppTheme.spacing16,
-            ),
+            padding: buttonPadding,
             elevation: 4,
+          ),
+        ),
+        const SizedBox(height: AppTheme.spacing12),
+
+        // Practice Pronunciation Button (Third)
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const TrainingSettingsPage(isPronunciationMode: true),
+              ),
+            );
+          },
+          icon: Icon(Icons.record_voice_over, size: iconSize),
+          label: Text(
+            localizations.practicePronunciation,
+            style: TextStyle(fontSize: fontSize),
+          ),
+          style: ElevatedButton.styleFrom(
+            padding: buttonPadding,
           ),
         ),
         const SizedBox(height: AppTheme.spacing12),
@@ -331,13 +398,13 @@ class _HomePageState extends ConsumerState<HomePage> {
               MaterialPageRoute(builder: (_) => const PackageFormPage()),
             );
           },
-          icon: const Icon(Icons.add_circle_outline, size: 24),
-          label: Text(localizations.createNewPackage),
+          icon: Icon(Icons.add_circle_outline, size: iconSize),
+          label: Text(
+            localizations.createNewPackage,
+            style: TextStyle(fontSize: fontSize),
+          ),
           style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacing24,
-              vertical: AppTheme.spacing16,
-            ),
+            padding: buttonPadding,
           ),
         ),
         const SizedBox(height: AppTheme.spacing12),
@@ -353,13 +420,13 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
             );
           },
-          icon: const Icon(Icons.storefront, size: 24),
-          label: Text(localizations.browseStore),
+          icon: Icon(Icons.storefront, size: iconSize),
+          label: Text(
+            localizations.browseStore,
+            style: TextStyle(fontSize: fontSize),
+          ),
           style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacing24,
-              vertical: AppTheme.spacing16,
-            ),
+            padding: buttonPadding,
           ),
         ),
         const SizedBox(height: AppTheme.spacing12),
@@ -372,13 +439,13 @@ class _HomePageState extends ConsumerState<HomePage> {
               MaterialPageRoute(builder: (_) => const AppSettingsPage()),
             );
           },
-          icon: const Icon(Icons.settings, size: 24),
-          label: Text(localizations.settings),
+          icon: Icon(Icons.settings, size: iconSize),
+          label: Text(
+            localizations.settings,
+            style: TextStyle(fontSize: fontSize),
+          ),
           style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacing24,
-              vertical: AppTheme.spacing16,
-            ),
+            padding: buttonPadding,
           ),
         ),
         const SizedBox(height: AppTheme.spacing12),
@@ -391,13 +458,13 @@ class _HomePageState extends ConsumerState<HomePage> {
               MaterialPageRoute(builder: (_) => const TestDataPage()),
             );
           },
-          icon: const Icon(Icons.science, size: 24),
-          label: Text(localizations.generateTestData),
+          icon: Icon(Icons.science, size: iconSize),
+          label: Text(
+            localizations.generateTestData,
+            style: TextStyle(fontSize: fontSize),
+          ),
           style: OutlinedButton.styleFrom(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacing24,
-              vertical: AppTheme.spacing16,
-            ),
+            padding: buttonPadding,
             side: BorderSide(
               color: theme.colorScheme.secondary,
               width: 2,
@@ -412,151 +479,182 @@ class _HomePageState extends ConsumerState<HomePage> {
   Widget _buildWelcomePanel(
     BuildContext context,
     AppLocalizations localizations,
-    ThemeData theme,
-  ) {
-    // Get screen height to calculate card height
-    final screenHeight = MediaQuery.of(context).size.height;
-    final cardHeight = screenHeight - 48.0; // Account for SafeArea padding
+    ThemeData theme, {
+    required bool isTablet,
+  }) {
+    final mediaQuery = MediaQuery.of(context);
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
 
-    return Card(
-      elevation: 4,
-      child: SizedBox(
-        height: cardHeight,
-        child: Scrollbar(
-          controller: _welcomePanelScrollController,
-          thumbVisibility: true,
-          thickness: 8,
-          radius: const Radius.circular(4),
-          child: SingleChildScrollView(
-            controller: _welcomePanelScrollController,
-            padding: const EdgeInsets.all(AppTheme.spacing24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Title
-                Text(
-                  localizations.welcomeTitle,
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-                const SizedBox(height: AppTheme.spacing8),
-                // Subtitle
-                Text(
-                  localizations.welcomeSubtitle,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-                const SizedBox(height: AppTheme.spacing12),
-                // Intro
-                Text(
-                  localizations.welcomeIntro,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    height: 1.5,
-                  ),
-                ),
-                const SizedBox(height: AppTheme.spacing24),
-                const Divider(),
-                const SizedBox(height: AppTheme.spacing24),
+    // Calculate card height only for tablets
+    double? cardHeight;
+    if (isTablet) {
+      final screenHeight = mediaQuery.size.height;
+      if (isLandscape) {
+        // Landscape mode: subtract padding for SafeArea
+        cardHeight = screenHeight - 48.0;
+      } else {
+        // Portrait mode: calculate available height more carefully
+        // Account for: SafeArea top/bottom, header, spacing, and buttons area
+        final estimatedButtonsHeight = 600.0; // Approximate height of buttons and header
+        cardHeight = screenHeight - estimatedButtonsHeight;
+        // Ensure minimum height
+        if (cardHeight < 300) cardHeight = 300;
+      }
+    }
 
-                // Section: Play Your Game
-                _buildWelcomeSection(
-                  theme,
-                  localizations.sectionPlayYourGame,
-                  localizations.sectionPlayYourGameDesc,
-                ),
-                const SizedBox(height: AppTheme.spacing24),
-                const Divider(),
-                const SizedBox(height: AppTheme.spacing24),
+    final contentWidget = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Title
+        Text(
+          localizations.welcomeTitle,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.primary,
+          ),
+        ),
+        const SizedBox(height: AppTheme.spacing8),
+        // Subtitle
+        Text(
+          localizations.welcomeSubtitle,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: theme.colorScheme.primary,
+          ),
+        ),
+        const SizedBox(height: AppTheme.spacing12),
+        // Intro
+        Text(
+          localizations.welcomeIntro,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            height: 1.5,
+          ),
+        ),
+        const SizedBox(height: AppTheme.spacing24),
+        const Divider(),
+        const SizedBox(height: AppTheme.spacing24),
 
-                // Section: AI Teammate
-                _buildWelcomeSection(
-                  theme,
-                  localizations.sectionAITeammate,
-                  localizations.sectionAITeammateDesc,
-                ),
-                const SizedBox(height: AppTheme.spacing24),
-                const Divider(),
-                const SizedBox(height: AppTheme.spacing24),
+        // Section: Play Your Game
+        _buildWelcomeSection(
+          theme,
+          localizations.sectionPlayYourGame,
+          localizations.sectionPlayYourGameDesc,
+        ),
+        const SizedBox(height: AppTheme.spacing24),
+        const Divider(),
+        const SizedBox(height: AppTheme.spacing24),
 
-                // Section: Train Smart
-                _buildWelcomeSection(
-                  theme,
-                  localizations.sectionTrainSmart,
-                  localizations.sectionTrainSmartDesc,
-                ),
-                const SizedBox(height: AppTheme.spacing24),
-                const Divider(),
-                const SizedBox(height: AppTheme.spacing24),
+        // Section: AI Teammate
+        _buildWelcomeSection(
+          theme,
+          localizations.sectionAITeammate,
+          localizations.sectionAITeammateDesc,
+        ),
+        const SizedBox(height: AppTheme.spacing24),
+        const Divider(),
+        const SizedBox(height: AppTheme.spacing24),
 
-                // Section: Real Examples
-                _buildWelcomeSection(
-                  theme,
-                  localizations.sectionRealExamples,
-                  localizations.sectionRealExamplesDesc,
-                ),
-                const SizedBox(height: AppTheme.spacing24),
-                const Divider(),
-                const SizedBox(height: AppTheme.spacing24),
+        // Section: Train Smart
+        _buildWelcomeSection(
+          theme,
+          localizations.sectionTrainSmart,
+          localizations.sectionTrainSmartDesc,
+        ),
+        const SizedBox(height: AppTheme.spacing24),
+        const Divider(),
+        const SizedBox(height: AppTheme.spacing24),
 
-                // Section: Teachers Welcome
-                _buildWelcomeSection(
-                  theme,
-                  localizations.sectionTeachersWelcome,
-                  localizations.sectionTeachersWelcomeDesc,
-                ),
-                const SizedBox(height: AppTheme.spacing24),
-                const Divider(),
-                const SizedBox(height: AppTheme.spacing24),
+        // Section: Real Examples
+        _buildWelcomeSection(
+          theme,
+          localizations.sectionRealExamples,
+          localizations.sectionRealExamplesDesc,
+        ),
+        const SizedBox(height: AppTheme.spacing24),
+        const Divider(),
+        const SizedBox(height: AppTheme.spacing24),
 
-                // Section: Unlock AI Power
-                _buildWelcomeSection(
-                  theme,
-                  localizations.sectionUnlockAI,
-                  localizations.sectionUnlockAIDesc,
-                ),
-                const SizedBox(height: AppTheme.spacing24),
-                const Divider(),
-                const SizedBox(height: AppTheme.spacing24),
+        // Section: Teachers Welcome
+        _buildWelcomeSection(
+          theme,
+          localizations.sectionTeachersWelcome,
+          localizations.sectionTeachersWelcomeDesc,
+        ),
+        const SizedBox(height: AppTheme.spacing24),
+        const Divider(),
+        const SizedBox(height: AppTheme.spacing24),
 
-                // Ready to start
-                Center(
-                  child: Text(
-                    localizations.readyToStart,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.primary,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: AppTheme.spacing16),
+        // Section: Unlock AI Power
+        _buildWelcomeSection(
+          theme,
+          localizations.sectionUnlockAI,
+          localizations.sectionUnlockAIDesc,
+        ),
+        const SizedBox(height: AppTheme.spacing24),
+        const Divider(),
+        const SizedBox(height: AppTheme.spacing24),
 
-                // Start App Tour button
-                SizedBox(
-                  width: double.infinity,
-                  child: FilledButton.icon(
-                    onPressed: () {
-                      _showAppTour(context, localizations, theme);
-                    },
-                    icon: const Icon(Icons.tour),
-                    label: Text(localizations.startAppTour),
-                    style: FilledButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: AppTheme.spacing16,
-                      ),
-                      backgroundColor: theme.colorScheme.secondary,
-                      foregroundColor: theme.colorScheme.onSecondary,
-                    ),
-                  ),
-                ),
-              ],
+        // Ready to start
+        Center(
+          child: Text(
+            localizations.readyToStart,
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.primary,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        const SizedBox(height: AppTheme.spacing16),
+
+        // Start App Tour button
+        SizedBox(
+          width: double.infinity,
+          child: FilledButton.icon(
+            onPressed: () {
+              _showAppTour(context, localizations, theme);
+            },
+            icon: const Icon(Icons.tour),
+            label: Text(localizations.startAppTour),
+            style: FilledButton.styleFrom(
+              padding: const EdgeInsets.symmetric(
+                vertical: AppTheme.spacing16,
+              ),
+              backgroundColor: theme.colorScheme.secondary,
+              foregroundColor: theme.colorScheme.onSecondary,
             ),
           ),
         ),
+      ],
+    );
+
+    // For tablets: use fixed height with scrollbar
+    if (isTablet && cardHeight != null) {
+      return Card(
+        elevation: 4,
+        child: SizedBox(
+          height: cardHeight,
+          child: Scrollbar(
+            controller: _welcomePanelScrollController,
+            thumbVisibility: true,
+            thickness: 8,
+            radius: const Radius.circular(4),
+            child: SingleChildScrollView(
+              controller: _welcomePanelScrollController,
+              padding: const EdgeInsets.all(AppTheme.spacing24),
+              child: contentWidget,
+            ),
+          ),
+        ),
+      );
+    }
+
+    // For phones: no fixed height, no scrollbar (parent SingleChildScrollView handles scrolling)
+    return Card(
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.spacing24),
+        child: contentWidget,
       ),
     );
   }
@@ -577,8 +675,8 @@ class _HomePageState extends ConsumerState<HomePage> {
           ),
         ),
         const SizedBox(height: AppTheme.spacing8),
-        Text(
-          description,
+        ClickableText(
+          text: description,
           style: theme.textTheme.bodyMedium?.copyWith(
             height: 1.6,
           ),

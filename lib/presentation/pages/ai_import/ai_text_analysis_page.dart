@@ -15,6 +15,7 @@ import '../../../data/repositories/category_repository.dart';
 import '../../../data/repositories/item_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../providers/app_settings_provider.dart';
+import '../settings/app_settings_page.dart';
 import 'ai_items_selection_page.dart';
 
 class AITextAnalysisPage extends ConsumerStatefulWidget {
@@ -1058,11 +1059,15 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
     // Parse error message to provide specific guidance
     String guidance = '';
     String technicalDetails = errorMessage;
+    bool isApiKeyIssue = false;
 
     if (errorMessage.contains('Invalid API key') ||
-        errorMessage.contains('401')) {
+        errorMessage.contains('401') ||
+        errorMessage.contains('OpenAI API key is required') ||
+        errorMessage.contains('not configured')) {
       guidance =
           '• ${l10n.checkApiKey}\n• ${l10n.ensureValidOpenAIKey}\n• ${l10n.verifyKeyInSettings}';
+      isApiKeyIssue = true;
     } else if (errorMessage.contains('rate limit') ||
         errorMessage.contains('429')) {
       guidance =
@@ -1154,6 +1159,18 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
           ),
         ),
         actions: [
+          if (isApiKeyIssue)
+            TextButton.icon(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AppSettingsPage()),
+                );
+              },
+              icon: const Icon(Icons.settings),
+              label: Text(l10n.settings),
+            ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
             child: Text(l10n.close),
@@ -1289,5 +1306,4 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
     return uniqueItems;
   }
 }
-
 

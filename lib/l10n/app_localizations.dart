@@ -1046,6 +1046,12 @@ abstract class AppLocalizations {
   /// **'No items in this package yet'**
   String get noItemsInPackage;
 
+  /// No description provided for @noItemsToTrain.
+  ///
+  /// In en, this message translates to:
+  /// **'No items available for practice with current settings'**
+  String get noItemsToTrain;
+
   /// No description provided for @clearFilters.
   ///
   /// In en, this message translates to:
@@ -1343,7 +1349,7 @@ abstract class AppLocalizations {
   /// No description provided for @deeplApiKeyDescription.
   ///
   /// In en, this message translates to:
-  /// **'For premium translation quality when editing language items (optional)'**
+  /// **'For premium translation quality when editing language items. See https://www.deepl.com/pro-api'**
   String get deeplApiKeyDescription;
 
   /// No description provided for @openaiApiKey.
@@ -1355,7 +1361,7 @@ abstract class AppLocalizations {
   /// No description provided for @openaiApiKeyDescription.
   ///
   /// In en, this message translates to:
-  /// **'For example generation with AI when editing language items (optional)'**
+  /// **'For example generation with AI when editing language items. See https://platform.openai.com/api-keys'**
   String get openaiApiKeyDescription;
 
   /// No description provided for @enterApiKey.
@@ -2939,7 +2945,7 @@ abstract class AppLocalizations {
   /// No description provided for @tourPage8Desc.
   ///
   /// In en, this message translates to:
-  /// **'For premium translations and advanced AI features, simply:\n\n1. Create your own DeepL API key\n2. Create your own OpenAI API key\n3. Paste both keys into the Settings section\n\nThis requires only a small budget (a few dollars), but gives you access to powerful, professional-grade language tools.\n\nNote: We recommend using paid API access for best results. It costs only a few dollars.\n\n🔑 DeepL API Key:\nhttps://www.deepl.com/pro-api\n\n🔑 OpenAI API Key:\nhttps://platform.openai.com/api-keys'**
+  /// **'For premium translations and advanced AI features, simply:\n 1. Create your own DeepL API key\n 2. Create your own OpenAI API key\n 3. Paste both keys into the Settings section\n\nThis requires only a small budget (a few dollars), but gives you access to powerful, professional-grade language tools.\nNote: We recommend using paid API access for best results. It costs only a few dollars.\n\n🔑 DeepL API Key: https://www.deepl.com/pro-api\n\n🔑 OpenAI API Key: https://platform.openai.com/api-keys'**
   String get tourPage8Desc;
 
   /// No description provided for @previousPage.
@@ -2965,6 +2971,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Page {current} of {total}'**
   String pageIndicator(int current, int total);
+
+  /// No description provided for @practicePronunciation.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice Pronunciation'**
+  String get practicePronunciation;
+
+  /// No description provided for @pronunciationPractice.
+  ///
+  /// In en, this message translates to:
+  /// **'Pronunciation Practice'**
+  String get pronunciationPractice;
+
+  /// No description provided for @startPractice.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Practice'**
+  String get startPractice;
+
+  /// No description provided for @listenToPronunciation.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen to pronunciation'**
+  String get listenToPronunciation;
+
+  /// No description provided for @tapToRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to record'**
+  String get tapToRecord;
+
+  /// No description provided for @recording.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording...'**
+  String get recording;
+
+  /// No description provided for @recorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Recorded'**
+  String get recorded;
+
+  /// No description provided for @pronunciationAccuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Pronunciation Accuracy'**
+  String get pronunciationAccuracy;
+
+  /// No description provided for @excellent.
+  ///
+  /// In en, this message translates to:
+  /// **'Excellent!'**
+  String get excellent;
+
+  /// No description provided for @good.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get good;
+
+  /// No description provided for @fair.
+  ///
+  /// In en, this message translates to:
+  /// **'Fair'**
+  String get fair;
+
+  /// No description provided for @needsImprovement.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs Improvement'**
+  String get needsImprovement;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try Again'**
+  String get tryAgain;
+
+  /// No description provided for @endPractice.
+  ///
+  /// In en, this message translates to:
+  /// **'End Practice'**
+  String get endPractice;
+
+  /// No description provided for @practiced.
+  ///
+  /// In en, this message translates to:
+  /// **'Practiced'**
+  String get practiced;
 }
 
 class _AppLocalizationsDelegate

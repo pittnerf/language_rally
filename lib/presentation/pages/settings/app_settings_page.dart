@@ -10,6 +10,7 @@ import '../../../core/constants/language_codes.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../providers/app_settings_provider.dart';
 import '../../providers/locale_provider.dart';
+import '../../widgets/clickable_text.dart';
 
 class AppSettingsPage extends ConsumerStatefulWidget {
   const AppSettingsPage({super.key});
@@ -34,6 +35,31 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
     _deeplApiKeyController = TextEditingController(text: settings.deeplApiKey ?? '');
     _openaiApiKeyController = TextEditingController(text: settings.openaiApiKey ?? '');
     _selectedLanguageCode = settings.userLanguageCode;
+
+    // Listen for settings changes and update controllers
+    // This is needed because settings are loaded asynchronously
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.listenManual(
+        appSettingsProvider,
+        (previous, next) {
+          // Update controllers only if they haven't been manually edited
+          if (_languageNameController.text == (previous?.userLanguageName ?? '')) {
+            _languageNameController.text = next.userLanguageName;
+            _selectedLanguageCode = next.userLanguageCode;
+          }
+          if (_deeplApiKeyController.text == (previous?.deeplApiKey ?? '')) {
+            _deeplApiKeyController.text = next.deeplApiKey ?? '';
+          }
+          if (_openaiApiKeyController.text == (previous?.openaiApiKey ?? '')) {
+            _openaiApiKeyController.text = next.openaiApiKey ?? '';
+          }
+          // Rebuild to show the new values
+          if (mounted) {
+            setState(() {});
+          }
+        },
+      );
+    });
   }
 
   @override
@@ -168,8 +194,8 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
           ],
         ),
         const SizedBox(height: AppTheme.spacing4),
-        Text(
-          description,
+        ClickableText(
+          text: description,
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -349,8 +375,8 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
           ],
         ),
         const SizedBox(height: AppTheme.spacing4),
-        Text(
-          description,
+        ClickableText(
+          text: description,
           style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),

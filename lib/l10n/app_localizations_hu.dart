@@ -516,6 +516,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get noItemsInPackage => 'Még nincs elem ebben a csomagban';
 
   @override
+  String get noItemsToTrain =>
+      'A jelenlegi beállításokkal nincs gyakorolható elem';
+
+  @override
   String get clearFilters => 'Törlés';
 
   @override
@@ -683,14 +687,14 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get deeplApiKeyDescription =>
-      'Prémium fordítási minőséghez a tételek szerkesztésénél (opcionális)';
+      'Prémium fordítási minőséghez a tételek szerkesztésénél. Látogasson el a https://www.deepl.com/pro-api linkre.';
 
   @override
   String get openaiApiKey => 'OpenAI API kulcs';
 
   @override
   String get openaiApiKeyDescription =>
-      'Jó minőségű példák generáláshoz AI segítségével (opcionális)';
+      'Jó minőségű példák generáláshoz AI segítségével. Látogasson el a https://platform.openai.com/api-keys linkre.';
 
   @override
   String get enterApiKey => 'API kulcs megadása';
@@ -912,7 +916,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get iDontKnow => 'Nem Tudom';
 
   @override
-  String get nextItem => 'Következő Elem';
+  String get nextItem => 'Következő elem';
 
   @override
   String get iDidNotKnowEither => 'Ezt Sem Tudtam';
@@ -1578,7 +1582,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get tourPage8Desc =>
-      'Prémium fordításokhoz és fejlett AI funkciókhoz egyszerűen:\n\n1. Hozza létre saját DeepL API kulcsát\n2. Hozza létre saját OpenAI API kulcsát\n3. Illessze be mindkét kulcsot a Beállítások részbe\n\nEz csak egy kis költségvetést igényel (néhány dollár), de hozzáférést biztosít erőteljes, professzionális szintű nyelvi eszközökhöz.\n\nMegjegyzés: A legjobb eredményekhez fizetős API hozzáférés használatát javasoljuk.\n\n🔑 DeepL API kulcs:\nhttps://www.deepl.com/pro-api\n\n🔑 OpenAI API kulcs:\nhttps://platform.openai.com/api-keys';
+      'Prémium fordításokhoz és fejlett AI funkciókhoz egyszerűen:\n 1. Hozza létre saját DeepL API kulcsát\n 2. Hozza létre saját OpenAI API kulcsát\n 3. Illessze be mindkét kulcsot a Beállítások részbe\nEz csak egy kis költségvetést igényel (néhány dollár), de hozzáférést biztosít erőteljes, professzionális szintű nyelvi eszközökhöz.\nMegjegyzés: A legjobb eredményekhez fizetős API hozzáférés használatát javasoljuk.\n\n🔑 DeepL API kulcs: https://www.deepl.com/pro-api\n🔑 OpenAI API kulcs: https://platform.openai.com/api-keys';
 
   @override
   String get previousPage => 'Előző';
@@ -1593,4 +1597,49 @@ class AppLocalizationsHu extends AppLocalizations {
   String pageIndicator(int current, int total) {
     return '$current. oldal a $total-ból';
   }
+
+  @override
+  String get practicePronunciation => 'Kiejtés gyakorlása';
+
+  @override
+  String get pronunciationPractice => 'Kiejtés gyakorlás';
+
+  @override
+  String get startPractice => 'Gyakorlás indítása';
+
+  @override
+  String get listenToPronunciation => 'Kiejtés meghallgatása';
+
+  @override
+  String get tapToRecord => 'Érintse meg a felvételhez';
+
+  @override
+  String get recording => 'Felvétel...';
+
+  @override
+  String get recorded => 'Felvéve';
+
+  @override
+  String get pronunciationAccuracy => 'Kiejtés pontossága';
+
+  @override
+  String get excellent => 'Kiváló!';
+
+  @override
+  String get good => 'Jó';
+
+  @override
+  String get fair => 'Megfelelő';
+
+  @override
+  String get needsImprovement => 'Fejlesztendő';
+
+  @override
+  String get tryAgain => 'Próbálja újra';
+
+  @override
+  String get endPractice => 'Gyakorlás befejezése';
+
+  @override
+  String get practiced => 'Gyakorolt';
 }

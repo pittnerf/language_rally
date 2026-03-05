@@ -1029,7 +1029,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                       '${l10n.question} - $languageCode',
                       style: theme.textTheme.labelLarge?.copyWith(
                         color: theme.colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.bold,
+                        // fontWeight: FontWeight.bold,
                       ),
                     ),
                   ),
@@ -1099,7 +1099,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                     '${l10n.question} - $languageCode',
                     style: theme.textTheme.labelLarge?.copyWith(
                       color: theme.colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.bold,
+                      // fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
@@ -1213,7 +1213,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                           '${l10n.answer} - $languageCode',
                           style: theme.textTheme.labelLarge?.copyWith(
                             color: theme.colorScheme.onSecondaryContainer,
-                            fontWeight: FontWeight.bold,
+                            // fontWeight: FontWeight.bold,
                           ),
                         ),
                       ),
@@ -1288,7 +1288,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                     '${l10n.answer} - $languageCode',
                     style: theme.textTheme.labelLarge?.copyWith(
                       color: theme.colorScheme.onSecondaryContainer,
-                      fontWeight: FontWeight.bold,
+                      //fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),

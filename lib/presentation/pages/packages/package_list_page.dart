@@ -16,6 +16,7 @@ import '../../../data/repositories/training_statistics_repository.dart';
 import '../../../data/repositories/app_settings_repository.dart';
 import '../../widgets/package_icon.dart';
 import '../../widgets/badge_widget.dart';
+import '../../widgets/clickable_text.dart';
 import '../../providers/package_order_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:reorderable_grid_view/reorderable_grid_view.dart';
@@ -1088,8 +1089,8 @@ class _PackageCardState extends State<PackageCard> {
         top: AppTheme.spacing4,
         left: !widget.isInGrid ? 40.0 : 0,
       ),
-      child: Text(
-        widget.package.description!,
+      child: ClickableText(
+        text: widget.package.description!,
         style: theme.textTheme.bodySmall?.copyWith(
           color: colorScheme.onSurfaceVariant,
         ),
@@ -1303,8 +1304,8 @@ class _PackageCardState extends State<PackageCard> {
     final theme = Theme.of(context);
     return Padding(
       padding: EdgeInsets.only(top: AppTheme.spacing12),
-      child: Text(
-        widget.package.description!,
+      child: ClickableText(
+        text: widget.package.description!,
         style: theme.textTheme.bodySmall,
         maxLines: 2,
         overflow: TextOverflow.ellipsis,
