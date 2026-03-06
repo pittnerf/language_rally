@@ -131,24 +131,36 @@ class _AppTourPageState extends State<AppTourPage> {
 
               // Page content
               Expanded(
-                child: PageView.builder(
-                  controller: _pageController,
-                  onPageChanged: (index) {
-                    setState(() {
-                      _currentPage = index;
-                    });
+                child: GestureDetector(
+                  onHorizontalDragEnd: (details) {
+                    // Swipe left (negative velocity) = next page
+                    if (details.primaryVelocity! < -500) {
+                      _nextPage();
+                    }
+                    // Swipe right (positive velocity) = previous page
+                    else if (details.primaryVelocity! > 500) {
+                      _previousPage();
+                    }
                   },
-                  itemCount: _totalPages,
-                  itemBuilder: (context, index) {
-                    final pages = _getTourPages(l10n);
-                    return _buildTourPage(
-                      context,
-                      pages[index],
-                      theme,
-                      isLandscape,
-                      isTablet,
-                    );
-                  },
+                  child: PageView.builder(
+                    controller: _pageController,
+                    onPageChanged: (index) {
+                      setState(() {
+                        _currentPage = index;
+                      });
+                    },
+                    itemCount: _totalPages,
+                    itemBuilder: (context, index) {
+                      final pages = _getTourPages(l10n);
+                      return _buildTourPage(
+                        context,
+                        pages[index],
+                        theme,
+                        isLandscape,
+                        isTablet,
+                      );
+                    },
+                  ),
                 ),
               ),
 

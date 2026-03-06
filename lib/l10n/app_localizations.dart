@@ -3014,6 +3014,60 @@ abstract class AppLocalizations {
   /// **'Recorded'**
   String get recorded;
 
+  /// No description provided for @speakNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Speak now - speak clearly and close to the microphone'**
+  String get speakNow;
+
+  /// No description provided for @noSpeechDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'No speech detected. Please try again.'**
+  String get noSpeechDetected;
+
+  /// No description provided for @processingAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing audio with AI...'**
+  String get processingAudio;
+
+  /// No description provided for @playbackRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Play back my recording'**
+  String get playbackRecording;
+
+  /// No description provided for @playbackRecordingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hear your recording while AI processes it'**
+  String get playbackRecordingSubtitle;
+
+  /// No description provided for @recordingTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording too short. Please speak for at least 1 second.'**
+  String get recordingTooShort;
+
+  /// No description provided for @microphonePermissionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone permission is required for pronunciation practice'**
+  String get microphonePermissionRequired;
+
+  /// No description provided for @speechRecognitionNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech recognition is not supported on this platform. Please use the mobile app (Android/iOS) for pronunciation practice.'**
+  String get speechRecognitionNotSupported;
+
+  /// No description provided for @speechRecognitionUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech recognition is not available on this device.'**
+  String get speechRecognitionUnavailable;
+
   /// No description provided for @pronunciationAccuracy.
   ///
   /// In en, this message translates to:

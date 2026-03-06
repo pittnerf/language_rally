@@ -1620,6 +1620,39 @@ class AppLocalizationsHu extends AppLocalizations {
   String get recorded => 'Felvéve';
 
   @override
+  String get speakNow =>
+      'Beszéljen most - beszéljen tisztán és közel a mikrofonhoz';
+
+  @override
+  String get noSpeechDetected => 'Nem észlelhető beszéd. Kérem próbálja újra.';
+
+  @override
+  String get processingAudio => 'Hang feldolgozása AI-val...';
+
+  @override
+  String get playbackRecording => 'Felvétel visszajátszása';
+
+  @override
+  String get playbackRecordingSubtitle =>
+      'Hallgassa meg a felvételét, miközben az AI feldolgozza';
+
+  @override
+  String get recordingTooShort =>
+      'A felvétel túl rövid. Kérem beszéljen legalább 1 másodpercig.';
+
+  @override
+  String get microphonePermissionRequired =>
+      'A kiejtés gyakorlásához mikrofon engedély szükséges';
+
+  @override
+  String get speechRecognitionNotSupported =>
+      'A beszédfelismerés nem támogatott ezen a platformon. Kérem használja a mobil alkalmazást (Android/iOS) a kiejtés gyakorlásához.';
+
+  @override
+  String get speechRecognitionUnavailable =>
+      'A beszédfelismerés nem elérhető ezen az eszközön.';
+
+  @override
   String get pronunciationAccuracy => 'Kiejtés pontossága';
 
   @override

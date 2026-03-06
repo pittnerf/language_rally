@@ -1612,6 +1612,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get recorded => 'Recorded';
 
   @override
+  String get speakNow =>
+      'Speak now - speak clearly and close to the microphone';
+
+  @override
+  String get noSpeechDetected => 'No speech detected. Please try again.';
+
+  @override
+  String get processingAudio => 'Processing audio with AI...';
+
+  @override
+  String get playbackRecording => 'Play back my recording';
+
+  @override
+  String get playbackRecordingSubtitle =>
+      'Hear your recording while AI processes it';
+
+  @override
+  String get recordingTooShort =>
+      'Recording too short. Please speak for at least 1 second.';
+
+  @override
+  String get microphonePermissionRequired =>
+      'Microphone permission is required for pronunciation practice';
+
+  @override
+  String get speechRecognitionNotSupported =>
+      'Speech recognition is not supported on this platform. Please use the mobile app (Android/iOS) for pronunciation practice.';
+
+  @override
+  String get speechRecognitionUnavailable =>
+      'Speech recognition is not available on this device.';
+
+  @override
   String get pronunciationAccuracy => 'Pronunciation Accuracy';
 
   @override
