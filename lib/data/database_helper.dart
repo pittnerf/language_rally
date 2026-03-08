@@ -5,6 +5,7 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'database_migrations.dart';
+import '../core/utils/debug_print.dart';
 
 // Import this to ensure SQLite native libraries are bundled
 
@@ -40,7 +41,7 @@ class DatabaseHelper {
         return _database!;
       } catch (e) {
         // Connection is stale, close it and create a new one
-        debugPrint('Database connection is stale, recreating: $e');
+        logDebug('Database connection is stale, recreating: $e');
         try {
           await _database!.close();
         } catch (_) {

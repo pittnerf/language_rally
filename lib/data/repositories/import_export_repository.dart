@@ -182,7 +182,7 @@ class ImportExportRepository {
         if (existingGroupWithId != null) {
           // ID exists but with different name, generate new ID
           newGroupId = const Uuid().v4();
-          // print('  Group ID conflict: using new ID $newGroupId instead of $exportedGroupId');
+          // logDebug('  Group ID conflict: using new ID $newGroupId instead of $exportedGroupId');
         }
 
         group = LanguagePackageGroup(
@@ -190,9 +190,9 @@ class ImportExportRepository {
           name: exportedGroupName,
         );
         await _groupRepo.insertGroup(group);
-        // print('  ✓ Created new group: $newGroupId - ${exportedGroupName}');
+        // logDebug('  ✓ Created new group: $newGroupId - ${exportedGroupName}');
       } else {
-        // print('  ✓ Using existing group: ${group.id} - ${group.name}');
+        // logDebug('  ✓ Using existing group: ${group.id} - ${group.name}');
       }
 
       groupId = group.id;
@@ -232,10 +232,10 @@ class ImportExportRepository {
     );
 
     await _packageRepo.insertPackage(package);
-    // print('Import: Package created with ID: $packageId, groupId: $groupId');
+    // logDebug('Import: Package created with ID: $packageId, groupId: $groupId');
 
     // Import categories (IDs already updated above)
-    // print('Import: Found ${categoriesData.length} categories in import data');
+    // logDebug('Import: Found ${categoriesData.length} categories in import data');
 
     for (final catData in categoriesData) {
       final category = Category(
@@ -245,11 +245,11 @@ class ImportExportRepository {
         description: catData['description'] as String?,
       );
       await _categoryRepo.insertCategory(category);
-      // print('  Imported category: ${category.id} - ${category.name}');
+      // logDebug('  Imported category: ${category.id} - ${category.name}');
     }
 
     // Import items
-    // print('Import: Found ${itemsData.length} items in import data');
+    // logDebug('Import: Found ${itemsData.length} items in import data');
 
     int importedCount = 0;
     for (final itemData in itemsData) {
@@ -262,15 +262,15 @@ class ImportExportRepository {
         // Since we generated new IDs, no duplicates are possible
         await _itemRepo.insertItem(updatedItem);
         importedCount++;
-        // print('  ✓ Item imported: ${updatedItem.id}');
+        // logDebug('  ✓ Item imported: ${updatedItem.id}');
       } catch (e) {
-        // print('  ❌ Error importing item: $e');
-        // print('  Stack trace: $stackTrace');
+        // logDebug('  ❌ Error importing item: $e');
+        // logDebug('  Stack trace: $stackTrace');
         // Continue with next item instead of failing entire import
       }
     }
 
-    // print('Import completed: $importedCount items imported');
+    // logDebug('Import completed: $importedCount items imported');
     return importedCount;
   }
 
@@ -373,14 +373,14 @@ class ImportExportRepository {
     // Get categories for the package
     final categories = await _categoryRepo.getCategoriesForPackage(packageId);
 
-    // print('Export: Found ${categories.length} categories for package $packageId');
+    // logDebug('Export: Found ${categories.length} categories for package $packageId');
 
 
     // Get all items for each category
     final categoryIds = categories.map((c) => c.id).toList();
     final items = await _itemRepo.getItemsForCategories(categoryIds);
 
-    // print('Export: Found ${items.length} items for ${categoryIds.length} categories');
+    // logDebug('Export: Found ${items.length} items for ${categoryIds.length} categories');
 
     // Get the group information
     final group = await _groupRepo.getGroupById(package.groupId);
@@ -446,9 +446,9 @@ class ImportExportRepository {
               final packageMap = exportData['package'] as Map<String, dynamic>;
               packageMap['icon'] = iconFileName;
 
-              // print('Exported custom icon: $iconFileName');
+              // logDebug('Exported custom icon: $iconFileName');
             } else {
-              // print('Warning: Custom icon file not found: ${package.icon}');
+              // logDebug('Warning: Custom icon file not found: ${package.icon}');
               // Set icon to null if file doesn't exist
               final packageMap = exportData['package'] as Map<String, dynamic>;
               packageMap['icon'] = null;
@@ -457,7 +457,7 @@ class ImportExportRepository {
           }
           // Asset icons don't need to be copied - they're part of the app
         } catch (e) {
-          // print('Error copying icon: $e');
+          // logDebug('Error copying icon: $e');
           // On error, set icon to null to avoid issues on import
           final packageMap = exportData['package'] as Map<String, dynamic>;
           packageMap['icon'] = null;
@@ -471,22 +471,22 @@ class ImportExportRepository {
         const JsonEncoder.withIndent('  ').convert(exportData),
       );
 
-      // print('Package data written to: ${jsonFile.path}');
-      // print('Icon in export: $finalIconPath');
+      // logDebug('Package data written to: ${jsonFile.path}');
+      // logDebug('Icon in export: $finalIconPath');
 
       // Create ZIP archive
       final archive = Archive();
 
       // Add all files from export directory to archive
       final files = await exportDir.list(recursive: true).toList();
-      // print('Files found in export directory:');
+      // logDebug('Files found in export directory:');
       for (final entity in files) {
         if (entity is File) {
           final relativePath = path.relative(entity.path, from: exportDir.path);
           final bytes = await entity.readAsBytes();
           final archiveFile = ArchiveFile(relativePath, bytes.length, bytes);
           archive.addFile(archiveFile);
-          // print('  Added to ZIP: $relativePath (${bytes.length} bytes)');
+          // logDebug('  Added to ZIP: $relativePath (${bytes.length} bytes)');
         }
       }
 
@@ -501,8 +501,8 @@ class ImportExportRepository {
       final zipFile = File(zipFilePath);
       await zipFile.writeAsBytes(zipData);
 
-      // print('ZIP file created: $zipFilePath');
-      // print('Total files in archive: ${archive.files.length}');
+      // logDebug('ZIP file created: $zipFilePath');
+      // logDebug('Total files in archive: ${archive.files.length}');
 
       return zipFilePath;
     } finally {
@@ -819,7 +819,7 @@ class ImportExportRepository {
         if (existingGroupWithId != null) {
           // ID exists but with different name, generate new ID
           newGroupId = const Uuid().v4();
-          // print('  Group ID conflict: using new ID $newGroupId instead of $exportedGroupId');
+          // logDebug('  Group ID conflict: using new ID $newGroupId instead of $exportedGroupId');
         }
 
         group = LanguagePackageGroup(
@@ -827,9 +827,9 @@ class ImportExportRepository {
           name: exportedGroupName,
         );
         await _groupRepo.insertGroup(group);
-        // print('  ✓ Created new group: $newGroupId - ${exportedGroupName}');
+        // logDebug('  ✓ Created new group: $newGroupId - ${exportedGroupName}');
       } else {
-        // print('  ✓ Using existing group: ${group.id} - ${group.name}');
+        // logDebug('  ✓ Using existing group: ${group.id} - ${group.name}');
       }
 
       groupId = group.id;
@@ -872,11 +872,11 @@ class ImportExportRepository {
     );
 
     await _packageRepo.insertPackage(package);
-    // print('Import ZIP: Package created with ID: $packageId, groupId: $groupId');
+    // logDebug('Import ZIP: Package created with ID: $packageId, groupId: $groupId');
 
     // Import categories
     final categoriesData = data['categories'] as List<dynamic>;
-    // print('Import ZIP: Found ${categoriesData.length} categories in import data');
+    // logDebug('Import ZIP: Found ${categoriesData.length} categories in import data');
 
     for (final catData in categoriesData) {
       final category = Category(
@@ -886,24 +886,24 @@ class ImportExportRepository {
         description: catData['description'] as String?,
       );
       await _categoryRepo.insertCategory(category);
-      // print('  Imported category: ${category.id} - ${category.name}');
+      // logDebug('  Imported category: ${category.id} - ${category.name}');
     }
 
     // Import items
     final itemsData = data['items'] as List<dynamic>;
     int importedCount = 0;
 
-    // print('Import ZIP: Found ${itemsData.length} items in import data');
+    // logDebug('Import ZIP: Found ${itemsData.length} items in import data');
 
     for (final itemData in itemsData) {
       try {
         final item = Item.fromJson(itemData as Map<String, dynamic>);
-        // print('  Processing item: ${item.id}, original packageId: ${item.packageId}');
+        // logDebug('  Processing item: ${item.id}, original packageId: ${item.packageId}');
 
         // Update item's packageId to match the imported package
         // This is crucial because the exported packageId might be different
         final updatedItem = item.copyWith(packageId: packageId);
-        // print('    Updated packageId to: ${updatedItem.packageId}');
+        // logDebug('    Updated packageId to: ${updatedItem.packageId}');
 
         // Check for duplicate: item with same ID in ANY package
         final existingItem = await _itemRepo.getItemById(updatedItem.id);
@@ -911,26 +911,26 @@ class ImportExportRepository {
           // Item with this ID already exists (in any package)
           if (existingItem.packageId == packageId) {
             // Item exists in THIS package - skip it
-            // print('    ⚠ Item already exists in this package, skipped');
+            // logDebug('    ⚠ Item already exists in this package, skipped');
           } else {
             // Item exists in ANOTHER package - this shouldn't happen with proper ID generation
             // Skip to avoid database constraint violations
-            // print('    ⚠ Item ID collision with another package, skipped');
+            // logDebug('    ⚠ Item ID collision with another package, skipped');
           }
         } else {
           // Item doesn't exist anywhere - safe to import
           await _itemRepo.insertItem(updatedItem);
           importedCount++;
-          // print('    ✓ Item imported successfully');
+          // logDebug('    ✓ Item imported successfully');
         }
       } catch (e) {
-        // print('    ❌ Error importing item: $e');
-        // print('    Stack trace: $stackTrace');
+        // logDebug('    ❌ Error importing item: $e');
+        // logDebug('    Stack trace: $stackTrace');
         // Continue with next item instead of failing entire import
       }
     }
 
-    // print('Import ZIP completed: $importedCount items imported, $skippedCount skipped');
+    // logDebug('Import ZIP completed: $importedCount items imported, $skippedCount skipped');
     return ImportResult(importedCount, groupName);
   }
 }

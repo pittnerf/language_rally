@@ -5,6 +5,7 @@
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../utils/debug_print.dart';
 
 class DeepLService {
   final String? _apiKey;
@@ -24,19 +25,19 @@ class DeepLService {
     required String targetLang,
     String? sourceLang,
   }) async {
-    print('🌐 DeepL Translation Request:');
-    print('  Source Language: $sourceLang');
-    print('  Target Language: $targetLang');
-    print('  Text: "$text"');
-    print('  API Key configured: ${_apiKey != null && _apiKey.isNotEmpty}');
+    logDebug('🌐 DeepL Translation Request:');
+    logDebug('  Source Language: $sourceLang');
+    logDebug('  Target Language: $targetLang');
+    logDebug('  Text: "$text"');
+    logDebug('  API Key configured: ${_apiKey != null && _apiKey.isNotEmpty}');
 
     if (_apiKey == null || _apiKey.isEmpty) {
-      print('  ⚠️ No API key, skipping DeepL');
+      logDebug('  ⚠️ No API key, skipping DeepL');
       return null;
     }
 
     if (text.trim().isEmpty) {
-      print('  ⚠️ Text is empty, skipping DeepL');
+      logDebug('  ⚠️ Text is empty, skipping DeepL');
       return null;
     }
 
@@ -48,8 +49,8 @@ class DeepLService {
       final targetLangCode = _normalizeLanguageCode(targetLang);
       final sourceLangCode = sourceLang != null ? _normalizeSourceLanguageCode(sourceLang) : null;
 
-      print('  Normalized Target: $targetLangCode');
-      print('  Normalized Source: $sourceLangCode');
+      logDebug('  Normalized Target: $targetLangCode');
+      logDebug('  Normalized Source: $sourceLangCode');
 
       final body = {
         'text': text,
@@ -60,7 +61,7 @@ class DeepLService {
         body['source_lang'] = sourceLangCode;
       }
 
-      print('  📤 Sending request to DeepL...');
+      logDebug('  📤 Sending request to DeepL...');
       final response = await http.post(
         Uri.parse(_baseUrl),
         headers: {
@@ -70,26 +71,26 @@ class DeepLService {
         body: body,
       );
 
-      print('  Status Code: ${response.statusCode}');
+      logDebug('  Status Code: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final translations = data['translations'] as List;
         if (translations.isNotEmpty) {
           final translated = translations[0]['text'];
-          print('  📥 DeepL Response: "$translated"');
-          print('  ✅ Translation successful');
+          logDebug('  📥 DeepL Response: "$translated"');
+          logDebug('  ✅ Translation successful');
           return translated;
         }
       } else {
-        print('  ❌ DeepL failed with status ${response.statusCode}');
-        print('  Response: ${response.body}');
+        logDebug('  ❌ DeepL failed with status ${response.statusCode}');
+        logDebug('  Response: ${response.body}');
       }
 
       return null;
     } catch (e) {
       // If DeepL fails, return null so caller can try OpenAI
-      print('  ❌ DeepL error: $e');
+      logDebug('  ❌ DeepL error: $e');
       return null;
     }
   }

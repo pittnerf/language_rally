@@ -23,6 +23,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:http/http.dart' as http;
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+import '../utils/debug_print.dart';
 
 class TtsService {
   static final TtsService _instance = TtsService._internal();
@@ -64,7 +65,7 @@ class TtsService {
         await _audioPlayer!.setAudioContext(audioContext);
       } catch (e) {
         if (kDebugMode) {
-          print('Warning: Could not fully configure audio player: $e');
+          logDebug('Warning: Could not fully configure audio player: $e');
         }
         // Continue anyway - basic playback might still work
       }
@@ -106,7 +107,7 @@ class TtsService {
 
       _flutterTts.setErrorHandler((msg) {
         _isSpeaking = false;
-        // print('TTS Error: $msg');
+        // logDebug('TTS Error: $msg');
       });
 
       _isInitialized = true;
@@ -114,27 +115,27 @@ class TtsService {
       // Log available languages for debugging
       try {
         // final languages = await getAvailableLanguages();
-        // print('TTS: ${languages.length} languages available on device');
-        // print('TTS: Sample languages: ${languages.take(10).join(", ")}');
+        // logDebug('TTS: ${languages.length} languages available on device');
+        // logDebug('TTS: Sample languages: ${languages.take(10).join(", ")}');
 
         // Try to get available voices
         try {
           final voices = await _flutterTts.getVoices;
           _availableVoices = voices;
-          // print('TTS: ${voices.length} voices available');
+          // logDebug('TTS: ${voices.length} voices available');
           if (voices.isNotEmpty) {
             // Show sample voices
             // final sampleVoices = voices.take(5).map((v) => v['name']).join(', ');
-            // print('TTS: Sample voices: $sampleVoices');
+            // logDebug('TTS: Sample voices: $sampleVoices');
           }
         } catch (e) {
-          // print('TTS: Could not get voices: $e');
+          // logDebug('TTS: Could not get voices: $e');
         }
       } catch (e) {
-        // print('TTS: Could not get available languages: $e');
+        // logDebug('TTS: Could not get available languages: $e');
       }
     } catch (e) {
-      // print('TTS initialization error: $e');
+      // logDebug('TTS initialization error: $e');
     }
   }
 
@@ -146,7 +147,7 @@ class TtsService {
       await initialize();
       await stop(); // Stop any ongoing speech
 
-      // print('Speaking text in language: $languageCode');
+      // logDebug('Speaking text in language: $languageCode');
 
       // On Windows, device TTS (SAPI) often doesn't switch languages correctly
       // even when setLanguage returns success. Web TTS is more reliable.
@@ -154,32 +155,32 @@ class TtsService {
       try {
         final webSuccess = await speakWebTts(text, languageCode);
         if (webSuccess) {
-          // print('Web TTS succeeded for language: $languageCode');
+          // logDebug('Web TTS succeeded for language: $languageCode');
           return true;
         }
       } catch (e) {
-        // print('Web TTS failed: $e, trying device TTS');
+        // logDebug('Web TTS failed: $e, trying device TTS');
       }
 
       // Fallback to device TTS
-      // print('Attempting device TTS for language: $languageCode');
+      // logDebug('Attempting device TTS for language: $languageCode');
 
       // Try to find and set a voice for this language
       bool voiceSet = await _setVoiceForLanguage(languageCode);
 
       // Try to set language
       final result = await _flutterTts.setLanguage(languageCode);
-      // print('setLanguage result: $result (1 = success), voice set: $voiceSet');
+      // logDebug('setLanguage result: $result (1 = success), voice set: $voiceSet');
 
       if (result == 1 || voiceSet) {
         await _flutterTts.speak(text);
         return true;
       } else {
-        // print('Device TTS failed for language: $languageCode');
+        // logDebug('Device TTS failed for language: $languageCode');
         return false;
       }
     } catch (e) {
-      // print('TTS speak error: $e');
+      // logDebug('TTS speak error: $e');
       return false;
     }
   }
@@ -202,16 +203,16 @@ class TtsService {
           final voiceName = voice['name'] as String? ?? '';
 
           if (voiceLang.startsWith(baseLang) || voiceName.toLowerCase().contains(baseLang)) {
-            // print('Setting voice: ${voice['name']} for language: $languageCode');
+            // logDebug('Setting voice: ${voice['name']} for language: $languageCode');
             await _flutterTts.setVoice(voice);
             return true;
           }
         }
 
-        // print('No voice found for language: $languageCode');
+        // logDebug('No voice found for language: $languageCode');
       }
     } catch (e) {
-      // print('Error setting voice: $e');
+      // logDebug('Error setting voice: $e');
     }
     return false;
   }
@@ -224,7 +225,7 @@ class TtsService {
       // Examples: 'en-US' -> 'en', 'hu-HU' -> 'hu', 'de-DE' -> 'de'
       final lang = languageCode.split('-').first;
 
-      // print('Web TTS: Using language code: $lang for text: ${text.substring(0, text.length > 30 ? 30 : text.length)}...');
+      // logDebug('Web TTS: Using language code: $lang for text: ${text.substring(0, text.length > 30 ? 30 : text.length)}...');
 
       // Google Translate TTS API (unofficial but widely used)
       // Note: This is for educational purposes. For production, consider:
@@ -235,7 +236,7 @@ class TtsService {
         'https://translate.google.com/translate_tts?ie=UTF-8&client=tw-ob&tl=$lang&q=${Uri.encodeComponent(text)}'
       );
 
-      // print('Fetching TTS audio from: $url');
+      // logDebug('Fetching TTS audio from: $url');
 
       final response = await http.get(
         url,
@@ -271,11 +272,11 @@ class TtsService {
 
         return true;
       } else {
-        // print('Web TTS failed with status: ${response.statusCode}');
+        // logDebug('Web TTS failed with status: ${response.statusCode}');
         return false;
       }
     } catch (e) {
-      // print('Web TTS error: $e');
+      // logDebug('Web TTS error: $e');
       return false;
     }
   }
@@ -289,7 +290,7 @@ class TtsService {
       }
       _isSpeaking = false;
     } catch (e) {
-      // print('TTS stop error: $e');
+      // logDebug('TTS stop error: $e');
     }
   }
 
@@ -317,7 +318,7 @@ class TtsService {
       final languages = await _flutterTts.getLanguages;
       return languages.cast<String>();
     } catch (e) {
-      // print('Error getting languages: $e');
+      // logDebug('Error getting languages: $e');
       return [];
     }
   }

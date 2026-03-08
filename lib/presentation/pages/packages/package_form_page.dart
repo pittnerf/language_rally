@@ -25,6 +25,7 @@ import '../../../data/repositories/import_export_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../widgets/package_icon.dart';
 import '../ai_import/ai_text_analysis_page.dart';
+import '../../../core/utils/debug_print.dart';
 
 /// Page for creating or editing a language package
 class PackageFormPage extends ConsumerStatefulWidget {
@@ -116,7 +117,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         }
       });
     } catch (e) {
-      debugPrint('Error loading groups: $e');
+      logDebug('Error loading groups: $e');
     }
   }
 

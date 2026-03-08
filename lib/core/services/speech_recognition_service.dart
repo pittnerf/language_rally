@@ -8,6 +8,7 @@
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import '../utils/debug_print.dart';
 
 class SpeechRecognitionService {
   final String? _apiKey;
@@ -73,24 +74,24 @@ class SpeechRecognitionService {
       // Add response format (we want verbose for more details)
       request.fields['response_format'] = 'verbose_json';
 
-      print('🎙️ Sending audio to OpenAI Whisper API...');
-      print('   File size: ${await audioFile.length()} bytes');
-      print('   Language: ${language ?? "auto-detect"}');
-      print('   Prompt: ${prompt ?? "none"}');
+      logDebug('🎙️ Sending audio to OpenAI Whisper API...');
+      logDebug('   File size: ${await audioFile.length()} bytes');
+      logDebug('   Language: ${language ?? "auto-detect"}');
+      logDebug('   Prompt: ${prompt ?? "none"}');
 
       // Send request
       final streamedResponse = await request.send();
       final response = await http.Response.fromStream(streamedResponse);
 
-      print('📡 Whisper API response: ${response.statusCode}');
+      logDebug('📡 Whisper API response: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        print('✓ Transcription successful');
-        print('   Text: ${data['text']}');
-        print('   Language: ${data['language'] ?? "unknown"}');
-        print('   Duration: ${data['duration'] ?? "unknown"}s');
+        logDebug('✓ Transcription successful');
+        logDebug('   Text: ${data['text']}');
+        logDebug('   Language: ${data['language'] ?? "unknown"}');
+        logDebug('   Duration: ${data['duration'] ?? "unknown"}s');
 
         return WhisperTranscriptionResult(
           text: data['text'] ?? '',
@@ -104,7 +105,7 @@ class SpeechRecognitionService {
         final errorMessage = errorData['error']['message'] ?? 'Unknown error';
         final errorType = errorData['error']['type'] ?? 'unknown';
 
-        print('!!! Whisper API error: $errorMessage (type: $errorType)');
+        logDebug('!!! Whisper API error: $errorMessage (type: $errorType)');
 
         if (response.statusCode == 401) {
           throw Exception('Invalid OpenAI API key. Please check your API key in Settings.');
@@ -117,7 +118,7 @@ class SpeechRecognitionService {
         }
       }
     } catch (e) {
-      print('!!! Exception during transcription: $e');
+      logDebug('!!! Exception during transcription: $e');
       rethrow;
     }
   }
@@ -138,7 +139,7 @@ class SpeechRecognitionService {
 
       return segments;
     } catch (e) {
-      print('Warning: Could not parse segments: $e');
+      logDebug('Warning: Could not parse segments: $e');
       return null;
     }
   }

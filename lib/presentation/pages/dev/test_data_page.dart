@@ -22,6 +22,7 @@ import '../../../data/models/training_settings.dart';
 import '../../../data/models/training_session.dart';
 import '../../../data/models/training_statistics.dart';
 import '../../../data/models/badge_event.dart';
+import '../../../core/utils/debug_print.dart';
 
 class TestDataPage extends StatefulWidget {
   const TestDataPage({super.key});
@@ -56,7 +57,7 @@ class _TestDataPageState extends State<TestDataPage> {
     setState(() {
       _statusMessage += '$message\n';
     });
-    debugPrint(message);
+    logDebug(message);
   }
 
   Future<void> _populateData() async {

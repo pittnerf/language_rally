@@ -6,6 +6,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../data/models/extracted_item.dart';
+import '../utils/debug_print.dart';
 
 class TextAnalysisService {
   final String _apiKey;
@@ -60,7 +61,7 @@ Response (only the 2-letter code):''';
     const maxSentencesPerRequest = 20; // More than 20 sentences → use chunking
 
     if (sentenceCount > maxSentencesPerRequest) {
-      print('Text has $sentenceCount sentences (>$maxSentencesPerRequest), using sentence-based chunking');
+      logDebug('Text has $sentenceCount sentences (>$maxSentencesPerRequest), using sentence-based chunking');
       return await _extractItemsInChunks(
         text: text,
         knowledgeLevel: knowledgeLevel,
@@ -77,7 +78,7 @@ Response (only the 2-letter code):''';
     const promptOverhead = 2000; // Tokens for our instructions
 
     if (estimatedInputTokens > maxContextTokens - promptOverhead) {
-      print('Text has $estimatedInputTokens estimated tokens (too large), using sentence-based chunking');
+      logDebug('Text has $estimatedInputTokens estimated tokens (too large), using sentence-based chunking');
       return await _extractItemsInChunks(
         text: text,
         knowledgeLevel: knowledgeLevel,
@@ -213,42 +214,42 @@ CRITICAL: If extracting only expressions, DO NOT include any single-word items i
 Do not include any explanation, only the JSON array.''';
 
     // DEBUG: Print analysis details to console
-    print('═══════════════════════════════════════════════════════════');
-    print('AI TEXT ANALYSIS - PROMPT SENT TO OPENAI');
-    print('═══════════════════════════════════════════════════════════');
-    print('Knowledge Level: $knowledgeLevel');
-    print('Extract Words: $extractWords');
-    print('Extract Expressions: $extractExpressions');
-    print('Max Items: $maxItems');
-    print('Dynamic Max Tokens: $dynamicMaxTokens');
-    print('Text Word Count: $textWordCount');
-    print('───────────────────────────────────────────────────────────');
-    print('INPUT TEXT DETAILS:');
-    print('  Character count: ${text.length}');
-    print('  First 100 chars: ${text.substring(0, text.length > 100 ? 100 : text.length)}');
-    print('  Last 100 chars: ${text.length > 100 ? text.substring(text.length - 100) : "[text too short]"}');
-    print('───────────────────────────────────────────────────────────');
-    print('PROMPT DETAILS:');
-    print('  Prompt character count: ${prompt.length}');
-    print('  Prompt word count: ${prompt.split(RegExp(r'\s+')).length}');
-    print('  Estimated tokens: ${_estimateTokens(prompt)}');
-    print('───────────────────────────────────────────────────────────');
+    logDebug('═══════════════════════════════════════════════════════════');
+    logDebug('AI TEXT ANALYSIS - PROMPT SENT TO OPENAI');
+    logDebug('═══════════════════════════════════════════════════════════');
+    logDebug('Knowledge Level: $knowledgeLevel');
+    logDebug('Extract Words: $extractWords');
+    logDebug('Extract Expressions: $extractExpressions');
+    logDebug('Max Items: $maxItems');
+    logDebug('Dynamic Max Tokens: $dynamicMaxTokens');
+    logDebug('Text Word Count: $textWordCount');
+    logDebug('───────────────────────────────────────────────────────────');
+    logDebug('INPUT TEXT DETAILS:');
+    logDebug('  Character count: ${text.length}');
+    logDebug('  First 100 chars: ${text.substring(0, text.length > 100 ? 100 : text.length)}');
+    logDebug('  Last 100 chars: ${text.length > 100 ? text.substring(text.length - 100) : "[text too short]"}');
+    logDebug('───────────────────────────────────────────────────────────');
+    logDebug('PROMPT DETAILS:');
+    logDebug('  Prompt character count: ${prompt.length}');
+    logDebug('  Prompt word count: ${prompt.split(RegExp(r'\s+')).length}');
+    logDebug('  Estimated tokens: ${_estimateTokens(prompt)}');
+    logDebug('───────────────────────────────────────────────────────────');
     // Note: Not printing full prompt to avoid logcat truncation issues
     // On Android, logcat truncates at ~4000 characters per line
-    print('NOTE: Full prompt not displayed due to logcat character limits');
-    print('      but the COMPLETE text is being sent to OpenAI API');
-    print('═══════════════════════════════════════════════════════════');
+    logDebug('NOTE: Full prompt not displayed due to logcat character limits');
+    logDebug('      but the COMPLETE text is being sent to OpenAI API');
+    logDebug('═══════════════════════════════════════════════════════════');
 
     try {
       final response = await _makeRequest(prompt, maxTokens: dynamicMaxTokens);
 
       // DEBUG: Print the response details
-      print('───────────────────────────────────────────────────────────');
-      print('OPENAI RESPONSE RECEIVED:');
-      print('  Response length: ${response.length} characters');
-      print('  Response starts with: ${response.substring(0, response.length > 80 ? 80 : response.length)}...');
-      print('  Response ends with: ...${response.length > 80 ? response.substring(response.length - 80) : response}');
-      print('───────────────────────────────────────────────────────────');
+      logDebug('───────────────────────────────────────────────────────────');
+      logDebug('OPENAI RESPONSE RECEIVED:');
+      logDebug('  Response length: ${response.length} characters');
+      logDebug('  Response starts with: ${response.substring(0, response.length > 80 ? 80 : response.length)}...');
+      logDebug('  Response ends with: ...${response.length > 80 ? response.substring(response.length - 80) : response}');
+      logDebug('───────────────────────────────────────────────────────────');
 
       // Extract JSON from response
       String jsonContent = response;
@@ -370,8 +371,8 @@ Do not include any explanation, only the JSON array.''';
           .toList();
     }
 
-    print('───────────────────────────────────────────────────────────');
-    print('SENTENCE-BASED CHUNKING: Detected ${sentences.length} sentences in text');
+    logDebug('───────────────────────────────────────────────────────────');
+    logDebug('SENTENCE-BASED CHUNKING: Detected ${sentences.length} sentences in text');
 
     // Group sentences into chunks (5-10 sentences per chunk)
     const minSentencesPerChunk = 5;
@@ -386,8 +387,8 @@ Do not include any explanation, only the JSON array.''';
       chunks.add(chunkSentences.join(' '));
     }
 
-    print('Creating ${chunks.length} chunks with $minSentencesPerChunk-$maxSentencesPerChunk sentences each');
-    print('───────────────────────────────────────────────────────────');
+    logDebug('Creating ${chunks.length} chunks with $minSentencesPerChunk-$maxSentencesPerChunk sentences each');
+    logDebug('───────────────────────────────────────────────────────────');
 
     for (int i = 0; i < chunks.length; i++) {
       final chunkSentenceCount = i + maxSentencesPerChunk <= sentences.length
@@ -395,14 +396,14 @@ Do not include any explanation, only the JSON array.''';
           : sentences.length - i * maxSentencesPerChunk;
       final chunkWordCount = chunks[i].split(RegExp(r'\s+')).length;
       final chunkCharCount = chunks[i].length;
-      print('  Chunk ${i + 1}: $chunkSentenceCount sentences, $chunkWordCount words, $chunkCharCount chars');
+      logDebug('  Chunk ${i + 1}: $chunkSentenceCount sentences, $chunkWordCount words, $chunkCharCount chars');
     }
-    print('───────────────────────────────────────────────────────────');
+    logDebug('───────────────────────────────────────────────────────────');
 
     // Process each chunk
     final allItems = <ExtractedItem>[];
     for (int i = 0; i < chunks.length; i++) {
-      print('Processing chunk ${i + 1}/${chunks.length}...');
+      logDebug('Processing chunk ${i + 1}/${chunks.length}...');
       final chunkItems = await extractItems(
         text: chunks[i],
         knowledgeLevel: knowledgeLevel,
@@ -412,12 +413,12 @@ Do not include any explanation, only the JSON array.''';
         sourceLanguage: sourceLanguage,
         maxItems: null, // Don't limit individual chunks
       );
-      print('Chunk ${i + 1} extracted ${chunkItems.length} items');
+      logDebug('Chunk ${i + 1} extracted ${chunkItems.length} items');
       allItems.addAll(chunkItems);
     }
 
-    print('───────────────────────────────────────────────────────────');
-    print('TOTAL ITEMS BEFORE DEDUPLICATION: ${allItems.length}');
+    logDebug('───────────────────────────────────────────────────────────');
+    logDebug('TOTAL ITEMS BEFORE DEDUPLICATION: ${allItems.length}');
 
     // Remove duplicates (same text)
     final uniqueItems = <String, ExtractedItem>{};
@@ -429,14 +430,14 @@ Do not include any explanation, only the JSON array.''';
     }
 
     var result = uniqueItems.values.toList();
-    print('TOTAL UNIQUE ITEMS: ${result.length}');
+    logDebug('TOTAL UNIQUE ITEMS: ${result.length}');
 
     // Apply maxItems limit if specified
     if (maxItems != null && result.length > maxItems) {
       result = result.take(maxItems).toList();
-      print('LIMITED TO: $maxItems items');
+      logDebug('LIMITED TO: $maxItems items');
     }
-    print('═══════════════════════════════════════════════════════════');
+    logDebug('═══════════════════════════════════════════════════════════');
 
     return result;
   }
@@ -497,16 +498,16 @@ Do not include any explanation, only the JSON array.''';
     required String sourceLang,
     required String targetLang,
   }) async {
-    print('🔄 OpenAI Translation Request:');
-    print('  Source Language: $sourceLang');
-    print('  Target Language: $targetLang');
-    print('  Text: "$text"');
-    print('  Text Length: ${text.length}');
-    print('  Text is empty: ${text.trim().isEmpty}');
+    logDebug('🔄 OpenAI Translation Request:');
+    logDebug('  Source Language: $sourceLang');
+    logDebug('  Target Language: $targetLang');
+    logDebug('  Text: "$text"');
+    logDebug('  Text Length: ${text.length}');
+    logDebug('  Text is empty: ${text.trim().isEmpty}');
 
     // Check if text is empty or null
     if (text.trim().isEmpty) {
-      print('  ⚠️ Text is empty, returning empty string');
+      logDebug('  ⚠️ Text is empty, returning empty string');
       return ''; // Return empty string instead of making API call
     }
 
@@ -523,23 +524,23 @@ Text to translate: "$text"
 Translation:''';
 
     try {
-      print('  📤 Sending translation request to OpenAI...');
+      logDebug('  📤 Sending translation request to OpenAI...');
       final response = await _makeRequest(prompt, maxTokens: 200);
-      print('  📥 OpenAI Response: "$response"');
+      logDebug('  📥 OpenAI Response: "$response"');
 
       final cleaned = _removeQuotes(response.trim());
-      print('  🧹 Cleaned Response: "$cleaned"');
+      logDebug('  🧹 Cleaned Response: "$cleaned"');
 
       // Filter out common error messages from OpenAI
       if (_isErrorMessage(cleaned)) {
-        print('  ❌ ERROR: OpenAI returned error message instead of translation');
+        logDebug('  ❌ ERROR: OpenAI returned error message instead of translation');
         throw Exception('OpenAI returned error message: $cleaned');
       }
 
-      print('  ✅ Translation successful');
+      logDebug('  ✅ Translation successful');
       return cleaned;
     } catch (e) {
-      print('  ❌ Translation failed: $e');
+      logDebug('  ❌ Translation failed: $e');
       throw Exception('Failed to translate: $e');
     }
   }
@@ -583,10 +584,10 @@ Translation:''';
     required String language,
     required String wordType,
   }) async {
-    print('📚 Generating Grammatical Metadata:');
-    print('  Text: "$text"');
-    print('  Language: $language');
-    print('  Type: $wordType');
+    logDebug('📚 Generating Grammatical Metadata:');
+    logDebug('  Text: "$text"');
+    logDebug('  Language: $language');
+    logDebug('  Type: $wordType');
 
     final prompt = '''You are a language expert. For the following ${wordType == 'word' ? 'word' : 'expression'} in $language, provide grammatical metadata.
 
@@ -645,9 +646,9 @@ Expression "in Betracht ziehen":
 Do not include any explanation, only the JSON object.''';
 
     try {
-      print('  📤 Sending request to OpenAI...');
+      logDebug('  📤 Sending request to OpenAI...');
       final response = await _makeRequest(prompt, maxTokens: 150);
-      print('  📥 OpenAI Response: "$response"');
+      logDebug('  📥 OpenAI Response: "$response"');
 
       // Extract JSON from response
       String jsonContent = response;
@@ -675,13 +676,13 @@ Do not include any explanation, only the JSON object.''';
       if (result['preItem']?.isEmpty ?? false) result['preItem'] = null;
       if (result['postItem']?.isEmpty ?? false) result['postItem'] = null;
 
-      print('  ✅ Generated metadata:');
-      print('    preItem: "${result['preItem']}"');
-      print('    postItem: "${result['postItem']}"');
+      logDebug('  ✅ Generated metadata:');
+      logDebug('    preItem: "${result['preItem']}"');
+      logDebug('    postItem: "${result['postItem']}"');
 
       return result;
     } catch (e) {
-      print('  ❌ Failed to generate metadata: $e');
+      logDebug('  ❌ Failed to generate metadata: $e');
       throw Exception('Failed to generate grammatical metadata: $e');
     }
   }
@@ -808,9 +809,9 @@ Do not include any explanation, only the JSON array.''';
     required String sourceLanguage,
     int? maxItems,
   }) async {
-    print('═══════════════════════════════════════════════════════════');
-    print('EXTRACT FULL ITEMS MODE - Line by Line Translation');
-    print('═══════════════════════════════════════════════════════════');
+    logDebug('═══════════════════════════════════════════════════════════');
+    logDebug('EXTRACT FULL ITEMS MODE - Line by Line Translation');
+    logDebug('═══════════════════════════════════════════════════════════');
 
     // Split text into non-empty lines
     final lines = text.split('\n')
@@ -818,14 +819,14 @@ Do not include any explanation, only the JSON array.''';
         .where((line) => line.isNotEmpty)
         .toList();
 
-    print('Total lines to process: ${lines.length}');
+    logDebug('Total lines to process: ${lines.length}');
 
     // Apply maxItems limit if specified
     final linesToProcess = maxItems != null && lines.length > maxItems
         ? lines.take(maxItems).toList()
         : lines;
 
-    print('Processing ${linesToProcess.length} lines');
+    logDebug('Processing ${linesToProcess.length} lines');
 
     // Each line becomes an ExtractedItem with just the text
     // Translation will happen in the next step (AI Items Selection Page)
@@ -841,8 +842,8 @@ Do not include any explanation, only the JSON array.''';
       );
     }).toList();
 
-    print('Created ${items.length} full items from lines');
-    print('═══════════════════════════════════════════════════════════');
+    logDebug('Created ${items.length} full items from lines');
+    logDebug('═══════════════════════════════════════════════════════════');
 
     return items;
   }

@@ -5,6 +5,7 @@
 
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/app_settings.dart';
+import '../../core/utils/debug_print.dart';
 
 class AppSettingsRepository {
   static const String _keyUserLanguageCode = 'user_language_code';
@@ -22,13 +23,29 @@ class AppSettingsRepository {
   /// Load app settings from SharedPreferences
   Future<AppSettings> loadSettings() async {
     try {
+      logDebug('📖 Loading settings from SharedPreferences...');
       final prefs = await SharedPreferences.getInstance();
 
-      return AppSettings(
+      // Read individual values
+      final deeplKey = prefs.getString(_keyDeeplApiKey);
+      final openaiKey = prefs.getString(_keyOpenaiApiKey);
+
+      logDebug('   Values read from SharedPreferences:');
+      logDebug('   - deeplApiKey: ${deeplKey == null ? "NULL" : "present (length: ${deeplKey.length})"}');
+      logDebug('   - openaiApiKey: ${openaiKey == null ? "NULL" : "present (length: ${openaiKey.length})"}');
+
+      // Check if keys exist in SharedPreferences
+      final hasDeeplKey = prefs.containsKey(_keyDeeplApiKey);
+      final hasOpenaiKey = prefs.containsKey(_keyOpenaiApiKey);
+      logDebug('   Keys exist in SharedPreferences:');
+      logDebug('   - $_keyDeeplApiKey: $hasDeeplKey');
+      logDebug('   - $_keyOpenaiApiKey: $hasOpenaiKey');
+
+      final settings = AppSettings(
         userLanguageCode: prefs.getString(_keyUserLanguageCode) ?? 'en',
         userLanguageName: prefs.getString(_keyUserLanguageName) ?? 'English',
-        deeplApiKey: prefs.getString(_keyDeeplApiKey),
-        openaiApiKey: prefs.getString(_keyOpenaiApiKey),
+        deeplApiKey: deeplKey,
+        openaiApiKey: openaiKey,
         openaiModel: prefs.getString(_keyOpenaiModel) ?? 'gpt-4-turbo',
         aiKnowledgeLevel: prefs.getString(_keyAiKnowledgeLevel) ?? 'B1',
         minItemsForBadges: prefs.getInt(_keyMinItemsForBadges) ?? 10,
@@ -36,7 +53,11 @@ class AppSettingsRepository {
         showTrainingExamples: prefs.getBool(_keyShowTrainingExamples) ?? true,
         showTrainingStatistics: prefs.getBool(_keyShowTrainingStatistics) ?? true,
       );
+
+      logDebug('✅ Settings loaded successfully');
+      return settings;
     } catch (e) {
+      logDebug('❌ Error loading settings: $e');
       // Return defaults if loading fails
       return const AppSettings();
     }
@@ -56,9 +77,27 @@ class AppSettingsRepository {
   Future<void> saveDeeplApiKey(String? apiKey) async {
     final prefs = await SharedPreferences.getInstance();
     if (apiKey == null || apiKey.isEmpty) {
-      await prefs.remove(_keyDeeplApiKey);
+      logDebug('🗑️ Removing DeepL API key from SharedPreferences');
+      final removed = await prefs.remove(_keyDeeplApiKey);
+      logDebug('✅ DeepL API key removed (success: $removed)');
+
+      // Force commit changes immediately (important on some platforms like Windows)
+      await prefs.reload();
+
+      // Verify it's actually gone
+      final stillExists = prefs.containsKey(_keyDeeplApiKey);
+      if (stillExists) {
+        logDebug('⚠️ WARNING: Key still exists after removal and reload!');
+        final value = prefs.getString(_keyDeeplApiKey);
+        logDebug('   Value: ${value == null ? "NULL" : "present (length: ${value.length})"}');
+      } else {
+        logDebug('✓ Verified: Key no longer exists in SharedPreferences');
+      }
     } else {
+      logDebug('💾 Saving DeepL API key to SharedPreferences (length: ${apiKey.length})');
       await prefs.setString(_keyDeeplApiKey, apiKey);
+      await prefs.reload();  // Force commit
+      logDebug('✅ DeepL API key saved');
     }
   }
 
@@ -66,9 +105,27 @@ class AppSettingsRepository {
   Future<void> saveOpenaiApiKey(String? apiKey) async {
     final prefs = await SharedPreferences.getInstance();
     if (apiKey == null || apiKey.isEmpty) {
-      await prefs.remove(_keyOpenaiApiKey);
+      logDebug('🗑️ Removing OpenAI API key from SharedPreferences');
+      final removed = await prefs.remove(_keyOpenaiApiKey);
+      logDebug('✅ OpenAI API key removed (success: $removed)');
+
+      // Force commit changes immediately (important on some platforms like Windows)
+      await prefs.reload();
+
+      // Verify it's actually gone
+      final stillExists = prefs.containsKey(_keyOpenaiApiKey);
+      if (stillExists) {
+        logDebug('⚠️ WARNING: Key still exists after removal and reload!');
+        final value = prefs.getString(_keyOpenaiApiKey);
+        logDebug('   Value: ${value == null ? "NULL" : "present (length: ${value.length})"}');
+      } else {
+        logDebug('✓ Verified: Key no longer exists in SharedPreferences');
+      }
     } else {
+      logDebug('💾 Saving OpenAI API key to SharedPreferences (length: ${apiKey.length})');
       await prefs.setString(_keyOpenaiApiKey, apiKey);
+      await prefs.reload();  // Force commit
+      logDebug('✅ OpenAI API key saved');
     }
   }
 

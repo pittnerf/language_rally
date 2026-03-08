@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../core/utils/debug_print.dart';
 
 /// Available theme options
 enum AppThemeOption {
@@ -76,7 +77,7 @@ class ThemeNotifier extends Notifier<ThemeConfig> {
       );
     } catch (e) {
       // If loading fails, keep default theme
-      debugPrint('Error loading theme preferences: $e');
+      logDebug('Error loading theme preferences: $e');
     }
   }
 
@@ -86,7 +87,7 @@ class ThemeNotifier extends Notifier<ThemeConfig> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_themeOptionKey, option.name);
     } catch (e) {
-      debugPrint('Error saving theme option: $e');
+      logDebug('Error saving theme option: $e');
     }
   }
 
@@ -96,7 +97,7 @@ class ThemeNotifier extends Notifier<ThemeConfig> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(_darkModeKey, isDark);
     } catch (e) {
-      debugPrint('Error saving dark mode: $e');
+      logDebug('Error saving dark mode: $e');
     }
   }
 

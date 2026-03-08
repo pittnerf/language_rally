@@ -30,6 +30,7 @@ import '../../../data/repositories/item_repository.dart';
 import '../../../data/repositories/category_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import 'item_edit_page.dart';
+import '../../../core/utils/debug_print.dart';
 
 /// Item browser page for viewing and filtering items in a package
 class ItemBrowserPage extends ConsumerStatefulWidget {
@@ -783,7 +784,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
   Widget _buildLandscapeLayout(AppLocalizations l10n, ThemeData theme) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth >= 900;
-    // print('isTablet: $isTablet, screenWidth: $screenWidth'  );
+    // logDebug('isTablet: $isTablet, screenWidth: $screenWidth'  );
 
     return Row(
       children: [
@@ -1050,9 +1051,23 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
             (i) => i.id == item.id,
             orElse: () => item,
           );
+
+          // Get safe area padding to avoid system UI overlays
+          final mediaQuery = MediaQuery.of(context);
+          final safeAreaPadding = mediaQuery.padding;
+          final availableHeight = mediaQuery.size.height - safeAreaPadding.top - safeAreaPadding.bottom;
+          final availableWidth = mediaQuery.size.width;
+
           return Dialog(
+            insetPadding: EdgeInsets.only(
+              top: safeAreaPadding.top,
+              bottom: safeAreaPadding.bottom,
+              left: AppTheme.spacing8,
+              right: AppTheme.spacing8,
+            ),
             child: Container(
-              constraints: const BoxConstraints(maxWidth: 600, maxHeight: 800),
+              width: availableWidth - (AppTheme.spacing8 * 2),
+              height: availableHeight,
               child: _buildItemDetailsForDialog(
                 l10n,
                 theme,
@@ -1087,10 +1102,22 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title
-              Text(
-                l10n.itemDetails,
-                style: reduceFontSize(theme.textTheme.headlineSmall),
+              // Back button and Title
+              Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () => Navigator.of(context).pop(),
+                    tooltip: l10n.close,
+                    padding: EdgeInsets.zero,
+                    constraints: const BoxConstraints(),
+                  ),
+                  const SizedBox(width: AppTheme.spacing8),
+                  Text(
+                    l10n.itemDetails,
+                    style: reduceFontSize(theme.textTheme.headlineSmall),
+                  ),
+                ],
               ),
               const SizedBox(height: AppTheme.spacing4),
 
@@ -1103,7 +1130,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                 item.language1Data.languageCode,
                 reduceFontSize,
               ),
-              const SizedBox(height: AppTheme.spacing4),
+              // const SizedBox(height: AppTheme.spacing4),
 
               // Language 2
               _buildLanguageSectionForDialog(
@@ -1114,12 +1141,12 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                 item.language2Data.languageCode,
                 reduceFontSize,
               ),
-              const SizedBox(height: AppTheme.spacing8),
+              const SizedBox(height: AppTheme.spacing4),
 
               // Status indicators
               Wrap(
-                spacing: AppTheme.spacing8,
-                runSpacing: AppTheme.spacing8,
+                spacing: AppTheme.spacing4,
+                runSpacing: AppTheme.spacing4,
                 children: [
                   if (item.isKnown && item.dontKnowCounter == 0)
                     Chip(
@@ -1200,7 +1227,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                   ),
                 ],
               ),
-              const SizedBox(height: AppTheme.spacing8),
+              const SizedBox(height: AppTheme.spacing4),
 
               // Examples
               Text(
@@ -1210,7 +1237,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                   color: theme.colorScheme.primary,
                 ),
               ),
-              const SizedBox(height: AppTheme.spacing8),
+              const SizedBox(height: AppTheme.spacing4),
               if (item.examples.isEmpty)
                 Text(
                   l10n.noExamples,
@@ -1223,7 +1250,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                 ...item.examples.map((example) {
                   final hasLanguage2 = example.textLanguage2.trim().isNotEmpty;
                   return Padding(
-                    padding: const EdgeInsets.only(bottom: AppTheme.spacing8),
+                    padding: const EdgeInsets.only(bottom: 2.0),
                     child: Card(
                       elevation: 1,
                       color: theme.colorScheme.surfaceContainerHighest,
@@ -1264,7 +1291,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                 }),
 
               // Categories section
-              const SizedBox(height: AppTheme.spacing8),
+              // const SizedBox(height: AppTheme.spacing8),
               _buildCategoryChipsForDialog(
                 item,
                 theme,
@@ -1300,7 +1327,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                     color: theme.colorScheme.onSecondaryContainer,
                   ),
                 ),
-                const SizedBox(width: AppTheme.spacing8),
+                const SizedBox(width: AppTheme.spacing4),
                 // Delete button
                 FloatingActionButton.small(
                   heroTag: 'delete_item_${item.id}',
@@ -1312,7 +1339,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                     color: theme.colorScheme.onErrorContainer,
                   ),
                 ),
-                const SizedBox(width: AppTheme.spacing8),
+                const SizedBox(width: AppTheme.spacing4),
                 // Edit button
                 FloatingActionButton.small(
                   heroTag: 'edit_item_${item.id}',
@@ -1348,6 +1375,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               languageName,
@@ -1360,6 +1388,11 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
               iconSize: 18, // 25% smaller than 24
               icon: const Icon(Icons.volume_up),
               tooltip: l10n.pronounce,
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(
+                minWidth: 32,
+                minHeight: 32,
+              ),
               onPressed: () async {
                 // Call pronunciation directly without relying on dialog context for errors
                 try {
@@ -1368,13 +1401,13 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                   await _ttsService.speak(fullText, languageCode);
                 } catch (e) {
                   // Errors are logged in the service
-                  // print('Pronunciation error: $e');
+                  // logDebug('Pronunciation error: $e');
                 }
               },
             ),
           ],
         ),
-        const SizedBox(height: AppTheme.spacing8),
+        // const SizedBox(height: AppTheme.spacing8),
         Container(
           width: double.infinity,
           padding: const EdgeInsets.all(AppTheme.spacing8),
@@ -1391,13 +1424,17 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                   style: reduceFontSize(theme.textTheme.titleMedium)?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                     fontStyle: FontStyle.italic,
+                    height: 1.0,
                   ),
                 ),
               Text(
                 text,
                 style: reduceFontSize(
                   theme.textTheme.titleMedium,
-                )?.copyWith(color: theme.colorScheme.onSurface),
+                )?.copyWith(
+                  color: theme.colorScheme.onSurface,
+                  height: 1.0,
+                ),
               ),
               if (postItem.isNotEmpty)
                 Text(
@@ -1405,6 +1442,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                   style: reduceFontSize(theme.textTheme.titleMedium)?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                     fontStyle: FontStyle.italic,
+                    height: 1.0,
                   ),
                 ),
             ],
@@ -1591,17 +1629,21 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
       children: [
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(AppTheme.spacing8),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppTheme.spacing8,
+            vertical: AppTheme.spacing4,
+          ),
           decoration: BoxDecoration(
             color: theme.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     if (preItem.isNotEmpty)
                       Text(
@@ -1609,12 +1651,14 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                         style: theme.textTheme.titleSmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                           fontStyle: FontStyle.italic,
+                          height: 1.0,
                         ),
                       ),
                     Text(
                       text,
                       style: theme.textTheme.titleSmall?.copyWith(
                         color: theme.colorScheme.onSurface,
+                        height: 1.0,
                       ),
                     ),
                     if (postItem.isNotEmpty)
@@ -1623,6 +1667,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                         style: theme.textTheme.titleSmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                           fontStyle: FontStyle.italic,
+                          height: 1.0,
                         ),
                       ),
                   ],
@@ -1631,6 +1676,11 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
               IconButton(
                 icon: const Icon(Icons.volume_up),
                 tooltip: l10n.pronounce,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(
+                  minWidth: 40,
+                  minHeight: 40,
+                ),
                 onPressed: () {
                   final fullText =
                       '${preItem.isNotEmpty ? "$preItem " : ""}$text';
@@ -1668,11 +1718,11 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
           //    fontSize: (theme.textTheme.titleSmall?.fontSize ?? 14) * 0.75,
           //  ),
           //),
-          Text(
-            '${l10n.itemDetails} (${item.language1Data.languageCode.split('-').first.toUpperCase()}-${item.language2Data.languageCode.split('-').first.toUpperCase()})',
-            style: theme.textTheme.titleMedium,
-          ),
-          const SizedBox(height: AppTheme.spacing4), // Half of spacing8
+          //Text(
+          //  '${l10n.itemDetails} (${item.language1Data.languageCode.split('-').first.toUpperCase()}-${item.language2Data.languageCode.split('-').first.toUpperCase()})',
+          //  style: theme.textTheme.titleSmall,
+          //),
+          // const SizedBox(height: AppTheme.spacing4), // Half of spacing8
           // Language 1
           _buildLanguageSectionCompact(
             l10n,
@@ -1690,7 +1740,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
             item.language2Data,
             item.language2Data.languageCode,
           ),
-          const SizedBox(height: AppTheme.spacing4), // Half of spacing8
+          const SizedBox(height: AppTheme.spacing8), // Half of spacing8
           // Status indicators (compact)
           Wrap(
             spacing: AppTheme.spacing4, // Half of spacing8
@@ -1751,15 +1801,15 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
               ),
             ],
           ),
-          const SizedBox(height: AppTheme.spacing4), // Half of spacing8
+          //const SizedBox(height: AppTheme.spacing4), // Half of spacing8
           // Examples
-          Text(
-            l10n.examples,
-            style: theme.textTheme.titleSmall?.copyWith(
-              fontSize: (theme.textTheme.titleSmall?.fontSize ?? 14),
-            ),
-          ),
-          const SizedBox(height: AppTheme.spacing4), // Half of spacing8
+          //Text(
+          //  l10n.examples,
+          //  style: theme.textTheme.titleSmall?.copyWith(
+          //    fontSize: (theme.textTheme.titleSmall?.fontSize ?? 14),
+          //  ),
+          //),
+          // const SizedBox(height: AppTheme.spacing4), // Half of spacing8
           if (item.examples.isEmpty)
             Text(
               l10n.noExamples,
@@ -1772,8 +1822,8 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
             ...item.examples.map(
               (example) => Padding(
                 padding: const EdgeInsets.only(
-                  bottom: AppTheme.spacing4,
-                ), // Half of spacing8
+                  bottom: 0,
+                ),
                 child: Card(
                   child: Padding(
                     padding: const EdgeInsets.all(
@@ -1859,38 +1909,45 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
       children: [
         Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(AppTheme.spacing8),
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppTheme.spacing8,
+            vertical: 0,
+          ),
           decoration: BoxDecoration(
             color: theme.colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     if (preItem.isNotEmpty)
                       Text(
                         preItem,
-                        style: theme.textTheme.titleSmall?.copyWith(
+                        style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                           fontStyle: FontStyle.italic,
+                          height: 1.0,
                         ),
                       ),
                     Text(
                       text,
-                      style: theme.textTheme.titleSmall?.copyWith(
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onSurface,
+                        height: 1.0,
                       ),
                     ),
                     if (postItem.isNotEmpty)
                       Text(
                         postItem,
-                        style: theme.textTheme.titleSmall?.copyWith(
+                        style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                           fontStyle: FontStyle.italic,
+                          height: 1.0,
                         ),
                       ),
                   ],
@@ -1899,6 +1956,11 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
               IconButton(
                 icon: const Icon(Icons.volume_up),
                 tooltip: l10n.pronounce,
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(
+                  minWidth: 40,
+                  minHeight: 40,
+                ),
                 onPressed: () {
                   final fullText =
                       '${preItem.isNotEmpty ? "$preItem " : ""}$text';

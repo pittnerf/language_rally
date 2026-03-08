@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import '../../data/database_helper.dart';
 import '../../data/repositories/language_package_group_repository.dart';
 import '../../data/models/language_package_group.dart';
+import '../utils/debug_print.dart' as debug_print_util;
+import '../utils/debug_print.dart';
 
 /// Service responsible for app initialization tasks
 /// Performs heavy operations that might block the UI during startup
@@ -28,7 +30,7 @@ class AppInitializationService {
       _isInitialized = true;
       return true;
     } catch (e) {
-      debugPrint('Error during app initialization: $e');
+      logDebug('Error during app initialization: $e');
       return false;
     }
   }
@@ -38,13 +40,13 @@ class AppInitializationService {
     try {
       // Get database instance to ensure it's initialized
       await DatabaseHelper.instance.database;
-      debugPrint('✓ Database initialized');
+      logDebug('✓ Database initialized');
 
       // Ensure default group exists (safety check)
       await _ensureDefaultGroupExists();
-      debugPrint('✓ Default group verified');
+      logDebug('✓ Default group verified');
     } catch (e) {
-      debugPrint('✗ Database initialization failed: $e');
+      logDebug('✗ Database initialization failed: $e');
       rethrow;
     }
   }
@@ -66,12 +68,12 @@ class AppInitializationService {
           name: defaultGroupName,
         );
         await groupRepo.insertGroup(defaultGroup);
-        debugPrint('  ✓ Created default package group');
+        logDebug('  ✓ Created default package group');
       } else {
-        debugPrint('  ✓ Default package group exists');
+        logDebug('  ✓ Default package group exists');
       }
     } catch (e) {
-      debugPrint('  ⚠️  Error ensuring default group: $e');
+      logDebug('  ⚠️  Error ensuring default group: $e');
       // Don't rethrow - this is a non-critical error
     }
   }
@@ -80,7 +82,7 @@ class AppInitializationService {
   static Future<void> _warmUpAssets() async {
     // Add a small delay to prevent blocking
     await Future.delayed(const Duration(milliseconds: 100));
-    debugPrint('✓ Assets warmed up');
+    logDebug('✓ Assets warmed up');
   }
 
   /// Reset initialization state (useful for testing)

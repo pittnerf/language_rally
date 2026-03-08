@@ -9,11 +9,12 @@ import '../data/repositories/language_package_repository.dart';
 import '../data/repositories/language_package_group_repository.dart';
 import '../data/repositories/category_repository.dart';
 import '../data/repositories/item_repository.dart';
+import '../core/utils/debug_print.dart';
 
 /// Standalone script to populate the database with comprehensive test data
 /// Run this with: flutter run lib/scripts/populate_test_data_script.dart
 Future<void> main() async {
-  // print('🚀 Starting comprehensive test data population...\n');
+  // logDebug('🚀 Starting comprehensive test data population...\n');
 
   final uuid = const Uuid();
   final packageRepo = LanguagePackageRepository();
@@ -34,9 +35,9 @@ Future<void> main() async {
         name: defaultGroupName,
       );
       await groupRepo.insertGroup(defaultGroup);
-      // print('✓ Created default package group: "$defaultGroupName"\n');
+      // logDebug('✓ Created default package group: "$defaultGroupName"\n');
     } else {
-      // print('✓ Using existing default package group: "$defaultGroupName"\n');
+      // logDebug('✓ Using existing default package group: "$defaultGroupName"\n');
     }
 
     // Package 1: English → Spanish
@@ -51,11 +52,11 @@ Future<void> main() async {
     // Package 4: Hungarian → English
     await _createHungarianEnglishPackage(uuid, packageRepo, categoryRepo, itemRepo, defaultGroupId);
 
-    // print('\n✅ Test data population completed successfully!');
-    // print('📊 Total: 4 packages with 120 items created');
+    // logDebug('\n✅ Test data population completed successfully!');
+    // logDebug('📊 Total: 4 packages with 120 items created');
   } catch (e) {
-    // print('❌ Error: $e');
-    // print('Stack trace: $stackTrace');
+    // logDebug('❌ Error: $e');
+    // logDebug('Stack trace: $stackTrace');
   }
 }
 
@@ -70,7 +71,7 @@ Future<void> _createEnglishSpanishPackage(
   ItemRepository itemRepo,
   String groupId,
 ) async {
-  // print('📦 Creating English → Spanish package...');
+  // logDebug('📦 Creating English → Spanish package...');
   final packageId = uuid.v4();
 
   final package = LanguagePackage(
@@ -156,7 +157,7 @@ Future<void> _createEnglishSpanishPackage(
     await itemRepo.insertItem(item);
   }
 
-  // print('  ✓ Created 30 Spanish items across 5 categories');
+  // logDebug('  ✓ Created 30 Spanish items across 5 categories');
 }
 
 // ============================================================================
@@ -170,7 +171,7 @@ Future<void> _createEnglishGermanPackage(
   ItemRepository itemRepo,
   String groupId,
 ) async {
-  // print('📦 Creating English → German package...');
+  // logDebug('📦 Creating English → German package...');
   final packageId = uuid.v4();
 
   final package = LanguagePackage(
@@ -255,7 +256,7 @@ Future<void> _createEnglishGermanPackage(
     await itemRepo.insertItem(item);
   }
 
-  // print('  ✓ Created 30 German items across 5 categories');
+  // logDebug('  ✓ Created 30 German items across 5 categories');
 }
 
 // ============================================================================
@@ -269,7 +270,7 @@ Future<void> _createEnglishFrenchPackage(
   ItemRepository itemRepo,
   String groupId,
 ) async {
-  // print('📦 Creating English → French package...');
+  // logDebug('📦 Creating English → French package...');
   final packageId = uuid.v4();
 
   final package = LanguagePackage(
@@ -354,7 +355,7 @@ Future<void> _createEnglishFrenchPackage(
     await itemRepo.insertItem(item);
   }
 
-  // print('  ✓ Created 30 French items across 5 categories');
+  // logDebug('  ✓ Created 30 French items across 5 categories');
 }
 
 // ============================================================================
@@ -368,7 +369,7 @@ Future<void> _createHungarianEnglishPackage(
   ItemRepository itemRepo,
   String groupId,
 ) async {
-  // print('📦 Creating Hungarian → English package...');
+  // logDebug('📦 Creating Hungarian → English package...');
   final packageId = uuid.v4();
 
   final package = LanguagePackage(
@@ -453,6 +454,6 @@ Future<void> _createHungarianEnglishPackage(
     await itemRepo.insertItem(item);
   }
 
-  // print('  ✓ Created 30 Hungarian items across 5 categories');
+  // logDebug('  ✓ Created 30 Hungarian items across 5 categories');
 }
 

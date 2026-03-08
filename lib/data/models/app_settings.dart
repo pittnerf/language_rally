@@ -53,24 +53,24 @@ class AppSettings extends Equatable {
   AppSettings copyWith({
     String? userLanguageCode,
     String? userLanguageName,
-    String? deeplApiKey,
-    String? openaiApiKey,
+    Object? deeplApiKey = _sentinel,  // Use sentinel to distinguish null from "not provided"
+    Object? openaiApiKey = _sentinel,
     String? openaiModel,
     String? aiKnowledgeLevel,
     int? minItemsForBadges,
-    String? lastTrainedPackageId,
+    Object? lastTrainedPackageId = _sentinel,
     bool? showTrainingExamples,
     bool? showTrainingStatistics,
   }) {
     return AppSettings(
       userLanguageCode: userLanguageCode ?? this.userLanguageCode,
       userLanguageName: userLanguageName ?? this.userLanguageName,
-      deeplApiKey: deeplApiKey ?? this.deeplApiKey,
-      openaiApiKey: openaiApiKey ?? this.openaiApiKey,
+      deeplApiKey: deeplApiKey == _sentinel ? this.deeplApiKey : deeplApiKey as String?,
+      openaiApiKey: openaiApiKey == _sentinel ? this.openaiApiKey : openaiApiKey as String?,
       openaiModel: openaiModel ?? this.openaiModel,
       aiKnowledgeLevel: aiKnowledgeLevel ?? this.aiKnowledgeLevel,
       minItemsForBadges: minItemsForBadges ?? this.minItemsForBadges,
-      lastTrainedPackageId: lastTrainedPackageId ?? this.lastTrainedPackageId,
+      lastTrainedPackageId: lastTrainedPackageId == _sentinel ? this.lastTrainedPackageId : lastTrainedPackageId as String?,
       showTrainingExamples: showTrainingExamples ?? this.showTrainingExamples,
       showTrainingStatistics: showTrainingStatistics ?? this.showTrainingStatistics,
     );
@@ -90,4 +90,7 @@ class AppSettings extends Equatable {
         showTrainingStatistics,
       ];
 }
+
+// Sentinel value to distinguish between "not provided" and "provided as null"
+const _sentinel = Object();
 

@@ -10,7 +10,9 @@ import 'data/database_helper.dart';
 import 'presentation/pages/home/home_page.dart';
 import 'presentation/providers/locale_provider.dart';
 import 'presentation/providers/theme_provider.dart';
+import 'presentation/providers/app_settings_provider.dart';
 import 'presentation/widgets/splash_screen.dart';
+import '../../core/utils/debug_print.dart';
 
 void main() {
   // Ensure Flutter binding is initialized
@@ -58,24 +60,31 @@ class _LanguageRallyAppState extends ConsumerState<LanguageRallyApp>
     switch (state) {
       case AppLifecycleState.resumed:
         // App came back to foreground - reinitialize if needed
-        debugPrint('App resumed - checking database connection');
+        logDebug('App resumed - checking database connection and refreshing providers');
         _checkAndReinitialize();
+        // Force refresh providers to ensure fresh data
+        if (mounted) {
+          // Invalidate providers to force reload - especially important for settings/API keys
+          ref.invalidate(appSettingsProvider);
+          ref.invalidate(localeProvider);
+          ref.invalidate(themeProvider);
+        }
         break;
       case AppLifecycleState.paused:
         // App going to background
-        debugPrint('App paused');
+        logDebug('App paused');
         break;
       case AppLifecycleState.inactive:
         // App is inactive (e.g., phone call)
-        debugPrint('App inactive');
+        logDebug('App inactive');
         break;
       case AppLifecycleState.detached:
         // App is detached
-        debugPrint('App detached');
+        logDebug('App detached');
         break;
       case AppLifecycleState.hidden:
         // App is hidden
-        debugPrint('App hidden');
+        logDebug('App hidden');
         break;
     }
   }
@@ -86,9 +95,9 @@ class _LanguageRallyAppState extends ConsumerState<LanguageRallyApp>
       final db = await DatabaseHelper.instance.database;
       // Try a simple query to verify connection
       await db.rawQuery('SELECT 1');
-      debugPrint('Database connection is healthy');
+      logDebug('Database connection is healthy');
     } catch (e) {
-      debugPrint('Database connection issue detected: $e');
+      logDebug('Database connection issue detected: $e');
       // Force re-initialization
       await _initializeApp();
     }
@@ -145,7 +154,11 @@ class _LanguageRallyAppState extends ConsumerState<LanguageRallyApp>
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
-      home: const HomePage(),
+      // Ensure app always starts at home when restored
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const HomePage(),
+      },
     );
   }
 }

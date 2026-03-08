@@ -17,6 +17,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../providers/app_settings_provider.dart';
 import '../settings/app_settings_page.dart';
 import 'ai_items_selection_page.dart';
+import '../../../core/utils/debug_print.dart';
 
 class AITextAnalysisPage extends ConsumerStatefulWidget {
   final LanguagePackage package;
@@ -771,22 +772,22 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
     }
 
     // Log text details BEFORE processing to verify no truncation
-    print('═══════════════════════════════════════════════════════════');
-    print('🚀 STARTING AI TEXT ANALYSIS');
-    print('═══════════════════════════════════════════════════════════');
-    print('TEXT INPUT VERIFICATION:');
-    print('  Total characters: ${text.length}');
-    print('  Total words: ${text.split(RegExp(r'\s+')).length}');
-    print('  First 100 chars: ${text.substring(0, text.length > 100 ? 100 : text.length)}');
-    print('  Last 100 chars: ${text.length > 100 ? text.substring(text.length - 100) : "[text too short]"}');
-    print('───────────────────────────────────────────────────────────');
-    print('SETTINGS:');
-    print('  Knowledge Level: $_selectedLevel');
-    print('  Extract Words: $_extractWords');
-    print('  Extract Expressions: $_extractExpressions');
-    print('  Extract Full Items: $_extractFullItems');
-    print('  Max Items: ${_maxItemsController.text.isEmpty ? "unlimited" : _maxItemsController.text}');
-    print('═══════════════════════════════════════════════════════════');
+    logDebug('═══════════════════════════════════════════════════════════');
+    logDebug('🚀 STARTING AI TEXT ANALYSIS');
+    logDebug('═══════════════════════════════════════════════════════════');
+    logDebug('TEXT INPUT VERIFICATION:');
+    logDebug('  Total characters: ${text.length}');
+    logDebug('  Total words: ${text.split(RegExp(r'\s+')).length}');
+    logDebug('  First 100 chars: ${text.substring(0, text.length > 100 ? 100 : text.length)}');
+    logDebug('  Last 100 chars: ${text.length > 100 ? text.substring(text.length - 100) : "[text too short]"}');
+    logDebug('───────────────────────────────────────────────────────────');
+    logDebug('SETTINGS:');
+    logDebug('  Knowledge Level: $_selectedLevel');
+    logDebug('  Extract Words: $_extractWords');
+    logDebug('  Extract Expressions: $_extractExpressions');
+    logDebug('  Extract Full Items: $_extractFullItems');
+    logDebug('  Max Items: ${_maxItemsController.text.isEmpty ? "unlimited" : _maxItemsController.text}');
+    logDebug('═══════════════════════════════════════════════════════════');
 
     // Check text size and warn user if it's very large
     final wordCount = text.split(RegExp(r'\s+')).length;
@@ -802,16 +803,16 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
       _cancelRequested = false;
     });
 
-    print('═══════════════════════════════════════════════════════════');
-    print('🔍 STARTING TEXT ANALYSIS');
-    print('═══════════════════════════════════════════════════════════');
-    print('Text word count: $wordCount');
-    print('Knowledge Level: $_selectedLevel');
-    print('Extract Words: $_extractWords');
-    print('Extract Expressions: $_extractExpressions');
-    print('Extract Full Items: $_extractFullItems');
-    print('Generate Examples: $_generateExamples');
-    print('Model: $_selectedModel');
+    logDebug('═══════════════════════════════════════════════════════════');
+    logDebug('🔍 STARTING TEXT ANALYSIS');
+    logDebug('═══════════════════════════════════════════════════════════');
+    logDebug('Text word count: $wordCount');
+    logDebug('Knowledge Level: $_selectedLevel');
+    logDebug('Extract Words: $_extractWords');
+    logDebug('Extract Expressions: $_extractExpressions');
+    logDebug('Extract Full Items: $_extractFullItems');
+    logDebug('Generate Examples: $_generateExamples');
+    logDebug('Model: $_selectedModel');
 
     try {
       final settings = ref.read(appSettingsProvider);
@@ -840,13 +841,13 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
       _showProgressDialog(l10n.detectingLanguage, 1, 2);
 
       // Step 1: Detect language
-      print('\n🔤 Step 1: Detecting Language...');
+      logDebug('\n🔤 Step 1: Detecting Language...');
       final detectedLang = await analysisService.detectLanguage(text);
-      print('  Detected Language: $detectedLang');
+      logDebug('  Detected Language: $detectedLang');
 
       // Check for cancellation
       if (_cancelRequested) {
-        print('  ❌ ANALYSIS CANCELLED BY USER');
+        logDebug('  ❌ ANALYSIS CANCELLED BY USER');
         if (mounted) {
           Navigator.of(context).pop(); // Close progress dialog
           setState(() {
@@ -875,7 +876,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
         sourceLanguage = widget.package.languageName2;
         targetLanguage = widget.package.languageName1;
       } else {
-        print(
+        logDebug(
           '  ❌ Language mismatch: $detectedLang not in [$lang1Code, $lang2Code]',
         );
         if (mounted) {
@@ -888,12 +889,12 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
         return;
       }
 
-      print('  Source Language: $sourceLanguage');
-      print('  Target Language: $targetLanguage');
+      logDebug('  Source Language: $sourceLanguage');
+      logDebug('  Target Language: $targetLanguage');
 
       // Check for cancellation
       if (_cancelRequested) {
-        print('  ❌ ANALYSIS CANCELLED BY USER');
+        logDebug('  ❌ ANALYSIS CANCELLED BY USER');
         if (mounted) {
           Navigator.of(context).pop(); // Close progress dialog
           setState(() {
@@ -911,12 +912,12 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
       }
 
       // Step 2: Extract items
-      print('\n📋 Step 2: Extracting Items...');
+      logDebug('\n📋 Step 2: Extracting Items...');
       final maxItems = _maxItemsController.text.isEmpty
           ? null
           : int.tryParse(_maxItemsController.text);
 
-      print('  Max Items: $maxItems');
+      logDebug('  Max Items: $maxItems');
 
       // Extract items with accounting for potential duplicates
       final extractedItems = await _extractItemsWithDuplicateCheck(
@@ -932,11 +933,11 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
         maxItems: maxItems,
       );
 
-      print('  Extracted ${extractedItems.length} unique items');
+      logDebug('  Extracted ${extractedItems.length} unique items');
 
       // Check for cancellation
       if (_cancelRequested) {
-        print('  ❌ ANALYSIS CANCELLED BY USER');
+        logDebug('  ❌ ANALYSIS CANCELLED BY USER');
         if (mounted) {
           Navigator.of(context).pop(); // Close progress dialog
           setState(() {
@@ -950,7 +951,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
       if (mounted) Navigator.of(context).pop(); // Close progress dialog
 
       if (extractedItems.isEmpty) {
-        print('  ⚠️ No items found');
+        logDebug('  ⚠️ No items found');
         if (mounted) {
           setState(() {
             _isAnalyzing = false;
@@ -960,8 +961,8 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
         return;
       }
 
-      print('\n✅ ANALYSIS COMPLETED SUCCESSFULLY');
-      print('═══════════════════════════════════════════════════════════');
+      logDebug('\n✅ ANALYSIS COMPLETED SUCCESSFULLY');
+      logDebug('═══════════════════════════════════════════════════════════');
 
       // Navigate to selection page
       if (mounted) {
@@ -982,9 +983,9 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
         // Don't pop - allow user to stay on AI text analysis page to import more items
       }
     } catch (e) {
-      print('\n❌ ERROR DURING ANALYSIS:');
-      print(e.toString());
-      print('═══════════════════════════════════════════════════════════');
+      logDebug('\n❌ ERROR DURING ANALYSIS:');
+      logDebug(e.toString());
+      logDebug('═══════════════════════════════════════════════════════════');
 
       if (mounted) {
         Navigator.of(context).pop(); // Close progress dialog if open
@@ -1224,7 +1225,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
         ? await ItemRepository().getItemsForCategories(categoryIds)
         : <Item>[];
 
-    print('  Existing items in package: ${existingItems.length}');
+    logDebug('  Existing items in package: ${existingItems.length}');
 
     // Determine which language code to check for duplicates
     final lang1Code = widget.package.languageCode1.split('-')[0].toLowerCase();
@@ -1239,7 +1240,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
       return text;
     }).toSet();
 
-    print('  Existing unique texts: ${existingTexts.length}');
+    logDebug('  Existing unique texts: ${existingTexts.length}');
 
     // If no maxItems specified, extract with a reasonable limit and filter duplicates
     if (maxItems == null) {
@@ -1258,7 +1259,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
         return !existingTexts.contains(item.text.toLowerCase().trim());
       }).toList();
 
-      print('  Extracted: ${extracted.length}, After filtering duplicates: ${uniqueItems.length}');
+      logDebug('  Extracted: ${extracted.length}, After filtering duplicates: ${uniqueItems.length}');
       return uniqueItems;
     }
 
@@ -1267,7 +1268,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
     final requestMultiplier = 1.5; // Request 50% more to account for duplicates
     final initialRequest = (maxItems * requestMultiplier).ceil();
 
-    print('  Requesting $initialRequest items initially (target: $maxItems unique)');
+    logDebug('  Requesting $initialRequest items initially (target: $maxItems unique)');
 
     final extracted = await analysisService.extractItems(
       text: text,
@@ -1279,7 +1280,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
       maxItems: initialRequest,
     );
 
-    print('  Extracted: ${extracted.length} items');
+    logDebug('  Extracted: ${extracted.length} items');
 
     // Filter out duplicates
     final uniqueItems = <ExtractedItem>[];
@@ -1295,12 +1296,12 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
     }
 
     final duplicateCount = extracted.length - uniqueItems.length;
-    print('  Unique items: ${uniqueItems.length}, Duplicates filtered: $duplicateCount');
+    logDebug('  Unique items: ${uniqueItems.length}, Duplicates filtered: $duplicateCount');
 
     // If we still don't have enough unique items, inform the user but return what we have
     if (uniqueItems.length < maxItems) {
-      print('  ⚠️ Warning: Only found ${uniqueItems.length} unique items (requested $maxItems)');
-      print('  This might be because the text doesn\'t contain enough unique items at this knowledge level');
+      logDebug('  ⚠️ Warning: Only found ${uniqueItems.length} unique items (requested $maxItems)');
+      logDebug('  This might be because the text doesn\'t contain enough unique items at this knowledge level');
     }
 
     return uniqueItems;

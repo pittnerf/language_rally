@@ -25,6 +25,7 @@ import 'package:path_provider/path_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/tts_service.dart';
 import '../../../core/services/speech_recognition_service.dart';
+import '../../../core/utils/debug_print.dart';
 import '../../../data/models/training_settings.dart';
 import '../../../data/models/language_package.dart';
 import '../../../data/models/item.dart';
@@ -32,6 +33,7 @@ import '../../../data/repositories/item_repository.dart';
 import '../../../data/repositories/category_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../providers/app_settings_provider.dart';
+import '../settings/app_settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PronunciationPracticePage extends ConsumerStatefulWidget {
@@ -85,29 +87,60 @@ class _PronunciationPracticePageState
   @override
   void initState() {
     super.initState();
+    logDebug('📱 PronunciationPracticePage.initState() called');
     _ttsService.initialize();
     _loadAndFilterItems();
     _loadPlaybackPreference();
 
-    // Listen for settings changes and initialize speech when ready
-    // This is needed because settings are loaded asynchronously
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Initialize immediately with current state
-      _initializeSpeechRecognition();
+    // Set up listener for settings changes - this will handle both initial load and updates
+    // Using the same pattern as app_settings_page to ensure API key is properly detected
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      logDebug('📍 postFrameCallback executing...');
 
-      // Also listen for future changes (e.g., if API key is added later)
+      // Check current settings state BEFORE initialization
+      final currentSettings = ref.read(appSettingsProvider);
+      logDebug('📊 Current settings state at postFrameCallback:');
+      logDebug('   - openaiApiKey present: ${currentSettings.openaiApiKey != null && currentSettings.openaiApiKey!.isNotEmpty}');
+      if (currentSettings.openaiApiKey != null && currentSettings.openaiApiKey!.isNotEmpty) {
+        logDebug('   - openaiApiKey length: ${currentSettings.openaiApiKey!.length}');
+        logDebug('   - openaiApiKey prefix: ${currentSettings.openaiApiKey!.substring(0, math.min(10, currentSettings.openaiApiKey!.length))}...');
+      }
+
+      // First, initialize with current settings - AWAIT to ensure it completes!
+      logDebug('🚀 Calling _initializeSpeechRecognition() for the first time...');
+      await _initializeSpeechRecognition();
+      logDebug('✅ Initial speech recognition setup complete');
+
+      // Then listen for any FUTURE changes (not the current state)
       ref.listenManual(
         appSettingsProvider,
         (previous, next) {
-          print('🔄 Settings changed, checking if we need to reinitialize speech recognition...');
-          final hadApiKey = previous?.openaiApiKey != null && previous!.openaiApiKey!.isNotEmpty;
-          final hasApiKey = next.openaiApiKey != null && next.openaiApiKey!.isNotEmpty;
+          logDebug('🔄 Settings provider notified of change:');
+          logDebug('   - Previous: ${previous != null ? "exists" : "null"}');
+          if (previous != null) {
+            logDebug('   - Previous had key: ${previous.openaiApiKey != null && previous.openaiApiKey!.isNotEmpty}');
+          }
+          logDebug('   - Now has key: ${next.openaiApiKey != null && next.openaiApiKey!.isNotEmpty}');
 
-          // Reinitialize if API key changed from empty to filled
-          if (!hadApiKey && hasApiKey && !_useWhisperAPI) {
-            print('✓ API key was added, switching to Whisper API mode');
-            _hasInitializedSpeech = false;
+          // IMPORTANT: Ignore the first notification where previous is null
+          // This happens during initial setup and we've already initialized
+          if (previous == null) {
+            logDebug('ℹ️ Ignoring first listener call (previous is null) - already initialized');
+            return;
+          }
+
+          // Check if API key changed
+          final previousHadKey = previous.openaiApiKey != null && previous.openaiApiKey!.isNotEmpty;
+          final nowHasKey = next.openaiApiKey != null && next.openaiApiKey!.isNotEmpty;
+
+          // Re-initialize ONLY if API key status actually changed
+          if (previousHadKey != nowHasKey) {
+            logDebug('✅ API key status changed from $previousHadKey to $nowHasKey');
+            logDebug('   Re-initializing speech recognition...');
+            _hasInitializedSpeech = false; // Reset to allow re-initialization
             _initializeSpeechRecognition();
+          } else {
+            logDebug('ℹ️ Settings changed but API key status unchanged ($previousHadKey -> $nowHasKey), no re-initialization needed');
           }
         },
       );
@@ -138,38 +171,102 @@ class _PronunciationPracticePageState
   }
 
   Future<void> _initializeSpeechRecognition() async {
-    if (_hasInitializedSpeech) return;
-    _hasInitializedSpeech = true;
+    logDebug('');
+    logDebug('═══════════════════════════════════════════════════════════');
+    logDebug('⚙️ _initializeSpeechRecognition() called');
+    logDebug('   - _hasInitializedSpeech: $_hasInitializedSpeech');
+    logDebug('   - _useWhisperAPI: $_useWhisperAPI');
+    logDebug('   - Call stack:');
+    final stackLines = StackTrace.current.toString().split('\n');
+    for (int i = 0; i < math.min(5, stackLines.length); i++) {
+      logDebug('     ${stackLines[i]}');
+    }
+    logDebug('═══════════════════════════════════════════════════════════');
+    logDebug('');
 
-    // Get OpenAI API key from settings - use watch to ensure we have latest value
-    final appSettings = ref.read(appSettingsProvider);
-    final openaiApiKey = appSettings.openaiApiKey;
-
-    print('=== Initializing Speech Recognition ===');
-    print('OpenAI API Key present: ${openaiApiKey != null && openaiApiKey.isNotEmpty}');
-    if (openaiApiKey != null && openaiApiKey.isNotEmpty) {
-      print('OpenAI API Key (first 10 chars): ${openaiApiKey.substring(0, openaiApiKey.length > 10 ? 10 : openaiApiKey.length)}...');
+    if (_hasInitializedSpeech) {
+      logDebug('   ⏭️ Already initialized, skipping');
+      return;
     }
 
-    // Initialize Whisper service if API key is available
+    logDebug('   🔒 Setting _hasInitializedSpeech = true');
+    _hasInitializedSpeech = true;
+
+    // Get OpenAI API key from settings
+    logDebug('   📖 Reading appSettingsProvider...');
+    var appSettings = ref.read(appSettingsProvider);
+    var openaiApiKey = appSettings.openaiApiKey;
+
+    // CRITICAL FIX: Wait for settings to load if they're still at default values
+    // The provider's build() method calls _loadSettings() without awaiting, so on first
+    // load the settings might still be loading. We need to wait a bit for them to load.
+    if (openaiApiKey == null) {
+      logDebug('   ⏳ API key is null, waiting for settings to load...');
+      logDebug('   (Settings provider loads asynchronously on first access)');
+
+      // Wait up to 500ms for settings to load, checking every 50ms
+      for (int i = 0; i < 10; i++) {
+        await Future.delayed(const Duration(milliseconds: 50));
+        appSettings = ref.read(appSettingsProvider);
+        openaiApiKey = appSettings.openaiApiKey;
+
+        if (openaiApiKey != null && openaiApiKey.isNotEmpty) {
+          logDebug('   ✅ Settings loaded after ${(i + 1) * 50}ms - API key found!');
+          break;
+        }
+      }
+
+      if (openaiApiKey == null) {
+        logDebug('   ⚠️ Settings still not loaded after 500ms - proceeding with null key');
+      }
+    }
+
+    logDebug('');
+    logDebug('╔═══════════════════════════════════════════════════════════╗');
+    logDebug('║      CHECKING OPENAI API KEY AVAILABILITY               ║');
+    logDebug('╚═══════════════════════════════════════════════════════════╝');
+    logDebug('OpenAI API Key: ${openaiApiKey == null ? "NULL" : openaiApiKey.isEmpty ? "EMPTY STRING" : "PRESENT"}');
     if (openaiApiKey != null && openaiApiKey.isNotEmpty) {
+      logDebug('OpenAI API Key length: ${openaiApiKey.length}');
+      logDebug('OpenAI API Key (first 10 chars): ${openaiApiKey.substring(0, openaiApiKey.length > 10 ? 10 : openaiApiKey.length)}...');
+    }
+    logDebug('');
+
+    final hasApiKey = openaiApiKey != null && openaiApiKey.isNotEmpty;
+    logDebug('Decision: hasApiKey = $hasApiKey');
+    logDebug('');
+
+    // Initialize Whisper service if API key is available
+    if (hasApiKey) {
+      logDebug('✅ BRANCH: Using OpenAI Whisper API');
+      logDebug('   🎯 Creating SpeechRecognitionService with API key...');
       _speechRecognitionService = SpeechRecognitionService(apiKey: openaiApiKey);
       _useWhisperAPI = true;
       _speechAvailable = true;
-      print('🎙️ Using OpenAI Whisper API for speech recognition');
-      print('   ✓ High-quality transcription enabled');
-      print('   ✓ Manual recording control (no automatic timeout)');
-      print('   ✓ No speech timeout issues');
+      logDebug('   🎙️ Using OpenAI Whisper API for speech recognition');
+      logDebug('   ✓ High-quality transcription enabled');
+      logDebug('   ✓ Manual recording control (no automatic timeout)');
+      logDebug('   ✓ No speech timeout issues');
     } else {
       // Fall back to native speech recognition
-      print('🎙️ OpenAI API key not found, using native speech recognition...');
-      print('   ⚠️ Note: Native mode has automatic timeout (may cause issues)');
-      print('   💡 Add OpenAI API key in Settings for better experience');
+      logDebug('⚠️ BRANCH: Using native speech recognition');
+      logDebug('   Reason: OpenAI API key not found or empty');
+      logDebug('   openaiApiKey == null: ${openaiApiKey == null}');
+      logDebug('   openaiApiKey.isEmpty: ${openaiApiKey?.isEmpty ?? "N/A"}');
+      logDebug('   ⚠️ Note: Native mode has automatic timeout (may cause issues)');
+      logDebug('   💡 Add OpenAI API key in Settings for better experience');
+      logDebug('   📞 Calling _initializeSpeech()...');
       await _initializeSpeech();
       _useWhisperAPI = false;
     }
 
-    if (mounted) setState(() {});
+    logDebug('🔄 Calling setState() to update UI...');
+    if (mounted) {
+      setState(() {});
+      logDebug('✅ setState() completed, UI should update now');
+    } else {
+      logDebug('⚠️ Widget not mounted, setState() skipped');
+    }
   }
 
   @override
@@ -197,72 +294,117 @@ class _PronunciationPracticePageState
   }
 
   Future<void> _initializeSpeech() async {
+    logDebug('');
+    logDebug('╔═══════════════════════════════════════════════════════════╗');
+    logDebug('║ 🚨 _initializeSpeech() CALLED (Native Speech Recognition) ║');
+    logDebug('║ This should ONLY be called when there is NO OpenAI API!  ║');
+    logDebug('╚═══════════════════════════════════════════════════════════╝');
+    logDebug('   Current state:');
+    logDebug('   - _useWhisperAPI: $_useWhisperAPI');
+    logDebug('   - _hasInitializedSpeech: $_hasInitializedSpeech');
+    logDebug('   - _speechAvailable: $_speechAvailable');
+
+    // Check if OpenAI key is available in settings
+    final appSettings = ref.read(appSettingsProvider);
+    final hasOpenAIKey = appSettings.openaiApiKey != null && appSettings.openaiApiKey!.isNotEmpty;
+    logDebug('   - OpenAI API key in settings: $hasOpenAIKey');
+    if (hasOpenAIKey) {
+      logDebug('   - API key length: ${appSettings.openaiApiKey!.length}');
+    }
+
+    logDebug('   Call stack:');
+    final stackLines = StackTrace.current.toString().split('\n');
+    for (int i = 0; i < math.min(10, stackLines.length); i++) {
+      logDebug('     $i: ${stackLines[i]}');
+    }
+    logDebug('');
+
+    // DEFENSIVE CHECK: This should never be called if we're using Whisper API or have an API key
+    if (_useWhisperAPI) {
+      logDebug('❌ ERROR: _initializeSpeech() called but _useWhisperAPI is TRUE!');
+      logDebug('   This is a bug - native speech should not initialize when using Whisper API');
+      logDebug('   RETURNING WITHOUT INITIALIZING NATIVE SPEECH');
+      logDebug('');
+      return; // Don't proceed with native initialization
+    }
+
+    if (hasOpenAIKey) {
+      logDebug('❌ ERROR: _initializeSpeech() called but OpenAI API key EXISTS!');
+      logDebug('   This is a bug - native speech should not initialize when API key is available');
+      logDebug('   RETURNING WITHOUT INITIALIZING NATIVE SPEECH');
+      logDebug('');
+      return; // Don't proceed with native initialization
+    }
+
+    logDebug('✓ Proceeding with native speech recognition initialization...');
+    logDebug('');
+
     try {
-      print('=== Speech Recognition Initialization ===');
-      print('Platform: ${Platform.operatingSystem}');
-      print('Is Web: $kIsWeb');
+      logDebug('=== Speech Recognition Initialization ===');
+      logDebug('Platform: ${Platform.operatingSystem}');
+      logDebug('Is Web: $kIsWeb');
 
       // Check if running on a supported platform
       final isDesktop = !kIsWeb && (Platform.isWindows || Platform.isLinux || Platform.isMacOS);
       final isAndroid = !kIsWeb && Platform.isAndroid;
       final isIOS = !kIsWeb && Platform.isIOS;
 
-      print('Is Desktop: $isDesktop');
-      print('Is Android: $isAndroid');
-      print('Is iOS: $isIOS');
+      logDebug('Is Desktop: $isDesktop');
+      logDebug('Is Android: $isAndroid');
+      logDebug('Is iOS: $isIOS');
 
       if (isDesktop) {
-        print('Warning: Speech recognition support on desktop platforms is limited or unavailable');
+        logDebug('Warning: Speech recognition support on desktop platforms is limited or unavailable');
       }
 
       if (isIOS) {
-        print('iOS specific checks:');
-        print('  - Ensure NSMicrophoneUsageDescription is set in Info.plist');
-        print('  - Ensure NSSpeechRecognitionUsageDescription is set in Info.plist');
-        print('  - Check Settings > Privacy > Microphone > Language Rally');
-        print('  - Check Settings > Privacy > Speech Recognition > Language Rally');
+        logDebug('iOS specific checks:');
+        logDebug('  - Ensure NSMicrophoneUsageDescription is set in Info.plist');
+        logDebug('  - Ensure NSSpeechRecognitionUsageDescription is set in Info.plist');
+        logDebug('  - Check Settings > Privacy > Microphone > Language Rally');
+        logDebug('  - Check Settings > Privacy > Speech Recognition > Language Rally');
       }
 
-      print('Attempting to initialize speech recognition...');
+      logDebug('Attempting to initialize speech recognition...');
       _speechAvailable = await _speech.initialize(
         onError: (error) {
-          print('!!! Speech recognition error: ${error.errorMsg}');
-          print('    Error permanent: ${error.permanent}');
+          logDebug('!!! Speech recognition error: ${error.errorMsg}');
+          logDebug('    Error permanent: ${error.permanent}');
 
           if (error.errorMsg.contains('timeout')) {
-            print('    Speech timeout - user did not speak or speech was too quiet');
+            logDebug('    Speech timeout - user did not speak or speech was too quiet');
           } else if (error.errorMsg.contains('no-speech')) {
-            print('    No speech detected - microphone may not be picking up voice');
+            logDebug('    No speech detected - microphone may not be picking up voice');
           }
 
           if (isIOS) {
             if (error.errorMsg.toLowerCase().contains('permission')) {
-              print('    iOS Permission Issue Detected!');
-              print('    Go to: Settings > Privacy > Microphone/Speech Recognition > Enable for Language Rally');
+              logDebug('    iOS Permission Issue Detected!');
+              logDebug('    Go to: Settings > Privacy > Microphone/Speech Recognition > Enable for Language Rally');
             } else if (error.errorMsg.toLowerCase().contains('not available')) {
-              print('    iOS Speech Recognition may not be available on this device');
-              print('    Check: Settings > General > Language & Region > Siri Language');
+              logDebug('    iOS Speech Recognition may not be available on this device');
+              logDebug('    Check: Settings > General > Language & Region > Siri Language');
             }
           }
         },
         onStatus: (status) {
-          print('>>> Speech recognition status: $status');
+          logDebug('>>> Speech recognition status: $status');
           if (status == 'notListening') {
-            print('    Speech recognition stopped listening');
+            logDebug('    Speech recognition stopped listening');
           } else if (status == 'done') {
-            print('    Speech recognition session completed');
+            logDebug('    Speech recognition session completed');
           }
         },
       );
 
       if (!_speechAvailable) {
-        print('!!! Speech recognition failed to initialize');
+        logDebug('!!! Speech recognition failed to initialize');
         if (isIOS) {
-          print('iOS Troubleshooting:');
-          print('  1. Check microphone permission: Settings > Privacy > Microphone');
-          print('  2. Check speech recognition permission: Settings > Privacy > Speech Recognition');
-          print('  3. Ensure Siri is enabled: Settings > Siri & Search');
-          print('  4. Check language support: Settings > General > Language & Region');
+          logDebug('iOS Troubleshooting:');
+          logDebug('  1. Check microphone permission: Settings > Privacy > Microphone');
+          logDebug('  2. Check speech recognition permission: Settings > Privacy > Speech Recognition');
+          logDebug('  3. Ensure Siri is enabled: Settings > Siri & Search');
+          logDebug('  4. Check language support: Settings > General > Language & Region');
         }
         if (mounted && isDesktop) {
           final l10n = AppLocalizations.of(context)!;
@@ -274,36 +416,36 @@ class _PronunciationPracticePageState
           );
         }
       } else {
-        print('✓ Speech recognition initialized successfully');
+        logDebug('✓ Speech recognition initialized successfully');
 
         // Get available locales for debugging
         final locales = await _speech.locales();
-        print('Available locales: ${locales.length}');
+        logDebug('Available locales: ${locales.length}');
         if (locales.isNotEmpty) {
-          print('First 5 locales: ${locales.take(5).map((l) => l.localeId).join(", ")}');
+          logDebug('First 5 locales: ${locales.take(5).map((l) => l.localeId).join(", ")}');
           if (isIOS) {
-            print('iOS Note: Available locales depend on:');
-            print('  - Siri language settings');
-            print('  - Keyboard languages added to device');
-            print('  - iOS version and device model');
+            logDebug('iOS Note: Available locales depend on:');
+            logDebug('  - Siri language settings');
+            logDebug('  - Keyboard languages added to device');
+            logDebug('  - iOS version and device model');
           }
         } else if (isIOS) {
-          print('!!! No locales available on iOS - possible issues:');
-          print('    - Siri not enabled');
-          print('    - No keyboard languages configured');
-          print('    - Speech recognition permission denied');
+          logDebug('!!! No locales available on iOS - possible issues:');
+          logDebug('    - Siri not enabled');
+          logDebug('    - No keyboard languages configured');
+          logDebug('    - Speech recognition permission denied');
         }
       }
 
       if (mounted) setState(() {});
     } catch (e, stackTrace) {
-      print('!!! Exception during speech initialization: $e');
-      print('Stack trace: $stackTrace');
+      logDebug('!!! Exception during speech initialization: $e');
+      logDebug('Stack trace: $stackTrace');
       if (Platform.isIOS && e.toString().contains('PlatformException')) {
-        print('iOS Platform Exception - Check:');
-        print('  1. Info.plist has required permission keys');
-        print('  2. App has been granted permissions in Settings');
-        print('  3. Device supports speech recognition (iOS 10+)');
+        logDebug('iOS Platform Exception - Check:');
+        logDebug('  1. Info.plist has required permission keys');
+        logDebug('  2. App has been granted permissions in Settings');
+        logDebug('  3. Device supports speech recognition (iOS 10+)');
       }
       _speechAvailable = false;
       if (mounted) setState(() {});
@@ -416,12 +558,12 @@ class _PronunciationPracticePageState
   }
 
   Future<void> _startRecording() async {
-    print('=== Start Recording Called ===');
-    print('Using Whisper API: $_useWhisperAPI');
-    print('Speech available: $_speechAvailable');
+    logDebug('=== Start Recording Called ===');
+    logDebug('Using Whisper API: $_useWhisperAPI');
+    logDebug('Speech available: $_speechAvailable');
 
     if (!_speechAvailable) {
-      print('!!! Speech recognition not available, showing error message');
+      logDebug('!!! Speech recognition not available, showing error message');
       final l10n = AppLocalizations.of(context)!;
 
       // Show message about needing OpenAI API key
@@ -433,7 +575,10 @@ class _PronunciationPracticePageState
             label: l10n.settings,
             onPressed: () {
               // Open settings page
-              Navigator.pushNamed(context, '/settings');
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const AppSettingsPage()),
+              );
             },
           ),
         ),
@@ -446,9 +591,9 @@ class _PronunciationPracticePageState
         _displayLanguage1 ? currentItem.language1Data : currentItem.language2Data;
     final languageCode = languageData.languageCode.split('-')[0];
 
-    print('Target language code: $languageCode');
-    print('Full language code: ${languageData.languageCode}');
-    print('Current item text: ${languageData.text}');
+    logDebug('Target language code: $languageCode');
+    logDebug('Full language code: ${languageData.languageCode}');
+    logDebug('Current item text: ${languageData.text}');
 
     setState(() {
       _isRecording = true;
@@ -463,15 +608,15 @@ class _PronunciationPracticePageState
       // ========================================
       // WHISPER API MODE - Manual stop only
       // ========================================
-      print('📱 Starting audio recording for Whisper API...');
-      print('   ⏱️ Recording will continue until user presses STOP button');
+      logDebug('📱 Starting audio recording for Whisper API...');
+      logDebug('   ⏱️ Recording will continue until user presses STOP button');
 
       try {
         final hasPermission = await _audioRecorder.hasPermission();
-        print('Audio recording permission: $hasPermission');
+        logDebug('Audio recording permission: $hasPermission');
 
         if (!hasPermission) {
-          print('!!! Audio recording permission not granted');
+          logDebug('!!! Audio recording permission not granted');
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -486,7 +631,7 @@ class _PronunciationPracticePageState
 
         final directory = await getTemporaryDirectory();
         final filePath = '${directory.path}/recording_${DateTime.now().millisecondsSinceEpoch}.m4a';
-        print('Audio file path: $filePath');
+        logDebug('Audio file path: $filePath');
 
         await _audioRecorder.start(
           const RecordConfig(
@@ -498,8 +643,8 @@ class _PronunciationPracticePageState
         );
 
         _recordedAudioPath = filePath;
-        print('✓ Audio recording started successfully (Whisper mode)');
-        print('   User controls when to stop recording');
+        logDebug('✓ Audio recording started successfully (Whisper mode)');
+        logDebug('   User controls when to stop recording');
 
         // Start monitoring amplitude for volume meter
         _startAmplitudeMonitoring();
@@ -516,8 +661,8 @@ class _PronunciationPracticePageState
           );
         }
       } catch (e, stackTrace) {
-        print('!!! Error starting audio recording: $e');
-        print('Stack trace: $stackTrace');
+        logDebug('!!! Error starting audio recording: $e');
+        logDebug('Stack trace: $stackTrace');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -532,7 +677,7 @@ class _PronunciationPracticePageState
       // ========================================
       // NATIVE SPEECH RECOGNITION MODE
       // ========================================
-      print('🎤 Starting native speech recognition...');
+      logDebug('🎤 Starting native speech recognition...');
 
       // Check if the requested locale is available
       final availableLocales = await _speech.locales();
@@ -540,16 +685,16 @@ class _PronunciationPracticePageState
         (locale) => locale.localeId.toLowerCase().startsWith(languageCode.toLowerCase())
       );
 
-      print('Requested locale available: $requestedLocaleAvailable');
+      logDebug('Requested locale available: $requestedLocaleAvailable');
       if (!requestedLocaleAvailable && availableLocales.isNotEmpty) {
-        print('!!! Warning: Requested locale "$languageCode" not found in available locales');
-        print('Available locales: ${availableLocales.take(10).map((l) => l.localeId).join(", ")}');
+        logDebug('!!! Warning: Requested locale "$languageCode" not found in available locales');
+        logDebug('Available locales: ${availableLocales.take(10).map((l) => l.localeId).join(", ")}');
       }
 
       // Start speech-to-text for word recognition
       try {
-        print('Attempting to start speech recognition...');
-        print('Using locale: $languageCode');
+        logDebug('Attempting to start speech recognition...');
+        logDebug('Using locale: $languageCode');
 
         bool listeningStarted = false;
         bool soundDetected = false;
@@ -557,14 +702,14 @@ class _PronunciationPracticePageState
 
         await _speech.listen(
           onResult: (result) {
-            print('>>> Speech result received:');
-            print('    Recognized: ${result.recognizedWords}');
-            print('    Confidence: ${result.confidence}');
-            print('    Final result: ${result.finalResult}');
+            logDebug('>>> Speech result received:');
+            logDebug('    Recognized: ${result.recognizedWords}');
+            logDebug('    Confidence: ${result.confidence}');
+            logDebug('    Final result: ${result.finalResult}');
 
             if (!listeningStarted) {
               listeningStarted = true;
-              print('✓ Speech recognition started successfully');
+              logDebug('✓ Speech recognition started successfully');
             }
 
             if (mounted) {
@@ -583,21 +728,21 @@ class _PronunciationPracticePageState
 
             if (level > 0.1 && !soundDetected) {
               soundDetected = true;
-              print('✓ Sound detected! Level: $level');
+              logDebug('✓ Sound detected! Level: $level');
             }
             if (DateTime.now().millisecond % 500 < 100) {
-              print('Sound level: $level (max: $maxSoundLevel)');
+              logDebug('Sound level: $level (max: $maxSoundLevel)');
             }
           },
         );
 
-        print('✓ Speech listen command executed successfully');
+        logDebug('✓ Speech listen command executed successfully');
 
         final isListening = _speech.isListening;
-        print('Is actually listening: $isListening');
+        logDebug('Is actually listening: $isListening');
 
         if (!isListening) {
-          print('!!! Warning: Speech recognition is not in listening state after listen() call');
+          logDebug('!!! Warning: Speech recognition is not in listening state after listen() call');
         } else {
           if (mounted) {
             final l10n = AppLocalizations.of(context)!;
@@ -626,15 +771,15 @@ class _PronunciationPracticePageState
               path: filePath,
             );
             _recordedAudioPath = filePath;
-            print('✓ Audio recording started successfully (native mode)');
+            logDebug('✓ Audio recording started successfully (native mode)');
           }
         } catch (e) {
-          print('Warning: Could not start audio recording: $e');
+          logDebug('Warning: Could not start audio recording: $e');
         }
 
       } catch (e, stackTrace) {
-        print('!!! Error starting speech recognition: $e');
-        print('Stack trace: $stackTrace');
+        logDebug('!!! Error starting speech recognition: $e');
+        logDebug('Stack trace: $stackTrace');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -648,12 +793,12 @@ class _PronunciationPracticePageState
       }
     }
 
-    print('=== Recording setup complete ===');
+    logDebug('=== Recording setup complete ===');
   }
 
   Future<void> _stopRecording() async {
-    print('=== Stop Recording Called ===');
-    print('Using Whisper API: $_useWhisperAPI');
+    logDebug('=== Stop Recording Called ===');
+    logDebug('Using Whisper API: $_useWhisperAPI');
 
     // Stop amplitude monitoring
     _stopAmplitudeMonitoring();
@@ -662,25 +807,25 @@ class _PronunciationPracticePageState
       // ========================================
       // WHISPER API MODE - Process recorded audio
       // ========================================
-      print('🎙️ Stopping audio recording...');
+      logDebug('🎙️ Stopping audio recording...');
 
       try{
         final audioPath = await _audioRecorder.stop();
-        print('Audio recording stopped, path: $audioPath');
+        logDebug('Audio recording stopped, path: $audioPath');
 
         if (audioPath != null && await File(audioPath).exists()) {
           final fileSize = await File(audioPath).length();
-          print('Audio file size: $fileSize bytes');
+          logDebug('Audio file size: $fileSize bytes');
 
           // Check recording duration
           final recordingDuration = _recordingStartTime != null
               ? DateTime.now().difference(_recordingStartTime!)
               : Duration.zero;
-          print('Recording duration: ${recordingDuration.inMilliseconds}ms');
+          logDebug('Recording duration: ${recordingDuration.inMilliseconds}ms');
 
           // Minimum duration check (0.1 seconds = 100ms)
           if (recordingDuration.inMilliseconds < 100) {
-            print('⚠️ Recording too short: ${recordingDuration.inMilliseconds}ms (minimum: 100ms)');
+            logDebug('⚠️ Recording too short: ${recordingDuration.inMilliseconds}ms (minimum: 100ms)');
 
             setState(() => _isRecording = false);
 
@@ -700,7 +845,7 @@ class _PronunciationPracticePageState
 
           // Check file size (should be at least a few KB for valid audio)
           if (fileSize < 1000) {
-            print('⚠️ Audio file too small: $fileSize bytes (suspicious)');
+            logDebug('⚠️ Audio file too small: $fileSize bytes (suspicious)');
 
             setState(() => _isRecording = false);
 
@@ -721,14 +866,15 @@ class _PronunciationPracticePageState
           if (fileSize > 0 && mounted) {
             setState(() => _isRecording = false);
 
-            // Play back the user's recording if enabled (while processing in background)
+            // Play back the user's recording if enabled and track completion
+            Future<void>? playbackFuture;
             if (_playbackAfterRecording) {
-              print('🔊 Playing back user recording...');
+              logDebug('🔊 Playing back user recording...');
               try {
-                // Play the recorded audio asynchronously (don't wait)
-                _audioPlayer.play(DeviceFileSource(audioPath));
+                // Start playing the recorded audio and capture the completion future
+                playbackFuture = _audioPlayer.play(DeviceFileSource(audioPath));
               } catch (e) {
-                print('Warning: Could not play back recording: $e');
+                logDebug('Warning: Could not play back recording: $e');
               }
             }
 
@@ -748,8 +894,8 @@ class _PronunciationPracticePageState
             final languageCode = languageData.languageCode.split('-')[0];
             final expectedText = '${languageData.preItem?.isNotEmpty ?? false ? "${languageData.preItem} " : ""}${languageData.text}';
 
-            print('📤 Sending to OpenAI Whisper API...');
-            print('   Expected text: "$expectedText"');
+            logDebug('📤 Sending to OpenAI Whisper API...');
+            logDebug('   Expected text: "$expectedText"');
 
             try {
               final result = await _speechRecognitionService!.transcribeAudio(
@@ -758,9 +904,9 @@ class _PronunciationPracticePageState
                 prompt: expectedText, // Helps Whisper understand context
               );
 
-              print('✓ Whisper transcription received: "${result.text}"');
-              print('   Detected language: ${result.language}');
-              print('   Audio duration: ${result.duration}s');
+              logDebug('✓ Whisper transcription received: "${result.text}"');
+              logDebug('   Detected language: ${result.language}');
+              logDebug('   Audio duration: ${result.duration}s');
 
               setState(() {
                 _recordedText = result.text;
@@ -771,13 +917,20 @@ class _PronunciationPracticePageState
                 ScaffoldMessenger.of(context).hideCurrentSnackBar();
               }
 
-              // Generate reference audio using TTS
+              // Generate reference audio using TTS (can run in background)
               await _generateReferenceAudio(expectedText, languageData.languageCode);
 
-              // Speak the correct pronunciation
+              // IMPORTANT: Wait for user's audio playback to complete before speaking correct pronunciation
+              if (playbackFuture != null) {
+                logDebug('⏳ Waiting for user recording playback to complete...');
+                await playbackFuture;
+                logDebug('✓ User recording playback completed');
+              }
+
+              // Now speak the correct pronunciation (after user's audio finished)
               await _ttsService.speak(expectedText, languageData.languageCode);
 
-              // Calculate match rate
+              // Calculate match rate (can run in background)
               await _calculateMatchRate(currentItem);
 
               setState(() {
@@ -786,7 +939,7 @@ class _PronunciationPracticePageState
               });
 
             } catch (e) {
-              print('!!! Error transcribing with Whisper: $e');
+              logDebug('!!! Error transcribing with Whisper: $e');
 
               // Hide processing message
               if (mounted) {
@@ -817,7 +970,10 @@ class _PronunciationPracticePageState
                     duration: const Duration(seconds: 7),
                     action: guidance == null ? SnackBarAction(
                       label: 'Settings',
-                      onPressed: () => Navigator.pushNamed(context, '/settings'),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const AppSettingsPage()),
+                      ),
                     ) : null,
                   ),
                 );
@@ -826,7 +982,7 @@ class _PronunciationPracticePageState
               }
             }
           } else {
-            print('!!! Audio file is empty or does not exist');
+            logDebug('!!! Audio file is empty or does not exist');
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
@@ -838,14 +994,14 @@ class _PronunciationPracticePageState
             }
           }
         } else {
-          print('!!! No audio file was created');
+          logDebug('!!! No audio file was created');
           if (mounted) {
             setState(() => _isRecording = false);
           }
         }
       } catch (e, stackTrace) {
-        print('!!! Error stopping audio recording: $e');
-        print('Stack trace: $stackTrace');
+        logDebug('!!! Error stopping audio recording: $e');
+        logDebug('Stack trace: $stackTrace');
         if (mounted) {
           setState(() => _isRecording = false);
         }
@@ -854,30 +1010,30 @@ class _PronunciationPracticePageState
       // ========================================
       // NATIVE SPEECH RECOGNITION MODE
       // ========================================
-      print('Speech is listening: ${_speech.isListening}');
-      print('Recorded text so far: "$_recordedText"');
+      logDebug('Speech is listening: ${_speech.isListening}');
+      logDebug('Recorded text so far: "$_recordedText"');
 
       await _speech.stop();
-      print('Speech recognition stopped');
+      logDebug('Speech recognition stopped');
 
       // Stop audio recording
       try {
         final audioPath = await _audioRecorder.stop();
-        print('Audio recording stopped, path: $audioPath');
+        logDebug('Audio recording stopped, path: $audioPath');
 
         if (audioPath != null && await File(audioPath).exists()) {
           final fileSize = await File(audioPath).length();
-          print('Audio file size: $fileSize bytes');
+          logDebug('Audio file size: $fileSize bytes');
         }
       } catch (e) {
-        print('!!! Error stopping audio recording: $e');
+        logDebug('!!! Error stopping audio recording: $e');
       }
 
       if (mounted) {
         setState(() => _isRecording = false);
 
         if (_recordedText.isNotEmpty) {
-          print('✓ Text was recognized: "$_recordedText"');
+          logDebug('✓ Text was recognized: "$_recordedText"');
 
           // Generate reference audio using TTS
           final currentItem = _filteredItems[_currentItemIndex];
@@ -887,7 +1043,7 @@ class _PronunciationPracticePageState
           final fullText =
               '${languageData.preItem?.isNotEmpty ?? false ? "${languageData.preItem} " : ""}${languageData.text}';
 
-          print('Expected text: "$fullText"');
+          logDebug('Expected text: "$fullText"');
 
           // Generate reference audio file (if needed)
           await _generateReferenceAudio(fullText, languageData.languageCode);
@@ -903,13 +1059,13 @@ class _PronunciationPracticePageState
             _totalPracticed++;
           });
         } else {
-          print('!!! No text recognized - possible issues:');
-          print('    1. Microphone permission not granted');
-          print('    2. Language/locale not supported on device');
-          print('    3. No speech detected by recognition engine');
-          print('    4. Microphone hardware issue');
-          print('    5. Background noise too high');
-          print('    6. Speaking too quietly or too far from microphone');
+          logDebug('!!! No text recognized - possible issues:');
+          logDebug('    1. Microphone permission not granted');
+          logDebug('    2. Language/locale not supported on device');
+          logDebug('    3. No speech detected by recognition engine');
+          logDebug('    4. Microphone hardware issue');
+          logDebug('    5. Background noise too high');
+          logDebug('    6. Speaking too quietly or too far from microphone');
 
           // Show more helpful error message
           final l10n = AppLocalizations.of(context)!;
@@ -939,7 +1095,7 @@ class _PronunciationPracticePageState
       }
     }
 
-    print('=== Stop Recording Complete ===');
+    logDebug('=== Stop Recording Complete ===');
   }
 
   Future<void> _generateReferenceAudio(String text, String languageCode) async {
@@ -958,7 +1114,7 @@ class _PronunciationPracticePageState
       // platform-specific code to save TTS output to a file
       // For now, we'll work with the recorded audio only
     } catch (e) {
-      print('Error generating reference audio: $e');
+      logDebug('Error generating reference audio: $e');
     }
   }
 
@@ -976,9 +1132,9 @@ class _PronunciationPracticePageState
       return;
     }
 
-    print('🎯 Calculating match rate:');
-    print('   Expected: "$fullText"');
-    print('   Recorded: "$recorded"');
+    logDebug('🎯 Calculating match rate:');
+    logDebug('   Expected: "$fullText"');
+    logDebug('   Recorded: "$recorded"');
 
     // 1. Word-level matching (primary metric for Whisper API)
     final expectedWords = fullText.split(RegExp(r'\s+'));
@@ -995,11 +1151,11 @@ class _PronunciationPracticePageState
         ? matchedWords / expectedWords.length
         : 0.0;
 
-    print('   Word match: $matchedWords/${expectedWords.length} = ${(wordMatchRate * 100).toStringAsFixed(1)}%');
+    logDebug('   Word match: $matchedWords/${expectedWords.length} = ${(wordMatchRate * 100).toStringAsFixed(1)}%');
 
     // 2. Character-level similarity (Levenshtein distance)
     final charMatchRate = _calculateStringSimilarity(fullText, recorded);
-    print('   Char similarity: ${(charMatchRate * 100).toStringAsFixed(1)}%');
+    logDebug('   Char similarity: ${(charMatchRate * 100).toStringAsFixed(1)}%');
 
     // For Whisper API: prioritize word matching (90%) with character similarity (10%)
     // This gives better results since Whisper transcription is highly accurate
@@ -1008,7 +1164,7 @@ class _PronunciationPracticePageState
         : (wordMatchRate * 0.7 + charMatchRate * 0.3);
 
     final finalRate = (combinedRate * 100).clamp(0.0, 100.0);
-    print('   Final rate: ${finalRate.toStringAsFixed(1)}%');
+    logDebug('   Final rate: ${finalRate.toStringAsFixed(1)}%');
 
     setState(() {
       _matchRate = finalRate;
@@ -1079,7 +1235,7 @@ class _PronunciationPracticePageState
 
       return audioScore.clamp(0.0, 1.0);
     } catch (e) {
-      print('Error analyzing audio similarity: $e');
+      logDebug('Error analyzing audio similarity: $e');
       return 0.0;
     }
   }
@@ -1336,27 +1492,37 @@ class _PronunciationPracticePageState
               children: [
                 // Info banner showing speech recognition mode
                 _buildModeInfoBanner(theme, l10n),
-                SizedBox(height: isTablet ? AppTheme.spacing12 : AppTheme.spacing8),
+                SizedBox(height: isTablet ? AppTheme.spacing8 : AppTheme.spacing8),
 
-                // Playback preference checkbox (only for Whisper API mode)
-                if (_useWhisperAPI) ...[
-                  _buildPlaybackCheckbox(theme, l10n),
-                  SizedBox(height: isTablet ? AppTheme.spacing12 : AppTheme.spacing8),
-                ],
-
-                // Status indicators
+                // Status indicators (includes playback checkbox when using Whisper API)
                 _buildStatusIndicators(theme, l10n),
-                SizedBox(height: isTablet ? AppTheme.spacing16 : AppTheme.spacing8),
+                SizedBox(height: isTablet ? AppTheme.spacing8 : AppTheme.spacing8),
 
-                // Item to pronounce
-                _buildPronunciationItem(theme, l10n, currentItem, isTablet),
-                SizedBox(height: isTablet ? AppTheme.spacing16 : AppTheme.spacing8),
-
-                // Tachometer (only shown after recording)
-                if (_hasRecorded) ...[
+                // Pronunciation item and tachometer - side by side on tablets, stacked on phones
+                if (isTablet)
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Item to pronounce (left side, takes 60% of width)
+                      Expanded(
+                        flex: 3,
+                        child: _buildPronunciationItem(theme, l10n, currentItem, isTablet),
+                      ),
+                      SizedBox(width: AppTheme.spacing8),
+                      // Tachometer (right side, takes 40% of width)
+                      Expanded(
+                        flex: 2,
+                        child: _buildTachometer(theme, l10n, isTablet),
+                      ),
+                    ],
+                  )
+                else ...[
+                  // Phone layout - stacked vertically
+                  _buildPronunciationItem(theme, l10n, currentItem, isTablet),
+                  SizedBox(height: AppTheme.spacing8),
                   _buildTachometer(theme, l10n, isTablet),
-                  SizedBox(height: isTablet ? AppTheme.spacing16 : AppTheme.spacing8),
                 ],
+                SizedBox(height: isTablet ? AppTheme.spacing8 : AppTheme.spacing8),
 
                 // Navigation buttons
                 _buildNavigationButtons(theme, l10n, isTablet),
@@ -1371,217 +1537,271 @@ class _PronunciationPracticePageState
   Widget _buildModeInfoBanner(ThemeData theme, AppLocalizations l10n) {
     if (_useWhisperAPI) {
       // Premium mode - Whisper API
-      return Container(
-        padding: const EdgeInsets.all(AppTheme.spacing12),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.primaryContainer,
-          borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              Icons.verified,
-              color: theme.colorScheme.primary,
-              size: 24,
-            ),
-            const SizedBox(width: AppTheme.spacing8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '🎙️ Premium Mode: AI Speech Recognition',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      color: theme.colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Record manually - no timeouts. High accuracy with OpenAI Whisper.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onPrimaryContainer,
-                    ),
-                  ),
-                ],
+      return Card(
+        elevation: 1,
+        color: theme.colorScheme.primaryContainer,
+        child: Padding(
+          padding: const EdgeInsets.all(AppTheme.spacing8),
+          child: Row(
+            children: [
+              Icon(
+                Icons.verified,
+                color: theme.colorScheme.primary,
+                size: 24,
               ),
-            ),
-          ],
+              const SizedBox(width: AppTheme.spacing8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '🎙️ Premium Mode: AI Speech Recognition',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: theme.colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Record manually - no timeouts. High accuracy with OpenAI Whisper.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onPrimaryContainer,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       );
     } else if (_speechAvailable) {
       // Native mode - fallback
-      return Container(
-        padding: const EdgeInsets.all(AppTheme.spacing12),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.tertiaryContainer,
+      return Card(
+        elevation: 1,
+        color: theme.colorScheme.tertiaryContainer,
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-          border: Border.all(
+          side: BorderSide(
             color: theme.colorScheme.tertiary.withValues(alpha: 0.5),
             width: 1,
           ),
         ),
-        child: Row(
-          children: [
-            Icon(
-              Icons.info_outline,
-              color: theme.colorScheme.tertiary,
-              size: 24,
-            ),
-            const SizedBox(width: AppTheme.spacing8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '📱 Basic Mode: Native Speech Recognition',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      color: theme.colorScheme.onTertiaryContainer,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Auto-timeout may occur. Add OpenAI API key in Settings for better experience.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onTertiaryContainer,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            IconButton(
-              icon: Icon(
-                Icons.settings,
+        child: Padding(
+          padding: const EdgeInsets.all(AppTheme.spacing8),
+          child: Row(
+            children: [
+              Icon(
+                Icons.info_outline,
                 color: theme.colorScheme.tertiary,
-                size: 20,
+                size: 24,
               ),
-              onPressed: () {
-                Navigator.pushNamed(context, '/settings');
-              },
-              tooltip: l10n.settings,
-            ),
-          ],
+              const SizedBox(width: AppTheme.spacing8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '📱 Basic Mode: Native Speech Recognition',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: theme.colorScheme.onTertiaryContainer,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Auto-timeout may occur. Add OpenAI API key in Settings for better experience.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onTertiaryContainer,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.settings,
+                  color: theme.colorScheme.tertiary,
+                  size: 20,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AppSettingsPage()),
+                  );
+                },
+                tooltip: l10n.settings,
+              ),
+            ],
+          ),
         ),
       );
     } else {
       // Speech recognition not available
-      return Container(
-        padding: const EdgeInsets.all(AppTheme.spacing12),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.errorContainer,
-          borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              Icons.warning,
-              color: theme.colorScheme.error,
-              size: 24,
-            ),
-            const SizedBox(width: AppTheme.spacing8),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '⚠️ Speech Recognition Unavailable',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      color: theme.colorScheme.onErrorContainer,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    'Add OpenAI API key in Settings to enable pronunciation practice.',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onErrorContainer,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            IconButton(
-              icon: Icon(
-                Icons.settings,
+      return Card(
+        elevation: 1,
+        color: theme.colorScheme.errorContainer,
+        child: Padding(
+          padding: const EdgeInsets.all(AppTheme.spacing12),
+          child: Row(
+            children: [
+              Icon(
+                Icons.warning,
                 color: theme.colorScheme.error,
-                size: 20,
+                size: 24,
               ),
-              onPressed: () {
-                Navigator.pushNamed(context, '/settings');
-              },
-              tooltip: l10n.settings,
-            ),
-          ],
+              const SizedBox(width: AppTheme.spacing8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '⚠️ Speech Recognition Unavailable',
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        color: theme.colorScheme.onErrorContainer,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Add OpenAI API key in Settings to enable pronunciation practice.',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onErrorContainer,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              IconButton(
+                icon: Icon(
+                  Icons.settings,
+                  color: theme.colorScheme.error,
+                  size: 20,
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const AppSettingsPage()),
+                  );
+                },
+                tooltip: l10n.settings,
+              ),
+            ],
+          ),
         ),
       );
     }
   }
 
-  Widget _buildPlaybackCheckbox(ThemeData theme, AppLocalizations l10n) {
-    return Card(
-      elevation: 1,
-      child: CheckboxListTile(
-        dense: true,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppTheme.spacing12,
-          vertical: 0,
-        ),
-        title: Row(
-          children: [
-            Icon(
-              Icons.play_circle_outline,
-              size: 20,
-              color: theme.colorScheme.primary,
-            ),
-            const SizedBox(width: AppTheme.spacing8),
-            Expanded(
-              child: Text(
-                l10n.playbackRecording,
-                style: theme.textTheme.bodyMedium,
-              ),
-            ),
-          ],
-        ),
-        subtitle: Text(
-          l10n.playbackRecordingSubtitle,
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-        value: _playbackAfterRecording,
-        onChanged: (bool? value) {
-          if (value != null) {
-            _savePlaybackPreference(value);
-          }
-        },
-        activeColor: theme.colorScheme.primary,
-      ),
-    );
-  }
 
   Widget _buildStatusIndicators(ThemeData theme, AppLocalizations l10n) {
+    final mediaQuery = MediaQuery.of(context);
+    final isTablet = mediaQuery.size.shortestSide >= 600;
+
+    // On phones with Whisper API, use Column to prevent overflow
+    // On tablets, keep everything in one row
+    final useColumnLayout = !isTablet && _useWhisperAPI;
+
     return Card(
       elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(AppTheme.spacing8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildStatusItem(
-              theme,
-              Icons.format_list_numbered,
-              l10n.items,
-              '${_currentItemIndex + 1}/${_filteredItems.length}',
-            ),
-            _buildStatusItem(
-              theme,
-              Icons.check_circle,
-              l10n.practiced,
-              _totalPracticed.toString(),
-            ),
-          ],
-        ),
+        child: useColumnLayout
+            ? Column(
+                children: [
+                  // First row: status indicators
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      _buildStatusItem(
+                        theme,
+                        Icons.format_list_numbered,
+                        l10n.items,
+                        '${_currentItemIndex + 1}/${_filteredItems.length}',
+                      ),
+                      _buildStatusItem(
+                        theme,
+                        Icons.check_circle,
+                        l10n.practiced,
+                        _totalPracticed.toString(),
+                      ),
+                    ],
+                  ),
+                  // Second row: checkbox (centered)
+                  const SizedBox(height: AppTheme.spacing8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Checkbox(
+                        value: _playbackAfterRecording,
+                        onChanged: (bool? value) {
+                          if (value != null) {
+                            _savePlaybackPreference(value);
+                          }
+                        },
+                        activeColor: theme.colorScheme.primary,
+                      ),
+                      Icon(
+                        Icons.play_circle_outline,
+                        size: 20,
+                        color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(width: AppTheme.spacing4),
+                      Text(
+                        l10n.playbackRecording,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontSize: 10,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              )
+            : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  _buildStatusItem(
+                    theme,
+                    Icons.format_list_numbered,
+                    l10n.items,
+                    '${_currentItemIndex + 1}/${_filteredItems.length}',
+                  ),
+                  _buildStatusItem(
+                    theme,
+                    Icons.check_circle,
+                    l10n.practiced,
+                    _totalPracticed.toString(),
+                  ),
+                  // Playback checkbox (only for Whisper API mode) - inline in same row on tablets
+                  if (_useWhisperAPI)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Checkbox(
+                          value: _playbackAfterRecording,
+                          onChanged: (bool? value) {
+                            if (value != null) {
+                              _savePlaybackPreference(value);
+                            }
+                          },
+                          activeColor: theme.colorScheme.primary,
+                        ),
+                        Icon(
+                          Icons.play_circle_outline,
+                          size: 20,
+                          color: theme.colorScheme.primary,
+                        ),
+                        const SizedBox(width: AppTheme.spacing4),
+                        Text(
+                          l10n.playbackRecording,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              ),
       ),
     );
   }
@@ -1592,10 +1812,10 @@ class _PronunciationPracticePageState
     String label,
     String value,
   ) {
-    return Column(
+    return Row(
       children: [
         Icon(icon, size: 20, color: theme.colorScheme.primary),
-        const SizedBox(height: AppTheme.spacing4),
+        const SizedBox(width: AppTheme.spacing4),
         Text(
           value,
           style: theme.textTheme.titleMedium?.copyWith(
@@ -1603,6 +1823,7 @@ class _PronunciationPracticePageState
             color: theme.colorScheme.primary,
           ),
         ),
+        const SizedBox(width: AppTheme.spacing4),
         Text(
           label,
           style: theme.textTheme.bodySmall?.copyWith(
@@ -1634,7 +1855,7 @@ class _PronunciationPracticePageState
       elevation: 2,
       color: theme.colorScheme.primaryContainer,
       child: Padding(
-        padding: EdgeInsets.all(isTablet ? AppTheme.spacing16 : AppTheme.spacing8),
+        padding: EdgeInsets.all(isTablet ? AppTheme.spacing8 : AppTheme.spacing8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1644,9 +1865,9 @@ class _PronunciationPracticePageState
                 Expanded(
                   child: Text(
                     '${l10n.pronounce} - $languageCode',
-                    style: theme.textTheme.titleMedium?.copyWith(
+                    style: theme.textTheme.labelLarge?.copyWith(
                       color: theme.colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.bold,
+                      //fontWeight: FontWeight.bold,
                       fontSize: isTablet ? null : 14,
                     ),
                   ),
@@ -1662,7 +1883,7 @@ class _PronunciationPracticePageState
                 ),
               ],
             ),
-            SizedBox(height: isTablet ? AppTheme.spacing12 : AppTheme.spacing8),
+            //SizedBox(height: isTablet ? AppTheme.spacing12 : AppTheme.spacing8),
 
             // Text to pronounce
             if (preText.isNotEmpty) ...[
@@ -1684,46 +1905,67 @@ class _PronunciationPracticePageState
                 fontSize: isTablet ? null : 18,
               ),
             ),
-            SizedBox(height: isTablet ? AppTheme.spacing16 : AppTheme.spacing12),
+            //SizedBox(height: isTablet ? AppTheme.spacing8 : AppTheme.spacing8),
 
-            // Microphone button
+            // Microphone button with volume meter
             Center(
               child: Column(
                 children: [
-                  Container(
-                    width: isTablet ? 80 : 60,
-                    height: isTablet ? 80 : 60,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _isRecording
-                          ? theme.colorScheme.error
-                          : theme.colorScheme.secondary,
-                      boxShadow: _isRecording
-                          ? [
-                              BoxShadow(
-                                color: theme.colorScheme.error.withValues(alpha: 0.5),
-                                blurRadius: 20,
-                                spreadRadius: 5,
-                              ),
-                            ]
-                          : null,
-                    ),
-                    child: IconButton(
-                      icon: Icon(
-                        _isRecording ? Icons.stop : Icons.mic,
-                        color: _isRecording
-                            ? theme.colorScheme.onError
-                            : theme.colorScheme.onSecondary,
-                        size: isTablet ? 40 : 30,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Microphone button
+                      Container(
+                        width: isTablet ? 80 : 60,
+                        height: isTablet ? 80 : 60,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: !_useWhisperAPI
+                              ? theme.colorScheme.surfaceContainerHighest // Disabled color
+                              : _isRecording
+                                  ? theme.colorScheme.error
+                                  : theme.colorScheme.secondary,
+                          boxShadow: _isRecording
+                              ? [
+                                  BoxShadow(
+                                    color: theme.colorScheme.error.withValues(alpha: 0.5),
+                                    blurRadius: 20,
+                                    spreadRadius: 5,
+                                  ),
+                                ]
+                              : null,
+                        ),
+                        child: IconButton(
+                          icon: Icon(
+                            _isRecording ? Icons.stop : Icons.mic,
+                            color: !_useWhisperAPI
+                                ? theme.colorScheme.onSurface.withValues(alpha: 0.38) // Disabled icon
+                                : _isRecording
+                                    ? theme.colorScheme.onError
+                                    : theme.colorScheme.onSecondary,
+                            size: isTablet ? 40 : 30,
+                          ),
+                          onPressed: !_useWhisperAPI
+                              ? null // Disable button when no API key
+                              : (_isRecording ? _stopRecording : _startRecording),
+                        ),
                       ),
-                      onPressed: _isRecording ? _stopRecording : _startRecording,
-                    ),
+
+                      // Volume meter (shown during recording, to the right of microphone)
+                      if (_isRecording) ...[
+                        SizedBox(width: isTablet ? AppTheme.spacing12 : AppTheme.spacing8),
+                        _buildVolumeMeter(theme, isTablet),
+                      ],
+                    ],
                   ),
-                  SizedBox(height: isTablet ? AppTheme.spacing12 : AppTheme.spacing8),
+                  SizedBox(height: isTablet ? AppTheme.spacing8 : AppTheme.spacing8),
                   Text(
-                    _isRecording
-                        ? l10n.recording
-                        : (_hasRecorded ? l10n.recorded : l10n.tapToRecord),
+                    !_useWhisperAPI
+                        ? l10n.openaiKeyRequired
+                        : _isRecording
+                            ? l10n.recording
+                            : (_hasRecorded ? l10n.recorded : l10n.tapToRecord),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onPrimaryContainer,
                       fontWeight: FontWeight.w500,
@@ -1731,17 +1973,12 @@ class _PronunciationPracticePageState
                     ),
                   ),
 
-                  // Volume meter during recording
-                  if (_isRecording) ...[
-                    SizedBox(height: isTablet ? AppTheme.spacing12 : AppTheme.spacing8),
-                    _buildVolumeMeter(theme, isTablet),
-                  ],
 
                   if (_recordedText.isNotEmpty) ...[
-                    SizedBox(height: isTablet ? AppTheme.spacing8 : AppTheme.spacing4),
+                    SizedBox(height: isTablet ? AppTheme.spacing8 : AppTheme.spacing8),
                     Text(
                       '"$_recordedText"',
-                      style: theme.textTheme.bodySmall?.copyWith(
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
                         fontStyle: FontStyle.italic,
                         fontSize: isTablet ? null : 11,
@@ -1759,34 +1996,86 @@ class _PronunciationPracticePageState
   }
 
   Widget _buildTachometer(ThemeData theme, AppLocalizations l10n, bool isTablet) {
+    // Get screen orientation for better sizing
+    final mediaQuery = MediaQuery.of(context);
+    final isLandscape = mediaQuery.orientation == Orientation.landscape;
+
+    // Adaptive sizing based on device type and orientation
+    double tachometerHeight;
+    double percentageFontSize;
+    double labelFontSize;
+    double titleFontSize;
+    double topPadding;
+    double titleSpacing;
+
+    if (isTablet) {
+      if (isLandscape) {
+        // Tablet landscape - compact (as just fixed)
+        tachometerHeight = 150;
+        percentageFontSize = 40;
+        labelFontSize = 13;
+        titleFontSize = 16;
+        topPadding = 30;
+        titleSpacing = AppTheme.spacing4;
+      } else {
+        // Tablet portrait - can be a bit larger
+        tachometerHeight = 130;
+        percentageFontSize = 44;
+        labelFontSize = 14;
+        titleFontSize = 18;
+        topPadding = 35;
+        titleSpacing = AppTheme.spacing8;
+      }
+    } else {
+      // Phone
+      if (isLandscape) {
+        // Phone landscape - very compact
+        tachometerHeight = 80;
+        percentageFontSize = 28;
+        labelFontSize = 11;
+        titleFontSize = 13;
+        topPadding = 20;
+        titleSpacing = AppTheme.spacing4;
+      } else {
+        // Phone portrait - standard size
+        tachometerHeight = 100;
+        percentageFontSize = 36;
+        labelFontSize = 12;
+        titleFontSize = 14;
+        topPadding = 30;
+        titleSpacing = AppTheme.spacing8;
+      }
+    }
+
     return Card(
       elevation: 2,
       child: Padding(
-        padding: EdgeInsets.all(isTablet ? AppTheme.spacing16 : AppTheme.spacing12),
+        padding: EdgeInsets.all(isTablet ? AppTheme.spacing8 : AppTheme.spacing8),
         child: Column(
           children: [
             Text(
               l10n.pronunciationAccuracy,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                fontSize: isTablet ? null : 14,
+                fontSize: titleFontSize,
               ),
             ),
-            SizedBox(height: isTablet ? AppTheme.spacing16 : AppTheme.spacing12),
+            SizedBox(height: titleSpacing),
 
             // Tachometer widget
             SizedBox(
-              height: isTablet ? 200 : 150,
+              height: tachometerHeight,
               child: CustomPaint(
                 painter: TachometerPainter(
                   percentage: _matchRate,
                   theme: theme,
+                  availableHeight: tachometerHeight,
                 ),
                 child: Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(height: isTablet ? 40 : 30),
+                      SizedBox(height: topPadding),
                       TweenAnimationBuilder<double>(
                         duration: const Duration(milliseconds: 1000),
                         curve: Curves.easeOutCubic,
@@ -1797,7 +2086,7 @@ class _PronunciationPracticePageState
                             style: theme.textTheme.displayMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: _getMatchRateColor(theme, value),
-                              fontSize: isTablet ? 48 : 36,
+                              fontSize: percentageFontSize,
                             ),
                           );
                         },
@@ -1806,7 +2095,7 @@ class _PronunciationPracticePageState
                         _getMatchRateLabel(l10n, _matchRate),
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
-                          fontSize: isTablet ? null : 12,
+                          fontSize: labelFontSize,
                         ),
                       ),
                     ],
@@ -1878,29 +2167,29 @@ class _PronunciationPracticePageState
 
 
   Widget _buildVolumeMeter(ThemeData theme, bool isTablet) {
-    return Column(
+    final meterHeight = isTablet ? 80.0 : 60.0; // Match microphone button height
+    final meterWidth = isTablet ? 16.0 : 12.0;
+
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Text(
-          'Volume',
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
-            fontSize: isTablet ? null : 10,
-          ),
-        ),
-        const SizedBox(height: 4),
+        // Vertical volume meter
         Container(
-          width: isTablet ? 200 : 150,
-          height: isTablet ? 8 : 6,
+          width: meterWidth,
+          height: meterHeight,
           decoration: BoxDecoration(
             color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.2),
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(meterWidth / 2),
           ),
           child: FractionallySizedBox(
-            alignment: Alignment.centerLeft,
-            widthFactor: _currentVolumeLevel.clamp(0.0, 1.0),
+            alignment: Alignment.bottomCenter,
+            heightFactor: _currentVolumeLevel.clamp(0.0, 1.0),
             child: Container(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
                   colors: [
                     Colors.green,
                     Colors.yellow,
@@ -1909,8 +2198,20 @@ class _PronunciationPracticePageState
                   ],
                   stops: [0.0, 0.5, 0.75, 1.0],
                 ),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(meterWidth / 2),
               ),
+            ),
+          ),
+        ),
+        const SizedBox(width: 4),
+        // "Volume" label rotated vertically
+        RotatedBox(
+          quarterTurns: 3,
+          child: Text(
+            'Volume',
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
+              fontSize: isTablet ? 10 : 8,
             ),
           ),
         ),
@@ -1923,16 +2224,29 @@ class _PronunciationPracticePageState
 class TachometerPainter extends CustomPainter {
   final double percentage;
   final ThemeData theme;
+  final double availableHeight;
 
   TachometerPainter({
     required this.percentage,
     required this.theme,
+    required this.availableHeight,
   });
 
   @override
   void paint(Canvas canvas, Size size) {
-    final center = Offset(size.width / 2, size.height * 0.75);
-    final radius = size.width * 0.35;
+    // Calculate radius to fit within available height
+    // The arc needs to fit: radius + strokeWidth/2 at top and bottom
+    final strokeWidth = 20.0;
+    final maxRadius = (availableHeight - strokeWidth) / 2;
+
+    // Also constrain by width
+    final maxRadiusByWidth = (size.width * 0.4);
+
+    // Use the smaller of the two to ensure it fits
+    final radius = math.min(maxRadius, maxRadiusByWidth);
+
+    // Center the arc vertically and horizontally
+    final center = Offset(size.width / 2, availableHeight * 0.6);
 
     // Draw background arc (gray)
     final backgroundPaint = Paint()

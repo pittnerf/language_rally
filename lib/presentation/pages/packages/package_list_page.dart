@@ -26,6 +26,7 @@ import '../items/item_browser_page.dart';
 import '../training/training_settings_page.dart';
 import '../ai_import/ai_text_analysis_page.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../../core/utils/debug_print.dart';
 
 /// Package list page displaying all language packages as cards
 class PackageListPage extends ConsumerStatefulWidget {
@@ -126,7 +127,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
       // Load packages for selected group
       await _loadPackages();
     } catch (e) {
-      debugPrint('Error loading groups and packages: $e');
+      logDebug('Error loading groups and packages: $e');
       setState(() {
         _isLoading = false;
       });
@@ -151,7 +152,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
 
       await _applySavedOrder();
     } catch (e) {
-      debugPrint('Error loading packages: $e');
+      logDebug('Error loading packages: $e');
       setState(() {
         _isLoading = false;
       });
@@ -1002,7 +1003,7 @@ class _PackageCardState extends State<PackageCard> {
         });
       }
     } catch (e) {
-      debugPrint('Error loading package data: $e');
+      logDebug('Error loading package data: $e');
       if (mounted) {
         setState(() {
           _isLoading = false;
@@ -1018,7 +1019,7 @@ class _PackageCardState extends State<PackageCard> {
 
       return stats?.currentBadge;
     } catch (e) {
-      debugPrint('Error getting highest badge: $e');
+      logDebug('Error getting highest badge: $e');
       return null;
     }
   }

@@ -11,6 +11,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../providers/app_settings_provider.dart';
 import '../../providers/locale_provider.dart';
 import '../../widgets/clickable_text.dart';
+import '../../../core/utils/debug_print.dart';
 
 class AppSettingsPage extends ConsumerStatefulWidget {
   const AppSettingsPage({super.key});
@@ -31,9 +32,20 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
   void initState() {
     super.initState();
     final settings = ref.read(appSettingsProvider);
+
+    logDebug('🔧 AppSettingsPage.initState() called');
+    logDebug('   Current settings in provider:');
+    logDebug('   - deeplApiKey: ${settings.deeplApiKey == null ? "NULL" : "present (length: ${settings.deeplApiKey!.length})"}');
+    logDebug('   - openaiApiKey: ${settings.openaiApiKey == null ? "NULL" : "present (length: ${settings.openaiApiKey!.length})"}');
+
     _languageNameController = TextEditingController(text: settings.userLanguageName);
     _deeplApiKeyController = TextEditingController(text: settings.deeplApiKey ?? '');
     _openaiApiKeyController = TextEditingController(text: settings.openaiApiKey ?? '');
+
+    logDebug('   Initialized controllers:');
+    logDebug('   - _deeplApiKeyController.text: "${_deeplApiKeyController.text.isEmpty ? "EMPTY" : "length: ${_deeplApiKeyController.text.length}"}"');
+    logDebug('   - _openaiApiKeyController.text: "${_openaiApiKeyController.text.isEmpty ? "EMPTY" : "length: ${_openaiApiKeyController.text.length}"}"');
+
     _selectedLanguageCode = settings.userLanguageCode;
 
     // Listen for settings changes and update controllers
@@ -42,16 +54,32 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
       ref.listenManual(
         appSettingsProvider,
         (previous, next) {
+          logDebug('📢 Settings changed in provider:');
+          logDebug('   Previous deeplApiKey: ${previous?.deeplApiKey == null ? "NULL" : "present (length: ${previous!.deeplApiKey!.length})"}');
+          logDebug('   Next deeplApiKey: ${next.deeplApiKey == null ? "NULL" : "present (length: ${next.deeplApiKey!.length})"}');
+          logDebug('   Previous openaiApiKey: ${previous?.openaiApiKey == null ? "NULL" : "present (length: ${previous!.openaiApiKey!.length})"}');
+          logDebug('   Next openaiApiKey: ${next.openaiApiKey == null ? "NULL" : "present (length: ${next.openaiApiKey!.length})"}');
+
           // Update controllers only if they haven't been manually edited
           if (_languageNameController.text == (previous?.userLanguageName ?? '')) {
             _languageNameController.text = next.userLanguageName;
             _selectedLanguageCode = next.userLanguageCode;
           }
           if (_deeplApiKeyController.text == (previous?.deeplApiKey ?? '')) {
+            logDebug('   Updating _deeplApiKeyController to: ${next.deeplApiKey ?? "EMPTY"}');
             _deeplApiKeyController.text = next.deeplApiKey ?? '';
+          } else {
+            logDebug('   NOT updating _deeplApiKeyController (manually edited)');
+            logDebug('   Controller text: "${_deeplApiKeyController.text}"');
+            logDebug('   Previous value: "${previous?.deeplApiKey ?? ""}"');
           }
           if (_openaiApiKeyController.text == (previous?.openaiApiKey ?? '')) {
+            logDebug('   Updating _openaiApiKeyController to: ${next.openaiApiKey ?? "EMPTY"}');
             _openaiApiKeyController.text = next.openaiApiKey ?? '';
+          } else {
+            logDebug('   NOT updating _openaiApiKeyController (manually edited)');
+            logDebug('   Controller text: "${_openaiApiKeyController.text}"');
+            logDebug('   Previous value: "${previous?.openaiApiKey ?? ""}"');
           }
           // Rebuild to show the new values
           if (mounted) {
@@ -563,10 +591,12 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
 
       // Save DeepL API key
       final deeplKey = _deeplApiKeyController.text.trim();
+      logDebug('💾 Saving DeepL API key: ${deeplKey.isEmpty ? "NULL (removing)" : "present (length: ${deeplKey.length})"}');
       await notifier.setDeeplApiKey(deeplKey.isEmpty ? null : deeplKey);
 
       // Save OpenAI API key
       final openaiKey = _openaiApiKeyController.text.trim();
+      logDebug('💾 Saving OpenAI API key: ${openaiKey.isEmpty ? "NULL (removing)" : "present (length: ${openaiKey.length})"}');
       await notifier.setOpenaiApiKey(openaiKey.isEmpty ? null : openaiKey);
 
       if (mounted) {

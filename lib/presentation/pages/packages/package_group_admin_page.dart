@@ -4,6 +4,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../data/models/language_package_group.dart';
 import '../../../data/repositories/language_package_group_repository.dart';
 import '../../../data/repositories/language_package_repository.dart';
+import '../../../core/utils/debug_print.dart';
 
 
 /// Page for managing language package groups (add, edit, delete)
@@ -48,7 +49,7 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
         _isLoading = false;
       });
     } catch (e) {
-      debugPrint('Error loading groups: $e');
+      logDebug('Error loading groups: $e');
       setState(() {
         _isLoading = false;
       });

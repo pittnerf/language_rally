@@ -28,6 +28,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../providers/app_settings_provider.dart';
 import '../../widgets/feedback_animation.dart';
 import '../items/item_edit_page.dart';
+import '../../../core/utils/debug_print.dart';
 
 class TrainingRallyPage extends ConsumerStatefulWidget {
   final LanguagePackage package;
@@ -556,7 +557,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
       }
     } catch (e) {
       // Handle error silently or log it
-      debugPrint('Error refreshing items: $e');
+      logDebug('Error refreshing items: $e');
     }
   }
 
