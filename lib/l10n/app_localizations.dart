@@ -1538,11 +1538,77 @@ abstract class AppLocalizations {
   /// **'Tap microphone to speak'**
   String get tapToSpeak;
 
+  /// No description provided for @tapToStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to stop recording'**
+  String get tapToStop;
+
   /// No description provided for @speechNotRecognized.
   ///
   /// In en, this message translates to:
   /// **'No speech was recognized. Please try again.'**
   String get speechNotRecognized;
+
+  /// No description provided for @usingWhisperApiSlower.
+  ///
+  /// In en, this message translates to:
+  /// **'Using cloud AI for speech recognition (may be slower)'**
+  String get usingWhisperApiSlower;
+
+  /// No description provided for @languageNotSupportedAddApiKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Language {languageCode} not supported natively. Add OpenAI API key in Settings for AI-powered speech recognition.'**
+  String languageNotSupportedAddApiKey(String languageCode);
+
+  /// No description provided for @recordingTapToStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording... Tap again to stop'**
+  String get recordingTapToStop;
+
+  /// No description provided for @speakClearlyKeepRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Speak clearly. Record at least 1 second.'**
+  String get speakClearlyKeepRecording;
+
+  /// No description provided for @recordingTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording too short. Please speak for at least 1 second.'**
+  String get recordingTooShort;
+
+  /// No description provided for @pleaseRecordLonger.
+  ///
+  /// In en, this message translates to:
+  /// **'Please speak for at least 1 second and tap stop.'**
+  String get pleaseRecordLonger;
+
+  /// No description provided for @errorStartingRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Error starting recording'**
+  String get errorStartingRecording;
+
+  /// No description provided for @noAudioRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'No audio was recorded'**
+  String get noAudioRecorded;
+
+  /// No description provided for @processingAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing audio with AI...'**
+  String get processingAudio;
+
+  /// No description provided for @errorTranscribing.
+  ///
+  /// In en, this message translates to:
+  /// **'Error transcribing audio'**
+  String get errorTranscribing;
 
   /// No description provided for @trainingSettings.
   ///
@@ -3026,12 +3092,6 @@ abstract class AppLocalizations {
   /// **'No speech detected. Please try again.'**
   String get noSpeechDetected;
 
-  /// No description provided for @processingAudio.
-  ///
-  /// In en, this message translates to:
-  /// **'Processing audio with AI...'**
-  String get processingAudio;
-
   /// No description provided for @playbackRecording.
   ///
   /// In en, this message translates to:
@@ -3043,12 +3103,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hear your recording while AI processes it'**
   String get playbackRecordingSubtitle;
-
-  /// No description provided for @recordingTooShort.
-  ///
-  /// In en, this message translates to:
-  /// **'Recording too short. Please speak for at least 1 second.'**
-  String get recordingTooShort;
 
   /// No description provided for @microphonePermissionRequired.
   ///

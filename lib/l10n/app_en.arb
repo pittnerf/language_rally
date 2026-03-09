@@ -239,7 +239,25 @@
   "speechRecognitionPermissionDenied": "Speech recognition permission was denied",
   "speechRecognitionError": "Speech recognition error",
   "tapToSpeak": "Tap microphone to speak",
+  "tapToStop": "Tap to stop recording",
   "speechNotRecognized": "No speech was recognized. Please try again.",
+  "usingWhisperApiSlower": "Using cloud AI for speech recognition (may be slower)",
+  "languageNotSupportedAddApiKey": "Language {languageCode} not supported natively. Add OpenAI API key in Settings for AI-powered speech recognition.",
+  "@languageNotSupportedAddApiKey": {
+    "placeholders": {
+      "languageCode": {
+        "type": "String"
+      }
+    }
+  },
+  "recordingTapToStop": "Recording... Tap again to stop",
+  "speakClearlyKeepRecording": "Speak clearly. Record at least 1 second.",
+  "recordingTooShort": "Recording too short!",
+  "pleaseRecordLonger": "Please speak for at least 1 second and tap stop.",
+  "errorStartingRecording": "Error starting recording",
+  "noAudioRecorded": "No audio was recorded",
+  "processingAudio": "Processing audio...",
+  "errorTranscribing": "Error transcribing audio",
   "trainingSettings": "Training Settings",
   "itemScope": "Item Scope",
   "lastNItems": "Last N items",

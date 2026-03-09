@@ -30,7 +30,6 @@ import '../../../data/repositories/item_repository.dart';
 import '../../../data/repositories/category_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import 'item_edit_page.dart';
-import '../../../core/utils/debug_print.dart';
 
 /// Item browser page for viewing and filtering items in a package
 class ItemBrowserPage extends ConsumerStatefulWidget {
@@ -1065,7 +1064,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
               left: AppTheme.spacing8,
               right: AppTheme.spacing8,
             ),
-            child: Container(
+            child: SizedBox(
               width: availableWidth - (AppTheme.spacing8 * 2),
               height: availableHeight,
               child: _buildItemDetailsForDialog(

@@ -516,8 +516,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get noItemsInPackage => 'Még nincs elem ebben a csomagban';
 
   @override
-  String get noItemsToTrain =>
-      'A jelenlegi beállításokkal nincs gyakorolható elem';
+  String get noItemsToTrain => 'A jelenlegi ey nincs gyakorolható elem';
 
   @override
   String get clearFilters => 'Törlés';
@@ -794,8 +793,48 @@ class AppLocalizationsHu extends AppLocalizations {
   String get tapToSpeak => 'Koppints a mikrofonra a beszédhez';
 
   @override
+  String get tapToStop => 'Koppints a leállításhoz';
+
+  @override
   String get speechNotRecognized =>
       'Nem sikerült felismerni a beszédet. Kérlek, próbáld újra.';
+
+  @override
+  String get usingWhisperApiSlower =>
+      'Felhő alapú AI beszédfelismerés használata (lassabb lehet)';
+
+  @override
+  String languageNotSupportedAddApiKey(String languageCode) {
+    return 'A $languageCode nyelv natívan nem támogatott. Adj hozzá OpenAI API kulcsot a Beállításokban az AI-alapú beszédfelismeréshez.';
+  }
+
+  @override
+  String get recordingTapToStop =>
+      'Felvétel folyamatban... Koppints újra a leállításhoz';
+
+  @override
+  String get speakClearlyKeepRecording =>
+      'Beszélj érthetően. Legalább 1 másodpercig rögzíts.';
+
+  @override
+  String get recordingTooShort =>
+      'A felvétel túl rövid. Kérem beszéljen legalább 1 másodpercig.';
+
+  @override
+  String get pleaseRecordLonger =>
+      'Kérlek, beszélj legalább 1 másodpercig és koppints a leállításra.';
+
+  @override
+  String get errorStartingRecording => 'Hiba a felvétel indításakor';
+
+  @override
+  String get noAudioRecorded => 'Nem készült hangfelvétel';
+
+  @override
+  String get processingAudio => 'Hang feldolgozása AI-val...';
+
+  @override
+  String get errorTranscribing => 'Hiba a hangátiratban';
 
   @override
   String get trainingSettings => 'Gyakorlási Beállítások';
@@ -1627,18 +1666,11 @@ class AppLocalizationsHu extends AppLocalizations {
   String get noSpeechDetected => 'Nem észlelhető beszéd. Kérem próbálja újra.';
 
   @override
-  String get processingAudio => 'Hang feldolgozása AI-val...';
-
-  @override
   String get playbackRecording => 'Felvétel visszajátszása';
 
   @override
   String get playbackRecordingSubtitle =>
       'Hallgassa meg a felvételét, miközben az AI feldolgozza';
-
-  @override
-  String get recordingTooShort =>
-      'A felvétel túl rövid. Kérem beszéljen legalább 1 másodpercig.';
 
   @override
   String get microphonePermissionRequired =>

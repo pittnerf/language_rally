@@ -9,7 +9,6 @@ import '../data/repositories/language_package_repository.dart';
 import '../data/repositories/language_package_group_repository.dart';
 import '../data/repositories/category_repository.dart';
 import '../data/repositories/item_repository.dart';
-import '../core/utils/debug_print.dart';
 
 /// Standalone script to populate the database with comprehensive test data
 /// Run this with: flutter run lib/scripts/populate_test_data_script.dart

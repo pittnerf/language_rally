@@ -13,15 +13,21 @@
 // - Real-time validation
 //
 
+import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:uuid/uuid.dart';
+import 'package:record/record.dart';
+import 'package:path_provider/path_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/translation_service.dart';
 import '../../../core/services/ai_service.dart';
 import '../../../core/services/tts_service.dart';
 import '../../../core/services/service_error_messages.dart';
+import '../../../core/services/speech_recognition_service.dart';
+import '../../../core/utils/debug_print.dart';
 import '../../../data/models/item.dart';
 import '../../../data/models/item_language_data.dart';
 import '../../../data/models/example_sentence.dart';
@@ -99,6 +105,13 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
   bool _speechAvailable = false;
   bool _isListening = false;
 
+  // Audio recording for Whisper API fallback
+  final _audioRecorder = AudioRecorder();
+  SpeechRecognitionService? _speechRecognitionService;
+  bool _useWhisperAPI = false;
+  final Map<String, bool> _languageAvailability = {};
+  DateTime? _recordingStartTime;
+
   // Language 1 controllers
   late TextEditingController _preItem1Controller;
   late TextEditingController _text1Controller;
@@ -132,7 +145,23 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
     super.initState();
     _ttsService.initialize();
     _initializeControllers();
-    _initializeSpeechRecognition();
+
+    // Use post-frame callback to ensure settings are loaded before initializing speech recognition
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      logDebug('📍 ItemEditPage: postFrameCallback executing...');
+
+      final currentSettings = ref.read(appSettingsProvider);
+      logDebug('📊 Current settings state at postFrameCallback:');
+      logDebug('   - openaiApiKey present: ${currentSettings.openaiApiKey != null && currentSettings.openaiApiKey!.isNotEmpty}');
+      if (currentSettings.openaiApiKey != null && currentSettings.openaiApiKey!.isNotEmpty) {
+        logDebug('   - openaiApiKey length: ${currentSettings.openaiApiKey!.length}');
+      }
+
+      logDebug('🚀 Calling _initializeSpeechRecognition()...');
+      await _initializeSpeechRecognition();
+      logDebug('✅ Initial speech recognition setup complete');
+    });
+
     _isKnown = widget.item.isKnown;
     _isFavourite = widget.item.isFavourite;
     _isImportant = widget.item.isImportant;
@@ -142,9 +171,31 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
 
   Future<void> _initializeSpeechRecognition() async {
     _speech = stt.SpeechToText();
+
+    logDebug('═══════════════════════════════════════════════════════════');
+    logDebug('🎤 Initializing Speech Recognition for Item Edit Page');
+    logDebug('═══════════════════════════════════════════════════════════');
+
+    // Check if OpenAI API key is available for Whisper fallback
+    final settings = ref.read(appSettingsProvider);
+    final openaiApiKey = settings.openaiApiKey;
+
+    logDebug('📊 Settings provider state:');
+    logDebug('   - OpenAI API Key: ${openaiApiKey != null ? (openaiApiKey.isNotEmpty ? "present (${openaiApiKey.length} chars)" : "empty") : "null"}');
+
+    if (openaiApiKey != null && openaiApiKey.isNotEmpty) {
+      logDebug('✓ OpenAI API key available - Whisper API can be used as fallback');
+      logDebug('   First 10 chars: ${openaiApiKey.substring(0, openaiApiKey.length > 10 ? 10 : openaiApiKey.length)}...');
+      _speechRecognitionService = SpeechRecognitionService(apiKey: openaiApiKey);
+      logDebug('✓ SpeechRecognitionService created');
+    } else {
+      logDebug('❌ No OpenAI API key - Whisper API fallback not available');
+    }
+
     try {
       _speechAvailable = await _speech.initialize(
         onStatus: (status) {
+          logDebug('   Speech status: $status');
           if (mounted) {
             setState(() {
               _isListening = status == 'listening';
@@ -152,6 +203,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
           }
         },
         onError: (error) {
+          logDebug('   Speech error: $error');
           if (mounted) {
             setState(() {
               _isListening = false;
@@ -159,9 +211,66 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
           }
         },
       );
+
+      if (_speechAvailable) {
+        // Check which languages are available
+        final availableLocales = await _speech.locales();
+        logDebug('✓ Speech recognition available with ${availableLocales.length} locales');
+
+        // Check if our package languages are supported
+        final lang1 = widget.package.languageCode1.split('-')[0].toLowerCase();
+        final lang2 = widget.package.languageCode2.split('-')[0].toLowerCase();
+
+        _languageAvailability[widget.package.languageCode1] = availableLocales.any(
+          (locale) => locale.localeId.toLowerCase().startsWith(lang1)
+        );
+        _languageAvailability[widget.package.languageCode2] = availableLocales.any(
+          (locale) => locale.localeId.toLowerCase().startsWith(lang2)
+        );
+
+        logDebug('📋 Language availability:');
+        logDebug('   ${widget.package.languageName1} (${widget.package.languageCode1}): ${_languageAvailability[widget.package.languageCode1]}');
+        logDebug('   ${widget.package.languageName2} (${widget.package.languageCode2}): ${_languageAvailability[widget.package.languageCode2]}');
+      } else {
+        logDebug('❌ Native speech recognition not available on this device');
+      }
     } catch (e) {
+      logDebug('❌ Native speech recognition initialization failed: $e');
+      logDebug('   Error type: ${e.runtimeType}');
+
+      // Check if this is a Windows SAPI error
+      if (e.toString().contains('HRESULT') || e.toString().contains('80045077')) {
+        logDebug('');
+        logDebug('ℹ️  This is a Windows SAPI error - EXPECTED on Windows desktop');
+        logDebug('   👉 Solution: Whisper API will be used automatically if OpenAI key is configured');
+        logDebug('');
+      }
+
       _speechAvailable = false;
     }
+
+    logDebug('═══════════════════════════════════════════════════════════');
+    logDebug('📊 Final initialization state:');
+    logDebug('   - Native speech available: $_speechAvailable');
+    logDebug('   - Whisper service available: ${_speechRecognitionService?.isWhisperAvailable ?? false}');
+
+    if (!_speechAvailable && _speechRecognitionService?.isWhisperAvailable == true) {
+      logDebug('');
+      logDebug('✅ READY FOR RECORDING:');
+      logDebug('   - Native speech: Not available (expected on Windows)');
+      logDebug('   - Whisper API: Available and ready to use');
+      logDebug('   - Click microphone button to start recording');
+      logDebug('');
+    } else if (!_speechAvailable && _speechRecognitionService?.isWhisperAvailable == false) {
+      logDebug('');
+      logDebug('⚠️  WARNING: No speech input method available');
+      logDebug('   - Native speech: Not available');
+      logDebug('   - Whisper API: Not configured');
+      logDebug('   - Action needed: Add OpenAI API key in Settings');
+      logDebug('');
+    }
+
+    logDebug('═══════════════════════════════════════════════════════════');
   }
 
   void _initializeControllers() {
@@ -217,6 +326,9 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
     if (_isListening) {
       _speech.stop();
     }
+
+    // Dispose audio recorder
+    _audioRecorder.dispose();
 
     super.dispose();
   }
@@ -498,9 +610,9 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
                 labelText: '${l10n.mainText} *',
                 suffixIcon: IconButton(
                   icon: _isListening
-                      ? const Icon(Icons.mic, size: 20, color: Colors.red)
+                      ? const Icon(Icons.stop_circle, size: 24, color: Colors.red)
                       : const Icon(Icons.mic, size: 20),
-                  tooltip: l10n.voiceInput,
+                  tooltip: _isListening ? l10n.tapToStop : l10n.voiceInput,
                   onPressed: () => _startVoiceInput(textController, languageCode),
                 ),
               ),
@@ -1490,31 +1602,101 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
   }
 
   /// Starts voice input for the given text controller using speech recognition.
-  /// The recognition uses the specified language code (e.g., 'en-US', 'hu-HU').
-  /// Shows visual feedback during listening and displays the recognized text.
+  /// Automatically falls back to OpenAI Whisper API if native speech recognition
+  /// is not available or the language is not supported.
   Future<void> _startVoiceInput(TextEditingController controller, String languageCode) async {
     final l10n = AppLocalizations.of(context)!;
 
-    // Check if speech recognition is available
-    if (!_speechAvailable) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.speechRecognitionNotAvailable),
-          backgroundColor: Theme.of(context).colorScheme.error,
-          duration: const Duration(seconds: 3),
-        ),
-      );
-      return;
-    }
+    logDebug('🎤 _startVoiceInput called for language: $languageCode');
+    logDebug('   Currently listening: $_isListening');
 
     // If already listening, stop
     if (_isListening) {
-      await _speech.stop();
-      setState(() => _isListening = false);
+      logDebug('⏹️ Already listening, calling stop...');
+      if (_useWhisperAPI) {
+        await _stopWhisperRecording(controller, languageCode);
+      } else {
+        await _speech.stop();
+        setState(() => _isListening = false);
+      }
       return;
     }
 
-    // Show listening indicator
+    // Re-check API key availability
+    final settings = ref.read(appSettingsProvider);
+    final openaiApiKey = settings.openaiApiKey;
+
+    if (openaiApiKey != null && openaiApiKey.isNotEmpty && _speechRecognitionService == null) {
+      logDebug('✓ API key available, initializing Whisper service...');
+      _speechRecognitionService = SpeechRecognitionService(apiKey: openaiApiKey);
+    }
+
+    // Check availability
+    final languageAvailable = _languageAvailability[languageCode] ?? false;
+    final whisperAvailable = _speechRecognitionService?.isWhisperAvailable ?? false;
+
+    logDebug('📋 Mode selection:');
+    logDebug('   - Native available: $_speechAvailable');
+    logDebug('   - Language available: $languageAvailable');
+    logDebug('   - Whisper available: $whisperAvailable');
+
+    // Determine which mode to use
+    if (_speechAvailable && languageAvailable) {
+      logDebug('✅ Using native speech recognition');
+      _useWhisperAPI = false;
+      await _startNativeSpeechRecognition(controller, languageCode);
+    } else if (whisperAvailable) {
+      logDebug('✅ Using Whisper API (fallback)');
+      _useWhisperAPI = true;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.cloud, color: Colors.white, size: 20),
+              const SizedBox(width: 12),
+              Expanded(child: Text(l10n.usingWhisperApiSlower)),
+            ],
+          ),
+          duration: const Duration(seconds: 3),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+        ),
+      );
+
+      await _startWhisperRecording(controller, languageCode);
+    } else {
+      logDebug('❌ No speech input available');
+      String message = !_speechAvailable
+        ? l10n.speechRecognitionNotAvailable
+        : l10n.languageNotSupportedAddApiKey(languageCode);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(message),
+          backgroundColor: Theme.of(context).colorScheme.error,
+          duration: const Duration(seconds: 5),
+          action: SnackBarAction(
+            label: l10n.settings,
+            textColor: Colors.white,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AppSettingsPage()),
+              );
+            },
+          ),
+        ),
+      );
+    }
+  }
+
+  /// Native speech recognition (original implementation)
+  Future<void> _startNativeSpeechRecognition(
+    TextEditingController controller,
+    String languageCode,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -1537,13 +1719,10 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
       ),
     );
 
-    // Start listening
     try {
       await _speech.listen(
         onResult: (result) {
-          // Schedule state updates for the next frame to avoid assertion errors
           if (!result.finalResult) {
-            // Update text with partial results for better user feedback
             Future.microtask(() {
               if (mounted) {
                 setState(() {
@@ -1552,7 +1731,6 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
               }
             });
           } else {
-            // Final result - stop listening
             Future.microtask(() {
               if (mounted) {
                 setState(() {
@@ -1560,10 +1738,8 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
                   _isListening = false;
                 });
 
-                // Hide the listening snackbar
                 ScaffoldMessenger.of(context).hideCurrentSnackBar();
 
-                // Show success message
                 if (result.recognizedWords.isNotEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -1585,12 +1761,12 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
           }
         },
         localeId: languageCode,
-        listenFor: const Duration(seconds: 60), // Increased from 30 to 60 seconds
-        pauseFor: const Duration(seconds: 4), // Increased from 3 to 4 seconds
+        listenFor: const Duration(seconds: 60),
+        pauseFor: const Duration(seconds: 4),
         listenOptions: stt.SpeechListenOptions(
-          partialResults: true, // Changed to true for live feedback
+          partialResults: true,
           cancelOnError: true,
-          listenMode: stt.ListenMode.dictation, // Changed from confirmation to dictation
+          listenMode: stt.ListenMode.dictation,
         ),
       );
 
@@ -1598,7 +1774,6 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
     } catch (e) {
       setState(() => _isListening = false);
 
-      // Hide the listening snackbar and show error
       if (!mounted) return;
 
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -1615,6 +1790,381 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
           duration: const Duration(seconds: 4),
         ),
       );
+    }
+  }
+
+  /// Start Whisper API recording
+  Future<void> _startWhisperRecording(
+    TextEditingController controller,
+    String languageCode,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    logDebug('🎙️ Starting Whisper recording...');
+
+    // Check if running on Windows - audio recording is problematic on Windows desktop
+    final isWindows = !kIsWeb && Platform.isWindows;
+    if (isWindows) {
+      logDebug('⚠️ WARNING: Running on Windows desktop');
+      logDebug('   Audio recording has known issues on Windows with Flutter');
+      logDebug('   The record package does not properly capture audio on Windows');
+      logDebug('   Recommendation: Use Android or iOS device for voice input');
+      logDebug('   Proceeding anyway, but recording will likely fail...');
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              '⚠️ Audio recording not supported on Windows!\n\n'
+              'The microphone recording feature does not work properly on Windows desktop.\n\n'
+              '✅ Solution: Use this feature on Android or iOS device instead.\n\n'
+              'Or type the text manually on Windows.'
+            ),
+            backgroundColor: Colors.orange,
+            duration: const Duration(seconds: 10),
+            action: SnackBarAction(
+              label: 'OK',
+              textColor: Colors.white,
+              onPressed: () {},
+            ),
+          ),
+        );
+      }
+
+      // Don't proceed with recording on Windows
+      return;
+    }
+
+    try {
+      logDebug('🔍 Checking recorder state before start...');
+      final wasRecording = await _audioRecorder.isRecording();
+      logDebug('   Was already recording: $wasRecording');
+
+      if (wasRecording) {
+        logDebug('⚠️ Recorder was already active, stopping it first...');
+        await _audioRecorder.stop();
+        await Future.delayed(const Duration(milliseconds: 500));
+      }
+
+      final hasPermission = await _audioRecorder.hasPermission();
+      logDebug('📊 Microphone permission: $hasPermission');
+
+      if (!hasPermission) {
+        logDebug('❌ No microphone permission');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.microphonePermissionRequired),
+              duration: const Duration(seconds: 5),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
+        return;
+      }
+
+      final directory = await getTemporaryDirectory();
+      final fileName = 'voice_input_${DateTime.now().millisecondsSinceEpoch}.m4a';
+      final filePath = '${directory.path}/$fileName';
+
+      logDebug('📁 Recording details:');
+      logDebug('   - Directory: ${directory.path}');
+      logDebug('   - File name: $fileName');
+      logDebug('   - Full path: $filePath');
+
+      // Check if file already exists (shouldn't, but let's verify)
+      final file = File(filePath);
+      if (await file.exists()) {
+        logDebug('⚠️ File already exists, deleting it...');
+        await file.delete();
+      }
+
+      logDebug('🎚️ Starting recording with config:');
+      logDebug('   - Encoder: AAC-LC');
+      logDebug('   - Sample rate: 44100 Hz');
+      logDebug('   - Bit rate: 128000 bps');
+      logDebug('   - Format: M4A');
+
+      await _audioRecorder.start(
+        const RecordConfig(
+          encoder: AudioEncoder.aacLc,
+          sampleRate: 44100,
+          bitRate: 128000,
+        ),
+        path: filePath,
+      );
+
+      // Wait a moment for recording to initialize
+      await Future.delayed(const Duration(milliseconds: 300));
+
+      final isRecording = await _audioRecorder.isRecording();
+      logDebug('📊 Recording status after start:');
+      logDebug('   - Is recording: $isRecording');
+
+      if (!isRecording) {
+        logDebug('❌❌❌ CRITICAL: Recorder reports NOT recording after start!');
+        logDebug('   This indicates the audio system failed to start');
+        logDebug('   Possible causes:');
+        logDebug('   1. No default audio input device configured');
+        logDebug('   2. Audio device is in use by another application');
+        logDebug('   3. Windows audio service issue');
+        logDebug('   4. Codec/encoder not available');
+
+        setState(() => _isListening = false);
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Recording failed to start!\n\nCheck:\n1. Microphone is connected\n2. Microphone is set as default device\n3. No other app is using microphone'),
+              backgroundColor: Theme.of(context).colorScheme.error,
+              duration: const Duration(seconds: 8),
+            ),
+          );
+        }
+        return;
+      }
+
+      _recordingStartTime = DateTime.now();
+      setState(() => _isListening = true);
+
+      // Check if file was created
+      await Future.delayed(const Duration(milliseconds: 500));
+      final fileCreated = await file.exists();
+      final initialSize = fileCreated ? await file.length() : 0;
+
+      logDebug('📊 Initial recording check (500ms after start):');
+      logDebug('   - File created: $fileCreated');
+      logDebug('   - Initial file size: $initialSize bytes');
+
+      if (initialSize == 0) {
+        logDebug('⚠️⚠️⚠️ WARNING: No audio data written after 500ms!');
+        logDebug('   This suggests the microphone is not capturing audio');
+        logDebug('   Recording will continue, but result may be too small');
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.fiber_manual_record, color: Colors.red, size: 16),
+                const SizedBox(width: 12),
+                Expanded(child: Text('${l10n.recordingTapToStop}\n💡 Speak loudly and clearly for at least 2 seconds')),
+              ],
+            ),
+            duration: const Duration(seconds: 60),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+          ),
+        );
+      }
+
+      logDebug('✅ Recording started successfully');
+      logDebug('   User should speak now and tap stop when done');
+    } catch (e, stackTrace) {
+      logDebug('❌ Error starting recording: $e');
+      logDebug('   Stack trace: $stackTrace');
+      setState(() => _isListening = false);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${l10n.errorStartingRecording}: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    }
+  }
+
+  /// Stop Whisper API recording and transcribe
+  Future<void> _stopWhisperRecording(
+    TextEditingController controller,
+    String languageCode,
+  ) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    logDebug('⏹️ Stopping Whisper recording...');
+
+    if (_recordingStartTime != null) {
+      final duration = DateTime.now().difference(_recordingStartTime!);
+      logDebug('⏱️ Recording duration: ${duration.inMilliseconds}ms');
+    }
+
+    try {
+      // Check if still recording before stopping
+      final isStillRecording = await _audioRecorder.isRecording();
+      logDebug('📊 Is still recording before stop: $isStillRecording');
+
+      final audioPath = await _audioRecorder.stop();
+      setState(() => _isListening = false);
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      await Future.delayed(const Duration(milliseconds: 100));
+
+      if (audioPath == null || audioPath.isEmpty) {
+        logDebug('❌ No audio path returned from recorder');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.noAudioRecorded),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        return;
+      }
+
+      logDebug('📁 Audio saved to: $audioPath');
+
+      final audioFile = File(audioPath);
+
+      // Wait a moment for file to be fully written
+      await Future.delayed(const Duration(milliseconds: 200));
+
+      final fileExists = await audioFile.exists();
+      logDebug('📊 File exists: $fileExists');
+
+      if (!fileExists) {
+        logDebug('❌ Audio file does not exist at path!');
+        logDebug('   This means recording never created a file');
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Recording failed - no audio file created!\n\nPossible causes:\n1. Microphone not connected\n2. No audio input detected\n3. Windows audio settings issue'),
+              backgroundColor: Theme.of(context).colorScheme.error,
+              duration: const Duration(seconds: 8),
+            ),
+          );
+        }
+        return;
+      }
+
+      final fileSize = await audioFile.length();
+      logDebug('📊 File size: $fileSize bytes (${(fileSize / 1024).toStringAsFixed(2)} KB)');
+
+      // Calculate expected file size
+      if (_recordingStartTime != null) {
+        final actualDuration = DateTime.now().difference(_recordingStartTime!).inMilliseconds / 1000.0;
+        final expectedSize = (128000 / 8) * actualDuration; // 128kbps = 16KB/sec
+        logDebug('📊 Size analysis:');
+        logDebug('   - Actual duration: ${actualDuration.toStringAsFixed(2)}s');
+        logDebug('   - Expected size: ${expectedSize.toStringAsFixed(0)} bytes (~${(expectedSize / 1024).toStringAsFixed(2)} KB)');
+        logDebug('   - Actual size: $fileSize bytes (${(fileSize / 1024).toStringAsFixed(2)} KB)');
+        logDebug('   - Size ratio: ${(fileSize / expectedSize * 100).toStringAsFixed(1)}%');
+
+        if (fileSize < expectedSize * 0.1) {
+          logDebug('❌❌❌ CRITICAL: File is less than 10% of expected size!');
+          logDebug('   This indicates NO audio was captured');
+          logDebug('   Likely causes:');
+          logDebug('   1. Microphone muted or volume at 0%');
+          logDebug('   2. Wrong audio input device selected');
+          logDebug('   3. Microphone not working');
+          logDebug('   4. Windows is blocking audio access');
+        }
+      }
+
+      if (fileSize < 1000) {
+        logDebug('⚠️ Audio file too small for Whisper API');
+        logDebug('   Minimum: ~1000 bytes (0.1 seconds)');
+        logDebug('   Actual: $fileSize bytes');
+        logDebug('');
+        logDebug('🔧 TROUBLESHOOTING STEPS:');
+        logDebug('   1. Check Windows Sound Settings → Input');
+        logDebug('   2. Verify microphone is NOT muted');
+        logDebug('   3. Test microphone level (speak and watch the bar)');
+        logDebug('   4. Try selecting a different microphone if multiple exist');
+        logDebug('   5. Check if microphone works in other apps (e.g., Voice Recorder)');
+        logDebug('');
+
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('${l10n.recordingTooShort}\n\nFile size: $fileSize bytes\nExpected: >15 KB\n\n⚠️ Microphone may not be working!\n\nCheck Windows Sound Settings → Input'),
+              backgroundColor: Theme.of(context).colorScheme.error,
+              duration: const Duration(seconds: 10),
+            ),
+          );
+        }
+        return;
+      }
+
+      logDebug('✅ File size acceptable, proceeding with transcription');
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(l10n.processingAudio),
+              ],
+            ),
+            duration: const Duration(seconds: 30),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+          ),
+        );
+      }
+
+      logDebug('📤 Sending to Whisper API...');
+
+      final result = await _speechRecognitionService!.transcribeAudio(
+        audioFilePath: audioPath,
+        language: languageCode.split('-')[0],
+      );
+
+      logDebug('✅ Transcription: "${result.text}"');
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+        setState(() {
+          controller.text = result.text;
+        });
+
+        if (result.text.isNotEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('✓ ${result.text}'),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.speechNotRecognized),
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    } catch (e, stackTrace) {
+      logDebug('❌ Error transcribing: $e');
+      logDebug('   Stack trace: $stackTrace');
+
+      setState(() => _isListening = false);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${l10n.errorTranscribing}: $e'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
     }
   }
 

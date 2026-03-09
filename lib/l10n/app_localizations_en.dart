@@ -794,8 +794,47 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tapToSpeak => 'Tap microphone to speak';
 
   @override
+  String get tapToStop => 'Tap to stop recording';
+
+  @override
   String get speechNotRecognized =>
       'No speech was recognized. Please try again.';
+
+  @override
+  String get usingWhisperApiSlower =>
+      'Using cloud AI for speech recognition (may be slower)';
+
+  @override
+  String languageNotSupportedAddApiKey(String languageCode) {
+    return 'Language $languageCode not supported natively. Add OpenAI API key in Settings for AI-powered speech recognition.';
+  }
+
+  @override
+  String get recordingTapToStop => 'Recording... Tap again to stop';
+
+  @override
+  String get speakClearlyKeepRecording =>
+      'Speak clearly. Record at least 1 second.';
+
+  @override
+  String get recordingTooShort =>
+      'Recording too short. Please speak for at least 1 second.';
+
+  @override
+  String get pleaseRecordLonger =>
+      'Please speak for at least 1 second and tap stop.';
+
+  @override
+  String get errorStartingRecording => 'Error starting recording';
+
+  @override
+  String get noAudioRecorded => 'No audio was recorded';
+
+  @override
+  String get processingAudio => 'Processing audio with AI...';
+
+  @override
+  String get errorTranscribing => 'Error transcribing audio';
 
   @override
   String get trainingSettings => 'Training Settings';
@@ -1619,18 +1658,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noSpeechDetected => 'No speech detected. Please try again.';
 
   @override
-  String get processingAudio => 'Processing audio with AI...';
-
-  @override
   String get playbackRecording => 'Play back my recording';
 
   @override
   String get playbackRecordingSubtitle =>
       'Hear your recording while AI processes it';
-
-  @override
-  String get recordingTooShort =>
-      'Recording too short. Please speak for at least 1 second.';
 
   @override
   String get microphonePermissionRequired =>
