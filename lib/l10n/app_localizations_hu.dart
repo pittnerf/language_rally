@@ -1707,4 +1707,161 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get practiced => 'Gyakorolt';
+
+  @override
+  String get windowsAudioTestPageTitle => 'Windows Hang Teszt (RTAudio)';
+
+  @override
+  String get configureWindowsAudio =>
+      'Hangbemenet tesztelése és beállítása Windows-on';
+
+  @override
+  String get configureWindowsAudioDescription =>
+      'Hangfelvétel, lejátszás és átírás tesztelése a natív Windows RTAudio meghajtóval';
+
+  @override
+  String get audioTestTitle => 'Windows hangfelvétel teszt';
+
+  @override
+  String get audioTestSubtitle => 'RTAudio — Natív Windows hangfelvétel';
+
+  @override
+  String get audioInputDevice => 'Bemeneti hangeszköz';
+
+  @override
+  String get selectMicrophone => 'Mikrofon kiválasztása';
+
+  @override
+  String get refreshDevices => 'Eszközök frissítése';
+
+  @override
+  String get noAudioDevicesFound => 'Nem találhatók hangbemeneti eszközök';
+
+  @override
+  String get loadingAudioDevices => 'Hangeszközök betöltése...';
+
+  @override
+  String get recordingSettings => 'Felvételi beállítások';
+
+  @override
+  String get stereoRecording => 'Sztereó felvétel';
+
+  @override
+  String get stereoChannels => '2 csatorna (sztereó)';
+
+  @override
+  String get monoChannel => '1 csatorna (mono)';
+
+  @override
+  String get sampleRateLabel => 'Mintavételi frekvencia';
+
+  @override
+  String get nativeRateBadge => 'natív';
+
+  @override
+  String get microphoneGainLabel => 'Mikrofon erősítés';
+
+  @override
+  String get gainHint =>
+      '1x = nincs erősítés  •  3x ≈ +9,5 dB  •  10x ≈ +20 dB';
+
+  @override
+  String get tapToStartRec => 'Koppintson a felvétel indításához';
+
+  @override
+  String get tapToStopRec => 'Koppintson a felvétel leállításához';
+
+  @override
+  String get recordingCompleteLabel => 'Felvétel kész';
+
+  @override
+  String get tapMicToStop => 'Koppintson a mikrofonra a leállításhoz';
+
+  @override
+  String get playRecordingLabel => 'Felvétel lejátszása';
+
+  @override
+  String get stopPlaybackLabel => 'Leállítás';
+
+  @override
+  String get whisperSectionTitle => 'OpenAI Whisper átírás';
+
+  @override
+  String get whisperWavNote =>
+      'A WAV (16 bites PCM) formátumot a Whisper natívan támogatja — nincs szükség konverzióra.';
+
+  @override
+  String get sendToWhisperLabel => 'Küldés Whispernek';
+
+  @override
+  String get transcribingLabel => 'Átírás folyamatban...';
+
+  @override
+  String get transcriptionResultLabel => 'Átírás eredménye';
+
+  @override
+  String get transcriptionFailedLabel => 'Átírás sikertelen';
+
+  @override
+  String get debugInformationLabel => 'Hibakeresési információk';
+
+  @override
+  String get debugConsoleHint =>
+      'A részletes naplók a konzolon találhatók (logDebug())';
+
+  @override
+  String get debugDevicesFound => 'Talált eszközök';
+
+  @override
+  String get debugSelectedDevice => 'Kiválasztott eszköz';
+
+  @override
+  String get debugDeviceRateNative => 'Eszköz frekvencia (natív)';
+
+  @override
+  String get debugRequestedRate => 'Kért frekvencia';
+
+  @override
+  String get debugActualRate => 'Ténylegesen használt';
+
+  @override
+  String get debugActualRateForced => '⚠ felülírva';
+
+  @override
+  String get debugActualRateOk => '✓';
+
+  @override
+  String get debugRecordingMode => 'Felvételi mód';
+
+  @override
+  String get debugLastRecording => 'Utolsó felvétel';
+
+  @override
+  String get debugFileSize => 'Fájlméret';
+
+  @override
+  String get debugStereo => 'Sztereó';
+
+  @override
+  String get debugMono => 'Mono';
+
+  @override
+  String get recordingSavedSnack => 'Felvétel mentve';
+
+  @override
+  String get recordingTooShortSnack =>
+      'A felvétel túl rövid. Kérem, vegyen fel legalább 1 másodpercet.';
+
+  @override
+  String get recordingSmallSnack =>
+      'A felvétel fájl nagyon kicsi. Lehetséges, hogy a felvétel nem sikerült.';
+
+  @override
+  String get noAudioDataSnack => 'Nem lett hangadat rögzítve';
+
+  @override
+  String get noDeviceSelectedSnack => 'Kérjük, válasszon hangeszközt';
+
+  @override
+  String get failedToInitRtAudio => 'Az RTAudio inicializálása nem sikerült';
 }

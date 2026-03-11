@@ -71,4 +71,28 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
     await _repository.saveShowTrainingStatistics(show);
     state = state.copyWith(showTrainingStatistics: show);
   }
+
+  /// Persist and update Windows Audio Recording Test page settings
+  Future<void> setAudioTestSettings({
+    int? deviceId,
+    String? deviceName,
+    required bool stereo,
+    required int sampleRate,
+    required double gain,
+  }) async {
+    await _repository.saveAudioTestSettings(
+      deviceId: deviceId,
+      deviceName: deviceName,
+      stereo: stereo,
+      sampleRate: sampleRate,
+      gain: gain,
+    );
+    state = state.copyWith(
+      audioTestDeviceId:   deviceId,
+      audioTestDeviceName: deviceName,
+      audioTestStereo:     stereo,
+      audioTestSampleRate: sampleRate,
+      audioTestGain:       gain,
+    );
+  }
 }

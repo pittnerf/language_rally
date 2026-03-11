@@ -20,6 +20,13 @@ class AppSettingsRepository {
   static const String _keyShowTrainingExamples = 'show_training_examples';
   static const String _keyShowTrainingStatistics = 'show_training_statistics';
 
+  // ── Windows Audio Recording Test ─────────────────────────────────────────
+  static const String _keyAudioTestDeviceId   = 'audio_test_device_id';
+  static const String _keyAudioTestDeviceName = 'audio_test_device_name';
+  static const String _keyAudioTestStereo     = 'audio_test_stereo';
+  static const String _keyAudioTestSampleRate = 'audio_test_sample_rate';
+  static const String _keyAudioTestGain       = 'audio_test_gain';
+
   /// Load app settings from SharedPreferences
   Future<AppSettings> loadSettings() async {
     try {
@@ -52,6 +59,11 @@ class AppSettingsRepository {
         lastTrainedPackageId: prefs.getString(_keyLastTrainedPackageId),
         showTrainingExamples: prefs.getBool(_keyShowTrainingExamples) ?? true,
         showTrainingStatistics: prefs.getBool(_keyShowTrainingStatistics) ?? true,
+        audioTestDeviceId:   prefs.getInt(_keyAudioTestDeviceId),
+        audioTestDeviceName: prefs.getString(_keyAudioTestDeviceName),
+        audioTestStereo:     prefs.getBool(_keyAudioTestStereo) ?? false,
+        audioTestSampleRate: prefs.getInt(_keyAudioTestSampleRate) ?? 48000,
+        audioTestGain:       prefs.getDouble(_keyAudioTestGain) ?? 3.0,
       );
 
       logDebug('✅ Settings loaded successfully');
@@ -204,6 +216,31 @@ class AppSettingsRepository {
   Future<void> saveShowTrainingStatistics(bool show) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_keyShowTrainingStatistics, show);
+  }
+
+  /// Save Windows Audio Recording Test page settings
+  Future<void> saveAudioTestSettings({
+    int? deviceId,
+    String? deviceName,
+    required bool stereo,
+    required int sampleRate,
+    required double gain,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (deviceId != null) {
+      await prefs.setInt(_keyAudioTestDeviceId, deviceId);
+    } else {
+      await prefs.remove(_keyAudioTestDeviceId);
+    }
+    if (deviceName != null && deviceName.isNotEmpty) {
+      await prefs.setString(_keyAudioTestDeviceName, deviceName);
+    } else {
+      await prefs.remove(_keyAudioTestDeviceName);
+    }
+    await prefs.setBool(_keyAudioTestStereo, stereo);
+    await prefs.setInt(_keyAudioTestSampleRate, sampleRate);
+    await prefs.setDouble(_keyAudioTestGain, gain);
+    logDebug('💾 Audio test settings saved: deviceId=$deviceId stereo=$stereo rate=$sampleRate gain=$gain');
   }
 }
 

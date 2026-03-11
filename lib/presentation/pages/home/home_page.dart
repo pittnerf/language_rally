@@ -10,6 +10,7 @@ import '../training/training_settings_page.dart';
 import '../dev/test_data_page.dart';
 import '../settings/app_settings_page.dart';
 import '../app_tour/app_tour_page.dart';
+import '../test/windows_audio_recording_test_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -461,6 +462,30 @@ class _HomePageState extends ConsumerState<HomePage> {
           icon: Icon(Icons.science, size: iconSize),
           label: Text(
             localizations.generateTestData,
+            style: TextStyle(fontSize: fontSize),
+          ),
+          style: OutlinedButton.styleFrom(
+            padding: buttonPadding,
+            side: BorderSide(
+              color: theme.colorScheme.secondary,
+              width: 2,
+            ),
+            foregroundColor: theme.colorScheme.secondary,
+          ),
+        ),
+        const SizedBox(height: AppTheme.spacing12),
+
+        // Windows Audio Recording Test Button (Dev Tool)
+        OutlinedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const WindowsAudioRecordingTestPage()),
+            );
+          },
+          icon: Icon(Icons.mic_external_on, size: iconSize),
+          label: Text(
+            'Windows Audio Test',
             style: TextStyle(fontSize: fontSize),
           ),
           style: OutlinedButton.styleFrom(

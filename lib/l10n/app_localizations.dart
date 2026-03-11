@@ -3169,6 +3169,306 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Practiced'**
   String get practiced;
+
+  /// No description provided for @windowsAudioTestPageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Windows Audio Test (RTAudio)'**
+  String get windowsAudioTestPageTitle;
+
+  /// No description provided for @configureWindowsAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Test and configure audio input on Windows'**
+  String get configureWindowsAudio;
+
+  /// No description provided for @configureWindowsAudioDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Record, play back and transcribe audio using the native Windows RTAudio driver'**
+  String get configureWindowsAudioDescription;
+
+  /// No description provided for @audioTestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Windows Audio Recording Test'**
+  String get audioTestTitle;
+
+  /// No description provided for @audioTestSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'RTAudio — Native Windows audio recording'**
+  String get audioTestSubtitle;
+
+  /// No description provided for @audioInputDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Input Device'**
+  String get audioInputDevice;
+
+  /// No description provided for @selectMicrophone.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Microphone'**
+  String get selectMicrophone;
+
+  /// No description provided for @refreshDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh Devices'**
+  String get refreshDevices;
+
+  /// No description provided for @noAudioDevicesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No audio input devices found'**
+  String get noAudioDevicesFound;
+
+  /// No description provided for @loadingAudioDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading audio devices...'**
+  String get loadingAudioDevices;
+
+  /// No description provided for @recordingSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording Settings'**
+  String get recordingSettings;
+
+  /// No description provided for @stereoRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Stereo Recording'**
+  String get stereoRecording;
+
+  /// No description provided for @stereoChannels.
+  ///
+  /// In en, this message translates to:
+  /// **'2 channels (stereo)'**
+  String get stereoChannels;
+
+  /// No description provided for @monoChannel.
+  ///
+  /// In en, this message translates to:
+  /// **'1 channel (mono)'**
+  String get monoChannel;
+
+  /// No description provided for @sampleRateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample Rate'**
+  String get sampleRateLabel;
+
+  /// No description provided for @nativeRateBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'native'**
+  String get nativeRateBadge;
+
+  /// No description provided for @microphoneGainLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone Gain'**
+  String get microphoneGainLabel;
+
+  /// No description provided for @gainHint.
+  ///
+  /// In en, this message translates to:
+  /// **'1x = no boost  •  3x ≈ +9.5 dB  •  10x ≈ +20 dB'**
+  String get gainHint;
+
+  /// No description provided for @tapToStartRec.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to Start Recording'**
+  String get tapToStartRec;
+
+  /// No description provided for @tapToStopRec.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to Stop Recording'**
+  String get tapToStopRec;
+
+  /// No description provided for @recordingCompleteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording Complete'**
+  String get recordingCompleteLabel;
+
+  /// No description provided for @tapMicToStop.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap microphone to stop'**
+  String get tapMicToStop;
+
+  /// No description provided for @playRecordingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Play Recording'**
+  String get playRecordingLabel;
+
+  /// No description provided for @stopPlaybackLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop'**
+  String get stopPlaybackLabel;
+
+  /// No description provided for @whisperSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'OpenAI Whisper Transcription'**
+  String get whisperSectionTitle;
+
+  /// No description provided for @whisperWavNote.
+  ///
+  /// In en, this message translates to:
+  /// **'WAV (16-bit PCM) is natively supported by Whisper — no conversion needed.'**
+  String get whisperWavNote;
+
+  /// No description provided for @sendToWhisperLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Send to Whisper'**
+  String get sendToWhisperLabel;
+
+  /// No description provided for @transcribingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcribing...'**
+  String get transcribingLabel;
+
+  /// No description provided for @transcriptionResultLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcription Result'**
+  String get transcriptionResultLabel;
+
+  /// No description provided for @transcriptionFailedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Transcription Failed'**
+  String get transcriptionFailedLabel;
+
+  /// No description provided for @debugInformationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Debug Information'**
+  String get debugInformationLabel;
+
+  /// No description provided for @debugConsoleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Check the console for detailed debug logs using logDebug()'**
+  String get debugConsoleHint;
+
+  /// No description provided for @debugDevicesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Devices Found'**
+  String get debugDevicesFound;
+
+  /// No description provided for @debugSelectedDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected Device'**
+  String get debugSelectedDevice;
+
+  /// No description provided for @debugDeviceRateNative.
+  ///
+  /// In en, this message translates to:
+  /// **'Device Rate (native)'**
+  String get debugDeviceRateNative;
+
+  /// No description provided for @debugRequestedRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested Rate'**
+  String get debugRequestedRate;
+
+  /// No description provided for @debugActualRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Actual Rate Used'**
+  String get debugActualRate;
+
+  /// No description provided for @debugActualRateForced.
+  ///
+  /// In en, this message translates to:
+  /// **'⚠ forced'**
+  String get debugActualRateForced;
+
+  /// No description provided for @debugActualRateOk.
+  ///
+  /// In en, this message translates to:
+  /// **'✓'**
+  String get debugActualRateOk;
+
+  /// No description provided for @debugRecordingMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording Mode'**
+  String get debugRecordingMode;
+
+  /// No description provided for @debugLastRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Recording'**
+  String get debugLastRecording;
+
+  /// No description provided for @debugFileSize.
+  ///
+  /// In en, this message translates to:
+  /// **'File Size'**
+  String get debugFileSize;
+
+  /// No description provided for @debugStereo.
+  ///
+  /// In en, this message translates to:
+  /// **'Stereo'**
+  String get debugStereo;
+
+  /// No description provided for @debugMono.
+  ///
+  /// In en, this message translates to:
+  /// **'Mono'**
+  String get debugMono;
+
+  /// No description provided for @recordingSavedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording saved'**
+  String get recordingSavedSnack;
+
+  /// No description provided for @recordingTooShortSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording is too short. Please record for at least 1 second.'**
+  String get recordingTooShortSnack;
+
+  /// No description provided for @recordingSmallSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording file is very small. Recording may have failed.'**
+  String get recordingSmallSnack;
+
+  /// No description provided for @noAudioDataSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'No audio data recorded'**
+  String get noAudioDataSnack;
+
+  /// No description provided for @noDeviceSelectedSnack.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select an audio device'**
+  String get noDeviceSelectedSnack;
+
+  /// No description provided for @failedToInitRtAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to initialize RTAudio'**
+  String get failedToInitRtAudio;
 }
 
 class _AppLocalizationsDelegate

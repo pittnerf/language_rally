@@ -1699,4 +1699,160 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get practiced => 'Practiced';
+
+  @override
+  String get windowsAudioTestPageTitle => 'Windows Audio Test (RTAudio)';
+
+  @override
+  String get configureWindowsAudio =>
+      'Test and configure audio input on Windows';
+
+  @override
+  String get configureWindowsAudioDescription =>
+      'Record, play back and transcribe audio using the native Windows RTAudio driver';
+
+  @override
+  String get audioTestTitle => 'Windows Audio Recording Test';
+
+  @override
+  String get audioTestSubtitle => 'RTAudio — Native Windows audio recording';
+
+  @override
+  String get audioInputDevice => 'Audio Input Device';
+
+  @override
+  String get selectMicrophone => 'Select Microphone';
+
+  @override
+  String get refreshDevices => 'Refresh Devices';
+
+  @override
+  String get noAudioDevicesFound => 'No audio input devices found';
+
+  @override
+  String get loadingAudioDevices => 'Loading audio devices...';
+
+  @override
+  String get recordingSettings => 'Recording Settings';
+
+  @override
+  String get stereoRecording => 'Stereo Recording';
+
+  @override
+  String get stereoChannels => '2 channels (stereo)';
+
+  @override
+  String get monoChannel => '1 channel (mono)';
+
+  @override
+  String get sampleRateLabel => 'Sample Rate';
+
+  @override
+  String get nativeRateBadge => 'native';
+
+  @override
+  String get microphoneGainLabel => 'Microphone Gain';
+
+  @override
+  String get gainHint => '1x = no boost  •  3x ≈ +9.5 dB  •  10x ≈ +20 dB';
+
+  @override
+  String get tapToStartRec => 'Tap to Start Recording';
+
+  @override
+  String get tapToStopRec => 'Tap to Stop Recording';
+
+  @override
+  String get recordingCompleteLabel => 'Recording Complete';
+
+  @override
+  String get tapMicToStop => 'Tap microphone to stop';
+
+  @override
+  String get playRecordingLabel => 'Play Recording';
+
+  @override
+  String get stopPlaybackLabel => 'Stop';
+
+  @override
+  String get whisperSectionTitle => 'OpenAI Whisper Transcription';
+
+  @override
+  String get whisperWavNote =>
+      'WAV (16-bit PCM) is natively supported by Whisper — no conversion needed.';
+
+  @override
+  String get sendToWhisperLabel => 'Send to Whisper';
+
+  @override
+  String get transcribingLabel => 'Transcribing...';
+
+  @override
+  String get transcriptionResultLabel => 'Transcription Result';
+
+  @override
+  String get transcriptionFailedLabel => 'Transcription Failed';
+
+  @override
+  String get debugInformationLabel => 'Debug Information';
+
+  @override
+  String get debugConsoleHint =>
+      'Check the console for detailed debug logs using logDebug()';
+
+  @override
+  String get debugDevicesFound => 'Devices Found';
+
+  @override
+  String get debugSelectedDevice => 'Selected Device';
+
+  @override
+  String get debugDeviceRateNative => 'Device Rate (native)';
+
+  @override
+  String get debugRequestedRate => 'Requested Rate';
+
+  @override
+  String get debugActualRate => 'Actual Rate Used';
+
+  @override
+  String get debugActualRateForced => '⚠ forced';
+
+  @override
+  String get debugActualRateOk => '✓';
+
+  @override
+  String get debugRecordingMode => 'Recording Mode';
+
+  @override
+  String get debugLastRecording => 'Last Recording';
+
+  @override
+  String get debugFileSize => 'File Size';
+
+  @override
+  String get debugStereo => 'Stereo';
+
+  @override
+  String get debugMono => 'Mono';
+
+  @override
+  String get recordingSavedSnack => 'Recording saved';
+
+  @override
+  String get recordingTooShortSnack =>
+      'Recording is too short. Please record for at least 1 second.';
+
+  @override
+  String get recordingSmallSnack =>
+      'Recording file is very small. Recording may have failed.';
+
+  @override
+  String get noAudioDataSnack => 'No audio data recorded';
+
+  @override
+  String get noDeviceSelectedSnack => 'Please select an audio device';
+
+  @override
+  String get failedToInitRtAudio => 'Failed to initialize RTAudio';
 }

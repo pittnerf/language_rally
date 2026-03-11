@@ -50,6 +50,56 @@ endfunction()
 set(FLUTTER_MANAGED_DIR "${CMAKE_CURRENT_SOURCE_DIR}/flutter")
 add_subdirectory(${FLUTTER_MANAGED_DIR})
 
+# RTAudio Plugin
+add_library(rtaudio_plugin STATIC
+  "rtaudio_plugin.cpp"
+  "rtaudio_plugin.h"
+  "rtaudio_plugin_registrar.cc"
+  "rtaudio_plugin_c_api.cpp"
+  "rtaudio_plugin_c_api.h"
+  "RtAudio.cpp"
+  "RtAudio.h"
+)
+
+# Ensure Flutter is built first
+add_dependencies(rtaudio_plugin flutter flutter_assemble flutter_wrapper_plugin)
+
+apply_standard_settings(rtaudio_plugin)
+
+# Define RTAudio API (use WASAPI for Windows)
+target_compile_definitions(rtaudio_plugin PRIVATE __WINDOWS_WASAPI__)
+
+# Link Windows audio libraries and Flutter
+target_link_libraries(rtaudio_plugin PRIVATE
+  flutter
+  flutter_wrapper_plugin
+  ksuser
+  mfplat
+  mfuuid
+  wmcodecdspuuid
+  mmdevapi
+  avrt
+  ole32
+  oleaut32
+  winmm
+)
+
+set_target_properties(rtaudio_plugin PROPERTIES
+  CXX_VISIBILITY_PRESET hidden
+)
+
+# Add Flutter include directories using the ephemeral path
+set(FLUTTER_EPHEMERAL_DIR "${FLUTTER_MANAGED_DIR}/ephemeral")
+target_include_directories(rtaudio_plugin PRIVATE
+  "${CMAKE_CURRENT_SOURCE_DIR}"
+  "${FLUTTER_EPHEMERAL_DIR}"
+  "${FLUTTER_EPHEMERAL_DIR}/cpp_client_wrapper/include"
+)
+
+target_include_directories(rtaudio_plugin INTERFACE
+  "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+
 # Application build; see runner/CMakeLists.txt.
 add_subdirectory("runner")
 

@@ -37,6 +37,18 @@ class AppSettings extends Equatable {
   /// Show training statistics chart in training rally page (hidden setting)
   final bool showTrainingStatistics;
 
+  // ── Windows Audio Recording Test settings ────────────────────────────────
+  /// Last selected audio input device ID
+  final int? audioTestDeviceId;
+  /// Last selected audio input device name (for display before RTAudio loads)
+  final String? audioTestDeviceName;
+  /// Stereo (true) or mono (false)
+  final bool audioTestStereo;
+  /// Sample rate in Hz
+  final int audioTestSampleRate;
+  /// Microphone gain multiplier
+  final double audioTestGain;
+
   const AppSettings({
     this.userLanguageCode = 'en-US',
     this.userLanguageName = 'English (United States)',
@@ -48,12 +60,17 @@ class AppSettings extends Equatable {
     this.lastTrainedPackageId,
     this.showTrainingExamples = true,
     this.showTrainingStatistics = true,
+    this.audioTestDeviceId,
+    this.audioTestDeviceName,
+    this.audioTestStereo = false,
+    this.audioTestSampleRate = 48000,
+    this.audioTestGain = 3.0,
   });
 
   AppSettings copyWith({
     String? userLanguageCode,
     String? userLanguageName,
-    Object? deeplApiKey = _sentinel,  // Use sentinel to distinguish null from "not provided"
+    Object? deeplApiKey = _sentinel,
     Object? openaiApiKey = _sentinel,
     String? openaiModel,
     String? aiKnowledgeLevel,
@@ -61,6 +78,11 @@ class AppSettings extends Equatable {
     Object? lastTrainedPackageId = _sentinel,
     bool? showTrainingExamples,
     bool? showTrainingStatistics,
+    Object? audioTestDeviceId = _sentinel,
+    Object? audioTestDeviceName = _sentinel,
+    bool? audioTestStereo,
+    int? audioTestSampleRate,
+    double? audioTestGain,
   }) {
     return AppSettings(
       userLanguageCode: userLanguageCode ?? this.userLanguageCode,
@@ -73,6 +95,11 @@ class AppSettings extends Equatable {
       lastTrainedPackageId: lastTrainedPackageId == _sentinel ? this.lastTrainedPackageId : lastTrainedPackageId as String?,
       showTrainingExamples: showTrainingExamples ?? this.showTrainingExamples,
       showTrainingStatistics: showTrainingStatistics ?? this.showTrainingStatistics,
+      audioTestDeviceId: audioTestDeviceId == _sentinel ? this.audioTestDeviceId : audioTestDeviceId as int?,
+      audioTestDeviceName: audioTestDeviceName == _sentinel ? this.audioTestDeviceName : audioTestDeviceName as String?,
+      audioTestStereo: audioTestStereo ?? this.audioTestStereo,
+      audioTestSampleRate: audioTestSampleRate ?? this.audioTestSampleRate,
+      audioTestGain: audioTestGain ?? this.audioTestGain,
     );
   }
 
@@ -88,6 +115,11 @@ class AppSettings extends Equatable {
         lastTrainedPackageId,
         showTrainingExamples,
         showTrainingStatistics,
+        audioTestDeviceId,
+        audioTestDeviceName,
+        audioTestStereo,
+        audioTestSampleRate,
+        audioTestGain,
       ];
 }
 

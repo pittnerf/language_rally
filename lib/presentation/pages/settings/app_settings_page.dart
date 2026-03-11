@@ -3,6 +3,7 @@
 // Application Settings Page
 //
 
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
@@ -12,6 +13,7 @@ import '../../providers/app_settings_provider.dart';
 import '../../providers/locale_provider.dart';
 import '../../widgets/clickable_text.dart';
 import '../../../core/utils/debug_print.dart';
+import '../test/windows_audio_recording_test_page.dart';
 
 class AppSettingsPage extends ConsumerStatefulWidget {
   const AppSettingsPage({super.key});
@@ -127,32 +129,78 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(AppTheme.spacing16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // UI Language Section
-            _buildSectionHeader(
-              theme,
-              Icons.translate,
-              l10n.uiLanguage,
-              l10n.uiLanguageDescription,
-            ),
-            const SizedBox(height: AppTheme.spacing12),
-            _buildUiLanguageDropdown(context, l10n, theme),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // Use side-by-side layout when the available width is tablet/landscape
+            final bool isWide = constraints.maxWidth >= 600;
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
 
-            const SizedBox(height: AppTheme.spacing24),
+                // ── Language row: side-by-side in wide mode ─────────────────
+                if (isWide) ...[
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // UI Language — left half
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildSectionHeader(
+                              theme,
+                              Icons.translate,
+                              l10n.uiLanguage,
+                              l10n.uiLanguageDescription,
+                            ),
+                            const SizedBox(height: AppTheme.spacing12),
+                            _buildUiLanguageDropdown(context, l10n, theme),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: AppTheme.spacing16),
+                      // User Language — right half
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _buildSectionHeader(
+                              theme,
+                              Icons.language,
+                              l10n.userLanguage,
+                              l10n.userLanguageDescription,
+                            ),
+                            const SizedBox(height: AppTheme.spacing12),
+                            _buildLanguageNameAutocomplete(context, l10n, theme),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ] else ...[
+                  // Narrow / portrait — stack vertically as before
+                  _buildSectionHeader(
+                    theme,
+                    Icons.translate,
+                    l10n.uiLanguage,
+                    l10n.uiLanguageDescription,
+                  ),
+                  const SizedBox(height: AppTheme.spacing12),
+                  _buildUiLanguageDropdown(context, l10n, theme),
 
-            // User Language Section
-            _buildSectionHeader(
-              theme,
-              Icons.language,
-              l10n.userLanguage,
-              l10n.userLanguageDescription,
-            ),
-            const SizedBox(height: AppTheme.spacing12),
-            _buildLanguageNameAutocomplete(context, l10n, theme),
+                  const SizedBox(height: AppTheme.spacing24),
 
-            const SizedBox(height: AppTheme.spacing24),
+                  _buildSectionHeader(
+                    theme,
+                    Icons.language,
+                    l10n.userLanguage,
+                    l10n.userLanguageDescription,
+                  ),
+                  const SizedBox(height: AppTheme.spacing12),
+                  _buildLanguageNameAutocomplete(context, l10n, theme),
+                ],
+
+                const SizedBox(height: AppTheme.spacing24),
 
             // API Keys Section
             _buildSectionHeader(
@@ -193,10 +241,65 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
               theme: theme,
               settings: settings,
             ),
-          ],
-        ),
-      ),
-    );
+
+            const SizedBox(height: AppTheme.spacing24),
+
+            // Windows Audio Input Section
+            _buildSectionHeader(
+              theme,
+              Icons.mic,
+              l10n.configureWindowsAudio,
+              l10n.configureWindowsAudioDescription,
+            ),
+            const SizedBox(height: AppTheme.spacing12),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: Platform.isWindows
+                    ? () => Navigator.of(context).push(MaterialPageRoute(
+                          builder: (_) => const WindowsAudioRecordingTestPage(),
+                        ))
+                    : null,
+                icon: Icon(
+                  Icons.settings_input_component,
+                  color: Platform.isWindows
+                      ? theme.colorScheme.primary
+                      : theme.disabledColor,
+                ),
+                label: Text(l10n.configureWindowsAudio),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: AppTheme.spacing16,
+                    horizontal: AppTheme.spacing16,
+                  ),
+                  side: BorderSide(
+                    color: Platform.isWindows
+                        ? theme.colorScheme.primary
+                        : theme.disabledColor,
+                  ),
+                  foregroundColor: Platform.isWindows
+                      ? theme.colorScheme.primary
+                      : theme.disabledColor,
+                ),
+              ),
+            ),
+            if (!Platform.isWindows)
+              Padding(
+                padding: const EdgeInsets.only(top: AppTheme.spacing8),
+                child: Text(
+                  'Windows only',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.disabledColor,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ),
+            ],
+          );  // Column
+        },   // LayoutBuilder builder
+        ),   // LayoutBuilder
+      ),     // SingleChildScrollView
+    );       // Scaffold
   }
 
   Widget _buildSectionHeader(
