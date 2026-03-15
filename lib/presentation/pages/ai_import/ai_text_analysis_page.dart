@@ -6,6 +6,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/text_analysis_service.dart';
 import '../../../data/models/language_package.dart';
@@ -803,6 +804,9 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
       _cancelRequested = false;
     });
 
+    // Keep the screen on during the entire analysis + import flow
+    await WakelockPlus.enable();
+
     logDebug('═══════════════════════════════════════════════════════════');
     logDebug('🔍 STARTING TEXT ANALYSIS');
     logDebug('═══════════════════════════════════════════════════════════');
@@ -992,6 +996,9 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
         _showDetailedErrorDialog(l10n.errorAnalyzingText, e.toString());
       }
     } finally {
+      // Re-enable screen lock now that we're done
+      await WakelockPlus.disable();
+
       if (mounted) {
         setState(() {
           _isAnalyzing = false;

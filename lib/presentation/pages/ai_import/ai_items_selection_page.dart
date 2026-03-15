@@ -6,6 +6,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/text_analysis_service.dart';
 import '../../../core/services/deepl_service.dart';
@@ -370,6 +371,9 @@ class _AIItemsSelectionPageState extends ConsumerState<AIItemsSelectionPage> {
       _cancelRequested = false;
     });
 
+    // Keep screen on during the entire import — API calls + DB writes can take minutes
+    await WakelockPlus.enable();
+
     logDebug('═══════════════════════════════════════════════════════════');
     logDebug('🚀 STARTING IMPORT PROCESS');
     logDebug('═══════════════════════════════════════════════════════════');
@@ -607,6 +611,7 @@ class _AIItemsSelectionPageState extends ConsumerState<AIItemsSelectionPage> {
         _showDetailedErrorDialog(l10n.errorImportingItems, e.toString());
       }
     } finally {
+      await WakelockPlus.disable();
       if (mounted) {
         setState(() {
           _isImporting = false;

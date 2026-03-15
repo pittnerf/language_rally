@@ -3353,13 +3353,13 @@ abstract class AppLocalizations {
   /// No description provided for @debugInformationLabel.
   ///
   /// In en, this message translates to:
-  /// **'Debug Information'**
+  /// **'Information'**
   String get debugInformationLabel;
 
   /// No description provided for @debugConsoleHint.
   ///
   /// In en, this message translates to:
-  /// **'Check the console for detailed debug logs using logDebug()'**
+  /// **'Check the console for detailed logs'**
   String get debugConsoleHint;
 
   /// No description provided for @debugDevicesFound.

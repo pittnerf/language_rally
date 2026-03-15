@@ -5,7 +5,6 @@
 // This class provides a Dart interface to the native RTAudio recording functionality
 
 import 'dart:async';
-import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import '../utils/debug_print.dart';
 
@@ -235,6 +234,24 @@ class RtAudioRecorder {
 
   /// Check if currently recording
   bool get isRecording => _isRecording;
+
+  /// Direct WASAPI test – completely bypasses RTAudio.
+  /// Returns a map with keys:
+  ///   ok, deviceName, formatTag, sampleRate, channels, bitsPerSample, subformat,
+  ///   totalFrames, nonZeroFrames, silentFlagSeen, packetCount, error
+  Future<Map<String, dynamic>> testDirectWasapi({String? deviceWasapiId}) async {
+    try {
+      final args = <String, dynamic>{};
+      if (deviceWasapiId != null) args['deviceWasapiId'] = deviceWasapiId;
+      final result = await _channel.invokeMethod('testDirectWasapi', args);
+      if (result is Map) {
+        return Map<String, dynamic>.from(result);
+      }
+      return {'ok': false, 'error': 'unexpected result type'};
+    } catch (e) {
+      return {'ok': false, 'error': e.toString()};
+    }
+  }
 
   /// Dispose resources
   Future<void> dispose() async {

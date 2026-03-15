@@ -78,6 +78,9 @@ class RtAudioPlugin {
                  std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
   void StopAudio(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
   void Dispose(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+  // Direct WASAPI diagnostic – bypasses RTAudio entirely
+  void TestDirectWasapi(const flutter::EncodableMap& args,
+                        std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
 };
 
 }  // namespace language_rally

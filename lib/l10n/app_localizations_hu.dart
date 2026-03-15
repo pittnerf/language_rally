@@ -1803,11 +1803,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get transcriptionFailedLabel => 'Átírás sikertelen';
 
   @override
-  String get debugInformationLabel => 'Hibakeresési információk';
+  String get debugInformationLabel => 'Információk';
 
   @override
-  String get debugConsoleHint =>
-      'A részletes naplók a konzolon találhatók (logDebug())';
+  String get debugConsoleHint => 'A részletes naplók a konzolon találhatók';
 
   @override
   String get debugDevicesFound => 'Talált eszközök';

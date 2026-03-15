@@ -21,6 +21,8 @@ import 'dart:math' as math;
 import 'dart:io';
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/tts_service.dart';
@@ -630,14 +632,14 @@ class _PronunciationPracticePageState
         }
 
         final directory = await getTemporaryDirectory();
-        final filePath = '${directory.path}/recording_${DateTime.now().millisecondsSinceEpoch}.m4a';
+        final filePath = '${directory.path}/recording_${DateTime.now().millisecondsSinceEpoch}.wav';
         logDebug('Audio file path: $filePath');
 
         await _audioRecorder.start(
           const RecordConfig(
-            encoder: AudioEncoder.aacLc,
-            sampleRate: 44100,
-            bitRate: 128000,
+            encoder: AudioEncoder.wav,
+            sampleRate: 16000, // 16 kHz mono — optimal for Whisper AND lightweight for analysis
+            numChannels: 1,
           ),
           path: filePath,
         );
@@ -761,12 +763,12 @@ class _PronunciationPracticePageState
           final hasPermission = await _audioRecorder.hasPermission();
           if (hasPermission) {
             final directory = await getTemporaryDirectory();
-            final filePath = '${directory.path}/recording_${DateTime.now().millisecondsSinceEpoch}.m4a';
+            final filePath = '${directory.path}/recording_${DateTime.now().millisecondsSinceEpoch}.wav';
             await _audioRecorder.start(
               const RecordConfig(
-                encoder: AudioEncoder.aacLc,
-                sampleRate: 44100,
-                bitRate: 128000,
+                encoder: AudioEncoder.wav,
+                sampleRate: 16000,
+                numChannels: 1,
               ),
               path: filePath,
             );
@@ -1100,19 +1102,38 @@ class _PronunciationPracticePageState
 
   Future<void> _generateReferenceAudio(String text, String languageCode) async {
     try {
+      if (!_useWhisperAPI) return; // Only when Whisper/OpenAI key is available
+
+      final appSettings = ref.read(appSettingsProvider);
+      final apiKey = appSettings.openaiApiKey;
+      if (apiKey == null || apiKey.isEmpty) return;
+
       final directory = await getTemporaryDirectory();
-      final filePath = '${directory.path}/reference_${DateTime.now().millisecondsSinceEpoch}.wav';
+      final filePath =
+          '${directory.path}/reference_${DateTime.now().millisecondsSinceEpoch}.wav';
 
-      // Note: TTS doesn't directly save to file in flutter_tts
-      // We'll use the TTS service to speak and capture the audio conceptually
-      // For a full implementation, you'd need a TTS service that can save to file
-      // or use platform-specific TTS APIs that support file output
+      logDebug('🔊 Generating reference audio via OpenAI TTS...');
+      final response = await http.post(
+        Uri.parse('https://api.openai.com/v1/audio/speech'),
+        headers: {
+          'Authorization': 'Bearer $apiKey',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'model': 'tts-1',
+          'input': text,
+          'voice': 'alloy',
+          'response_format': 'wav',
+        }),
+      );
 
-      _referenceAudioPath = filePath;
-
-      // This is a placeholder - in reality, you'd need to implement
-      // platform-specific code to save TTS output to a file
-      // For now, we'll work with the recorded audio only
+      if (response.statusCode == 200) {
+        await File(filePath).writeAsBytes(response.bodyBytes);
+        _referenceAudioPath = filePath;
+        logDebug('✓ Reference audio saved: $filePath');
+      } else {
+        logDebug('⚠️ TTS API error ${response.statusCode}: ${response.body}');
+      }
     } catch (e) {
       logDebug('Error generating reference audio: $e');
     }
@@ -1136,35 +1157,41 @@ class _PronunciationPracticePageState
     logDebug('   Expected: "$fullText"');
     logDebug('   Recorded: "$recorded"');
 
-    // 1. Word-level matching (primary metric for Whisper API)
+    // ── 1. Text score (word + character similarity) ───────────────────────
     final expectedWords = fullText.split(RegExp(r'\s+'));
     final recordedWords = recorded.split(RegExp(r'\s+'));
 
     int matchedWords = 0;
     for (final word in recordedWords) {
-      if (expectedWords.any((expected) => expected.contains(word) || word.contains(expected))) {
+      if (expectedWords.any(
+          (expected) => expected.contains(word) || word.contains(expected))) {
         matchedWords++;
       }
     }
-
     final wordMatchRate = expectedWords.isNotEmpty
         ? matchedWords / expectedWords.length
         : 0.0;
 
-    logDebug('   Word match: $matchedWords/${expectedWords.length} = ${(wordMatchRate * 100).toStringAsFixed(1)}%');
-
-    // 2. Character-level similarity (Levenshtein distance)
     final charMatchRate = _calculateStringSimilarity(fullText, recorded);
+
+    logDebug('   Word match: $matchedWords/${expectedWords.length} = ${(wordMatchRate * 100).toStringAsFixed(1)}%');
     logDebug('   Char similarity: ${(charMatchRate * 100).toStringAsFixed(1)}%');
 
-    // For Whisper API: prioritize word matching (90%) with character similarity (10%)
-    // This gives better results since Whisper transcription is highly accurate
-    final combinedRate = _useWhisperAPI
+    // Whisper transcription is highly accurate → weight words more
+    final textScore = _useWhisperAPI
         ? (wordMatchRate * 0.9 + charMatchRate * 0.1)
         : (wordMatchRate * 0.7 + charMatchRate * 0.3);
 
-    final finalRate = (combinedRate * 100).clamp(0.0, 100.0);
-    logDebug('   Final rate: ${finalRate.toStringAsFixed(1)}%');
+    // ── 2. Audio score (volume envelope + rhythm) ─────────────────────────
+    final audioScore = await _analyzeAudioSimilarity(fullText);
+
+    logDebug('   Text score : ${(textScore  * 100).toStringAsFixed(1)}%');
+    logDebug('   Audio score: ${(audioScore * 100).toStringAsFixed(1)}%');
+
+    // ── 3. Final score: 50 % text + 50 % audio ───────────────────────────
+    final finalRate = ((textScore * 0.5 + audioScore * 0.5) * 100)
+        .clamp(0.0, 100.0);
+    logDebug('   Final rate : ${finalRate.toStringAsFixed(1)}%');
 
     setState(() {
       _matchRate = finalRate;
@@ -1192,98 +1219,240 @@ class _PronunciationPracticePageState
     return matches / maxLen;
   }
 
-  /// Analyzes audio characteristics: volume patterns and rhythm
-  /// Returns a normalized score between 0.0 and 1.0
+  /// Analyzes audio characteristics: volume patterns and rhythm.
+  /// When a reference WAV (from OpenAI TTS) is available the user's recording
+  /// is compared directly against it; otherwise text-based heuristics are used.
+  /// Returns a normalized score between 0.0 and 1.0.
   Future<double> _analyzeAudioSimilarity(String expectedText) async {
     try {
-      if (_recordedAudioPath == null || !await File(_recordedAudioPath!).exists()) {
+      if (_recordedAudioPath == null ||
+          !await File(_recordedAudioPath!).exists()) {
         return 0.0;
       }
 
-      // Read the audio file
-      final audioFile = File(_recordedAudioPath!);
-      final audioBytes = await audioFile.readAsBytes();
+      final userBytes    = await File(_recordedAudioPath!).readAsBytes();
+      final userFeatures = _extractAudioFeatures(userBytes);
+      final userVolume   = List<double>.from(
+          userFeatures['volumePattern'] as List? ?? []);
 
-      // Extract audio features
-      final audioFeatures = _extractAudioFeatures(audioBytes);
+      double durationScore;
+      double volumeScore;
+      double rhythmScore;
 
-      // Calculate expected duration based on text length
-      // Average speaking rate: ~150 words per minute = 2.5 words per second
-      final words = expectedText.split(RegExp(r'\s+'));
-      final expectedDuration = words.length / 2.5; // in seconds
+      final hasReference = _referenceAudioPath != null &&
+          await File(_referenceAudioPath!).exists();
 
-      // 1. Duration similarity (normalized)
-      final durationScore = _calculateDurationScore(
-        audioFeatures['duration'] ?? 0.0,
-        expectedDuration,
-      );
+      if (hasReference) {
+        // ── Direct audio-vs-audio comparison ────────────────────────────────
+        logDebug('🎵 Comparing user audio against reference audio...');
+        final refBytes    = await File(_referenceAudioPath!).readAsBytes();
+        final refFeatures = _extractAudioFeatures(refBytes);
+        final refVolume   = List<double>.from(
+            refFeatures['volumePattern'] as List? ?? []);
 
-      // 2. Volume/energy patterns (syllable stress detection)
-      final volumeScore = _calculateVolumePatternScore(
-        audioFeatures['volumePattern'] ?? [],
-        words.length,
-      );
+        final userDuration = userFeatures['duration'] as double? ?? 0.0;
+        final refDuration  = refFeatures['duration']  as double? ?? 0.0;
+        durationScore = refDuration > 0
+            ? _calculateDurationScore(userDuration, refDuration)
+            : 0.0;
 
-      // 3. Rhythm score (pauses and pacing)
-      final rhythmScore = _calculateRhythmScore(
-        audioFeatures['volumePattern'] ?? [],
-        words.length,
-      );
+        volumeScore  = _compareVolumeEnvelopes(userVolume, refVolume);
+        rhythmScore  = _compareRhythmPatterns(userVolume, refVolume);
 
-      // Combine audio metrics
-      final audioScore = (durationScore * 0.3 + volumeScore * 0.4 + rhythmScore * 0.3);
+        logDebug('   Duration score : ${(durationScore * 100).toStringAsFixed(1)}%');
+        logDebug('   Envelope score : ${(volumeScore  * 100).toStringAsFixed(1)}%');
+        logDebug('   Rhythm score   : ${(rhythmScore  * 100).toStringAsFixed(1)}%');
+      } else {
+        // ── Fallback: text-based temporal expectations ───────────────────────
+        logDebug('🎵 No reference audio — using text-based audio heuristics...');
+        final words = expectedText.split(RegExp(r'\s+'));
+        final expectedDuration = words.length / 2.5; // ~150 wpm
 
-      return audioScore.clamp(0.0, 1.0);
+        durationScore = _calculateDurationScore(
+            userFeatures['duration'] as double? ?? 0.0, expectedDuration);
+        volumeScore   = _calculateVolumePatternScore(userVolume, words.length);
+        rhythmScore   = _calculateRhythmScore(userVolume, words.length);
+      }
+
+      final score =
+          (durationScore * 0.3 + volumeScore * 0.4 + rhythmScore * 0.3)
+              .clamp(0.0, 1.0);
+      logDebug('   Audio similarity score: ${(score * 100).toStringAsFixed(1)}%');
+      return score;
     } catch (e) {
       logDebug('Error analyzing audio similarity: $e');
       return 0.0;
     }
   }
 
-  /// Extract basic audio features from raw audio data
-  Map<String, dynamic> _extractAudioFeatures(Uint8List audioBytes) {
-    // This is a simplified implementation
-    // For production, you'd use audio processing libraries
+  // ── Audio comparison helpers ───────────────────────────────────────────────
 
-    // Estimate duration from file size (very rough approximation)
-    // AAC LC at 128kbps = 16KB per second
-    final durationSeconds = audioBytes.length / (16 * 1024);
+  /// Compare two volume envelopes by resampling both to 100 points and
+  /// computing the Pearson correlation (remapped to [0, 1]).
+  double _compareVolumeEnvelopes(List<double> user, List<double> reference) {
+    if (user.isEmpty || reference.isEmpty) return 0.0;
+    return _pearsonCorrelation(
+        _resamplePattern(user, 100), _resamplePattern(reference, 100));
+  }
 
-    // Extract volume pattern by sampling the audio data
-    // This is a simplified approach - real implementation would need proper audio decoding
-    final volumePattern = <double>[];
-    const sampleInterval = 1000; // Sample every 1000 bytes
+  /// Compare rhythm by matching the relative positions of energy peaks.
+  double _compareRhythmPatterns(List<double> user, List<double> reference) {
+    if (user.isEmpty || reference.isEmpty) return 0.0;
 
-    for (int i = 0; i < audioBytes.length; i += sampleInterval) {
-      final endIdx = math.min(i + sampleInterval, audioBytes.length);
-      final chunk = audioBytes.sublist(i, endIdx);
+    final uPeaks = _findRelativePeakPositions(user);
+    final rPeaks = _findRelativePeakPositions(reference);
 
-      // Calculate RMS (root mean square) as volume indicator
-      double sumSquares = 0;
-      for (final byte in chunk) {
-        final normalized = (byte - 128) / 128.0; // Normalize to -1 to 1
-        sumSquares += normalized * normalized;
+    if (uPeaks.isEmpty && rPeaks.isEmpty) return 1.0;
+    if (uPeaks.isEmpty || rPeaks.isEmpty) return 0.0;
+
+    // Peak-count similarity
+    final countScore = 1.0 -
+        ((uPeaks.length - rPeaks.length).abs() /
+                math.max(uPeaks.length, rPeaks.length))
+            .clamp(0.0, 1.0);
+
+    // Average distance between each user peak and its nearest reference peak
+    double posScore = 0.0;
+    for (final up in uPeaks) {
+      final nearest =
+          rPeaks.reduce((a, b) => (a - up).abs() < (b - up).abs() ? a : b);
+      posScore += 1.0 - (up - nearest).abs().clamp(0.0, 1.0);
+    }
+    posScore /= uPeaks.length;
+
+    return (countScore * 0.4 + posScore * 0.6).clamp(0.0, 1.0);
+  }
+
+  /// Resample a pattern to [targetLength] using linear interpolation.
+  List<double> _resamplePattern(List<double> pattern, int targetLength) {
+    if (pattern.length == targetLength) return List.of(pattern);
+    if (pattern.isEmpty) return List.filled(targetLength, 0.0);
+    if (pattern.length == 1) return List.filled(targetLength, pattern[0]);
+
+    final result = List<double>.filled(targetLength, 0.0);
+    for (int i = 0; i < targetLength; i++) {
+      final src = i * (pattern.length - 1) / (targetLength - 1);
+      final lo  = src.floor().clamp(0, pattern.length - 1);
+      final hi  = (lo + 1).clamp(0, pattern.length - 1);
+      result[i] = pattern[lo] * (1 - (src - lo)) + pattern[hi] * (src - lo);
+    }
+    return result;
+  }
+
+  /// Pearson correlation coefficient, remapped from [-1, 1] → [0, 1].
+  double _pearsonCorrelation(List<double> a, List<double> b) {
+    if (a.length != b.length || a.length < 2) return 0.0;
+    final n    = a.length;
+    final meanA = a.reduce((x, y) => x + y) / n;
+    final meanB = b.reduce((x, y) => x + y) / n;
+
+    double cov = 0, varA = 0, varB = 0;
+    for (int i = 0; i < n; i++) {
+      final da = a[i] - meanA;
+      final db = b[i] - meanB;
+      cov  += da * db;
+      varA += da * da;
+      varB += db * db;
+    }
+    final denom = math.sqrt(varA * varB);
+    if (denom == 0) return 0.0;
+    return ((cov / denom) + 1.0) / 2.0; // remap to [0, 1]
+  }
+
+  /// Returns relative peak positions in [0.0, 1.0] for the given envelope.
+  /// Only peaks above 40 % of the maximum are considered significant.
+  List<double> _findRelativePeakPositions(List<double> pattern) {
+    if (pattern.length < 3) return [];
+    final threshold = pattern.reduce(math.max) * 0.4;
+    final peaks = <double>[];
+    for (int i = 1; i < pattern.length - 1; i++) {
+      if (pattern[i] > pattern[i - 1] &&
+          pattern[i] > pattern[i + 1] &&
+          pattern[i] > threshold) {
+        peaks.add(i / (pattern.length - 1));
       }
-      final rms = math.sqrt(sumSquares / chunk.length);
-      volumePattern.add(rms);
+    }
+    return peaks;
+  }
+
+  /// Extract audio features by properly parsing a WAV (PCM) file.
+  /// Returns duration (seconds), a normalized volume envelope, and averageVolume.
+  Map<String, dynamic> _extractAudioFeatures(Uint8List audioBytes) {
+    const empty = {'duration': 0.0, 'volumePattern': <double>[], 'averageVolume': 0.0};
+    if (audioBytes.length < 44) return empty;
+
+    // ── WAV header parsing ────────────────────────────────────────────────────
+    // Bytes 22-23: num channels  (little-endian uint16)
+    final numChannels = audioBytes[22] | (audioBytes[23] << 8);
+    // Bytes 24-27: sample rate   (little-endian uint32)
+    final sampleRate  = audioBytes[24] | (audioBytes[25] << 8) |
+                        (audioBytes[26] << 16) | (audioBytes[27] << 24);
+    // Bytes 34-35: bits per sample (little-endian uint16)
+    final bitsPerSample = audioBytes[34] | (audioBytes[35] << 8);
+
+    if (sampleRate == 0 || numChannels == 0 || bitsPerSample == 0) return empty;
+
+    // Walk chunks to find the 'data' chunk (handles LIST/INFO chunks gracefully)
+    int offset = 12; // skip 'RIFF' + fileSize + 'WAVE'
+    int dataOffset = -1;
+    int dataSize   = 0;
+    while (offset + 8 <= audioBytes.length) {
+      final id = String.fromCharCodes(audioBytes.sublist(offset, offset + 4));
+      final chunkSize = audioBytes[offset + 4] | (audioBytes[offset + 5] << 8) |
+                        (audioBytes[offset + 6] << 16) | (audioBytes[offset + 7] << 24);
+      if (id == 'data') {
+        dataOffset = offset + 8;
+        dataSize   = chunkSize;
+        break;
+      }
+      offset += 8 + chunkSize;
+    }
+    if (dataOffset < 0 || dataOffset >= audioBytes.length) return empty;
+
+    // ── PCM analysis ─────────────────────────────────────────────────────────
+    final bytesPerSample = bitsPerSample ~/ 8;
+    final frameSize      = numChannels * bytesPerSample;
+    final totalFrames    = dataSize ~/ frameSize;
+    final durationSeconds = totalFrames / sampleRate;
+
+    // 50 ms windows give fine-grained but not noisy envelope
+    final windowFrames = (sampleRate * 0.05).round().clamp(1, totalFrames);
+    final volumePattern = <double>[];
+
+    for (int frame = 0; frame < totalFrames; frame += windowFrames) {
+      final endFrame = math.min(frame + windowFrames, totalFrames);
+      double sumSq = 0;
+      for (int f = frame; f < endFrame; f++) {
+        final byteIdx = dataOffset + f * frameSize;
+        if (byteIdx + 1 >= audioBytes.length) break;
+        // Read first channel only (mono or left channel of stereo)
+        int raw = audioBytes[byteIdx] | (audioBytes[byteIdx + 1] << 8);
+        if (raw >= 32768) raw -= 65536; // two's-complement → signed
+        final norm = raw / 32768.0;
+        sumSq += norm * norm;
+      }
+      volumePattern.add(math.sqrt(sumSq / (endFrame - frame)));
     }
 
-    // Normalize volume pattern
+    // Normalize envelope to [0, 1]
     if (volumePattern.isNotEmpty) {
-      final maxVolume = volumePattern.reduce(math.max);
-      if (maxVolume > 0) {
+      final peak = volumePattern.reduce(math.max);
+      if (peak > 0) {
         for (int i = 0; i < volumePattern.length; i++) {
-          volumePattern[i] = volumePattern[i] / maxVolume;
+          volumePattern[i] /= peak;
         }
       }
     }
 
+    final avgVol = volumePattern.isEmpty
+        ? 0.0
+        : volumePattern.reduce((a, b) => a + b) / volumePattern.length;
+
     return {
-      'duration': durationSeconds,
-      'volumePattern': volumePattern,
-      'averageVolume': volumePattern.isEmpty
-          ? 0.0
-          : volumePattern.reduce((a, b) => a + b) / volumePattern.length,
+      'duration':       durationSeconds,
+      'volumePattern':  volumePattern,
+      'averageVolume':  avgVol,
+      'sampleRate':     sampleRate.toDouble(),
     };
   }
 

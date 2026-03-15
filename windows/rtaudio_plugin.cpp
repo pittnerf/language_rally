@@ -100,6 +100,10 @@ void RtAudioPlugin::HandleMethodCall(
     StopAudio(std::move(result));
   } else if (method == "dispose") {
     Dispose(std::move(result));
+  } else if (method == "testDirectWasapi") {
+    const auto* arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
+    flutter::EncodableMap emptyMap;
+    TestDirectWasapi(arguments ? *arguments : emptyMap, std::move(result));
   } else {
     result->NotImplemented();
   }
@@ -481,6 +485,200 @@ void RtAudioPlugin::Dispose(
   result->Success(flutter::EncodableValue(nullptr));
 }
 
+// ── Direct WASAPI diagnostic (no RTAudio) ─────────────────────────────────
+//
+// Opens the specified (or default) capture device directly via IAudioCaptureClient,
+// records ~200 ms, and reports:
+//   - deviceName, formatTag, sampleRate, channels, bitsPerSample
+//   - totalFrames, nonZeroFrames, silentFlagSeen
+// This lets us distinguish between "WASAPI itself is silent" vs "RTAudio bug".
+void RtAudioPlugin::TestDirectWasapi(
+    const flutter::EncodableMap& args,
+    std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+
+  HRESULT hr;
+  bool co_init = false;
+  hr = CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
+  if (SUCCEEDED(hr)) co_init = true;
+  else if (hr == RPC_E_CHANGED_MODE) co_init = false; // already init'd, don't uninit
+
+  IMMDeviceEnumerator* enumerator = nullptr;
+  IMMDevice*           device     = nullptr;
+  IAudioClient*        client     = nullptr;
+  IAudioCaptureClient* capture    = nullptr;
+  WAVEFORMATEX*        pwfx       = nullptr;
+
+  flutter::EncodableMap res;
+  res[flutter::EncodableValue("ok")] = flutter::EncodableValue(false);
+
+  auto cleanup = [&]() {
+    if (capture)    { capture->Release();    capture    = nullptr; }
+    if (client)     { client->Release();     client     = nullptr; }
+    if (device)     { device->Release();     device     = nullptr; }
+    if (enumerator) { enumerator->Release(); enumerator = nullptr; }
+    if (pwfx)       { CoTaskMemFree(pwfx);   pwfx       = nullptr; }
+    if (co_init)    CoUninitialize();
+  };
+
+  hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr,
+                        CLSCTX_ALL, __uuidof(IMMDeviceEnumerator),
+                        reinterpret_cast<void**>(&enumerator));
+  if (FAILED(hr)) {
+    res[flutter::EncodableValue("error")] = flutter::EncodableValue(std::string("CoCreateInstance(MMDeviceEnumerator) failed: ") + std::to_string(hr));
+    cleanup(); result->Success(flutter::EncodableValue(res)); return;
+  }
+
+  // Prefer the device ID passed in; fall back to default capture device
+  auto id_it = args.find(flutter::EncodableValue("deviceWasapiId"));
+  if (id_it != args.end()) {
+    if (const auto* sid = std::get_if<std::string>(&id_it->second)) {
+      std::wstring wid(sid->begin(), sid->end());
+      hr = enumerator->GetDevice(wid.c_str(), &device);
+    }
+  }
+  if (!device) {
+    hr = enumerator->GetDefaultAudioEndpoint(eCapture, eConsole, &device);
+  }
+  if (FAILED(hr) || !device) {
+    res[flutter::EncodableValue("error")] = flutter::EncodableValue(std::string("GetDefaultAudioEndpoint failed: ") + std::to_string(hr));
+    cleanup(); result->Success(flutter::EncodableValue(res)); return;
+  }
+
+  // Get device friendly name
+  IPropertyStore* props = nullptr;
+  std::string device_name = "(unknown)";
+  if (SUCCEEDED(device->OpenPropertyStore(STGM_READ, &props))) {
+    PROPVARIANT pv; PropVariantInit(&pv);
+    if (SUCCEEDED(props->GetValue(PKEY_Device_FriendlyName, &pv)) && pv.pwszVal) {
+      int n = WideCharToMultiByte(CP_UTF8, 0, pv.pwszVal, -1, nullptr, 0, nullptr, nullptr);
+      if (n > 0) { std::string s(n - 1, '\0'); WideCharToMultiByte(CP_UTF8, 0, pv.pwszVal, -1, &s[0], n, nullptr, nullptr); device_name = s; }
+    }
+    PropVariantClear(&pv);
+    props->Release();
+  }
+  res[flutter::EncodableValue("deviceName")] = flutter::EncodableValue(device_name);
+
+  hr = device->Activate(__uuidof(IAudioClient), CLSCTX_ALL, nullptr, reinterpret_cast<void**>(&client));
+  if (FAILED(hr)) {
+    res[flutter::EncodableValue("error")] = flutter::EncodableValue(std::string("Activate(IAudioClient) failed: ") + std::to_string(hr));
+    cleanup(); result->Success(flutter::EncodableValue(res)); return;
+  }
+
+  hr = client->GetMixFormat(&pwfx);
+  if (FAILED(hr)) {
+    res[flutter::EncodableValue("error")] = flutter::EncodableValue(std::string("GetMixFormat failed: ") + std::to_string(hr));
+    cleanup(); result->Success(flutter::EncodableValue(res)); return;
+  }
+
+  // Log format details
+  res[flutter::EncodableValue("formatTag")]     = flutter::EncodableValue(static_cast<int>(pwfx->wFormatTag));
+  res[flutter::EncodableValue("sampleRate")]    = flutter::EncodableValue(static_cast<int>(pwfx->nSamplesPerSec));
+  res[flutter::EncodableValue("channels")]      = flutter::EncodableValue(static_cast<int>(pwfx->nChannels));
+  res[flutter::EncodableValue("bitsPerSample")] = flutter::EncodableValue(static_cast<int>(pwfx->wBitsPerSample));
+  if (pwfx->wFormatTag == WAVE_FORMAT_EXTENSIBLE) {
+    WAVEFORMATEXTENSIBLE* wfex = reinterpret_cast<WAVEFORMATEXTENSIBLE*>(pwfx);
+    bool is_float = (wfex->SubFormat == KSDATAFORMAT_SUBTYPE_IEEE_FLOAT);
+    bool is_pcm   = (wfex->SubFormat == KSDATAFORMAT_SUBTYPE_PCM);
+    res[flutter::EncodableValue("subformat")] = flutter::EncodableValue(
+        std::string(is_float ? "IEEE_FLOAT" : (is_pcm ? "PCM" : "OTHER")));
+  }
+
+  // Initialise in shared mode – use IAudioClient3 for low latency if available
+  IAudioClient3* client3 = nullptr;
+  client->QueryInterface(__uuidof(IAudioClient3), reinterpret_cast<void**>(&client3));
+
+  if (client3) {
+    UINT32 ignore, minPeriod;
+    hr = client3->GetSharedModeEnginePeriod(pwfx, &ignore, &ignore, &minPeriod, &ignore);
+    if (SUCCEEDED(hr)) {
+      hr = client3->InitializeSharedAudioStream(AUDCLNT_STREAMFLAGS_EVENTCALLBACK, minPeriod, pwfx, nullptr);
+    }
+    client3->Release(); client3 = nullptr;
+    if (FAILED(hr)) {
+      // Fall back to regular Initialize
+      hr = client->Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
+                              0, 0, pwfx, nullptr);
+    }
+  } else {
+    hr = client->Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
+                            0, 0, pwfx, nullptr);
+  }
+
+  if (FAILED(hr)) {
+    res[flutter::EncodableValue("error")] = flutter::EncodableValue(std::string("client->Initialize failed: ") + std::to_string(hr));
+    cleanup(); result->Success(flutter::EncodableValue(res)); return;
+  }
+
+  hr = client->GetService(__uuidof(IAudioCaptureClient), reinterpret_cast<void**>(&capture));
+  if (FAILED(hr)) {
+    res[flutter::EncodableValue("error")] = flutter::EncodableValue(std::string("GetService(IAudioCaptureClient) failed: ") + std::to_string(hr));
+    cleanup(); result->Success(flutter::EncodableValue(res)); return;
+  }
+
+  HANDLE hEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+  if (!hEvent) {
+    res[flutter::EncodableValue("error")] = flutter::EncodableValue(std::string("CreateEvent failed"));
+    cleanup(); result->Success(flutter::EncodableValue(res)); return;
+  }
+  client->SetEventHandle(hEvent);
+  hr = client->Start();
+  if (FAILED(hr)) {
+    CloseHandle(hEvent);
+    res[flutter::EncodableValue("error")] = flutter::EncodableValue(std::string("client->Start failed: ") + std::to_string(hr));
+    cleanup(); result->Success(flutter::EncodableValue(res)); return;
+  }
+
+  // Capture for ~300 ms
+  DWORD deadline = GetTickCount() + 300;
+  int64_t total_frames   = 0;
+  int64_t nonzero_frames = 0;
+  bool    silent_flag_seen = false;
+  int     packet_count = 0;
+
+  while (GetTickCount() < deadline) {
+    WaitForSingleObject(hEvent, 20);
+
+    UINT32 pkt_size = 0;
+    capture->GetNextPacketSize(&pkt_size);
+    while (pkt_size > 0) {
+      BYTE*  data   = nullptr;
+      UINT32 frames = 0;
+      DWORD  flags  = 0;
+      hr = capture->GetBuffer(&data, &frames, &flags, nullptr, nullptr);
+      if (FAILED(hr)) break;
+
+      if (flags & AUDCLNT_BUFFERFLAGS_SILENT) silent_flag_seen = true;
+
+      total_frames += frames;
+      const int bytes_per_frame = pwfx->nBlockAlign;
+      // Check raw bytes for any non-zero content
+      bool any_nonzero = false;
+      for (UINT32 f = 0; f < frames && !any_nonzero; f++) {
+        BYTE* frame_ptr = data + f * bytes_per_frame;
+        for (int b = 0; b < bytes_per_frame; b++) {
+          if (frame_ptr[b] != 0) { any_nonzero = true; break; }
+        }
+      }
+      if (any_nonzero) nonzero_frames += frames;
+
+      capture->ReleaseBuffer(frames);
+      packet_count++;
+      capture->GetNextPacketSize(&pkt_size);
+    }
+  }
+
+  client->Stop();
+  CloseHandle(hEvent);
+
+  res[flutter::EncodableValue("ok")]             = flutter::EncodableValue(true);
+  res[flutter::EncodableValue("totalFrames")]    = flutter::EncodableValue(static_cast<int>(total_frames));
+  res[flutter::EncodableValue("nonZeroFrames")]  = flutter::EncodableValue(static_cast<int>(nonzero_frames));
+  res[flutter::EncodableValue("silentFlagSeen")] = flutter::EncodableValue(silent_flag_seen);
+  res[flutter::EncodableValue("packetCount")]    = flutter::EncodableValue(packet_count);
+
+  cleanup();
+  result->Success(flutter::EncodableValue(res));
+}
 
 }  // namespace language_rally
 

@@ -54,6 +54,10 @@ class _WindowsAudioRecordingTestPageState
   String? _transcriptionResult;
   String? _transcriptionError;
 
+  // Direct WASAPI test state
+  bool _isWasapiTesting = false;
+  Map<String, dynamic>? _wasapiTestResult;
+
   // true once app settings have been loaded and applied to the controls
   bool _settingsLoaded = false;
   // platform check — all controls are disabled on non-Windows
@@ -85,7 +89,9 @@ class _WindowsAudioRecordingTestPageState
         // Stop waiting as soon as a non-default value appears OR openai key loaded
         if (settings.openaiApiKey != null ||
             settings.audioTestSampleRate != 48000 ||
-            settings.audioTestDeviceId != null) break;
+            settings.audioTestDeviceId != null) {
+          break;
+        }
       }
     }
 
@@ -166,6 +172,9 @@ class _WindowsAudioRecordingTestPageState
     if (success) {
       logDebug('✅ RTAudio initialized successfully');
       await _loadInputDevices(preferredDeviceId: preferredDeviceId);
+      // Auto-run the direct WASAPI test so we always know if WASAPI delivers
+      // real data or zeros (privacy block / driver issue) before the first recording.
+      await _runDirectWasapiTest();
     } else {
       logDebug('❌ RTAudio initialization failed');
       if (mounted) {
@@ -232,6 +241,45 @@ class _WindowsAudioRecordingTestPageState
     logDebug('');
   }
 
+  // ── Direct WASAPI diagnostic ──────────────────────────────────────────────
+
+  Future<void> _runDirectWasapiTest() async {
+    logDebug('═══════════════════════════════════════════════════════════');
+    logDebug('🔬 Direct WASAPI Test (bypasses RTAudio)');
+    logDebug('═══════════════════════════════════════════════════════════');
+    if (mounted) setState(() => _isWasapiTesting = true);
+    try {
+      final r = await _audioRecorder.testDirectWasapi();
+      if (mounted) setState(() { _wasapiTestResult = r; _isWasapiTesting = false; });
+      logDebug('   Device     : ${r['deviceName'] ?? '-'}');
+      logDebug('   Format     : ${r['subformat'] ?? r['formatTag']}  ${r['bitsPerSample']} bit  ${r['sampleRate']} Hz  ${r['channels']}ch');
+      final total    = (r['totalFrames']   as int?) ?? 0;
+      final nonzero  = (r['nonZeroFrames'] as int?) ?? 0;
+      final silent   = (r['silentFlagSeen'] as bool?) ?? false;
+      final packets  = (r['packetCount']   as int?) ?? 0;
+      logDebug('   Packets    : $packets');
+      logDebug('   Frames     : $total total / $nonzero non-zero');
+      logDebug('   SILENT flag: $silent');
+      if (!(r['ok'] as bool? ?? false)) {
+        logDebug('   ❌ Error: ${r['error']}');
+      } else if (nonzero == 0 && total > 0) {
+        logDebug('   ❌ WASAPI itself delivers ONLY ZEROS — Windows privacy/driver issue');
+        logDebug('      → Check Windows Settings > Privacy > Microphone');
+        logDebug('      → Try: Settings > Sound > Input > Test your microphone');
+      } else if (total == 0) {
+        logDebug('   ⚠️ No frames captured — stream may not have started in time');
+      } else {
+        logDebug('   ✅ WASAPI delivers real audio data ($nonzero/$total frames non-zero)');
+        logDebug('      → If RTAudio recording is still silent, the bug is in RTAudio processing');
+      }
+    } catch (e) {
+      logDebug('   ❌ Exception: $e');
+      if (mounted) setState(() { _wasapiTestResult = null; _isWasapiTesting = false; });
+    }
+    logDebug('═══════════════════════════════════════════════════════════');
+    logDebug('');
+  }
+
   // ── Recording ─────────────────────────────────────────────────────────────
 
   Future<void> _startRecording() async {
@@ -241,8 +289,10 @@ class _WindowsAudioRecordingTestPageState
     logDebug('═══════════════════════════════════════════════════════════');
     if (_selectedDevice == null) {
       logDebug('❌ No device selected');
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(l10n.noDeviceSelectedSnack), backgroundColor: Colors.red));
+      }
       return;
     }
     try {
@@ -271,10 +321,12 @@ class _WindowsAudioRecordingTestPageState
       if (success) {
         final actualRate = _audioRecorder.actualSampleRate;
         setState(() => _isRecording = true);
+        // Note: RTAudio WASAPI always uses shared mode (exclusive is TODO in RtAudio).
+        // When actual == requested, no MF resampler is needed → fast start.
         if (actualRate == requestedRate) {
-          logDebug('✅ Recording started — $actualRate Hz ✓ (exclusive mode)');
+          logDebug('✅ Recording started — $actualRate Hz ✓ (shared mode, no resampling)');
         } else {
-          logDebug('✅ Recording started — $actualRate Hz (WASAPI forced; requested $requestedRate Hz)');
+          logDebug('✅ Recording started — $actualRate Hz (WASAPI shared mode; requested $requestedRate Hz → MF resampling active)');
         }
         logDebug('   Channels: ${_audioRecorder.actualChannels}');
         logDebug('═══════════════════════════════════════════════════════════');
@@ -285,13 +337,22 @@ class _WindowsAudioRecordingTestPageState
         final cb = info['callbackCount'] ?? 0;
         final nz = info['nonzeroCount'] ?? 0;
         logDebug('📊 Diagnostics after 500ms:  buffer=${((info['byteSize'] ?? 0) / 1024).toStringAsFixed(1)} KB  callbacks=$cb  with-signal=$nz');
-        if (cb == 0) logDebug('   ⚠️ Callback never fired!');
-        else if (nz == 0) logDebug('   ⚠️ All callbacks silent — check Windows Privacy > Microphone');
-        else logDebug('   ✓ Real audio signal in $nz/$cb callbacks');
+        if (cb == 0) {
+          // With the MF-skip patch this should no longer happen at native rate.
+          // If it still fires, Media Foundation is being loaded (non-native rate selected).
+          logDebug('   ⚠️ Callback not started yet — MF resampler may still be initialising');
+          logDebug('      (Use the preferred device rate to avoid this delay)');
+        } else if (nz == 0) {
+          logDebug('   ⚠️ All callbacks silent — check Windows Privacy > Microphone');
+        } else {
+          logDebug('   ✓ Real audio signal in $nz/$cb callbacks');
+        }
       } else {
         logDebug('❌ Failed to start recording');
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(l10n.errorStartingRecording), backgroundColor: Colors.red));
+        }
       }
     } catch (e, st) {
       logDebug('❌ $e\n$st');
@@ -318,8 +379,10 @@ class _WindowsAudioRecordingTestPageState
 
       if (audioData == null || audioData.isEmpty) {
         logDebug('⚠️ No audio data');
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(l10n.noAudioDataSnack), backgroundColor: Colors.orange));
+        }
         return;
       }
 
@@ -353,8 +416,10 @@ class _WindowsAudioRecordingTestPageState
         snackMsg = '${l10n.recordingSavedSnack}: ${_recordingDuration!.inSeconds}s, ${(fileSize / 1024).toStringAsFixed(1)} KB';
         snackColor = Colors.green;
       }
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(snackMsg), backgroundColor: snackColor));
+      }
 
       setState(() {
         _recordedFilePath = wavPath;
@@ -463,7 +528,9 @@ class _WindowsAudioRecordingTestPageState
 
   Uint8List _i2b(int v, int n) {
     final r = Uint8List(n);
-    for (int i = 0; i < n; i++) r[i] = (v >> (i * 8)) & 0xFF;
+    for (int i = 0; i < n; i++) {
+      r[i] = (v >> (i * 8)) & 0xFF;
+    }
     return r;
   }
 
@@ -544,6 +611,10 @@ class _WindowsAudioRecordingTestPageState
                           if (_transcriptionError != null) ...[
                             const SizedBox(height: 8),
                             _buildTranscriptionError(theme, l10n),
+                          ],
+                          if (_wasapiTestResult != null) ...[
+                            const SizedBox(height: 8),
+                            _buildWasapiTestResult(theme),
                           ],
                         ],
                       ),
@@ -834,6 +905,55 @@ class _WindowsAudioRecordingTestPageState
     );
   }
 
+  Widget _buildWasapiTestResult(ThemeData theme) {
+    final r = _wasapiTestResult!;
+    final ok        = (r['ok']           as bool?) ?? false;
+    final total     = (r['totalFrames']  as int?)  ?? 0;
+    final nonzero   = (r['nonZeroFrames']as int?)  ?? 0;
+    final silent    = (r['silentFlagSeen'] as bool?) ?? false;
+    final hasSignal = ok && total > 0 && nonzero > 0;
+    final color     = hasSignal ? Colors.green : Colors.red;
+
+    return Container(
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        border: Border.all(color: color),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          Icon(hasSignal ? Icons.check_circle : Icons.warning_amber_rounded,
+              color: color, size: 16),
+          const SizedBox(width: 6),
+          Text(
+            hasSignal ? '🔬 WASAPI: real audio ($nonzero/$total frames)'
+                      : '🔬 WASAPI: SILENT ($nonzero/$total frames)',
+            style: theme.textTheme.labelMedium?.copyWith(color: color),
+          ),
+        ]),
+        const SizedBox(height: 4),
+        Text('${r['subformat'] ?? r['formatTag']}  ${r['bitsPerSample']}b  '
+             '${r['sampleRate']} Hz  ${r['channels']}ch'
+             '${silent ? "  ⚠️ SILENT flag" : ""}',
+             style: theme.textTheme.bodySmall),
+        if (!ok) Text('Error: ${r['error']}',
+            style: theme.textTheme.bodySmall?.copyWith(color: Colors.red)),
+        if (!hasSignal && ok && total > 0) ...[
+          const SizedBox(height: 4),
+          Text('WASAPI delivers zeros → check Windows Privacy > Microphone',
+              style: theme.textTheme.bodySmall?.copyWith(
+                  color: Colors.red, fontWeight: FontWeight.bold)),
+        ],
+        if (hasSignal) ...[
+          const SizedBox(height: 4),
+          Text('WASAPI is fine → if RTAudio is silent, the issue is in the RTAudio processing layer',
+              style: theme.textTheme.bodySmall?.copyWith(color: Colors.green)),
+        ],
+      ]),
+    );
+  }
+
   Widget _dbgRow(String label, String value, ThemeData theme) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
@@ -887,6 +1007,18 @@ class _WindowsAudioRecordingTestPageState
           disabled: !hasRecording || !hasApiKey,
           isLoading: _isTranscribing,
           subtitle: hasApiKey ? l10n.whisperWavNote : l10n.openaiApiKey,
+        ),
+
+        // ── Direct WASAPI Test button ──────────────────────────────────────
+        _BottomBarButton(
+          onTap: (_isRecording || _isWasapiTesting || !_isWindows) ? null : _runDirectWasapiTest,
+          icon: Icons.biotech,
+          label: _isWasapiTesting ? 'Testing...' : 'WASAPI Test',
+          color: Colors.deepPurple,
+          isActive: _isWasapiTesting,
+          disabled: !_isWindows || _isRecording,
+          isLoading: _isWasapiTesting,
+          subtitle: 'Bypass RTAudio',
         ),
       ],
     );

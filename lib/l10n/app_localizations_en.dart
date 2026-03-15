@@ -1794,11 +1794,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get transcriptionFailedLabel => 'Transcription Failed';
 
   @override
-  String get debugInformationLabel => 'Debug Information';
+  String get debugInformationLabel => 'Information';
 
   @override
-  String get debugConsoleHint =>
-      'Check the console for detailed debug logs using logDebug()';
+  String get debugConsoleHint => 'Check the console for detailed logs';
 
   @override
   String get debugDevicesFound => 'Devices Found';

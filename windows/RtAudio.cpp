@@ -4607,6 +4607,7 @@ public:
     : _bytesPerSample( bitsPerSample / 8 )
     , _channelCount( channelCount )
     , _sampleRatio( ( float ) outSampleRate / inSampleRate )
+    , _mfInitialized( false )
     , _transformUnk( NULL )
     , _transform( NULL )
     , _mediaType( NULL )
@@ -4617,9 +4618,15 @@ public:
       , _resamplerProps( NULL )
     #endif
   {
-    // 1. Initialization
+    // When in/out rates are identical, Convert() uses a fast memcpy path.
+    // Skip the expensive MFStartup + CoCreateInstance entirely so that the
+    // WASAPI thread starts firing callbacks immediately instead of after the
+    // 2-3 second Media Foundation cold-start delay.
+    if ( _sampleRatio == 1.0f ) return;
 
+    // 1. Initialization
     MFStartup( MF_VERSION, MFSTARTUP_NOSOCKET );
+    _mfInitialized = true;
 
     // 2. Create Resampler Transform Object
 
@@ -4667,8 +4674,10 @@ public:
 
   ~WasapiResampler()
   {
-    // 8. Send stream stop messages to Resampler
+    // If MF was never initialised (ratio == 1, passthrough mode), nothing to clean up.
+    if ( !_mfInitialized ) return;
 
+    // 8. Send stream stop messages to Resampler
     _transform->ProcessMessage( MFT_MESSAGE_NOTIFY_END_OF_STREAM, 0 );
     _transform->ProcessMessage( MFT_MESSAGE_NOTIFY_END_STREAMING, 0 );
 
@@ -4765,6 +4774,7 @@ private:
   unsigned int _bytesPerSample;
   unsigned int _channelCount;
   float _sampleRatio;
+  bool  _mfInitialized;   // true only when MF was started (ratio != 1.0)
 
   ComPtr<IUnknown> _transformUnk;
   ComPtr<IMFTransform> _transform;
@@ -5677,36 +5687,24 @@ void RtApiWasapi::wasapiThread()
     captureSrRatio = ( ( float ) captureFormat->nSamplesPerSec / stream_.sampleRate );
 
     if ( !captureClient ) {
-      ComPtr<IAudioClient3> captureAudioClient3 = nullptr;
-      captureAudioClient->QueryInterface( __uuidof( IAudioClient3 ), ( void** ) &captureAudioClient3 );
-      if ( captureAudioClient3 && !loopbackEnabled )
-      {
-        UINT32 Ignore;
-        UINT32 MinPeriodInFrames;
-        hr = captureAudioClient3->GetSharedModeEnginePeriod( captureFormat,
-                                                             &Ignore,
-                                                             &Ignore,
-                                                             &MinPeriodInFrames,
-                                                             &Ignore );
-        if ( FAILED( hr ) ) {
-          errorText = "RtApiWasapi::wasapiThread: Unable to initialize capture audio client.";
-          goto Exit;
-        }
-        
-        hr = captureAudioClient3->InitializeSharedAudioStream( AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
-                                                               MinPeriodInFrames,
-                                                               captureFormat,
-                                                               NULL );
-      }
-      else
-      {
-        hr = captureAudioClient->Initialize( AUDCLNT_SHAREMODE_SHARED,
-                                             loopbackEnabled ? AUDCLNT_STREAMFLAGS_LOOPBACK : AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
-                                             0,
-                                             0,
-                                             captureFormat,
-                                             NULL );
-      }
+      // NOTE: We intentionally skip IAudioClient3::InitializeSharedAudioStream here.
+      // The low-latency pipeline setup performed by InitializeSharedAudioStream can
+      // block for 1-3 seconds on many Realtek/Intel drivers while the audio engine
+      // re-configures itself.  For recording use-cases the extra latency saved by
+      // the low-latency path is irrelevant, but the startup delay causes the first
+      // 2-3 seconds of every recording to be silently dropped.
+      //
+      // We use an explicit 100ms buffer duration so the engine event fires every
+      // ~10ms (one engine period), giving ~100 callbacks/sec at 48 kHz / 512 frames.
+      // Duration 0 can leave WASAPI choosing a very large buffer (up to 1 second),
+      // producing only 1-3 callbacks in the first 500ms instead of the expected ~47.
+      const REFERENCE_TIME hnsBufferDuration = 1000000; // 100 ms in 100-ns units
+      hr = captureAudioClient->Initialize( AUDCLNT_SHAREMODE_SHARED,
+                                           loopbackEnabled ? AUDCLNT_STREAMFLAGS_LOOPBACK : AUDCLNT_STREAMFLAGS_EVENTCALLBACK,
+                                           hnsBufferDuration,
+                                           0,
+                                           captureFormat,
+                                           NULL );
 
       if ( FAILED( hr ) ) {
         errorText = "RtApiWasapi::wasapiThread: Unable to initialize capture audio client.";
