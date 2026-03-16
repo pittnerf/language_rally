@@ -25,6 +25,7 @@ import '../../../data/repositories/import_export_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../widgets/package_icon.dart';
 import '../ai_import/ai_text_analysis_page.dart';
+import '../items/item_edit_page.dart';
 import '../../../core/utils/debug_print.dart';
 
 /// Page for creating or editing a language package
@@ -64,6 +65,9 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
   bool get _isReadOnly => widget.package?.isReadonly ?? false;
   bool get _isPurchased => widget.package?.isPurchased ?? false;
 
+  /// Cached item count for the current package; null = not yet loaded.
+  int? _itemCount;
+
   // Helper method to determine if fields should be enabled
   bool get _fieldsEnabled => !_isPurchased && _isEditingEnabled;
 
@@ -98,6 +102,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     _initializeControllers();
     _loadCustomIcons();
     _loadGroups();
+    if (_isEditMode) _loadItemCount();
   }
 
   Future<void> _loadGroups() async {
@@ -118,6 +123,18 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
       });
     } catch (e) {
       logDebug('Error loading groups: $e');
+    }
+  }
+
+  Future<void> _loadItemCount() async {
+    if (!_isEditMode || widget.package == null) return;
+    try {
+      final count = await _itemRepo.getItemCountForPackage(widget.package!.id);
+      if (mounted) {
+        setState(() => _itemCount = count);
+      }
+    } catch (e) {
+      logDebug('Error loading item count: $e');
     }
   }
 
@@ -325,6 +342,11 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
       SizedBox(height: AppTheme.spacing16),
       _buildActionButtons(context, l10n),
       SizedBox(height: AppTheme.spacing8),
+      // Empty-state section: shown only when the package has no items yet
+      if (_isEditMode && _itemCount == 0) ...[
+        _buildEmptyPackageSection(context, l10n),
+        SizedBox(height: AppTheme.spacing8),
+      ],
     ];
   }
 
@@ -1283,6 +1305,22 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                     SizedBox(width: AppTheme.spacing8),
                     Expanded(
                       child: ElevatedButton.icon(
+                        onPressed: _openAddNewItem,
+                        icon: const Icon(Icons.add),
+                        label: Text(l10n.addNewItem),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
+                          foregroundColor: Theme.of(
+                            context,
+                          ).colorScheme.onPrimary,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: AppTheme.spacing8),
+                    Expanded(
+                      child: ElevatedButton.icon(
                         onPressed: _exportEnabled ? _openAITextAnalysis : null,
                         icon: const Icon(Icons.psychology),
                         label: Text(l10n.aiTextAnalysis),
@@ -1399,32 +1437,55 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                       ],
                     ),
                     SizedBox(height: AppTheme.spacing8),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton.icon(
-                        onPressed: _exportEnabled ? _openAITextAnalysis : null,
-                        icon: const Icon(Icons.psychology),
-                        label: Text(l10n.aiTextAnalysis),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(
-                            context,
-                          ).colorScheme.secondary,
-                          foregroundColor: Theme.of(
-                            context,
-                          ).colorScheme.onSecondary,
-                          disabledBackgroundColor: Theme.of(
-                            context,
-                          ).colorScheme.surfaceContainerHighest,
-                          disabledForegroundColor: Theme.of(context)
-                              .colorScheme
-                              .onSurfaceVariant
-                              .withValues(alpha: 0.38),
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 6,
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: _openAddNewItem,
+                            icon: const Icon(Icons.add),
+                            label: Text(l10n.addNewItem),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.primary,
+                              foregroundColor: Theme.of(
+                                context,
+                              ).colorScheme.onPrimary,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 6,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
+                        SizedBox(width: AppTheme.spacing8),
+                        Expanded(
+                          child: ElevatedButton.icon(
+                            onPressed: _exportEnabled ? _openAITextAnalysis : null,
+                            icon: const Icon(Icons.psychology),
+                            label: Text(l10n.aiTextAnalysis),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.secondary,
+                              foregroundColor: Theme.of(
+                                context,
+                              ).colorScheme.onSecondary,
+                              disabledBackgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
+                              disabledForegroundColor: Theme.of(context)
+                                  .colorScheme
+                                  .onSurfaceVariant
+                                  .withValues(alpha: 0.38),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 6,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -2502,6 +2563,52 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     return _ImportResult(successful: successfulItems, failed: failedItems);
   }
 
+  Future<void> _openAddNewItem() async {
+    if (widget.package == null) return;
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => ItemEditPage.newItem(package: widget.package!),
+      ),
+    );
+    if (mounted) await _loadItemCount();
+  }
+
+  Widget _buildEmptyPackageSection(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppTheme.spacing16),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+        borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+        border: Border.all(color: colorScheme.outlineVariant, width: 1),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.layers_clear_outlined,
+            size: 48,
+            color: colorScheme.outline,
+          ),
+          SizedBox(height: AppTheme.spacing8),
+          Text(
+            l10n.noItemsInPackage,
+            style: theme.textTheme.titleMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _openAITextAnalysis() async {
     if (widget.package == null) return;
 
@@ -2510,6 +2617,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         builder: (context) => AITextAnalysisPage(package: widget.package!),
       ),
     );
+    if (mounted) await _loadItemCount();
   }
 
 

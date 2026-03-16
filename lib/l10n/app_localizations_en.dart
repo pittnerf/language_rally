@@ -514,6 +514,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noItemsInPackage => 'No items in this package yet';
 
   @override
+  String get addItem => 'Add item';
+
+  @override
+  String get emptyPackageHint =>
+      'Add items manually or use AI to import items quickly';
+
+  @override
   String get noItemsToTrain =>
       'No items available for practice with current settings';
 
@@ -955,6 +962,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get nextItem => 'Next Item';
+
+  @override
+  String get previousItem => 'Previous Item';
 
   @override
   String get iDidNotKnowEither => 'I Didn\'t Know Either';
@@ -1677,7 +1687,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Speech recognition is not available on this device.';
 
   @override
-  String get pronunciationAccuracy => 'Pronunciation Accuracy';
+  String get pronunciationAccuracy => 'Pronunciation\nAccuracy';
 
   @override
   String get excellent => 'Excellent!';
@@ -1854,4 +1864,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get failedToInitRtAudio => 'Failed to initialize RTAudio';
+
+  @override
+  String get envelopeScoreLabel => 'Envelope';
+
+  @override
+  String get rhythmScoreLabel => 'Rhythm';
+
+  @override
+  String get textScoreLabel => 'Text';
 }

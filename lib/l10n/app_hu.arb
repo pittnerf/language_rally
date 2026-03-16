@@ -158,6 +158,8 @@
   "ttsError": "Szövegfelolvasás nem elérhető",
   "noItemsFound": "Nem található elem",
   "noItemsInPackage": "Még nincs elem ebben a csomagban",
+  "addItem": "Elem hozzáadása",
+  "emptyPackageHint": "Adjon hozzá elemeket kézzel, vagy importáljon gyorsan AI segítségével",
   "noItemsToTrain": "A jelenlegi ey nincs gyakorolható elem",
   "clearFilters": "Törlés",
   "itemCount": "{count} elem",
@@ -289,7 +291,8 @@
   "answer": "Válasz",
   "iKnow": "Tudom",
   "iDontKnow": "Nem Tudom",
-  "nextItem": "Következő Elem",
+  "nextItem": "Kvetkező Elem",
+  "previousItem": "Előző elem",
   "iDidNotKnowEither": "Ezt Sem Tudtam",
   "exportBeforeDelete": "Exportálja törlés előtt?",
   "aiTextAnalysis": "Import AI-val",
@@ -524,7 +527,7 @@
   "microphonePermissionRequired": "A kiejtés gyakorlásához mikrofon engedély szükséges",
   "speechRecognitionNotSupported": "A beszédfelismerés nem támogatott ezen a platformon. Kérem használja a mobil alkalmazást (Android/iOS) a kiejtés gyakorlásához.",
   "speechRecognitionUnavailable": "A beszédfelismerés nem elérhető ezen az eszközön.",
-  "pronunciationAccuracy": "Kiejtés pontossága",
+  "pronunciationAccuracy": "Kiejtés\npontossága",
   "excellent": "Kiváló!",
   "good": "Jó",
   "fair": "Megfelelő",
@@ -583,7 +586,10 @@
   "recordingSmallSnack": "A felvétel fájl nagyon kicsi. Lehetséges, hogy a felvétel nem sikerült.",
   "noAudioDataSnack": "Nem lett hangadat rögzítve",
   "noDeviceSelectedSnack": "Kérjük, válasszon hangeszközt",
-  "failedToInitRtAudio": "Az RTAudio inicializálása nem sikerült"
+  "failedToInitRtAudio": "Az RTAudio inicializálása nem sikerült",
+  "envelopeScoreLabel": "Burkoló",
+  "rhythmScoreLabel": "Ritmus",
+  "textScoreLabel": "Szöveg"
 }
 
 

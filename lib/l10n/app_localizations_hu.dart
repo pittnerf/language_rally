@@ -516,6 +516,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get noItemsInPackage => 'Még nincs elem ebben a csomagban';
 
   @override
+  String get addItem => 'Elem hozzáadása';
+
+  @override
+  String get emptyPackageHint =>
+      'Adjon hozzá elemeket kézzel, vagy importáljon gyorsan AI segítségével';
+
+  @override
   String get noItemsToTrain => 'A jelenlegi ey nincs gyakorolható elem';
 
   @override
@@ -956,6 +963,9 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get nextItem => 'Következő elem';
+
+  @override
+  String get previousItem => 'Előző elem';
 
   @override
   String get iDidNotKnowEither => 'Ezt Sem Tudtam';
@@ -1685,7 +1695,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'A beszédfelismerés nem elérhető ezen az eszközön.';
 
   @override
-  String get pronunciationAccuracy => 'Kiejtés pontossága';
+  String get pronunciationAccuracy => 'Kiejtés\npontossága';
 
   @override
   String get excellent => 'Kiváló!';
@@ -1863,4 +1873,13 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get failedToInitRtAudio => 'Az RTAudio inicializálása nem sikerült';
+
+  @override
+  String get envelopeScoreLabel => 'Burkoló';
+
+  @override
+  String get rhythmScoreLabel => 'Ritmus';
+
+  @override
+  String get textScoreLabel => 'Szöveg';
 }

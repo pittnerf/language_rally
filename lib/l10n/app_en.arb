@@ -157,6 +157,8 @@
   "ttsError": "Text-to-speech not available",
   "noItemsFound": "No items found",
   "noItemsInPackage": "No items in this package yet",
+  "addItem": "Add item",
+  "emptyPackageHint": "Add items manually or use AI to import items quickly",
   "noItemsToTrain": "No items available for practice with current settings",
   "clearFilters": "Clear",
   "itemCount": "{count} items",
@@ -296,6 +298,7 @@
   "iKnow": "I Know",
   "iDontKnow": "I Don't Know",
   "nextItem": "Next Item",
+  "previousItem": "Previous Item",
   "iDidNotKnowEither": "I Didn't Know Either",
   "exportBeforeDelete": "Export Before Deleting?",
   "aiTextAnalysis": "Import with AI",
@@ -584,7 +587,7 @@
   "microphonePermissionRequired": "Microphone permission is required for pronunciation practice",
   "speechRecognitionNotSupported": "Speech recognition is not supported on this platform. Please use the mobile app (Android/iOS) for pronunciation practice.",
   "speechRecognitionUnavailable": "Speech recognition is not available on this device.",
-  "pronunciationAccuracy": "Pronunciation Accuracy",
+  "pronunciationAccuracy": "Pronunciation\nAccuracy",
   "excellent": "Excellent!",
   "good": "Good",
   "fair": "Fair",
@@ -643,7 +646,10 @@
   "recordingSmallSnack": "Recording file is very small. Recording may have failed.",
   "noAudioDataSnack": "No audio data recorded",
   "noDeviceSelectedSnack": "Please select an audio device",
-  "failedToInitRtAudio": "Failed to initialize RTAudio"
+  "failedToInitRtAudio": "Failed to initialize RTAudio",
+  "envelopeScoreLabel": "Envelope",
+  "rhythmScoreLabel": "Rhythm",
+  "textScoreLabel": "Text"
 }
 
 

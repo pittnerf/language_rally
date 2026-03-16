@@ -1046,6 +1046,18 @@ abstract class AppLocalizations {
   /// **'No items in this package yet'**
   String get noItemsInPackage;
 
+  /// No description provided for @addItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add item'**
+  String get addItem;
+
+  /// No description provided for @emptyPackageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add items manually or use AI to import items quickly'**
+  String get emptyPackageHint;
+
   /// No description provided for @noItemsToTrain.
   ///
   /// In en, this message translates to:
@@ -1837,6 +1849,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Next Item'**
   String get nextItem;
+
+  /// No description provided for @previousItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous Item'**
+  String get previousItem;
 
   /// No description provided for @iDidNotKnowEither.
   ///
@@ -3125,7 +3143,7 @@ abstract class AppLocalizations {
   /// No description provided for @pronunciationAccuracy.
   ///
   /// In en, this message translates to:
-  /// **'Pronunciation Accuracy'**
+  /// **'Pronunciation\nAccuracy'**
   String get pronunciationAccuracy;
 
   /// No description provided for @excellent.
@@ -3469,6 +3487,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to initialize RTAudio'**
   String get failedToInitRtAudio;
+
+  /// No description provided for @envelopeScoreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Envelope'**
+  String get envelopeScoreLabel;
+
+  /// No description provided for @rhythmScoreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Rhythm'**
+  String get rhythmScoreLabel;
+
+  /// No description provided for @textScoreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get textScoreLabel;
 }
 
 class _AppLocalizationsDelegate

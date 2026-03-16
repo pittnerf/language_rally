@@ -83,6 +83,11 @@ class _PronunciationPracticePageState
   DateTime? _recordingStartTime;
   double _currentVolumeLevel = 0.0; // For volume meter (0.0 to 1.0)
 
+  // Sub-scores exposed in the tachometer panel after recording
+  double _volumeScore = 0.0; // Envelope (Pearson) similarity
+  double _rhythmScore = 0.0; // Rhythm / peak-pattern similarity
+  double _textScore  = 0.0; // Text (word + char) similarity
+
   // Statistics
   int _totalPracticed = 0;
 
@@ -276,22 +281,40 @@ class _PronunciationPracticePageState
     _ttsService.stop();
     _speech.stop();
     _audioRecorder.dispose();
-    _audioPlayer.dispose();
     _amplitudeTimer?.cancel();
-    _cleanupAudioFiles();
+    // Stop playback first so files are not in use when we delete them
+    _audioPlayer.stop().whenComplete(() => _audioPlayer.dispose());
+    // Fire-and-forget file deletion — cannot await inside dispose()
+    final recPath = _recordedAudioPath;
+    final refPath = _referenceAudioPath;
+    Future(() async {
+      try {
+        if (recPath != null && await File(recPath).exists()) await File(recPath).delete();
+        if (refPath != null && await File(refPath).exists()) await File(refPath).delete();
+      } catch (_) {}
+    });
     super.dispose();
   }
 
   Future<void> _cleanupAudioFiles() async {
+    // Capture paths and null them immediately so concurrent calls don't re-delete
+    final recPath = _recordedAudioPath;
+    final refPath = _referenceAudioPath;
+    _recordedAudioPath = null;
+    _referenceAudioPath = null;
+    // Stop playback before deleting the files that may be in use
+    try { await _audioPlayer.stop(); } catch (_) {}
     try {
-      if (_recordedAudioPath != null && await File(_recordedAudioPath!).exists()) {
-        await File(_recordedAudioPath!).delete();
+      if (recPath != null && await File(recPath).exists()) {
+        await File(recPath).delete();
+        logDebug('🗑️ Deleted recorded audio: $recPath');
       }
-      if (_referenceAudioPath != null && await File(_referenceAudioPath!).exists()) {
-        await File(_referenceAudioPath!).delete();
+      if (refPath != null && await File(refPath).exists()) {
+        await File(refPath).delete();
+        logDebug('🗑️ Deleted reference audio: $refPath');
       }
     } catch (e) {
-      // Ignore cleanup errors
+      logDebug('Error during audio cleanup: $e');
     }
   }
 
@@ -601,6 +624,9 @@ class _PronunciationPracticePageState
       _isRecording = true;
       _hasRecorded = false;
       _matchRate = 0.0;
+      _volumeScore = 0.0;
+      _rhythmScore = 0.0;
+      _textScore   = 0.0;
       _recordedText = '';
       _recordedAudioPath = null;
       _recordingStartTime = DateTime.now();
@@ -868,15 +894,24 @@ class _PronunciationPracticePageState
           if (fileSize > 0 && mounted) {
             setState(() => _isRecording = false);
 
-            // Play back the user's recording if enabled and track completion
-            Future<void>? playbackFuture;
+            // Play back the user's recording if enabled – wait for TRUE completion
+            Completer<void>? playbackCompleter;
+            StreamSubscription<void>? playbackSub;
             if (_playbackAfterRecording) {
               logDebug('🔊 Playing back user recording...');
               try {
-                // Start playing the recorded audio and capture the completion future
-                playbackFuture = _audioPlayer.play(DeviceFileSource(audioPath));
+                final completer = Completer<void>();
+                playbackCompleter = completer;
+                // Subscribe BEFORE play() so short clips don't slip through
+                playbackSub = _audioPlayer.onPlayerComplete.listen((_) {
+                  if (!completer.isCompleted) completer.complete();
+                });
+                await _audioPlayer.play(DeviceFileSource(audioPath));
               } catch (e) {
                 logDebug('Warning: Could not play back recording: $e');
+                await playbackSub?.cancel();
+                playbackSub = null;
+                playbackCompleter = null;
               }
             }
 
@@ -884,7 +919,7 @@ class _PronunciationPracticePageState
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(AppLocalizations.of(context)!.processingAudio),
-                duration: const Duration(seconds: 30), // Long duration while processing
+                duration: const Duration(seconds: 5), // Long duration while processing
               ),
             );
 
@@ -922,10 +957,17 @@ class _PronunciationPracticePageState
               // Generate reference audio using TTS (can run in background)
               await _generateReferenceAudio(expectedText, languageData.languageCode);
 
-              // IMPORTANT: Wait for user's audio playback to complete before speaking correct pronunciation
-              if (playbackFuture != null) {
+              // IMPORTANT: Wait for user's audio to fully finish before playing AI audio
+              if (playbackCompleter != null) {
                 logDebug('⏳ Waiting for user recording playback to complete...');
-                await playbackFuture;
+                try {
+                  await playbackCompleter.future
+                      .timeout(const Duration(seconds: 20));
+                } catch (_) {
+                  logDebug('⚠️ Playback wait timed out or was interrupted');
+                } finally {
+                  await playbackSub?.cancel();
+                }
                 logDebug('✓ User recording playback completed');
               }
 
@@ -1194,7 +1236,8 @@ class _PronunciationPracticePageState
     logDebug('   Final rate : ${finalRate.toStringAsFixed(1)}%');
 
     setState(() {
-      _matchRate = finalRate;
+      _matchRate  = finalRate;
+      _textScore  = textScore;
     });
   }
 
@@ -1259,7 +1302,7 @@ class _PronunciationPracticePageState
         volumeScore  = _compareVolumeEnvelopes(userVolume, refVolume);
         rhythmScore  = _compareRhythmPatterns(userVolume, refVolume);
 
-        logDebug('   Duration score : ${(durationScore * 100).toStringAsFixed(1)}%');
+        logDebug('   Duration score : ${(durationScore * 100).toStringAsFixed(1)}% - not used');
         logDebug('   Envelope score : ${(volumeScore  * 100).toStringAsFixed(1)}%');
         logDebug('   Rhythm score   : ${(rhythmScore  * 100).toStringAsFixed(1)}%');
       } else {
@@ -1274,9 +1317,14 @@ class _PronunciationPracticePageState
         rhythmScore   = _calculateRhythmScore(userVolume, words.length);
       }
 
+      //final score =
+      //    (durationScore * 0.3 + volumeScore * 0.4 + rhythmScore * 0.3)
+      //        .clamp(0.0, 1.0);
       final score =
-          (durationScore * 0.3 + volumeScore * 0.4 + rhythmScore * 0.3)
-              .clamp(0.0, 1.0);
+      ( volumeScore * 0.5 + rhythmScore * 0.5).clamp(0.0, 1.0);
+      // Persist sub-scores for the tachometer panel
+      _volumeScore = volumeScore;
+      _rhythmScore = rhythmScore;
       logDebug('   Audio similarity score: ${(score * 100).toStringAsFixed(1)}%');
       return score;
     } catch (e) {
@@ -1550,18 +1598,20 @@ class _PronunciationPracticePageState
     return pauseScore;
   }
 
-  void _nextItem() {
-    if (_currentItemIndex < _filteredItems.length - 1) {
-      // Clean up audio files
-      _cleanupAudioFiles();
+  Future<void> _nextItem() async {
+    // Stop player and delete audio files before moving on
+    await _cleanupAudioFiles();
 
+    if (_currentItemIndex < _filteredItems.length - 1) {
       setState(() {
         _currentItemIndex++;
         _hasRecorded = false;
         _matchRate = 0.0;
+        _volumeScore = 0.0;
+        _rhythmScore = 0.0;
+        _textScore   = 0.0;
         _recordedText = '';
-        _recordedAudioPath = null;
-        _referenceAudioPath = null;
+        // _recordedAudioPath / _referenceAudioPath already nulled by cleanup
 
         // Redetermine display language if random
         if (widget.settings.displayLanguage == DisplayLanguage.random) {
@@ -1641,6 +1691,7 @@ class _PronunciationPracticePageState
           l10n.pronunciationPractice,
           style: theme.textTheme.titleMedium,
         ),
+        actions: [_buildModeInfoAction(theme, l10n)],
       ),
       body: GestureDetector(
         onHorizontalDragEnd: (details) {
@@ -1659,9 +1710,6 @@ class _PronunciationPracticePageState
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Info banner showing speech recognition mode
-                _buildModeInfoBanner(theme, l10n),
-                SizedBox(height: isTablet ? AppTheme.spacing8 : AppTheme.spacing8),
 
                 // Status indicators (includes playback checkbox when using Whisper API)
                 _buildStatusIndicators(theme, l10n),
@@ -1703,41 +1751,23 @@ class _PronunciationPracticePageState
     );
   }
 
-  Widget _buildModeInfoBanner(ThemeData theme, AppLocalizations l10n) {
+
+  Widget _buildModeInfoAction(ThemeData theme, AppLocalizations l10n) {
     if (_useWhisperAPI) {
-      // Premium mode - Whisper API
-      return Card(
-        elevation: 1,
-        color: theme.colorScheme.primaryContainer,
+      return Tooltip(
+        message: 'Premium Mode: AI Speech Recognition (OpenAI Whisper)',
         child: Padding(
-          padding: const EdgeInsets.all(AppTheme.spacing8),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.verified,
-                color: theme.colorScheme.primary,
-                size: 24,
-              ),
-              const SizedBox(width: AppTheme.spacing8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '🎙️ Premium Mode: AI Speech Recognition',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        color: theme.colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Record manually - no timeouts. High accuracy with OpenAI Whisper.',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onPrimaryContainer,
-                      ),
-                    ),
-                  ],
+              Icon(Icons.verified, color: theme.colorScheme.primary, size: 18),
+              const SizedBox(width: 4),
+              Text(
+                'AI',
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
             ],
@@ -1745,232 +1775,119 @@ class _PronunciationPracticePageState
         ),
       );
     } else if (_speechAvailable) {
-      // Native mode - fallback
-      return Card(
-        elevation: 1,
-        color: theme.colorScheme.tertiaryContainer,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
-          side: BorderSide(
-            color: theme.colorScheme.tertiary.withValues(alpha: 0.5),
-            width: 1,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(AppTheme.spacing8),
-          child: Row(
-            children: [
-              Icon(
-                Icons.info_outline,
-                color: theme.colorScheme.tertiary,
-                size: 24,
-              ),
-              const SizedBox(width: AppTheme.spacing8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '📱 Basic Mode: Native Speech Recognition',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        color: theme.colorScheme.onTertiaryContainer,
-                        fontWeight: FontWeight.bold,
-                      ),
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Tooltip(
+            message: 'Basic Mode: Native Speech Recognition. Add OpenAI API key for better experience.',
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.info_outline, color: theme.colorScheme.tertiary, size: 18),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Basic',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.tertiary,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Auto-timeout may occur. Add OpenAI API key in Settings for better experience.',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onTertiaryContainer,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              IconButton(
-                icon: Icon(
-                  Icons.settings,
-                  color: theme.colorScheme.tertiary,
-                  size: 20,
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const AppSettingsPage()),
-                  );
-                },
-                tooltip: l10n.settings,
-              ),
-            ],
+            ),
           ),
-        ),
+          IconButton(
+            icon: Icon(Icons.settings, size: 18, color: theme.colorScheme.tertiary),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AppSettingsPage()),
+            ),
+            tooltip: l10n.settings,
+          ),
+        ],
       );
     } else {
-      // Speech recognition not available
-      return Card(
-        elevation: 1,
-        color: theme.colorScheme.errorContainer,
-        child: Padding(
-          padding: const EdgeInsets.all(AppTheme.spacing12),
-          child: Row(
-            children: [
-              Icon(
-                Icons.warning,
-                color: theme.colorScheme.error,
-                size: 24,
-              ),
-              const SizedBox(width: AppTheme.spacing8),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '⚠️ Speech Recognition Unavailable',
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        color: theme.colorScheme.onErrorContainer,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'Add OpenAI API key in Settings to enable pronunciation practice.',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onErrorContainer,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.settings,
-                  color: theme.colorScheme.error,
-                  size: 20,
-                ),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const AppSettingsPage()),
-                  );
-                },
-                tooltip: l10n.settings,
-              ),
-            ],
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Tooltip(
+            message: '⚠️ Speech Recognition Unavailable. Add OpenAI API key in Settings.',
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+              child: Icon(Icons.warning, color: theme.colorScheme.error, size: 18),
+            ),
           ),
-        ),
+          IconButton(
+            icon: Icon(Icons.settings, size: 18, color: theme.colorScheme.error),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AppSettingsPage()),
+            ),
+            tooltip: l10n.settings,
+          ),
+        ],
       );
     }
   }
 
 
   Widget _buildStatusIndicators(ThemeData theme, AppLocalizations l10n) {
-    final mediaQuery = MediaQuery.of(context);
-    final isTablet = mediaQuery.size.shortestSide >= 600;
-
-    // On phones with Whisper API, use Column to prevent overflow
-    // On tablets, keep everything in one row
-    final useColumnLayout = !isTablet && _useWhisperAPI;
-
     return Card(
       elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(AppTheme.spacing8),
-        child: useColumnLayout
-            ? Column(
-                children: [
-                  // First row: status indicators
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildStatusItem(
-                        theme,
-                        Icons.format_list_numbered,
-                        l10n.items,
-                        '${_currentItemIndex + 1}/${_filteredItems.length}',
-                      ),
-                      _buildStatusItem(
-                        theme,
-                        Icons.check_circle,
-                        l10n.practiced,
-                        _totalPracticed.toString(),
-                      ),
-                    ],
-                  ),
-                  // Second row: checkbox (centered)
-                  const SizedBox(height: AppTheme.spacing8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Checkbox(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildStatusItem(
+              theme,
+              Icons.format_list_numbered,
+              l10n.items,
+              '${_currentItemIndex + 1}/${_filteredItems.length}',
+            ),
+            _buildStatusItem(
+              theme,
+              Icons.check_circle,
+              l10n.practiced,
+              _totalPracticed.toString(),
+            ),
+            if (_useWhisperAPI)
+              Flexible(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      width: 32,
+                      height: 32,
+                      child: Checkbox(
                         value: _playbackAfterRecording,
                         onChanged: (bool? value) {
-                          if (value != null) {
-                            _savePlaybackPreference(value);
-                          }
+                          if (value != null) _savePlaybackPreference(value);
                         },
                         activeColor: theme.colorScheme.primary,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
-                      Icon(
-                        Icons.play_circle_outline,
-                        size: 20,
-                        color: theme.colorScheme.primary,
-                      ),
-                      const SizedBox(width: AppTheme.spacing4),
-                      Text(
-                        l10n.playbackRecording,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  _buildStatusItem(
-                    theme,
-                    Icons.format_list_numbered,
-                    l10n.items,
-                    '${_currentItemIndex + 1}/${_filteredItems.length}',
-                  ),
-                  _buildStatusItem(
-                    theme,
-                    Icons.check_circle,
-                    l10n.practiced,
-                    _totalPracticed.toString(),
-                  ),
-                  // Playback checkbox (only for Whisper API mode) - inline in same row on tablets
-                  if (_useWhisperAPI)
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Checkbox(
-                          value: _playbackAfterRecording,
-                          onChanged: (bool? value) {
-                            if (value != null) {
-                              _savePlaybackPreference(value);
-                            }
-                          },
-                          activeColor: theme.colorScheme.primary,
-                        ),
-                        Icon(
-                          Icons.play_circle_outline,
-                          size: 20,
-                          color: theme.colorScheme.primary,
-                        ),
-                        const SizedBox(width: AppTheme.spacing4),
-                        Text(
-                          l10n.playbackRecording,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            fontSize: 10,
-                          ),
-                        ),
-                      ],
                     ),
-                ],
+                    Icon(
+                      Icons.play_circle_outline,
+                      size: 18,
+                      color: theme.colorScheme.primary,
+                    ),
+                    const SizedBox(width: AppTheme.spacing4),
+                    Flexible(
+                      child: Text(
+                        l10n.playbackRecording,
+                        style: theme.textTheme.bodySmall?.copyWith(fontSize: 10),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+          ],
+        ),
       ),
     );
   }
@@ -2020,6 +1937,120 @@ class _PronunciationPracticePageState
         .split('-')[0]
         .toUpperCase();
 
+    final isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
+    // Only phones in landscape get the side-by-side layout
+    final isPhoneLandscape = !isTablet && isLandscape;
+
+    // ── Text-to-pronounce section ──────────────────────────────────────
+    final Widget textSection = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (preText.isNotEmpty) ...[
+          Text(
+            preText,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
+              fontStyle: FontStyle.italic,
+              fontSize: isTablet ? null : 10,
+            ),
+          ),
+          const SizedBox(height: AppTheme.spacing4),
+        ],
+        Text(
+          mainText,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            color: theme.colorScheme.onPrimaryContainer,
+            fontWeight: FontWeight.bold,
+            fontSize: isTablet ? null : 14,
+          ),
+        ),
+      ],
+    );
+
+    // ── Microphone + status section ────────────────────────────────────
+    final Widget micSection = Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Microphone button
+              Container(
+                width: isTablet ? 80 : 50,
+                height: isTablet ? 80 : 50,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: !_useWhisperAPI
+                      ? theme.colorScheme.surfaceContainerHighest
+                      : _isRecording
+                          ? theme.colorScheme.error
+                          : theme.colorScheme.secondary,
+                  boxShadow: _isRecording
+                      ? [
+                          BoxShadow(
+                            color: theme.colorScheme.error.withValues(alpha: 0.5),
+                            blurRadius: 20,
+                            spreadRadius: 5,
+                          ),
+                        ]
+                      : null,
+                ),
+                child: IconButton(
+                  icon: Icon(
+                    _isRecording ? Icons.stop : Icons.mic,
+                    color: !_useWhisperAPI
+                        ? theme.colorScheme.onSurface.withValues(alpha: 0.38)
+                        : _isRecording
+                            ? theme.colorScheme.onError
+                            : theme.colorScheme.onSecondary,
+                    size: isTablet ? 40 : 24,
+                  ),
+                  onPressed: !_useWhisperAPI
+                      ? null
+                      : (_isRecording ? _stopRecording : _startRecording),
+                ),
+              ),
+
+              // Volume meter (shown during recording, to the right of microphone)
+              if (_isRecording) ...[
+                SizedBox(width: isTablet ? AppTheme.spacing12 : AppTheme.spacing8),
+                _buildVolumeMeter(theme, isTablet),
+              ],
+            ],
+          ),
+          SizedBox(height: isTablet ? AppTheme.spacing8 : AppTheme.spacing4),
+          Text(
+            !_useWhisperAPI
+                ? l10n.openaiKeyRequired
+                : _isRecording
+                    ? l10n.recording
+                    : (_hasRecorded ? l10n.recorded : l10n.tapToRecord),
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onPrimaryContainer,
+              fontWeight: FontWeight.w500,
+              fontSize: isTablet ? null : 10,
+            ),
+          ),
+          if (_recordedText.isNotEmpty) ...[
+            SizedBox(height: isTablet ? AppTheme.spacing8 : AppTheme.spacing4),
+            Text(
+              '"$_recordedText"',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
+                fontStyle: FontStyle.italic,
+                fontSize: isTablet ? null : 10,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ],
+      ),
+    );
+
     return Card(
       elevation: 2,
       color: theme.colorScheme.primaryContainer,
@@ -2036,7 +2067,6 @@ class _PronunciationPracticePageState
                     '${l10n.pronounce} - $languageCode',
                     style: theme.textTheme.labelLarge?.copyWith(
                       color: theme.colorScheme.onPrimaryContainer,
-                      //fontWeight: FontWeight.bold,
                       fontSize: isTablet ? null : 14,
                     ),
                   ),
@@ -2052,112 +2082,21 @@ class _PronunciationPracticePageState
                 ),
               ],
             ),
-            //SizedBox(height: isTablet ? AppTheme.spacing12 : AppTheme.spacing8),
 
-            // Text to pronounce
-            if (preText.isNotEmpty) ...[
-              Text(
-                preText,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.8),
-                  fontStyle: FontStyle.italic,
-                  fontSize: isTablet ? null : 12,
-                ),
-              ),
-              const SizedBox(height: AppTheme.spacing4),
-            ],
-            Text(
-              mainText,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                color: theme.colorScheme.onPrimaryContainer,
-                fontWeight: FontWeight.bold,
-                fontSize: isTablet ? null : 18,
-              ),
-            ),
-            //SizedBox(height: isTablet ? AppTheme.spacing8 : AppTheme.spacing8),
-
-            // Microphone button with volume meter
-            Center(
-              child: Column(
+            // Phone landscape: text (70%) | mic (30%) side by side
+            // All other layouts: text above mic (existing vertical order)
+            if (isPhoneLandscape)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      // Microphone button
-                      Container(
-                        width: isTablet ? 80 : 60,
-                        height: isTablet ? 80 : 60,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: !_useWhisperAPI
-                              ? theme.colorScheme.surfaceContainerHighest // Disabled color
-                              : _isRecording
-                                  ? theme.colorScheme.error
-                                  : theme.colorScheme.secondary,
-                          boxShadow: _isRecording
-                              ? [
-                                  BoxShadow(
-                                    color: theme.colorScheme.error.withValues(alpha: 0.5),
-                                    blurRadius: 20,
-                                    spreadRadius: 5,
-                                  ),
-                                ]
-                              : null,
-                        ),
-                        child: IconButton(
-                          icon: Icon(
-                            _isRecording ? Icons.stop : Icons.mic,
-                            color: !_useWhisperAPI
-                                ? theme.colorScheme.onSurface.withValues(alpha: 0.38) // Disabled icon
-                                : _isRecording
-                                    ? theme.colorScheme.onError
-                                    : theme.colorScheme.onSecondary,
-                            size: isTablet ? 40 : 30,
-                          ),
-                          onPressed: !_useWhisperAPI
-                              ? null // Disable button when no API key
-                              : (_isRecording ? _stopRecording : _startRecording),
-                        ),
-                      ),
-
-                      // Volume meter (shown during recording, to the right of microphone)
-                      if (_isRecording) ...[
-                        SizedBox(width: isTablet ? AppTheme.spacing12 : AppTheme.spacing8),
-                        _buildVolumeMeter(theme, isTablet),
-                      ],
-                    ],
-                  ),
-                  SizedBox(height: isTablet ? AppTheme.spacing8 : AppTheme.spacing8),
-                  Text(
-                    !_useWhisperAPI
-                        ? l10n.openaiKeyRequired
-                        : _isRecording
-                            ? l10n.recording
-                            : (_hasRecorded ? l10n.recorded : l10n.tapToRecord),
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onPrimaryContainer,
-                      fontWeight: FontWeight.w500,
-                      fontSize: isTablet ? null : 12,
-                    ),
-                  ),
-
-
-                  if (_recordedText.isNotEmpty) ...[
-                    SizedBox(height: isTablet ? AppTheme.spacing8 : AppTheme.spacing8),
-                    Text(
-                      '"$_recordedText"',
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onPrimaryContainer.withValues(alpha: 0.7),
-                        fontStyle: FontStyle.italic,
-                        fontSize: isTablet ? null : 11,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
+                  Expanded(flex: 7, child: textSection),
+                  Expanded(flex: 3, child: micSection),
                 ],
-              ),
-            ),
+              )
+            else ...[
+              textSection,
+              micSection,
+            ],
           ],
         ),
       ),
@@ -2175,7 +2114,6 @@ class _PronunciationPracticePageState
     double labelFontSize;
     double titleFontSize;
     double topPadding;
-    double titleSpacing;
 
     if (isTablet) {
       if (isLandscape) {
@@ -2185,7 +2123,6 @@ class _PronunciationPracticePageState
         labelFontSize = 13;
         titleFontSize = 16;
         topPadding = 30;
-        titleSpacing = AppTheme.spacing4;
       } else {
         // Tablet portrait - can be a bit larger
         tachometerHeight = 130;
@@ -2193,26 +2130,23 @@ class _PronunciationPracticePageState
         labelFontSize = 14;
         titleFontSize = 18;
         topPadding = 35;
-        titleSpacing = AppTheme.spacing8;
       }
     } else {
       // Phone
       if (isLandscape) {
         // Phone landscape - very compact
-        tachometerHeight = 80;
-        percentageFontSize = 28;
+        tachometerHeight = 120;
+        percentageFontSize = 18;
         labelFontSize = 11;
         titleFontSize = 13;
         topPadding = 20;
-        titleSpacing = AppTheme.spacing4;
       } else {
         // Phone portrait - standard size
         tachometerHeight = 100;
-        percentageFontSize = 36;
+        percentageFontSize = 18;
         labelFontSize = 12;
         titleFontSize = 14;
         topPadding = 30;
-        titleSpacing = AppTheme.spacing8;
       }
     }
 
@@ -2220,58 +2154,106 @@ class _PronunciationPracticePageState
       elevation: 2,
       child: Padding(
         padding: EdgeInsets.all(isTablet ? AppTheme.spacing8 : AppTheme.spacing8),
-        child: Column(
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              l10n.pronunciationAccuracy,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                fontSize: titleFontSize,
+            // ── Label ────────────────────────────────────────────────────
+            SizedBox(
+
+              height: tachometerHeight,
+              child: Center(
+                child: Text(
+                  l10n.pronunciationAccuracy,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: titleFontSize - 2,
+                  ),
+                  textAlign: TextAlign.center,
+                  softWrap: true,
+                ),
               ),
             ),
-            SizedBox(height: titleSpacing),
-
-            // Tachometer widget
-            SizedBox(
-              height: tachometerHeight,
-              child: CustomPaint(
-                painter: TachometerPainter(
-                  percentage: _matchRate,
-                  theme: theme,
-                  availableHeight: tachometerHeight,
-                ),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(height: topPadding),
-                      TweenAnimationBuilder<double>(
-                        duration: const Duration(milliseconds: 1000),
-                        curve: Curves.easeOutCubic,
-                        tween: Tween<double>(begin: 0, end: _matchRate),
-                        builder: (context, value, child) {
-                          return Text(
-                            '${value.toStringAsFixed(0)}%',
-                            style: theme.textTheme.displayMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                              color: _getMatchRateColor(theme, value),
-                              fontSize: percentageFontSize,
-                            ),
-                          );
-                        },
+            const SizedBox(width: 4),
+            // ── Arc ──────────────────────────────────────────────────────
+            Expanded(
+                  flex: 3,
+                  child: SizedBox(
+                    height: tachometerHeight,
+                    child: CustomPaint(
+                      painter: TachometerPainter(
+                        percentage: _matchRate,
+                        theme: theme,
+                        availableHeight: tachometerHeight,
                       ),
-                      Text(
-                        _getMatchRateLabel(l10n, _matchRate),
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontSize: labelFontSize,
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(height: topPadding),
+                            TweenAnimationBuilder<double>(
+                              duration: const Duration(milliseconds: 1000),
+                              curve: Curves.easeOutCubic,
+                              tween: Tween<double>(begin: 0, end: _matchRate),
+                              builder: (context, value, child) {
+                                return Text(
+                                  '${value.toStringAsFixed(0)}%',
+                                  style: theme.textTheme.displayMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: _getMatchRateColor(theme, value),
+                                    fontSize: percentageFontSize,
+                                  ),
+                                );
+                              },
+                            ),
+                            Text(
+                              _getMatchRateLabel(l10n, _matchRate),
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                                fontSize: labelFontSize,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ),
+
+                // ── Sub-score bars (only after a recording) ──────────────────
+                if (_hasRecorded) ...[
+                  const SizedBox(width: AppTheme.spacing8),
+                  Expanded(
+                    flex: 2,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        _buildScoreBar(
+                          theme,
+                          l10n.envelopeScoreLabel,
+                          _volumeScore,
+                          Icons.show_chart,
+                          labelFontSize,
+                        ),
+                        SizedBox(height: AppTheme.spacing8),
+                        _buildScoreBar(
+                          theme,
+                          l10n.rhythmScoreLabel,
+                          _rhythmScore,
+                          Icons.music_note,
+                          labelFontSize,
+                        ),
+                        SizedBox(height: AppTheme.spacing8),
+                        _buildScoreBar(
+                          theme,
+                          l10n.textScoreLabel,
+                          _textScore,
+                          Icons.text_fields,
+                          labelFontSize,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
           ],
         ),
       ),
@@ -2292,6 +2274,57 @@ class _PronunciationPracticePageState
     if (rate >= 40) return l10n.fair;
     if (rate >= 20) return l10n.needsImprovement;
     return l10n.tryAgain;
+  }
+
+  /// Compact labelled progress bar used in the tachometer panel.
+  Widget _buildScoreBar(
+    ThemeData theme,
+    String label,
+    double score,
+    IconData icon,
+    double fontSize,
+  ) {
+    final pct = (score * 100).round();
+    final color = _getMatchRateColor(theme, score * 100);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: fontSize + 2, color: color),
+            const SizedBox(width: 4),
+            Expanded(
+              child: Text(
+                label,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontSize: fontSize - 1,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            Text(
+              '$pct%',
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontSize: fontSize,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 2),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(3),
+          child: LinearProgressIndicator(
+            value: score.clamp(0.0, 1.0),
+            backgroundColor: theme.colorScheme.surfaceContainerHighest,
+            valueColor: AlwaysStoppedAnimation<Color>(color),
+            minHeight: 6,
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _buildNavigationButtons(ThemeData theme, AppLocalizations l10n, bool isTablet) {

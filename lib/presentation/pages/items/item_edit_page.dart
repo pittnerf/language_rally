@@ -2003,6 +2003,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
       ScaffoldMessenger.of(context).hideCurrentSnackBar();
       await Future.delayed(const Duration(milliseconds: 100));
 
+      if (!mounted) return;
       if (audioPath == null || audioPath.isEmpty) {
         logDebug('❌ No audio path returned from recorder');
         ScaffoldMessenger.of(context).showSnackBar(

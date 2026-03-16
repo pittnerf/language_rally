@@ -56,6 +56,15 @@ class ItemRepository {
   }
 
   // Read
+  Future<int> getItemCountForPackage(String packageId) async {
+    final db = await _dbHelper.database;
+    final result = await db.rawQuery(
+      'SELECT COUNT(*) as count FROM items WHERE package_id = ?',
+      [packageId],
+    );
+    return Sqflite.firstIntValue(result) ?? 0;
+  }
+
   Future<List<Item>> getItemsForPackage(String packageId) async {
     final db = await _dbHelper.database;
     final maps = await db.query(

@@ -836,6 +836,12 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
+            const SizedBox(height: AppTheme.spacing16),
+            FilledButton.icon(
+              onPressed: _showAddItemDialog,
+              icon: const Icon(Icons.add),
+              label: Text(l10n.addItem),
+            ),
           ],
         ),
       );
@@ -868,12 +874,12 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
       itemCount: _filteredItems.length,
       itemBuilder: (context, index) {
         final item = _filteredItems[index];
-        return _buildItemCard(l10n, theme, item);
+        return _buildItemCard(l10n, theme, item, _filteredItems, index);
       },
     );
   }
 
-  Widget _buildItemCard(AppLocalizations l10n, ThemeData theme, Item item) {
+  Widget _buildItemCard(AppLocalizations l10n, ThemeData theme, Item item, List<Item> items, int index) {
     final isSelected = _selectedItem?.id == item.id;
 
     return Card(
@@ -890,7 +896,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
             _selectedItem = item;
           });
           if (MediaQuery.of(context).orientation == Orientation.portrait) {
-            _showItemDetailsDialog(l10n, theme, item);
+            _showItemDetailsDialog(l10n, theme, items, index);
           }
         },
         borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
@@ -1039,22 +1045,23 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
   void _showItemDetailsDialog(
     AppLocalizations l10n,
     ThemeData theme,
-    Item item,
+    List<Item> items,
+    int initialIndex,
   ) {
+    // PageController lives outside StatefulBuilder so it survives setDialogState rebuilds
+    final pageController = PageController(initialPage: initialIndex);
+    int currentIndex = initialIndex;
+
     showDialog(
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) {
-          // Get the latest item data
-          final currentItem = _allItems.firstWhere(
-            (i) => i.id == item.id,
-            orElse: () => item,
-          );
-
           // Get safe area padding to avoid system UI overlays
           final mediaQuery = MediaQuery.of(context);
           final safeAreaPadding = mediaQuery.padding;
-          final availableHeight = mediaQuery.size.height - safeAreaPadding.top - safeAreaPadding.bottom;
+          final availableHeight = mediaQuery.size.height -
+              safeAreaPadding.top -
+              safeAreaPadding.bottom;
           final availableWidth = mediaQuery.size.width;
 
           return Dialog(
@@ -1067,17 +1074,93 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
             child: SizedBox(
               width: availableWidth - (AppTheme.spacing8 * 2),
               height: availableHeight,
-              child: _buildItemDetailsForDialog(
-                l10n,
-                theme,
-                currentItem,
-                setDialogState,
+              child: Column(
+                children: [
+                  // ── Navigation bar ──────────────────────────────────────
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppTheme.spacing4,
+                      vertical: 2,
+                    ),
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.chevron_left),
+                          iconSize: 22,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          tooltip: l10n.previousItem,
+                          onPressed: currentIndex > 0
+                              ? () => pageController.previousPage(
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeInOut,
+                                  )
+                              : null,
+                        ),
+                        Expanded(
+                          child: Text(
+                            '${currentIndex + 1} / ${items.length}',
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.chevron_right),
+                          iconSize: 22,
+                          padding: EdgeInsets.zero,
+                          constraints: const BoxConstraints(),
+                          tooltip: l10n.nextItem,
+                          onPressed: currentIndex < items.length - 1
+                              ? () => pageController.nextPage(
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.easeInOut,
+                                  )
+                              : null,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Divider(height: 1),
+
+                  // ── Swipeable item pages ────────────────────────────────
+                  Expanded(
+                    child: PageView.builder(
+                      controller: pageController,
+                      onPageChanged: (index) {
+                        setDialogState(() {
+                          currentIndex = index;
+                        });
+                        // Also keep the list selection in sync
+                        setState(() {
+                          _selectedItem = items[index];
+                        });
+                      },
+                      itemCount: items.length,
+                      itemBuilder: (context, index) {
+                        final baseItem = items[index];
+                        // Always use the freshest version of the item
+                        final freshItem = _allItems.firstWhere(
+                          (i) => i.id == baseItem.id,
+                          orElse: () => baseItem,
+                        );
+                        return _buildItemDetailsForDialog(
+                          l10n,
+                          theme,
+                          freshItem,
+                          setDialogState,
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
             ),
           );
         },
       ),
-    );
+    ).then((_) => pageController.dispose());
   }
 
   // Separate method for dialog to ensure proper context handling

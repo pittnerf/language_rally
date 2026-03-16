@@ -1,5 +1,6 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:language_rally/l10n/app_localizations.dart';
 
@@ -60,7 +61,13 @@ class _LanguageRallyAppState extends ConsumerState<LanguageRallyApp>
     switch (state) {
       case AppLifecycleState.resumed:
         // App came back to foreground - reinitialize if needed
-        logDebug('App resumed - checking database connection and refreshing providers');
+        logDebug('App resumed - forcing frame render and refreshing providers');
+        // Explicitly request a new frame from the Flutter engine.
+        // This is necessary to recover from Samsung Freezess (or any OS-level
+        // process suspension) where the rendering pipeline stalls after the
+        // app is unfrozen and the surface is recreated, but Flutter never
+        // renders — causing a permanent blank screen.
+        SchedulerBinding.instance.scheduleFrame();
         _checkAndReinitialize();
         // Force refresh providers to ensure fresh data
         if (mounted) {
@@ -98,7 +105,10 @@ class _LanguageRallyAppState extends ConsumerState<LanguageRallyApp>
       logDebug('Database connection is healthy');
     } catch (e) {
       logDebug('Database connection issue detected: $e');
-      // Force re-initialization
+      // Reset the static initialization flag so _initializeApp() performs a
+      // full re-init instead of returning immediately (the flag stays true
+      // across a Freezess/unfreeze cycle since the process is not killed).
+      AppInitializationService.reset();
       await _initializeApp();
     }
   }
