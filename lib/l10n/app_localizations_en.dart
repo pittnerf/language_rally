@@ -123,7 +123,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invalidEmail => 'Invalid email address';
 
   @override
-  String get invalidUrl => 'Invalid URL';
+  String get invalidUrl => 'Please enter a valid http:// or https:// URL.';
 
   @override
   String get readOnlyPackage =>
@@ -189,6 +189,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importItems => 'Import Items (JSON)';
 
   @override
+  String get importItemsDialogTitle => 'Import Items (JSON)';
+
+  @override
+  String get importItemsFromLocalJson => 'Import from local JSON file';
+
+  @override
+  String get enterItemsUrl => 'Items JSON URL (https://…)';
+
+  @override
+  String get downloadingItems => 'Downloading items…';
+
+  @override
   String get selectImportFile => 'Select Import File';
 
   @override
@@ -223,7 +235,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importPackage => 'Import Package';
 
   @override
-  String get importPackageTooltip => 'Import package from ZIP file';
+  String get importPackageTooltip => 'Import package from ZIP file or URL';
+
+  @override
+  String get importPackageDialogTitle => 'Import Language Package';
+
+  @override
+  String get importFromLocalFile => 'Import from local file';
+
+  @override
+  String get importFromUrl => 'Import from URL';
+
+  @override
+  String get enterPackageUrl => 'Package URL (https://…)';
+
+  @override
+  String get pasteFromClipboard => 'Paste from clipboard';
+
+  @override
+  String get downloadingPackage => 'Downloading package…';
+
+  @override
+  String get downloadFailed =>
+      'Download failed. Please check the URL and your internet connection.';
+
+  @override
+  String get orLabel => 'or';
 
   @override
   String get selectPackageZipFile => 'Select Package ZIP File';
@@ -973,10 +1010,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get exportBeforeDelete => 'Export Before Deleting?';
 
   @override
-  String get aiTextAnalysis => 'Import with AI';
+  String get aiTextAnalysis => 'Import items with AI';
 
   @override
-  String get aiTextAnalysisImport => 'Import with AI Text Analysis';
+  String get aiTextAnalysisImport => 'Import items with AI Text Analysis';
 
   @override
   String get knowledgeLevel => 'Knowledge Level';
@@ -1414,9 +1451,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get extractFullItems => 'Extract Full Items';
-
-  @override
-  String get pasteFromClipboard => 'Paste from clipboard';
 
   @override
   String get noItemsFoundOrAllDuplicates =>

@@ -1,7 +1,11 @@
 // lib/presentation/pages/packages/package_list_page.dart
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/badge_helper.dart';
 import '../../../data/models/language_package.dart';
@@ -264,7 +268,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
               height: 40,
               child: FloatingActionButton.extended(
                 heroTag: 'importPackage',
-                onPressed: _importPackageFromZip,
+                onPressed: _showImportDialog,
                 icon: const Icon(Icons.file_upload, size: 18),
                 label: Text(
                   l10n.importPackage,
@@ -731,6 +735,201 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
     // This ensures any new or edited packages are shown
     await _loadGroupsAndPackages();
   }
+
+  // ── Import dialog ────────────────────────────────────────────────────────
+
+  /// Shows the unified import dialog that lets the user choose between a
+  /// local ZIP file and a remote URL.
+  Future<void> _showImportDialog() async {
+    final l10n = AppLocalizations.of(context)!;
+    final urlController = TextEditingController();
+
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        final theme = Theme.of(dialogContext);
+        return AlertDialog(
+          title: Text(l10n.importPackageDialogTitle),
+          content: SizedBox(
+            // Give the dialog a comfortable fixed width.
+            width: 360,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // ── Local file ──────────────────────────────────────────────
+                FilledButton.icon(
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop();
+                    _importPackageFromZip();
+                  },
+                  icon: const Icon(Icons.folder_open),
+                  label: Text(l10n.importFromLocalFile),
+                ),
+
+                const SizedBox(height: AppTheme.spacing16),
+
+                // ── "or" divider ────────────────────────────────────────────
+                Row(
+                  children: [
+                    const Expanded(child: Divider()),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: AppTheme.spacing8),
+                      child: Text(
+                        l10n.orLabel,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                    const Expanded(child: Divider()),
+                  ],
+                ),
+
+                const SizedBox(height: AppTheme.spacing16),
+
+                // ── URL input ───────────────────────────────────────────────
+                TextField(
+                  controller: urlController,
+                  keyboardType: TextInputType.url,
+                  autocorrect: false,
+                  decoration: InputDecoration(
+                    labelText: l10n.enterPackageUrl,
+                    hintText: 'https://example.com/package.zip',
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.content_paste),
+                      tooltip: l10n.pasteFromClipboard,
+                      onPressed: () async {
+                        final data = await Clipboard.getData(
+                            Clipboard.kTextPlain);
+                        if (data?.text != null) {
+                          urlController.text = data!.text!;
+                        }
+                      },
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: AppTheme.spacing12),
+
+                // ── Import from URL button ──────────────────────────────────
+                FilledButton.icon(
+                  onPressed: () {
+                    final url = urlController.text.trim();
+                    if (url.isEmpty) return;
+                    Navigator.of(dialogContext).pop();
+                    _importPackageFromUrl(url);
+                  },
+                  icon: const Icon(Icons.download),
+                  label: Text(l10n.importFromUrl),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(l10n.cancel),
+            ),
+          ],
+        );
+      },
+    );
+
+    urlController.dispose();
+  }
+
+  // ── URL import ───────────────────────────────────────────────────────────
+
+  /// Downloads a package ZIP from [url], imports it, then deletes the
+  /// downloaded file.
+  ///
+  /// **Why [getApplicationSupportDirectory] instead of [getTemporaryDirectory]:**
+  /// The import can involve a user-facing confirmation dialog (duplicate
+  /// package prompt) that stays open indefinitely.  Android is allowed to
+  /// reclaim files in the system temp directory under memory pressure, so
+  /// storing the download there risks losing the file before the second read
+  /// inside [importPackageFromZipWithNewId] can happen.  The app-support
+  /// directory is private to the app and is never cleared by the OS.
+  ///
+  /// **Why explicit deletion instead of `finally`:**
+  /// Deletion is placed at the explicit end of both the success path and the
+  /// error path so it is guaranteed to run only *after* the import (and any
+  /// follow-up DB/UI work inside [_performPackageImport]) has fully
+  /// completed.  This removes any ambiguity about `finally` timing.
+  Future<void> _importPackageFromUrl(String url) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    // ── 1. Validate URL ────────────────────────────────────────────────────
+    final uri = Uri.tryParse(url);
+    if (uri == null ||
+        (!uri.isScheme('http') && !uri.isScheme('https'))) {
+      _showErrorDialog(l10n.importError, l10n.invalidUrl);
+      return;
+    }
+
+    String? tempFilePath;
+    try {
+      // ── 2. Download ──────────────────────────────────────────────────────
+      _showLoadingDialog(l10n.downloadingPackage);
+
+      final response = await http.get(uri);
+
+      if (mounted) Navigator.of(context).pop(); // close downloading dialog
+
+      if (response.statusCode != 200) {
+        logDebug('URL import: HTTP ${response.statusCode} for $url');
+        _showErrorDialog(l10n.importError, l10n.downloadFailed);
+        return;
+      }
+
+      // ── 3. Persist to app-support directory ──────────────────────────────
+      final supportDir = await getApplicationSupportDirectory();
+      final fileName =
+          'pkg_import_${DateTime.now().millisecondsSinceEpoch}.zip';
+      tempFilePath = '${supportDir.path}/$fileName';
+      await File(tempFilePath).writeAsBytes(response.bodyBytes);
+      logDebug(
+          'URL import: saved ${response.bodyBytes.length} bytes → $tempFilePath');
+
+      // ── 4. Import (must fully complete before we touch the file again) ───
+      await _performPackageImport(tempFilePath, l10n);
+
+      // ── 5a. SUCCESS — delete now that import is fully done ───────────────
+      await _deleteUrlTempFile(tempFilePath);
+      tempFilePath = null; // mark cleaned up so catch block skips it
+
+    } catch (e) {
+      // Close any open loading/downloading dialog
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      // ── 5b. FAILURE — delete now that all error handling is done ─────────
+      await _deleteUrlTempFile(tempFilePath);
+      tempFilePath = null;
+
+      _handleImportError(e, l10n);
+    }
+  }
+
+  /// Deletes a temporary file that was downloaded for a URL import.
+  /// Silently swallows errors so a cleanup failure never masks the real result.
+  Future<void> _deleteUrlTempFile(String? path) async {
+    if (path == null) return;
+    try {
+      final file = File(path);
+      if (await file.exists()) {
+        await file.delete();
+        logDebug('URL import: deleted temp file $path');
+      }
+    } catch (e) {
+      logDebug('URL import: could not delete temp file: $e');
+    }
+  }
+
+  // ── Local-file import (unchanged) ────────────────────────────────────────
 
   Future<void> _importPackageFromZip() async {
     final l10n = AppLocalizations.of(context)!;

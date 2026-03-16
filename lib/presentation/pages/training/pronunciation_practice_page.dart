@@ -1275,8 +1275,16 @@ class _PronunciationPracticePageState
 
       final userBytes    = await File(_recordedAudioPath!).readAsBytes();
       final userFeatures = _extractAudioFeatures(userBytes);
-      final userVolume   = List<double>.from(
+      final rawUserVolume = List<double>.from(
           userFeatures['volumePattern'] as List? ?? []);
+
+      // Trim leading/trailing silence from the user's recording so that the
+      // shape comparison is not biased by the quiet parts before the user
+      // starts talking and after they stop.  The reference audio (TTS) is
+      // already clean and needs no trimming.
+      final userVolume = _trimSilence(rawUserVolume);
+      logDebug('   Silence trim: ${rawUserVolume.length} → ${userVolume.length} '
+          'frames (removed ${rawUserVolume.length - userVolume.length})');
 
       double durationScore;
       double volumeScore;
@@ -1504,7 +1512,69 @@ class _PronunciationPracticePageState
     };
   }
 
-  /// Calculate how well the duration matches expected duration
+  /// Trims leading and trailing silence from a normalised volume envelope.
+  ///
+  /// The envelope is expected to be normalised so the loudest frame = 1.0.
+  /// The noise-floor threshold is derived **automatically** from the recording
+  /// itself: the bottom [noisePercentile] fraction of frames is used to
+  /// estimate the ambient background level, and the cut-off is set to
+  /// [noiseMultiplier] times that level.  Hard limits ([minThreshold] and
+  /// [maxThreshold]) keep the result sensible in very quiet or very noisy
+  /// environments.
+  ///
+  /// [holdFrames] extra frames are kept on each side so that the soft
+  /// onset/offset of real speech (which can start quietly) is not clipped.
+  List<double> _trimSilence(
+    List<double> pattern, {
+    double noisePercentile  = 0.20, // bottom 20 % of frames → noise estimate
+    double noiseMultiplier  = 3.0,  // threshold = noise floor × 3
+    double minThreshold     = 0.05, // never cut above 5 % of peak
+    double maxThreshold     = 0.20, // never require more than 20 % of peak
+    int    holdFrames       = 2,    // 2 × 50 ms = 100 ms grace on each side
+  }) {
+    if (pattern.length < 4) return pattern;
+
+    // ── Adaptive noise-floor estimation ─────────────────────────────────────
+    final sorted = List<double>.from(pattern)..sort();
+    final noiseFloorIdx = ((pattern.length - 1) * noisePercentile).round();
+    final noiseFloor    = sorted[noiseFloorIdx];
+    final threshold     = (noiseFloor * noiseMultiplier)
+        .clamp(minThreshold, maxThreshold);
+
+    logDebug('   trimSilence: noise floor=${(noiseFloor * 100).toStringAsFixed(1)}%'
+        '  threshold=${(threshold * 100).toStringAsFixed(1)}%');
+
+    // ── Find first frame above threshold ────────────────────────────────────
+    int start = pattern.length; // sentinel = "nothing found"
+    for (int i = 0; i < pattern.length; i++) {
+      if (pattern[i] >= threshold) {
+        start = i;
+        break;
+      }
+    }
+    if (start == pattern.length) {
+      // Entire recording is below threshold (complete silence / mic off).
+      // Return as-is so the caller still has data to work with.
+      logDebug('   trimSilence: entire recording below threshold — skipping trim');
+      return pattern;
+    }
+
+    // ── Find last frame above threshold ─────────────────────────────────────
+    int end = 0;
+    for (int i = pattern.length - 1; i >= 0; i--) {
+      if (pattern[i] >= threshold) {
+        end = i;
+        break;
+      }
+    }
+
+    // ── Apply hold margin ────────────────────────────────────────────────────
+    start = (start - holdFrames).clamp(0, pattern.length - 1);
+    end   = (end   + holdFrames).clamp(0, pattern.length - 1);
+
+    if (start >= end) return pattern;
+    return pattern.sublist(start, end + 1);
+  }
   double _calculateDurationScore(double actualDuration, double expectedDuration) {
     if (expectedDuration <= 0) return 0.0;
 

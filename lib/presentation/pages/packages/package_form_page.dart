@@ -2,7 +2,9 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
@@ -1281,7 +1283,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                     SizedBox(width: AppTheme.spacing8),
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: _fieldsEnabled ? _importItems : null,
+                        onPressed: _fieldsEnabled ? _showImportItemsDialog : null,
                         icon: const Icon(Icons.file_upload),
                         label: Text(l10n.importItems),
                         style: ElevatedButton.styleFrom(
@@ -1410,7 +1412,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                       children: [
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: _fieldsEnabled ? _importItems : null,
+                            onPressed: _fieldsEnabled ? _showImportItemsDialog : null,
                             icon: const Icon(Icons.file_upload),
                             label: Text(l10n.importItems),
                             style: ElevatedButton.styleFrom(
@@ -2051,29 +2053,225 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     }
   }
 
-  Future<void> _importItems() async {
+  // ── Import items – entry points ─────────────────────────────────────────
+
+  /// Shows the unified import dialog (local JSON file or remote URL).
+  Future<void> _showImportItemsDialog() async {
     if (widget.package == null) return;
-
     final l10n = AppLocalizations.of(context)!;
+    final urlController = TextEditingController();
 
-    // Let user select JSON file
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['json'],
-      dialogTitle: l10n.selectImportFile,
+    await showDialog<void>(
+      context: context,
+      builder: (dialogContext) {
+        final theme = Theme.of(dialogContext);
+        return AlertDialog(
+          title: Text(l10n.importItemsDialogTitle),
+          content: SizedBox(
+            width: 360,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // ── Local JSON file ────────────────────────────────────────
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.of(dialogContext).pop();
+                    _importItems();
+                  },
+                  icon: const Icon(Icons.folder_open),
+                  label: Text(l10n.importItemsFromLocalJson),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.tertiary,
+                    foregroundColor: theme.colorScheme.onTertiary,
+                  ),
+                ),
+
+                const SizedBox(height: AppTheme.spacing16),
+
+                // ── "or" divider ───────────────────────────────────────────
+                Row(
+                  children: [
+                    const Expanded(child: Divider()),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: AppTheme.spacing8),
+                      child: Text(
+                        l10n.orLabel,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                    const Expanded(child: Divider()),
+                  ],
+                ),
+
+                const SizedBox(height: AppTheme.spacing16),
+
+                // ── URL input ──────────────────────────────────────────────
+                TextField(
+                  controller: urlController,
+                  keyboardType: TextInputType.url,
+                  autocorrect: false,
+                  decoration: InputDecoration(
+                    labelText: l10n.enterItemsUrl,
+                    hintText: 'https://example.com/items.json',
+                    border: const OutlineInputBorder(),
+                    suffixIcon: IconButton(
+                      icon: const Icon(Icons.content_paste),
+                      tooltip: l10n.pasteFromClipboard,
+                      onPressed: () async {
+                        final data = await Clipboard.getData(
+                            Clipboard.kTextPlain);
+                        if (data?.text != null) {
+                          urlController.text = data!.text!;
+                        }
+                      },
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: AppTheme.spacing12),
+
+                // ── Import from URL button ─────────────────────────────────
+                ElevatedButton.icon(
+                  onPressed: () {
+                    final url = urlController.text.trim();
+                    if (url.isEmpty) return;
+                    Navigator.of(dialogContext).pop();
+                    _importItemsFromUrl(url);
+                  },
+                  icon: const Icon(Icons.download),
+                  label: Text(l10n.importFromUrl),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: theme.colorScheme.tertiary,
+                    foregroundColor: theme.colorScheme.onTertiary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(dialogContext).pop(),
+              child: Text(l10n.cancel),
+            ),
+          ],
+        );
+      },
     );
 
-    if (result == null || result.files.single.path == null) {
-      // User cancelled
+    urlController.dispose();
+  }
+
+  /// Downloads an items JSON from [url], imports it, then deletes the
+  /// downloaded file whether the import succeeded or failed.
+  ///
+  /// Uses [getApplicationSupportDirectory] so that the OS cannot reclaim the
+  /// file while a confirmation dialog (e.g. language-mismatch prompt) is open.
+  Future<void> _importItemsFromUrl(String url) async {
+    if (widget.package == null) return;
+    final l10n = AppLocalizations.of(context)!;
+
+    // ── 1. Validate URL ────────────────────────────────────────────────────
+    final uri = Uri.tryParse(url);
+    if (uri == null ||
+        (!uri.isScheme('http') && !uri.isScheme('https'))) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(l10n.invalidUrl),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ));
+      }
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    String? tempFilePath;
+    try {
+      // ── 2. Download ──────────────────────────────────────────────────────
+      if (mounted) setState(() => _isLoading = true);
+
+      final response = await http.get(uri);
+
+      if (response.statusCode != 200) {
+        logDebug('URL items import: HTTP ${response.statusCode} for $url');
+        if (mounted) {
+          setState(() => _isLoading = false);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(l10n.downloadFailed),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ));
+        }
+        return;
+      }
+
+      // ── 3. Persist to app-support directory ──────────────────────────────
+      final supportDir = await getApplicationSupportDirectory();
+      final fileName =
+          'items_import_${DateTime.now().millisecondsSinceEpoch}.json';
+      tempFilePath = '${supportDir.path}/$fileName';
+      await File(tempFilePath).writeAsBytes(response.bodyBytes);
+      logDebug(
+          'URL items import: saved ${response.bodyBytes.length} bytes → $tempFilePath');
+
+      // Reset loading; _performItemsImportFromFile manages its own state
+      if (mounted) setState(() => _isLoading = false);
+
+      // ── 4. Import (fully awaited before any cleanup) ──────────────────────
+      await _performItemsImportFromFile(tempFilePath);
+
+      // ── 5a. SUCCESS — delete now that import is fully done ───────────────
+      await _deleteItemsUrlTempFile(tempFilePath);
+      tempFilePath = null;
+
+    } catch (e) {
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      if (mounted) setState(() => _isLoading = false);
+
+      // ── 5b. FAILURE — delete now that error handling is done ─────────────
+      await _deleteItemsUrlTempFile(tempFilePath);
+      tempFilePath = null;
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('${l10n.errorImportingItems}: $e'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ));
+      }
+    }
+  }
+
+  /// Deletes a temporary file downloaded for a URL import.
+  /// Silently swallows errors so cleanup never masks the real result.
+  Future<void> _deleteItemsUrlTempFile(String? path) async {
+    if (path == null) return;
+    try {
+      final file = File(path);
+      if (await file.exists()) {
+        await file.delete();
+        logDebug('URL items import: deleted temp file $path');
+      }
+    } catch (e) {
+      logDebug('URL items import: could not delete temp file: $e');
+    }
+  }
+
+  // ── Shared import logic ──────────────────────────────────────────────────
+
+  /// Reads and imports items from a local JSON file at [filePath].
+  /// Called by both [_importItems] (file picker) and [_importItemsFromUrl]
+  /// (downloaded file).  Manages [_isLoading] and the progress dialog.
+  Future<void> _performItemsImportFromFile(String filePath) async {
+    if (widget.package == null) return;
+    final l10n = AppLocalizations.of(context)!;
+
+    setState(() => _isLoading = true);
 
     try {
-      final file = File(result.files.single.path!);
+      final file = File(filePath);
       final content = await file.readAsString();
 
       // Parse JSON
@@ -2081,47 +2279,39 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
 
       if (jsonData is! List) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${l10n.errorImportingItems}: JSON must be an array'),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+                '${l10n.errorImportingItems}: JSON must be an array'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ));
         }
         return;
       }
 
-      final List<Map<String, dynamic>> items = jsonData
-          .whereType<Map<String, dynamic>>()
-          .toList();
+      final List<Map<String, dynamic>> items =
+          jsonData.whereType<Map<String, dynamic>>().toList();
 
       if (items.isEmpty) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('${l10n.errorImportingItems}: No valid items found in JSON'),
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
-          );
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+                '${l10n.errorImportingItems}: No valid items found in JSON'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ));
         }
         return;
       }
 
-      // Check for language mismatch (only once)
-      bool shouldContinue = true;
+      // Check for language mismatch (only once, before showing progress)
       if (items.isNotEmpty) {
-        shouldContinue = await _checkLanguageMismatch(items.first);
-        if (!shouldContinue) {
-          return;
-        }
+        final shouldContinue = await _checkLanguageMismatch(items.first);
+        if (!shouldContinue) return;
       }
 
-      // Create a ValueNotifier for progress updates
+      // Show progress dialog
       final progressNotifier = ValueNotifier<_ImportProgress>(
         _ImportProgress(current: 0, total: items.length),
       );
-
-      // Show progress dialog
       if (mounted) {
         showDialog(
           context: context,
@@ -2134,42 +2324,45 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
       final importResult = await _processJsonImportItems(
         items,
         onProgress: (current, total) {
-          progressNotifier.value = _ImportProgress(
-            current: current,
-            total: total,
-          );
+          progressNotifier.value =
+              _ImportProgress(current: current, total: total);
         },
       );
 
       // Close progress dialog
-      if (mounted) {
-        Navigator.of(context).pop();
-      }
-
-      if (mounted) {
-        _showImportResultDialog(l10n, importResult);
-      }
+      if (mounted) Navigator.of(context).pop();
+      if (mounted) _showImportResultDialog(l10n, importResult);
     } catch (e) {
-      // Close progress dialog if open
       if (mounted && Navigator.of(context).canPop()) {
         Navigator.of(context).pop();
       }
-
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${l10n.errorImportingItems}: $e'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('${l10n.errorImportingItems}: $e'),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ));
       }
     } finally {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
+      if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  // ── Original local-file entry point (unchanged public contract) ──────────
+
+  Future<void> _importItems() async {
+    if (widget.package == null) return;
+    final l10n = AppLocalizations.of(context)!;
+
+    // Let user select JSON file
+    final FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['json'],
+      dialogTitle: l10n.selectImportFile,
+    );
+
+    if (result == null || result.files.single.path == null) return;
+
+    await _performItemsImportFromFile(result.files.single.path!);
   }
 
   Future<void> _exportItemsJson() async {

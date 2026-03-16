@@ -329,7 +329,7 @@ abstract class AppLocalizations {
   /// No description provided for @invalidUrl.
   ///
   /// In en, this message translates to:
-  /// **'Invalid URL'**
+  /// **'Please enter a valid http:// or https:// URL.'**
   String get invalidUrl;
 
   /// No description provided for @readOnlyPackage.
@@ -452,6 +452,30 @@ abstract class AppLocalizations {
   /// **'Import Items (JSON)'**
   String get importItems;
 
+  /// No description provided for @importItemsDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Items (JSON)'**
+  String get importItemsDialogTitle;
+
+  /// No description provided for @importItemsFromLocalJson.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from local JSON file'**
+  String get importItemsFromLocalJson;
+
+  /// No description provided for @enterItemsUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Items JSON URL (https://…)'**
+  String get enterItemsUrl;
+
+  /// No description provided for @downloadingItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading items…'**
+  String get downloadingItems;
+
   /// No description provided for @selectImportFile.
   ///
   /// In en, this message translates to:
@@ -521,8 +545,56 @@ abstract class AppLocalizations {
   /// No description provided for @importPackageTooltip.
   ///
   /// In en, this message translates to:
-  /// **'Import package from ZIP file'**
+  /// **'Import package from ZIP file or URL'**
   String get importPackageTooltip;
+
+  /// No description provided for @importPackageDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Language Package'**
+  String get importPackageDialogTitle;
+
+  /// No description provided for @importFromLocalFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from local file'**
+  String get importFromLocalFile;
+
+  /// No description provided for @importFromUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from URL'**
+  String get importFromUrl;
+
+  /// No description provided for @enterPackageUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Package URL (https://…)'**
+  String get enterPackageUrl;
+
+  /// No description provided for @pasteFromClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste from clipboard'**
+  String get pasteFromClipboard;
+
+  /// No description provided for @downloadingPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading package…'**
+  String get downloadingPackage;
+
+  /// No description provided for @downloadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Download failed. Please check the URL and your internet connection.'**
+  String get downloadFailed;
+
+  /// No description provided for @orLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get orLabel;
 
   /// No description provided for @selectPackageZipFile.
   ///
@@ -1871,13 +1943,13 @@ abstract class AppLocalizations {
   /// No description provided for @aiTextAnalysis.
   ///
   /// In en, this message translates to:
-  /// **'Import with AI'**
+  /// **'Import items with AI'**
   String get aiTextAnalysis;
 
   /// No description provided for @aiTextAnalysisImport.
   ///
   /// In en, this message translates to:
-  /// **'Import with AI Text Analysis'**
+  /// **'Import items with AI Text Analysis'**
   String get aiTextAnalysisImport;
 
   /// No description provided for @knowledgeLevel.
@@ -2671,12 +2743,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Extract Full Items'**
   String get extractFullItems;
-
-  /// No description provided for @pasteFromClipboard.
-  ///
-  /// In en, this message translates to:
-  /// **'Paste from clipboard'**
-  String get pasteFromClipboard;
 
   /// No description provided for @noItemsFoundOrAllDuplicates.
   ///

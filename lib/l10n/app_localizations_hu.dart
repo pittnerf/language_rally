@@ -123,7 +123,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get invalidEmail => 'Érvénytelen e-mail cím';
 
   @override
-  String get invalidUrl => 'Érvénytelen URL';
+  String get invalidUrl => 'Adjon meg érvényes http:// vagy https:// URL-t.';
 
   @override
   String get readOnlyPackage =>
@@ -190,6 +190,18 @@ class AppLocalizationsHu extends AppLocalizations {
   String get importItems => 'Elemek importálása (JSON)';
 
   @override
+  String get importItemsDialogTitle => 'Elemek importálása (JSON)';
+
+  @override
+  String get importItemsFromLocalJson => 'Importálás helyi JSON fájlból';
+
+  @override
+  String get enterItemsUrl => 'Elemek JSON URL-je (https://…)';
+
+  @override
+  String get downloadingItems => 'Elemek letöltése…';
+
+  @override
   String get selectImportFile => 'Importálandó fájl kiválasztása';
 
   @override
@@ -224,7 +236,33 @@ class AppLocalizationsHu extends AppLocalizations {
   String get importPackage => 'Csomag importálása';
 
   @override
-  String get importPackageTooltip => 'Csomag importálása ZIP fájlból';
+  String get importPackageTooltip =>
+      'Csomag importálása ZIP fájlból vagy URL-ről';
+
+  @override
+  String get importPackageDialogTitle => 'Nyelvi csomag importálása';
+
+  @override
+  String get importFromLocalFile => 'Importálás helyi fájlból';
+
+  @override
+  String get importFromUrl => 'Importálás URL-ről';
+
+  @override
+  String get enterPackageUrl => 'Csomag URL-je (https://…)';
+
+  @override
+  String get pasteFromClipboard => 'Beillesztés vágólapról';
+
+  @override
+  String get downloadingPackage => 'Csomag letöltése…';
+
+  @override
+  String get downloadFailed =>
+      'Letöltés sikertelen. Ellenőrizze az URL-t és az internetkapcsolatot.';
+
+  @override
+  String get orLabel => 'vagy';
 
   @override
   String get selectPackageZipFile => 'Válasszon csomag ZIP fájlt';
@@ -974,7 +1012,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get exportBeforeDelete => 'Exportálja törlés előtt?';
 
   @override
-  String get aiTextAnalysis => 'Import AI-val';
+  String get aiTextAnalysis => 'Elemek AI-val';
 
   @override
   String get aiTextAnalysisImport => 'Import AI Szövegelemzéssel';
@@ -1423,9 +1461,6 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get extractFullItems => 'Teljes elemek kinyerése';
-
-  @override
-  String get pasteFromClipboard => 'Beillesztés vágólapról';
 
   @override
   String get noItemsFoundOrAllDuplicates =>
