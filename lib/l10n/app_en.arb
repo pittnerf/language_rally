@@ -37,7 +37,7 @@
   "errorDeletingPackage": "Error deleting package",
   "fieldRequired": "This field is required",
   "invalidEmail": "Invalid email address",
-  "invalidUrl": "Invalid URL",
+
   "readOnlyPackage": "This package is read-only and cannot be edited",
   "purchasedPackage": "Purchased packages cannot be edited",
   "badges": "Badges",
@@ -68,17 +68,17 @@
   "importResults": "Import Results",
   "successfullyImported": "Successfully imported",
   "failedToImport": "Failed to import",
-  "errorImportingItems": "Error importing items",
+
   "error": "Error",
   "ok": "OK",
-  "close": "Close",
+
   "importPackage": "Import Package",
   "importPackageTooltip": "Import package from ZIP file or URL",
   "importPackageDialogTitle": "Import Language Package",
   "importFromLocalFile": "Import from local file",
   "importFromUrl": "Import from URL",
   "enterPackageUrl": "Package URL (https://…)",
-  "pasteFromClipboard": "Paste from clipboard",
+
   "downloadingPackage": "Downloading package…",
   "downloadFailed": "Download failed. Please check the URL and your internet connection.",
   "invalidUrl": "Please enter a valid http:// or https:// URL.",
@@ -125,7 +125,7 @@
   "importFormatLine4": "• The last | is optional",
   "importFormatLine5": "• Empty lines are ignored",
   "importFormatLine6": "• Duplicates are skipped",
-  "importProgress": "Importing: {current} / {total}",
+
   "importFormatNewDescription": "Import items from a text file. Each line should contain an item with fields separated by ---",
   "importFormatNewLine1": "• Main delimiter: ---",
   "importFormatNewLine2": "• L1=<text> - Language 1 main text (required if L2 is missing)",
@@ -164,7 +164,7 @@
   "position": "Position",
   "stepsUntilLearned": "Steps until learned",
   "examples": "Examples",
-  "examplesHint": "Enter example sentences (one per line, use | to separate languages)",
+
   "noExamples": "No examples available",
   "pronounce": "Pronounce",
   "ttsError": "Text-to-speech not available",
@@ -187,8 +187,7 @@
   "failedToGenerateExamples": "Failed to generate examples",
   "selectExamplesToAdd": "Select Examples to Add",
   "selectWhichExamples": "Select which examples you want to add to this item:",
-  "deselectAll": "Deselect All",
-  "selectAll": "Select All",
+
   "addSelected": "Add Selected",
   "pleaseSelectAtLeastOne": "Please select at least one example",
   "addNewItem": "Add New Item",
@@ -212,7 +211,7 @@
   "aiExampleSearch": "AI Example Search",
   "searchExamplesOnInternet": "Search for example sentences on the internet using AI for '{text}'",
   "generateExampleSentences": "Generate example sentences based on the main text in {language}",
-  "generateExamples": "Generate Examples",
+
   "voiceInput": "Voice input",
   "settings": "Settings",
   "uiLanguage": "UI Language",
@@ -232,7 +231,7 @@
   "errorSavingSettings": "Error saving settings",
   "usingGoogleTranslate": "Using free Google Translate",
   "usingDeepL": "Using DeepL (premium)",
-  "textCannotBeEmpty": "Text cannot be empty",
+
   "noTranslationReceivedFromGoogle": "No translation received from Google",
   "googleTranslationFailed": "Google translation failed",
   "googleTranslationError": "Google translation error",
@@ -267,11 +266,11 @@
   },
   "recordingTapToStop": "Recording... Tap again to stop",
   "speakClearlyKeepRecording": "Speak clearly. Record at least 1 second.",
-  "recordingTooShort": "Recording too short!",
+
   "pleaseRecordLonger": "Please speak for at least 1 second and tap stop.",
   "errorStartingRecording": "Error starting recording",
   "noAudioRecorded": "No audio was recorded",
-  "processingAudio": "Processing audio...",
+
   "errorTranscribing": "Error transcribing audio",
   "trainingSettings": "Training Settings",
   "itemScope": "Item Scope",
@@ -310,7 +309,7 @@
   "answer": "Answer",
   "iKnow": "I Know",
   "iDontKnow": "I Don't Know",
-  "nextItem": "Next Item",
+
   "previousItem": "Previous Item",
   "iDidNotKnowEither": "I Didn't Know Either",
   "exportBeforeDelete": "Export Before Deleting?",
@@ -381,7 +380,7 @@
   "errorLoadingItems": "Error loading items: {error}",
   "badgeEarnedWithName": "Badge Earned: {badgeName}!",
   "badgeLostWithName": "Badge Lost: {badgeName}",
-  "speakText": "Speak text",
+
   "trainingSessionProgress": "Training Session Stats",
   "total": "Total",
   "lastNValue": "N = {value}",

@@ -916,12 +916,14 @@ class _PronunciationPracticePageState
             }
 
             // Show processing message
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(AppLocalizations.of(context)!.processingAudio),
-                duration: const Duration(seconds: 5), // Long duration while processing
-              ),
-            );
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(AppLocalizations.of(context)!.processingAudio),
+                  duration: const Duration(seconds: 5), // Long duration while processing
+                ),
+              );
+            }
 
             // Transcribe using Whisper API (in parallel with playback)
             final currentItem = _filteredItems[_currentItemIndex];
