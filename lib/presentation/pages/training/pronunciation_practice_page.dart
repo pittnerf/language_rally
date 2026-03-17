@@ -22,6 +22,7 @@ import 'dart:io';
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:convert';
+import 'dart:ui' as ui;
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import '../../../core/theme/app_theme.dart';
@@ -1205,20 +1206,28 @@ class _PronunciationPracticePageState
     final expectedWords = fullText.split(RegExp(r'\s+'));
     final recordedWords = recorded.split(RegExp(r'\s+'));
 
-    int matchedWords = 0;
-    for (final word in recordedWords) {
-      if (expectedWords.any(
-          (expected) => expected.contains(word) || word.contains(expected))) {
-        matchedWords++;
+    // Fuzzy word matching: each expected word gets the score of its best
+    // matching recorded word (0–1 based on normalised edit distance).
+    // This gives partial credit when Whisper mis-transcribes a word that
+    // was actually pronounced closely enough (e.g. "corrosive" → "crucif").
+    double totalWordScore = 0;
+    for (final expWord in expectedWords) {
+      double best = 0.0;
+      for (final recWord in recordedWords) {
+        final sim = _wordSimilarity(expWord, recWord);
+        if (sim > best) best = sim;
       }
+      totalWordScore += best;
     }
     final wordMatchRate = expectedWords.isNotEmpty
-        ? matchedWords / expectedWords.length
+        ? totalWordScore / expectedWords.length
         : 0.0;
 
+    // LCS-based Dice coefficient — insensitive to alignment, far more
+    // accurate than positional character matching for mis-transcribed words.
     final charMatchRate = _calculateStringSimilarity(fullText, recorded);
 
-    logDebug('   Word match: $matchedWords/${expectedWords.length} = ${(wordMatchRate * 100).toStringAsFixed(1)}%');
+    logDebug('   Word match: ${totalWordScore.toStringAsFixed(2)}/${expectedWords.length} = ${(wordMatchRate * 100).toStringAsFixed(1)}%');
     logDebug('   Char similarity: ${(charMatchRate * 100).toStringAsFixed(1)}%');
 
     // Whisper transcription is highly accurate → weight words more
@@ -1243,25 +1252,59 @@ class _PronunciationPracticePageState
     });
   }
 
-  /// Calculate string similarity using a simplified algorithm
+  /// String similarity using the LCS-based Sørensen–Dice coefficient.
+  /// Range 0.0 (nothing in common) → 1.0 (identical).
+  /// Unlike positional matching this is insensitive to word-length differences.
   double _calculateStringSimilarity(String expected, String recorded) {
     if (expected.isEmpty && recorded.isEmpty) return 1.0;
     if (expected.isEmpty || recorded.isEmpty) return 0.0;
 
-    // Remove extra spaces and normalize
     final exp = expected.replaceAll(RegExp(r'\s+'), ' ').trim();
     final rec = recorded.replaceAll(RegExp(r'\s+'), ' ').trim();
+    if (exp == rec) return 1.0;
 
-    // Calculate similarity based on matching characters
-    int matches = 0;
-    final maxLen = exp.length > rec.length ? exp.length : rec.length;
-    final minLen = exp.length < rec.length ? exp.length : rec.length;
+    final m = exp.length;
+    final n = rec.length;
 
-    for (int i = 0; i < minLen; i++) {
-      if (exp[i] == rec[i]) matches++;
+    // DP table for LCS length
+    final dp = List.generate(m + 1, (_) => List.filled(n + 1, 0));
+    for (int i = 1; i <= m; i++) {
+      for (int j = 1; j <= n; j++) {
+        dp[i][j] = exp[i - 1] == rec[j - 1]
+            ? dp[i - 1][j - 1] + 1
+            : (dp[i - 1][j] > dp[i][j - 1] ? dp[i - 1][j] : dp[i][j - 1]);
+      }
     }
+    // Dice: 2 * |LCS| / (|a| + |b|)
+    return (2.0 * dp[m][n]) / (m + n);
+  }
 
-    return matches / maxLen;
+  /// Normalised word similarity: 1.0 = identical, 0.0 = nothing in common.
+  /// Uses Levenshtein edit distance normalised by the longer word's length.
+  double _wordSimilarity(String a, String b) {
+    if (a == b) return 1.0;
+    final dist = _levenshtein(a, b);
+    return (1.0 - dist / math.max(a.length, b.length)).clamp(0.0, 1.0);
+  }
+
+  /// Standard Levenshtein edit distance.
+  int _levenshtein(String a, String b) {
+    if (a.isEmpty) return b.length;
+    if (b.isEmpty) return a.length;
+    final m = a.length, n = b.length;
+    // Two-row rolling DP — O(m*n) time, O(n) space
+    var prev = List.generate(n + 1, (j) => j);
+    var curr = List.filled(n + 1, 0);
+    for (int i = 1; i <= m; i++) {
+      curr[0] = i;
+      for (int j = 1; j <= n; j++) {
+        curr[j] = a[i - 1] == b[j - 1]
+            ? prev[j - 1]
+            : 1 + [prev[j], curr[j - 1], prev[j - 1]].reduce(math.min);
+      }
+      final tmp = prev; prev = curr; curr = tmp;
+    }
+    return prev[n];
   }
 
   /// Analyzes audio characteristics: volume patterns and rhythm.
@@ -1300,8 +1343,19 @@ class _PronunciationPracticePageState
         logDebug('🎵 Comparing user audio against reference audio...');
         final refBytes    = await File(_referenceAudioPath!).readAsBytes();
         final refFeatures = _extractAudioFeatures(refBytes);
-        final refVolume   = List<double>.from(
+        final rawRefVolume = List<double>.from(
             refFeatures['volumePattern'] as List? ?? []);
+
+        // Trim silence from the reference (TTS output also has small silent
+        // pads at start/end; without trimming the leading silence stretches
+        // the resampled pattern and distorts the shape comparison).
+        final refVolume = _trimSilence(rawRefVolume);
+        logDebug('   Ref silence trim: ${rawRefVolume.length} → ${refVolume.length} '
+            'frames (removed ${rawRefVolume.length - refVolume.length})');
+        logDebug('   Frames before resample → user: ${userVolume.length}  '
+            'ref: ${refVolume.length}  '
+            '(≈${(userVolume.length * 50).toStringAsFixed(0)} ms  '
+            'vs ≈${(refVolume.length * 50).toStringAsFixed(0)} ms)');
 
         final userDuration = userFeatures['duration'] as double? ?? 0.0;
         final refDuration  = refFeatures['duration']  as double? ?? 0.0;
@@ -1349,9 +1403,168 @@ class _PronunciationPracticePageState
   /// computing the Pearson correlation (remapped to [0, 1]).
   double _compareVolumeEnvelopes(List<double> user, List<double> reference) {
     if (user.isEmpty || reference.isEmpty) return 0.0;
-    return _pearsonCorrelation(
-        _resamplePattern(user, 100), _resamplePattern(reference, 100));
+    final userR = _resamplePattern(user, 100);
+    final refR  = _resamplePattern(reference, 100);
+    // ignore: unawaited_futures
+    _debugSaveEnvelopeImage(userR, refR,
+        userFrames: user.length, refFrames: reference.length); // ← temporary debug helper
+    return _pearsonCorrelation(userR, refR);
   }
+
+  // ── TEMPORARY DEBUG ───────────────────────────────────────────────────────
+  /// Renders both resampled envelopes as a PNG chart and writes it to the
+  /// system temp directory.
+  ///
+  /// Android emulator : copy the file to the host with
+  ///   adb pull <printed-path> envelope_debug.png
+  /// Windows desktop  : open the printed path directly in any image viewer.
+  Future<void> _debugSaveEnvelopeImage(
+    List<double> userR,
+    List<double> refR, {
+    int userFrames = 0,
+    int refFrames  = 0,
+  }) async {
+    try {
+      const int   imgW = 860, imgH = 440;
+      const double padL = 50, padR = 20, padT = 52, padB = 44;
+      final double plotW = imgW - padL - padR;
+      final double plotH = imgH - padT - padB;
+
+      // Shared y-scale across both series
+      final allVals = [...userR, ...refR];
+      final maxVal  = allVals.fold(0.0, math.max);
+      final yScale  = maxVal > 0 ? maxVal : 1.0;
+
+      final recorder = ui.PictureRecorder();
+      final canvas   = Canvas(
+        recorder,
+        Rect.fromLTWH(0, 0, imgW.toDouble(), imgH.toDouble()),
+      );
+
+      // ── background ──────────────────────────────────────────────────────────
+      canvas.drawRect(
+        Rect.fromLTWH(0, 0, imgW.toDouble(), imgH.toDouble()),
+        Paint()..color = const Color(0xFFFFFFFF),
+      );
+
+      // ── grid ────────────────────────────────────────────────────────────────
+      final gridPaint = Paint()
+        ..color       = const Color(0xFFDDDDDD)
+        ..strokeWidth = 1.0;
+      for (int g = 0; g <= 10; g++) {
+        final y = padT + plotH - g * plotH / 10;
+        canvas.drawLine(Offset(padL, y),       Offset(padL + plotW, y),       gridPaint);
+        final x = padL + g * plotW / 10;
+        canvas.drawLine(Offset(x, padT),       Offset(x, padT + plotH),       gridPaint);
+      }
+
+      // ── axes ────────────────────────────────────────────────────────────────
+      final axisPaint = Paint()
+        ..color       = const Color(0xFF222222)
+        ..strokeWidth = 1.5;
+      canvas.drawLine(Offset(padL, padT),          Offset(padL, padT + plotH),         axisPaint);
+      canvas.drawLine(Offset(padL, padT + plotH),  Offset(padL + plotW, padT + plotH), axisPaint);
+
+      // ── helper: data index + value → canvas Offset ──────────────────────────
+      Offset pt(int i, double v, int n) => Offset(
+        padL + i * plotW / (n - 1),
+        padT + plotH - (v / yScale) * plotH,
+      );
+
+      // ── user series (blue) ──────────────────────────────────────────────────
+      final userPath = Path()
+        ..moveTo(pt(0, userR[0], userR.length).dx,
+                 pt(0, userR[0], userR.length).dy);
+      for (int i = 1; i < userR.length; i++) {
+        userPath.lineTo(pt(i, userR[i], userR.length).dx,
+                        pt(i, userR[i], userR.length).dy);
+      }
+      canvas.drawPath(userPath,
+        Paint()
+          ..color       = const Color(0xFF1565C0)
+          ..strokeWidth = 2.0
+          ..style       = PaintingStyle.stroke,
+      );
+
+      // ── reference series (red) ──────────────────────────────────────────────
+      final refPath = Path()
+        ..moveTo(pt(0, refR[0], refR.length).dx,
+                 pt(0, refR[0], refR.length).dy);
+      for (int i = 1; i < refR.length; i++) {
+        refPath.lineTo(pt(i, refR[i], refR.length).dx,
+                       pt(i, refR[i], refR.length).dy);
+      }
+      canvas.drawPath(refPath,
+        Paint()
+          ..color       = const Color(0xFFC62828)
+          ..strokeWidth = 2.0
+          ..style       = PaintingStyle.stroke,
+      );
+
+      // ── title + legend ───────────────────────────────────────────────────────
+      void drawText(String text, Offset offset, Color color,
+          {double fontSize = 13, FontWeight weight = FontWeight.w600}) {
+        (TextPainter(
+          text: TextSpan(
+            text: text,
+            style: TextStyle(color: color, fontSize: fontSize,
+                fontWeight: weight),
+          ),
+          textDirection: TextDirection.ltr,
+        )..layout())
+            .paint(canvas, offset);
+      }
+
+      drawText(
+        'Volume envelope comparison  '
+        '(100-pt resample, max=${yScale.toStringAsFixed(1)}'
+        '${userFrames > 0 ? "  |  user: ${userFrames} fr≈${(userFrames*50)}ms  ref: ${refFrames} fr≈${(refFrames*50)}ms" : ""})',
+        const Offset(padL, 10),
+        const Color(0xFF222222),
+        fontSize: 13,
+      );
+
+      // Blue legend swatch + label
+      canvas.drawRect(
+        Rect.fromLTWH(padL + 10, padT + 10, 18, 10),
+        Paint()..color = const Color(0xFF1565C0),
+      );
+      drawText('User recording',  Offset(padL + 34,  padT + 8),
+          const Color(0xFF1565C0));
+
+      // Red legend swatch + label
+      canvas.drawRect(
+        Rect.fromLTWH(padL + 175, padT + 10, 18, 10),
+        Paint()..color = const Color(0xFFC62828),
+      );
+      drawText('Reference audio', Offset(padL + 199, padT + 8),
+          const Color(0xFFC62828));
+
+      // ── encode + write ───────────────────────────────────────────────────────
+      final picture  = recorder.endRecording();
+      final image    = await picture.toImage(imgW, imgH);
+      final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      image.dispose();
+
+      if (byteData == null) {
+        logDebug('⚠️  _debugSaveEnvelopeImage: toByteData returned null');
+        return;
+      }
+
+      final dir  = await getTemporaryDirectory();
+      final path = '${dir.path}/envelope_debug.png';
+      await File(path).writeAsBytes(byteData.buffer.asUint8List());
+      logDebug('📊  Envelope debug image saved → $path');
+      if (!kIsWeb && Platform.isAndroid) {
+        const adb = r'$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe';
+        logDebug('   Run in PowerShell (emulator-5554):');
+        logDebug('   & "$adb" -s emulator-5554 shell run-as com.example.language_rally cp "$path" /sdcard/envelope_debug.png ; & "$adb" -s emulator-5554 pull /sdcard/envelope_debug.png "\$env:USERPROFILE\\Desktop\\envelope_debug.png"');
+      }
+    } catch (e, st) {
+      logDebug('⚠️  _debugSaveEnvelopeImage error: $e\n$st');
+    }
+  }
+  // ── END TEMPORARY DEBUG ───────────────────────────────────────────────────
 
   /// Compare rhythm by matching the relative positions of energy peaks.
   double _compareRhythmPatterns(List<double> user, List<double> reference) {
@@ -1440,17 +1653,30 @@ class _PronunciationPracticePageState
     if (audioBytes.length < 44) return empty;
 
     // ── WAV header parsing ────────────────────────────────────────────────────
+    // Bytes 20-21: audio format  (1 = PCM int, 3 = IEEE float, 65534 = extensible)
+    final audioFormat   = audioBytes[20] | (audioBytes[21] << 8);
     // Bytes 22-23: num channels  (little-endian uint16)
-    final numChannels = audioBytes[22] | (audioBytes[23] << 8);
+    final numChannels   = audioBytes[22] | (audioBytes[23] << 8);
     // Bytes 24-27: sample rate   (little-endian uint32)
-    final sampleRate  = audioBytes[24] | (audioBytes[25] << 8) |
-                        (audioBytes[26] << 16) | (audioBytes[27] << 24);
+    final sampleRate    = audioBytes[24] | (audioBytes[25] << 8) |
+                          (audioBytes[26] << 16) | (audioBytes[27] << 24);
     // Bytes 34-35: bits per sample (little-endian uint16)
     final bitsPerSample = audioBytes[34] | (audioBytes[35] << 8);
 
+    // Determine how to decode each sample:
+    //   fmt=1, bps=16 → 16-bit signed int  (microphone recording)
+    //   fmt=3, bps=32 → 32-bit IEEE float   (OpenAI TTS wav output)
+    //   fmt=1, bps=8  → 8-bit unsigned int  (rare legacy)
+    final isFloat32 = audioFormat == 3 && bitsPerSample == 32;
+    final isInt8    = audioFormat == 1 && bitsPerSample == 8;
+
+    logDebug('  WAV header: fmt=$audioFormat ch=$numChannels '
+        'rate=$sampleRate bps=$bitsPerSample '
+        '→ ${isFloat32 ? "float32" : isInt8 ? "int8" : "int16"}');
+
     if (sampleRate == 0 || numChannels == 0 || bitsPerSample == 0) return empty;
 
-    // Walk chunks to find the 'data' chunk (handles LIST/INFO chunks gracefully)
+    // Walk chunks to find the 'data' chunk (handles LIST/INFO/fact chunks)
     int offset = 12; // skip 'RIFF' + fileSize + 'WAVE'
     int dataOffset = -1;
     int dataSize   = 0;
@@ -1463,30 +1689,55 @@ class _PronunciationPracticePageState
         dataSize   = chunkSize;
         break;
       }
-      offset += 8 + chunkSize;
+      // WAV spec: chunks with odd byte-count are padded with a null byte
+      offset += 8 + chunkSize + (chunkSize & 1);
     }
     if (dataOffset < 0 || dataOffset >= audioBytes.length) return empty;
 
     // ── PCM analysis ─────────────────────────────────────────────────────────
-    final bytesPerSample = bitsPerSample ~/ 8;
-    final frameSize      = numChannels * bytesPerSample;
-    final totalFrames    = dataSize ~/ frameSize;
+    final bytesPerSample  = bitsPerSample ~/ 8;
+    final frameSize       = numChannels * bytesPerSample;
+    if (frameSize == 0) return empty;
+
+    // Some writers (e.g. OpenAI TTS) set dataSize = 0xFFFFFFFF as a
+    // "streaming / unknown" placeholder.  Always clamp to the bytes that
+    // actually exist in the file so the frame loop doesn't iterate billions
+    // of times producing zero-filled windows.
+    final availableBytes  = audioBytes.length - dataOffset;
+    final effectiveSize   = dataSize > availableBytes ? availableBytes : dataSize;
+
+    final totalFrames     = effectiveSize ~/ frameSize;
     final durationSeconds = totalFrames / sampleRate;
 
     // 50 ms windows give fine-grained but not noisy envelope
     final windowFrames = (sampleRate * 0.05).round().clamp(1, totalFrames);
     final volumePattern = <double>[];
 
+    // Pre-create a ByteData view for efficient float32 reads (no copy)
+    final byteData = audioBytes.buffer.asByteData(
+        audioBytes.offsetInBytes, audioBytes.lengthInBytes);
+
     for (int frame = 0; frame < totalFrames; frame += windowFrames) {
       final endFrame = math.min(frame + windowFrames, totalFrames);
       double sumSq = 0;
       for (int f = frame; f < endFrame; f++) {
         final byteIdx = dataOffset + f * frameSize;
-        if (byteIdx + 1 >= audioBytes.length) break;
-        // Read first channel only (mono or left channel of stereo)
-        int raw = audioBytes[byteIdx] | (audioBytes[byteIdx + 1] << 8);
-        if (raw >= 32768) raw -= 65536; // two's-complement → signed
-        final norm = raw / 32768.0;
+        double norm;
+        if (isFloat32) {
+          // 32-bit IEEE float (OpenAI TTS): 4 bytes per sample
+          if (byteIdx + 3 >= audioBytes.length) break;
+          norm = byteData.getFloat32(byteIdx, Endian.little).clamp(-1.0, 1.0);
+        } else if (isInt8) {
+          // 8-bit unsigned PCM: single byte, centre at 128
+          if (byteIdx >= audioBytes.length) break;
+          norm = (audioBytes[byteIdx] - 128) / 128.0;
+        } else {
+          // 16-bit signed PCM (default: microphone recording)
+          if (byteIdx + 1 >= audioBytes.length) break;
+          int raw = audioBytes[byteIdx] | (audioBytes[byteIdx + 1] << 8);
+          if (raw >= 32768) raw -= 65536; // two's-complement → signed
+          norm = raw / 32768.0;
+        }
         sumSq += norm * norm;
       }
       volumePattern.add(math.sqrt(sumSq / (endFrame - frame)));

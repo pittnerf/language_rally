@@ -602,7 +602,11 @@
   "failedToInitRtAudio": "Az RTAudio inicializálása nem sikerült",
   "envelopeScoreLabel": "Burkoló",
   "rhythmScoreLabel": "Ritmus",
-  "textScoreLabel": "Szöveg"
+  "textScoreLabel": "Szöveg",
+
+  "help": "Súgó",
+  "trainingHelpTitle": "Tippek a hatékony tanuláshoz",
+  "trainingHelpText": "Ahhoz, hogy a gyakorlás a lehető leghatékonyabb legyen, kövesd az alábbi lépéseket:\n1. Kattints a 'Számlálók törlése' gombra, hogy az összes elem ebben a csomagban ismertként legyen jelölve."
 }
 
 

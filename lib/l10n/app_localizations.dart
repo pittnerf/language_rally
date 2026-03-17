@@ -326,12 +326,6 @@ abstract class AppLocalizations {
   /// **'Invalid email address'**
   String get invalidEmail;
 
-  /// No description provided for @invalidUrl.
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter a valid http:// or https:// URL.'**
-  String get invalidUrl;
-
   /// No description provided for @readOnlyPackage.
   ///
   /// In en, this message translates to:
@@ -512,12 +506,6 @@ abstract class AppLocalizations {
   /// **'Failed to import'**
   String get failedToImport;
 
-  /// No description provided for @errorImportingItems.
-  ///
-  /// In en, this message translates to:
-  /// **'Error importing items'**
-  String get errorImportingItems;
-
   /// No description provided for @error.
   ///
   /// In en, this message translates to:
@@ -529,12 +517,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'OK'**
   String get ok;
-
-  /// No description provided for @close.
-  ///
-  /// In en, this message translates to:
-  /// **'Close'**
-  String get close;
 
   /// No description provided for @importPackage.
   ///
@@ -572,12 +554,6 @@ abstract class AppLocalizations {
   /// **'Package URL (https://…)'**
   String get enterPackageUrl;
 
-  /// No description provided for @pasteFromClipboard.
-  ///
-  /// In en, this message translates to:
-  /// **'Paste from clipboard'**
-  String get pasteFromClipboard;
-
   /// No description provided for @downloadingPackage.
   ///
   /// In en, this message translates to:
@@ -589,6 +565,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Download failed. Please check the URL and your internet connection.'**
   String get downloadFailed;
+
+  /// No description provided for @invalidUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid http:// or https:// URL.'**
+  String get invalidUrl;
 
   /// No description provided for @orLabel.
   ///
@@ -848,12 +830,6 @@ abstract class AppLocalizations {
   /// **'• Duplicates are skipped'**
   String get importFormatLine6;
 
-  /// No description provided for @importProgress.
-  ///
-  /// In en, this message translates to:
-  /// **'Importing {current} of {total}'**
-  String importProgress(Object current, Object total);
-
   /// No description provided for @importFormatNewDescription.
   ///
   /// In en, this message translates to:
@@ -1082,12 +1058,6 @@ abstract class AppLocalizations {
   /// **'Examples'**
   String get examples;
 
-  /// No description provided for @examplesHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter example sentences (one per line, use | to separate languages)'**
-  String get examplesHint;
-
   /// No description provided for @noExamples.
   ///
   /// In en, this message translates to:
@@ -1219,18 +1189,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select which examples you want to add to this item:'**
   String get selectWhichExamples;
-
-  /// No description provided for @deselectAll.
-  ///
-  /// In en, this message translates to:
-  /// **'Deselect All'**
-  String get deselectAll;
-
-  /// No description provided for @selectAll.
-  ///
-  /// In en, this message translates to:
-  /// **'Select All'**
-  String get selectAll;
 
   /// No description provided for @addSelected.
   ///
@@ -1370,12 +1328,6 @@ abstract class AppLocalizations {
   /// **'Generate example sentences based on the main text in {language}'**
   String generateExampleSentences(Object language);
 
-  /// No description provided for @generateExamples.
-  ///
-  /// In en, this message translates to:
-  /// **'Generate Examples'**
-  String get generateExamples;
-
   /// No description provided for @voiceInput.
   ///
   /// In en, this message translates to:
@@ -1489,12 +1441,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Using DeepL (premium)'**
   String get usingDeepL;
-
-  /// No description provided for @textCannotBeEmpty.
-  ///
-  /// In en, this message translates to:
-  /// **'Text cannot be empty'**
-  String get textCannotBeEmpty;
 
   /// No description provided for @noTranslationReceivedFromGoogle.
   ///
@@ -1658,12 +1604,6 @@ abstract class AppLocalizations {
   /// **'Speak clearly. Record at least 1 second.'**
   String get speakClearlyKeepRecording;
 
-  /// No description provided for @recordingTooShort.
-  ///
-  /// In en, this message translates to:
-  /// **'Recording too short. Please speak for at least 1 second.'**
-  String get recordingTooShort;
-
   /// No description provided for @pleaseRecordLonger.
   ///
   /// In en, this message translates to:
@@ -1681,12 +1621,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No audio was recorded'**
   String get noAudioRecorded;
-
-  /// No description provided for @processingAudio.
-  ///
-  /// In en, this message translates to:
-  /// **'Processing audio with AI...'**
-  String get processingAudio;
 
   /// No description provided for @errorTranscribing.
   ///
@@ -1916,12 +1850,6 @@ abstract class AppLocalizations {
   /// **'I Don\'t Know'**
   String get iDontKnow;
 
-  /// No description provided for @nextItem.
-  ///
-  /// In en, this message translates to:
-  /// **'Next Item'**
-  String get nextItem;
-
   /// No description provided for @previousItem.
   ///
   /// In en, this message translates to:
@@ -2023,6 +1951,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Leave empty for no limit'**
   String get maxItemsHint;
+
+  /// No description provided for @generateExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate Examples'**
+  String get generateExamples;
 
   /// No description provided for @categoryName.
   ///
@@ -2132,6 +2066,18 @@ abstract class AppLocalizations {
   /// **'Select Items to Import'**
   String get selectItemsToImport;
 
+  /// No description provided for @selectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Select All'**
+  String get selectAll;
+
+  /// No description provided for @deselectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect All'**
+  String get deselectAll;
+
   /// No description provided for @importSelected.
   ///
   /// In en, this message translates to:
@@ -2155,6 +2101,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No items selected'**
   String get noItemsSelected;
+
+  /// No description provided for @textCannotBeEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Text cannot be empty'**
+  String get textCannotBeEmpty;
 
   /// No description provided for @selectAtLeastOneType.
   ///
@@ -2192,6 +2144,12 @@ abstract class AppLocalizations {
   /// **'Duplicate'**
   String get duplicate;
 
+  /// No description provided for @importProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Importing {current} of {total}'**
+  String importProgress(Object current, Object total);
+
   /// No description provided for @detectingLanguage.
   ///
   /// In en, this message translates to:
@@ -2227,6 +2185,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error analyzing text'**
   String get errorAnalyzingText;
+
+  /// No description provided for @errorImportingItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Error importing items'**
+  String get errorImportingItems;
 
   /// No description provided for @warning.
   ///
@@ -2306,12 +2270,6 @@ abstract class AppLocalizations {
   /// **'Badge Lost: {badgeName}'**
   String badgeLostWithName(Object badgeName);
 
-  /// No description provided for @speakText.
-  ///
-  /// In en, this message translates to:
-  /// **'Speak text'**
-  String get speakText;
-
   /// No description provided for @trainingSessionProgress.
   ///
   /// In en, this message translates to:
@@ -2359,6 +2317,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Technical Details'**
   String get technicalDetails;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
 
   /// No description provided for @checkApiKey.
   ///
@@ -2720,6 +2684,12 @@ abstract class AppLocalizations {
   /// **'No examples yet. Click + to add.'**
   String get noExamplesYet;
 
+  /// No description provided for @speakText.
+  ///
+  /// In en, this message translates to:
+  /// **'Speak text'**
+  String get speakText;
+
   /// No description provided for @removeCategory.
   ///
   /// In en, this message translates to:
@@ -2743,6 +2713,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Extract Full Items'**
   String get extractFullItems;
+
+  /// No description provided for @pasteFromClipboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste from clipboard'**
+  String get pasteFromClipboard;
 
   /// No description provided for @noItemsFoundOrAllDuplicates.
   ///
@@ -3176,6 +3152,12 @@ abstract class AppLocalizations {
   /// **'No speech detected. Please try again.'**
   String get noSpeechDetected;
 
+  /// No description provided for @processingAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing audio with AI...'**
+  String get processingAudio;
+
   /// No description provided for @playbackRecording.
   ///
   /// In en, this message translates to:
@@ -3187,6 +3169,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hear your recording while AI processes it'**
   String get playbackRecordingSubtitle;
+
+  /// No description provided for @recordingTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording too short. Please speak for at least 1 second.'**
+  String get recordingTooShort;
 
   /// No description provided for @microphonePermissionRequired.
   ///
@@ -3241,6 +3229,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Try Again'**
   String get tryAgain;
+
+  /// No description provided for @nextItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Item'**
+  String get nextItem;
 
   /// No description provided for @endPractice.
   ///
@@ -3571,6 +3565,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Text'**
   String get textScoreLabel;
+
+  /// No description provided for @help.
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get help;
+
+  /// No description provided for @trainingHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Training Tips'**
+  String get trainingHelpTitle;
+
+  /// No description provided for @trainingHelpText.
+  ///
+  /// In en, this message translates to:
+  /// **'To make your training as effective as possible, follow these steps:\n1. Click the \'Clear counters\' button so that all items in this package are marked as known.'**
+  String get trainingHelpText;
 }
 
 class _AppLocalizationsDelegate

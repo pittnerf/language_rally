@@ -266,6 +266,85 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
     }
   }
 
+  Future<void> _confirmClearCounters() async {
+    if (_currentPackage == null) return;
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.clearCounters),
+        content: Text(l10n.confirmClearCounters),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.primary,
+            ),
+            child: Text(l10n.clear),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      await _clearCounters();
+    }
+  }
+
+  Future<void> _clearCounters() async {
+    if (_currentPackage == null) return;
+    setState(() => _isLoading = true);
+    try {
+      await _packageRepo.clearPackageCounters(_currentPackage!.id);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.countersCleared),
+            backgroundColor: Theme.of(context).colorScheme.primary,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.errorClearingCounters),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _showHelpDialog() async {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.help_outline, color: theme.colorScheme.primary),
+            const SizedBox(width: 8),
+            Text(l10n.trainingHelpTitle),
+          ],
+        ),
+        content: Text(l10n.trainingHelpText),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l10n.ok),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _startTraining() async {
     if (_currentPackage == null) return;
 
@@ -351,7 +430,7 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                     right: AppTheme.spacing8,
                     top: AppTheme.spacing8,
                     bottom:
-                        80 +
+                        (isLandscape ? 130 : 80) +
                         bottomPadding, // Space for floating buttons + system navigation
                   ),
                   child: Column(
@@ -404,82 +483,182 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                   ),
                 ),
               ),
-              // Floating action buttons at bottom - left and right
+              // Floating action buttons at bottom
+              // Portrait:  one row of 4 buttons
+              // Landscape: two rows of 2 buttons
+              // SafeArea handles the Android navigation bar on all orientations
               Positioned(
-                left: 8,
-                right: 8,
-                bottom:
-                    8 +
-                    bottomPadding, // Add bottom padding for Android navigation
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    // Clear Settings button on the left
-                    Flexible(
-                      child: ElevatedButton.icon(
-                        onPressed: _clearSettings,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: theme.colorScheme.errorContainer,
-                          foregroundColor: theme.colorScheme.onErrorContainer,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: isLandscape ? 12 : 8,
-                            vertical: isLandscape ? 6 : 4,
-                          ),
-                          elevation: 6,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        icon: Icon(
-                          Icons.clear_all,
-                          size: isLandscape ? 14 : 12,
-                        ),
-                        label: Text(
-                          l10n.clearTrainingSettings,
-                          style: (isLandscape
-                              ? theme.textTheme.bodySmall
-                              : theme.textTheme.labelSmall),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                    //const SizedBox(width: 8),
-                    // Start Training button on the right
-                    Flexible(
-                      child: ElevatedButton.icon(
-                        onPressed: _startTraining,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: theme.colorScheme.primary,
-                          foregroundColor: theme.colorScheme.onPrimary,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: isLandscape ? 12 : 8,
-                            vertical: isLandscape ? 6 : 4,
-                          ),
-                          elevation: 6,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        icon: Icon(
-                          Icons.play_arrow,
-                          size: isLandscape ? 16 : 14,
-                        ),
-                        label: Text(
-                          widget.isPronunciationMode
-                              ? l10n.startPractice
-                              : l10n.startTrainingRally,
-                          style:
-                              (isLandscape
-                                      ? theme.textTheme.bodySmall
-                                      : theme.textTheme.labelSmall)
-                                  ?.copyWith(
-                                    color: theme.colorScheme.onPrimary,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                    child: !isLandscape
+                        ? Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Top row: Clear Counters + Help
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: ElevatedButton.icon(
+                                      onPressed: _confirmClearCounters,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: theme.colorScheme.secondaryContainer,
+                                        foregroundColor: theme.colorScheme.onSecondaryContainer,
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                        elevation: 6,
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                      ),
+                                      icon: const Icon(Icons.refresh, size: 14),
+                                      label: Text(l10n.clearCounters, style: theme.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
+                                    ),
                                   ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ),
-                  ],
+                                  const SizedBox(width: 8),
+                                  Flexible(
+                                    child: ElevatedButton.icon(
+                                      onPressed: _showHelpDialog,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: theme.colorScheme.tertiaryContainer,
+                                        foregroundColor: theme.colorScheme.onTertiaryContainer,
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                        elevation: 6,
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                      ),
+                                      icon: const Icon(Icons.help_outline, size: 14),
+                                      label: Text(l10n.help, style: theme.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              // Bottom row: Clear Settings + Start Training
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: ElevatedButton.icon(
+                                      onPressed: _clearSettings,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: theme.colorScheme.errorContainer,
+                                        foregroundColor: theme.colorScheme.onErrorContainer,
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                        elevation: 6,
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                      ),
+                                      icon: const Icon(Icons.clear_all, size: 14),
+                                      label: Text(l10n.clearTrainingSettings, style: theme.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
+                                    ),
+                                  ),
+                                  const SizedBox(width: AppTheme.spacing8),
+                                  Flexible(
+                                    child: ElevatedButton.icon(
+                                      onPressed: _startTraining,
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: theme.colorScheme.primary,
+                                        foregroundColor: theme.colorScheme.onPrimary,
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                        elevation: 6,
+                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                      ),
+                                      icon: const Icon(Icons.play_arrow, size: 16),
+                                      label: Text(
+                                        widget.isPronunciationMode ? l10n.startPractice : l10n.startTrainingRally,
+                                        style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onPrimary),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )
+                        // Portrait: single row with all 4 buttons
+                        : Row(
+                            children: [
+                              // Clear Counters  (flex 2)
+                              Expanded(
+                                flex: 2,
+                                child: ElevatedButton.icon(
+                                  onPressed: _confirmClearCounters,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: theme.colorScheme.secondaryContainer,
+                                    foregroundColor: theme.colorScheme.onSecondaryContainer,
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                                    minimumSize: Size.zero,
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    elevation: 6,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                  ),
+                                  icon: const Icon(Icons.refresh, size: 12),
+                                  label: Text(l10n.clearCounters, style: theme.textTheme.labelSmall, overflow: TextOverflow.ellipsis),
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              // Clear Settings  (flex 2)
+                              Expanded(
+                                flex: 2,
+                                child: ElevatedButton.icon(
+                                  onPressed: _clearSettings,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: theme.colorScheme.errorContainer,
+                                    foregroundColor: theme.colorScheme.onErrorContainer,
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                                    minimumSize: Size.zero,
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    elevation: 6,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                  ),
+                                  icon: const Icon(Icons.clear_all, size: 12),
+                                  label: Text(l10n.clearTrainingSettings, style: theme.textTheme.labelSmall, overflow: TextOverflow.ellipsis),
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              // Help  (flex 1 — shortest label)
+                              Expanded(
+                                flex: 1,
+                                child: ElevatedButton.icon(
+                                  onPressed: _showHelpDialog,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: theme.colorScheme.tertiaryContainer,
+                                    foregroundColor: theme.colorScheme.onTertiaryContainer,
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                                    minimumSize: Size.zero,
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    elevation: 6,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                  ),
+                                  icon: const Icon(Icons.help_outline, size: 12),
+                                  label: Text(l10n.help, style: theme.textTheme.labelSmall, overflow: TextOverflow.ellipsis),
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              // Start Training  (flex 3 — longest label)
+                              Expanded(
+                                flex: 3,
+                                child: ElevatedButton.icon(
+                                  onPressed: _startTraining,
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: theme.colorScheme.primary,
+                                    foregroundColor: theme.colorScheme.onPrimary,
+                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                                    minimumSize: Size.zero,
+                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    elevation: 6,
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                  ),
+                                  icon: const Icon(Icons.play_arrow, size: 14),
+                                  label: Text(
+                                    widget.isPronunciationMode ? l10n.startPractice : l10n.startTrainingRally,
+                                    style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onPrimary),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                  ),
                 ),
               ),
             ],

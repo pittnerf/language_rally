@@ -1962,13 +1962,23 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
         if (!widget.package.isPurchased) ...[
           const SizedBox(height: AppTheme.spacing8),
           Padding(
-            padding: const EdgeInsets.only(right: AppTheme.spacing8),
+            padding: const EdgeInsets.only(right: 0),
             child: Align(
               alignment: Alignment.centerRight,
               child: ElevatedButton.icon(
                 onPressed: _openItemEditPage,
                 icon: const Icon(Icons.edit, size: 20),
                 label: Text(l10n.editItem),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: AppTheme.spacing8,
+                    horizontal: AppTheme.spacing8,
+                  ),
+                  minimumSize: const Size.fromHeight(48),
+                  elevation: 4,
+                ),
               ),
             ),
           ),

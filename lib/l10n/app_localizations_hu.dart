@@ -84,10 +84,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get upload => 'Ikon feltöltése';
 
   @override
-  String get uploadCustomIcon => 'Egyéni ikon feltöltése (max 512x512, 1MB)';
+  String get uploadCustomIcon => 'Saját ikon feltöltése (max 512x512, 1MB)';
 
   @override
-  String get customIconUploaded => 'Egyéni ikon sikeresen feltöltve';
+  String get customIconUploaded => 'Saját ikon sikeresen feltöltve';
 
   @override
   String get save => 'Mentés';
@@ -123,9 +123,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get invalidEmail => 'Érvénytelen e-mail cím';
 
   @override
-  String get invalidUrl => 'Adjon meg érvényes http:// vagy https:// URL-t.';
-
-  @override
   String get readOnlyPackage =>
       'Ez a csomag csak olvasható és nem szerkeszthető';
 
@@ -133,10 +130,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get purchasedPackage => 'A megvásárolt csomagok nem szerkeszthetők';
 
   @override
-  String get badges => 'Jelvények';
+  String get badges => 'Medálok';
 
   @override
-  String get noBadges => 'Még nincs megszerzett jelvény';
+  String get noBadges => 'Még nincs megszerzett medál';
 
   @override
   String get selectLanguageCode => 'Nyelvkód kiválasztása';
@@ -221,16 +218,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get failedToImport => 'Importálás sikertelen';
 
   @override
-  String get errorImportingItems => 'Hiba az elemek importálása során';
-
-  @override
   String get error => 'Hiba';
 
   @override
   String get ok => 'OK';
-
-  @override
-  String get close => 'Bezárás';
 
   @override
   String get importPackage => 'Csomag importálása';
@@ -252,14 +243,14 @@ class AppLocalizationsHu extends AppLocalizations {
   String get enterPackageUrl => 'Csomag URL-je (https://…)';
 
   @override
-  String get pasteFromClipboard => 'Beillesztés vágólapról';
-
-  @override
   String get downloadingPackage => 'Csomag letöltése…';
 
   @override
   String get downloadFailed =>
       'Letöltés sikertelen. Ellenőrizze az URL-t és az internetkapcsolatot.';
+
+  @override
+  String get invalidUrl => 'Adjon meg érvényes http:// vagy https:// URL-t.';
 
   @override
   String get orLabel => 'vagy';
@@ -308,7 +299,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get invalidPackageZip =>
-      'Érvénytelen csomag ZIP: hiányzik a package_data.json';
+      'Érvénytelen csomag ZIP: hiányzik a package_data.json állomány';
 
   @override
   String get invalidPackageFormat => 'Érvénytelen csomag fájlformátum';
@@ -367,10 +358,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get generateTestData => 'Teszt adatok generálása';
 
   @override
-  String get designSystemShowcase => 'Designrendszer bemutató';
+  String get designSystemShowcase => 'Design System Showcase';
 
   @override
-  String get badgeEarned => 'Jelvény megszerzése!';
+  String get badgeEarned => 'Medál megszerzése!';
 
   @override
   String get achievement => 'Teljesítmény';
@@ -398,11 +389,6 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get importFormatLine6 => '• A duplikátumok kihagyásra kerülnek';
-
-  @override
-  String importProgress(Object current, Object total) {
-    return '$current / $total importálása';
-  }
 
   @override
   String get importFormatNewDescription =>
@@ -523,7 +509,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get favourite => 'Kedvenc';
 
   @override
-  String get badge => 'Jelvény';
+  String get badge => 'Medál';
 
   @override
   String get position => 'Pozíció';
@@ -533,10 +519,6 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get examples => 'Példamondatok';
-
-  @override
-  String get examplesHint =>
-      'Írj be példamondatokat (soronként egyet, használj | jelet a nyelvek elválasztására)';
 
   @override
   String get noExamples => 'Nincsenek elérhető példamondatok';
@@ -558,10 +540,10 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get emptyPackageHint =>
-      'Adjon hozzá elemeket kézzel, vagy importáljon gyorsan AI segítségével';
+      'Adjon hozzá elemeket manuálisan, vagy importáljon hatékonyan AI segítségével';
 
   @override
-  String get noItemsToTrain => 'A jelenlegi ey nincs gyakorolható elem';
+  String get noItemsToTrain => 'Nincs gyakorolható elem a szűrések alapján';
 
   @override
   String get clearFilters => 'Törlés';
@@ -587,11 +569,11 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get aiServiceNotConfigured =>
-      'AI szolgáltatás nincs konfigurálva. Kérlek, add meg az OpenAI API kulcsot.';
+      'AI szolgáltatás nincs konfigurálva. Kérlek, add meg az OpenAI API kulcsot a Beállításoknál.';
 
   @override
   String pleaseEnterTextInLanguageFirst(Object language) {
-    return 'Kérlek, először adj meg szöveget $language nyelven';
+    return 'Kérlek, először adj meg egy szöveget $language nyelven';
   }
 
   @override
@@ -616,12 +598,6 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get selectWhichExamples =>
       'Válaszd ki, melyik példákat szeretnéd hozzáadni:';
-
-  @override
-  String get deselectAll => 'Összes kijelölés törlése';
-
-  @override
-  String get selectAll => 'Összes kijelölése';
 
   @override
   String get addSelected => 'Kijelöltek hozzáadása';
@@ -660,13 +636,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get itemCreated => 'Elem sikeresen létrehozva';
 
   @override
-  String get preTextOptional => 'Elő-szöveg (opcionális)';
+  String get preTextOptional => 'Előtag (opcionális)';
 
   @override
   String get mainText => 'Fő szöveg';
 
   @override
-  String get postTextOptional => 'Utó-szöveg (opcionális)';
+  String get postTextOptional => 'Utótag (opcionális)';
 
   @override
   String get forExampleToForVerbs => 'pl. \"to\" igéknél angolul';
@@ -699,9 +675,6 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get generateExamples => 'Példák generálása';
-
-  @override
   String get voiceInput => 'Hangbemenet';
 
   @override
@@ -721,7 +694,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get userLanguageDescription =>
-      'A nyilvi csomagok létrehozásánál preferált anyanyelv';
+      'A nyelvi csomagok létrehozásánál preferált anyanyelv';
 
   @override
   String get apiKeys => 'API kulcsok';
@@ -731,14 +704,14 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get deeplApiKeyDescription =>
-      'Prémium fordítási minőséghez a tételek szerkesztésénél. Látogasson el a https://www.deepl.com/pro-api linkre.';
+      'Prémium fordítási minőséghez a tételek szerkesztésénél. Látogasson el a https://www.deepl.com/pro-api linkre és hozzon létre API kulcsot.';
 
   @override
   String get openaiApiKey => 'OpenAI API kulcs';
 
   @override
   String get openaiApiKeyDescription =>
-      'Jó minőségű példák generáláshoz AI segítségével. Látogasson el a https://platform.openai.com/api-keys linkre.';
+      'Jó minőségű példák generáláshoz AI segítségével. Látogasson el a https://platform.openai.com/api-keys linkre és hozzon létre API kulcsot.';
 
   @override
   String get enterApiKey => 'API kulcs megadása';
@@ -760,9 +733,6 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get usingDeepL => 'DeepL használata (prémium)';
-
-  @override
-  String get textCannotBeEmpty => 'A szöveg nem lehet üres';
 
   @override
   String get noTranslationReceivedFromGoogle =>
@@ -792,11 +762,11 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get invalidApiKeyConfigureOpenAI =>
-      'Érvénytelen API kulcs. Kérlek, konfiguráld az OpenAI API kulcsot.';
+      'Érvénytelen API kulcs. Kérlek, konfiguráld az OpenAI API kulcsot a Beállításoknál.';
 
   @override
   String get apiRateLimitExceeded =>
-      'API sebesség limit túllépve. Kérlek, próbáld újra később.';
+      'API lekérdezési limit túllépve. Kérlek, próbáld újra később.';
 
   @override
   String get aiRequestFailed => 'AI kérés sikertelen';
@@ -818,10 +788,10 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get noApiKeyFallbackMessage =>
-      'API kulcsok nélkül alapszintű fordítás és korlátozott példák érhetők el. A legjobb eredményekhez állítsd be az API kulcsokat a Beállításokban.';
+      'API kulcsok nélkül alapszintű fordítás és korlátozott példák érhetők csak el. A legjobb eredményekhez állítsd be az API kulcsokat a Beállításokban.';
 
   @override
-  String get listeningForSpeech => 'Figyelek... Beszélj most';
+  String get listeningForSpeech => 'Figyelek... Most beszélj!';
 
   @override
   String get speechRecognitionNotAvailable =>
@@ -862,10 +832,6 @@ class AppLocalizationsHu extends AppLocalizations {
       'Beszélj érthetően. Legalább 1 másodpercig rögzíts.';
 
   @override
-  String get recordingTooShort =>
-      'A felvétel túl rövid. Kérem beszéljen legalább 1 másodpercig.';
-
-  @override
   String get pleaseRecordLonger =>
       'Kérlek, beszélj legalább 1 másodpercig és koppints a leállításra.';
 
@@ -874,9 +840,6 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get noAudioRecorded => 'Nem készült hangfelvétel';
-
-  @override
-  String get processingAudio => 'Hang feldolgozása AI-val...';
 
   @override
   String get errorTranscribing => 'Hiba a hangátiratban';
@@ -950,7 +913,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Hányszor kell \'nem tudom\'-nak jelölni egy elemet a speciális kezeléshez';
 
   @override
-  String get startTrainingRally => 'Gyakorlási Rally Indítása';
+  String get startTrainingRally => 'Gyakorlás Indítása (Rally)';
 
   @override
   String get clearTrainingSettings => 'Beállítások Törlése';
@@ -998,9 +961,6 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get iDontKnow => 'Nem Tudom';
-
-  @override
-  String get nextItem => 'Következő elem';
 
   @override
   String get previousItem => 'Előző elem';
@@ -1052,6 +1012,9 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get maxItemsHint => 'Hagyja üresen korlát nélkül';
+
+  @override
+  String get generateExamples => 'Példák generálása';
 
   @override
   String get categoryName => 'Kategória neve';
@@ -1111,6 +1074,12 @@ class AppLocalizationsHu extends AppLocalizations {
   String get selectItemsToImport => 'Válassza ki az importálandó elemeket';
 
   @override
+  String get selectAll => 'Összes kijelölése';
+
+  @override
+  String get deselectAll => 'Összes kijelölés törlése';
+
+  @override
   String get importSelected => 'Kijelöltek importálása';
 
   @override
@@ -1121,6 +1090,9 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get noItemsSelected => 'Nincs elem kijelölve';
+
+  @override
+  String get textCannotBeEmpty => 'A szöveg nem lehet üres';
 
   @override
   String get selectAtLeastOneType =>
@@ -1148,6 +1120,11 @@ class AppLocalizationsHu extends AppLocalizations {
   String get duplicate => 'Duplikátum';
 
   @override
+  String importProgress(Object current, Object total) {
+    return '$current / $total importálása';
+  }
+
+  @override
   String get detectingLanguage => 'Nyelv felismerése...';
 
   @override
@@ -1164,6 +1141,9 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get errorAnalyzingText => 'Hiba a szöveg elemzése során';
+
+  @override
+  String get errorImportingItems => 'Hiba az elemek importálása során';
 
   @override
   String get warning => 'Figyelmeztetés';
@@ -1206,16 +1186,13 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String badgeEarnedWithName(Object badgeName) {
-    return 'Jelvény Megszerzve: $badgeName!';
+    return 'Medál megszerzve: $badgeName!';
   }
 
   @override
   String badgeLostWithName(Object badgeName) {
-    return 'Jelvény Elveszítve: $badgeName';
+    return 'Medál elveszítve: $badgeName';
   }
-
-  @override
-  String get speakText => 'Szöveg felolvasása';
 
   @override
   String get trainingSessionProgress => 'Gyakorlási Statisztika';
@@ -1244,6 +1221,9 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get technicalDetails => 'Technikai Részletek';
+
+  @override
+  String get close => 'Bezárás';
 
   @override
   String get checkApiKey => 'Ellenőrizd az OpenAI API kulcsot';
@@ -1449,6 +1429,9 @@ class AppLocalizationsHu extends AppLocalizations {
       'Még nincsenek példák. Kattintson a + gombra hozzáadáshoz.';
 
   @override
+  String get speakText => 'Szöveg felolvasása';
+
+  @override
   String get removeCategory => 'Kategória eltávolítása';
 
   @override
@@ -1461,6 +1444,9 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get extractFullItems => 'Teljes elemek kinyerése';
+
+  @override
+  String get pasteFromClipboard => 'Beillesztés vágólapról';
 
   @override
   String get noItemsFoundOrAllDuplicates =>
@@ -1599,7 +1585,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get tourStep5Desc =>
-      'Ellenőrizze tanulási haladását részletes statisztikákkal és teljesítmény jelvényekkel.';
+      'Ellenőrizze tanulási haladását részletes statisztikákkal és a megszerzett medálokkal.';
 
   @override
   String get gotIt => 'Értem!';
@@ -1711,11 +1697,18 @@ class AppLocalizationsHu extends AppLocalizations {
   String get noSpeechDetected => 'Nem észlelhető beszéd. Kérem próbálja újra.';
 
   @override
+  String get processingAudio => 'Hang feldolgozása AI-val...';
+
+  @override
   String get playbackRecording => 'Felvétel visszajátszása';
 
   @override
   String get playbackRecordingSubtitle =>
       'Hallgassa meg a felvételét, miközben az AI feldolgozza';
+
+  @override
+  String get recordingTooShort =>
+      'A felvétel túl rövid. Kérem beszéljen legalább 1 másodpercig.';
 
   @override
   String get microphonePermissionRequired =>
@@ -1746,6 +1739,9 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get tryAgain => 'Próbálja újra';
+
+  @override
+  String get nextItem => 'Következő elem';
 
   @override
   String get endPractice => 'Gyakorlás befejezése';
@@ -1917,4 +1913,14 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get textScoreLabel => 'Szöveg';
+
+  @override
+  String get help => 'Súgó';
+
+  @override
+  String get trainingHelpTitle => 'Tippek a hatékony tanuláshoz';
+
+  @override
+  String get trainingHelpText =>
+      'Ahhoz, hogy a gyakorlás a lehető leghatékonyabb legyen, kövesd az alábbi lépéseket:\n1. Kattints a \'Számlálók törlése\' gombra, hogy az összes elem ebben a csomagban ismertként legyen jelölve.';
 }

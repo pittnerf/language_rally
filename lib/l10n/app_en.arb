@@ -661,7 +661,11 @@
   "failedToInitRtAudio": "Failed to initialize RTAudio",
   "envelopeScoreLabel": "Envelope",
   "rhythmScoreLabel": "Rhythm",
-  "textScoreLabel": "Text"
+  "textScoreLabel": "Text",
+
+  "help": "Help",
+  "trainingHelpTitle": "Training Tips",
+  "trainingHelpText": "To make your training as effective as possible, follow these steps:\n1. Click the 'Clear counters' button so that all items in this package are marked as known."
 }
 
 

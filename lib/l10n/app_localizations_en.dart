@@ -123,9 +123,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get invalidEmail => 'Invalid email address';
 
   @override
-  String get invalidUrl => 'Please enter a valid http:// or https:// URL.';
-
-  @override
   String get readOnlyPackage =>
       'This package is read-only and cannot be edited';
 
@@ -220,16 +217,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get failedToImport => 'Failed to import';
 
   @override
-  String get errorImportingItems => 'Error importing items';
-
-  @override
   String get error => 'Error';
 
   @override
   String get ok => 'OK';
-
-  @override
-  String get close => 'Close';
 
   @override
   String get importPackage => 'Import Package';
@@ -250,14 +241,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get enterPackageUrl => 'Package URL (https://…)';
 
   @override
-  String get pasteFromClipboard => 'Paste from clipboard';
-
-  @override
   String get downloadingPackage => 'Downloading package…';
 
   @override
   String get downloadFailed =>
       'Download failed. Please check the URL and your internet connection.';
+
+  @override
+  String get invalidUrl => 'Please enter a valid http:// or https:// URL.';
 
   @override
   String get orLabel => 'or';
@@ -397,11 +388,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importFormatLine6 => '• Duplicates are skipped';
 
   @override
-  String importProgress(Object current, Object total) {
-    return 'Importing $current of $total';
-  }
-
-  @override
   String get importFormatNewDescription =>
       'Import items from a text file. Each line should contain an item with fields separated by ---';
 
@@ -532,10 +518,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get examples => 'Examples';
 
   @override
-  String get examplesHint =>
-      'Enter example sentences (one per line, use | to separate languages)';
-
-  @override
   String get noExamples => 'No examples available';
 
   @override
@@ -616,12 +598,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Select which examples you want to add to this item:';
 
   @override
-  String get deselectAll => 'Deselect All';
-
-  @override
-  String get selectAll => 'Select All';
-
-  @override
   String get addSelected => 'Add Selected';
 
   @override
@@ -697,9 +673,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get generateExamples => 'Generate Examples';
-
-  @override
   String get voiceInput => 'Voice input';
 
   @override
@@ -759,9 +732,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get usingDeepL => 'Using DeepL (premium)';
-
-  @override
-  String get textCannotBeEmpty => 'Text cannot be empty';
 
   @override
   String get noTranslationReceivedFromGoogle =>
@@ -861,10 +831,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Speak clearly. Record at least 1 second.';
 
   @override
-  String get recordingTooShort =>
-      'Recording too short. Please speak for at least 1 second.';
-
-  @override
   String get pleaseRecordLonger =>
       'Please speak for at least 1 second and tap stop.';
 
@@ -873,9 +839,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noAudioRecorded => 'No audio was recorded';
-
-  @override
-  String get processingAudio => 'Processing audio with AI...';
 
   @override
   String get errorTranscribing => 'Error transcribing audio';
@@ -998,9 +961,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get iDontKnow => 'I Don\'t Know';
 
   @override
-  String get nextItem => 'Next Item';
-
-  @override
   String get previousItem => 'Previous Item';
 
   @override
@@ -1050,6 +1010,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get maxItemsHint => 'Leave empty for no limit';
+
+  @override
+  String get generateExamples => 'Generate Examples';
 
   @override
   String get categoryName => 'Category Name';
@@ -1110,6 +1073,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectItemsToImport => 'Select Items to Import';
 
   @override
+  String get selectAll => 'Select All';
+
+  @override
+  String get deselectAll => 'Deselect All';
+
+  @override
   String get importSelected => 'Import Selected';
 
   @override
@@ -1120,6 +1089,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noItemsSelected => 'No items selected';
+
+  @override
+  String get textCannotBeEmpty => 'Text cannot be empty';
 
   @override
   String get selectAtLeastOneType =>
@@ -1146,6 +1118,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get duplicate => 'Duplicate';
 
   @override
+  String importProgress(Object current, Object total) {
+    return 'Importing $current of $total';
+  }
+
+  @override
   String get detectingLanguage => 'Detecting language...';
 
   @override
@@ -1162,6 +1139,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorAnalyzingText => 'Error analyzing text';
+
+  @override
+  String get errorImportingItems => 'Error importing items';
 
   @override
   String get warning => 'Warning';
@@ -1213,9 +1193,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get speakText => 'Speak text';
-
-  @override
   String get trainingSessionProgress => 'Training Session Stats';
 
   @override
@@ -1242,6 +1219,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get technicalDetails => 'Technical Details';
+
+  @override
+  String get close => 'Close';
 
   @override
   String get checkApiKey => 'Check your OpenAI API key';
@@ -1439,6 +1419,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noExamplesYet => 'No examples yet. Click + to add.';
 
   @override
+  String get speakText => 'Speak text';
+
+  @override
   String get removeCategory => 'Remove Category';
 
   @override
@@ -1451,6 +1434,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get extractFullItems => 'Extract Full Items';
+
+  @override
+  String get pasteFromClipboard => 'Paste from clipboard';
 
   @override
   String get noItemsFoundOrAllDuplicates =>
@@ -1702,11 +1688,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noSpeechDetected => 'No speech detected. Please try again.';
 
   @override
+  String get processingAudio => 'Processing audio with AI...';
+
+  @override
   String get playbackRecording => 'Play back my recording';
 
   @override
   String get playbackRecordingSubtitle =>
       'Hear your recording while AI processes it';
+
+  @override
+  String get recordingTooShort =>
+      'Recording too short. Please speak for at least 1 second.';
 
   @override
   String get microphonePermissionRequired =>
@@ -1737,6 +1730,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tryAgain => 'Try Again';
+
+  @override
+  String get nextItem => 'Next Item';
 
   @override
   String get endPractice => 'End Practice';
@@ -1907,4 +1903,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get textScoreLabel => 'Text';
+
+  @override
+  String get help => 'Help';
+
+  @override
+  String get trainingHelpTitle => 'Training Tips';
+
+  @override
+  String get trainingHelpText =>
+      'To make your training as effective as possible, follow these steps:\n1. Click the \'Clear counters\' button so that all items in this package are marked as known.';
 }
