@@ -1,0 +1,27 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pencil + writing lines — circular rose/pink background -->
+  <circle cx="64" cy="64" r="56" fill="#FDF2F8" stroke="#DB2777" stroke-width="3"/>
+  <!-- Pencil eraser top -->
+  <rect x="52" y="16" width="24" height="10" rx="4" fill="#FDA4AF"/>
+  <!-- Metal ferrule band -->
+  <rect x="52" y="26" width="24" height="6" fill="#94A3B8"/>
+  <!-- Pencil body -->
+  <rect x="52" y="32" width="24" height="58" fill="#FDE047"/>
+  <!-- Body centre line -->
+  <line x1="64" y1="32" x2="64" y2="90" stroke="rgba(0,0,0,0.08)" stroke-width="1.5"/>
+  <!-- Wood cone tip -->
+  <path d="M52 90 L76 90 L64 112 Z" fill="#F9A825"/>
+  <!-- Lead tip -->
+  <path d="M59 101 L64 112 L69 101 Z" fill="#292524"/>
+  <!-- Writing lines to the right -->
+  <line x1="84" y1="48" x2="110" y2="48" stroke="#DB2777" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="84" y1="60" x2="106" y2="60" stroke="#DB2777" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="84" y1="72" x2="112" y2="72" stroke="#DB2777" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="84" y1="84" x2="104" y2="84" stroke="#F9A8D4" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- Sparkle stars to the left -->
+  <path d="M28 44 L30 50 L36 50 L31 54 L33 60 L28 56 L23 60 L25 54 L20 50 L26 50 Z" fill="#FBBF24"/>
+  <path d="M20 72 L21.5 76 L26 76 L22.5 78.5 L24 83 L20 80 L16 83 L17.5 78.5 L14 76 L18.5 76 Z" fill="#FBBF24"/>
+  <circle cx="34" cy="38" r="2.5" fill="#F9A8D4"/>
+  <circle cx="18" cy="88" r="2" fill="#F9A8D4"/>
+</svg>
+

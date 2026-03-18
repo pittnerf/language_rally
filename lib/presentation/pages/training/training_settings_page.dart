@@ -51,14 +51,16 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
   LanguagePackage? _currentPackage;
   List<LanguagePackage> _availablePackages = [];
 
-  // Settings values
-  late ItemScope _itemScope;
-  late int _lastNItems;
-  late ItemOrder _itemOrder;
-  late DisplayLanguage _displayLanguage;
-  late ItemType _itemType;
-  late List<String> _selectedCategoryIds;
-  late int _dontKnowThreshold;
+  // Settings values  – initialised to safe defaults so the build method never
+  // reads an uninitialised late field (e.g. when _loadSettings() throws before
+  // it reaches the setState that would assign them).
+  ItemScope _itemScope = ItemScope.all;
+  int _lastNItems = 20;
+  ItemOrder _itemOrder = ItemOrder.random;
+  DisplayLanguage _displayLanguage = DisplayLanguage.random;
+  ItemType _itemType = ItemType.dictionaryItems;
+  List<String> _selectedCategoryIds = [];
+  int _dontKnowThreshold = 3;
 
   List<Category> _allCategories = [];
   bool _isLoading = true;

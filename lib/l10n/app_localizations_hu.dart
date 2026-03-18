@@ -358,7 +358,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get generateTestData => 'Teszt adatok generálása';
 
   @override
-  String get designSystemShowcase => 'Design System Showcase';
+  String get designSystemShowcase => 'Design rendszer bemutató';
 
   @override
   String get badgeEarned => 'Medál megszerzése!';
@@ -1383,13 +1383,37 @@ class AppLocalizationsHu extends AppLocalizations {
   String get defaultIconLabel => 'Alapértelmezett';
 
   @override
-  String get icon1Label => '1. ikon';
+  String get icon2Label => 'Nyitott könyv';
 
   @override
-  String get icon2Label => '2. ikon';
+  String get icon3Label => 'Színes könyv';
 
   @override
-  String get icon3Label => '3. ikon';
+  String get icon4Label => 'Párbeszéd';
+
+  @override
+  String get icon5Label => 'Diploma';
+
+  @override
+  String get icon6Label => 'Agy';
+
+  @override
+  String get icon7Label => 'Könyvhalom';
+
+  @override
+  String get icon8Label => 'Szókártya';
+
+  @override
+  String get icon9Label => 'Földgömb';
+
+  @override
+  String get icon10Label => 'Ceruza';
+
+  @override
+  String get icon11Label => 'Trófea';
+
+  @override
+  String get icon12Label => 'Keresés';
 
   @override
   String get customIconFile => 'Egyéni ikon';
@@ -1695,6 +1719,10 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get noSpeechDetected => 'Nem észlelhető beszéd. Kérem próbálja újra.';
+
+  @override
+  String get noTextRecognized =>
+      'Nem sikerült szöveget felismerni a felvételben. Kérem ellenőrizze, hogy a mikrofon megfelelően működik, és próbálja újra.';
 
   @override
   String get processingAudio => 'Hang feldolgozása AI-val...';

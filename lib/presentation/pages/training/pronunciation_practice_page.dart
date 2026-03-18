@@ -948,9 +948,41 @@ class _PronunciationPracticePageState
               logDebug('   Detected language: ${result.language}');
               logDebug('   Audio duration: ${result.duration}s');
 
+              // Detect silent-audio hallucinations (e.g. "Untertitel der Amara.org-Community")
+              // and treat them exactly like an empty transcription.
+              final bool isHallucination = _isWhisperHallucination(result.text);
+              final String cleanedText = isHallucination ? '' : result.text;
+              if (isHallucination) {
+                logDebug('⚠️ Whisper hallucination detected ("${result.text}") – treating as empty');
+              }
+
               setState(() {
-                _recordedText = result.text;
+                _recordedText = cleanedText;
               });
+
+              // Warn the user when Whisper returned an empty transcription or a
+              // hallucination (typically means the recording was silent /
+              // microphone not working).
+              if (cleanedText.trim().isEmpty && mounted) {
+                logDebug('⚠️ Empty/hallucinated transcription – showing no-speech warning');
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Row(
+                      children: [
+                        const Icon(Icons.mic_off, color: Colors.white),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            AppLocalizations.of(context)!.noTextRecognized,
+                          ),
+                        ),
+                      ],
+                    ),
+                    backgroundColor: Colors.orange.shade800,
+                    duration: const Duration(seconds: 6),
+                  ),
+                );
+              }
 
               // Hide processing message
               if (mounted) {
@@ -1405,19 +1437,20 @@ class _PronunciationPracticePageState
     if (user.isEmpty || reference.isEmpty) return 0.0;
     final userR = _resamplePattern(user, 100);
     final refR  = _resamplePattern(reference, 100);
-    // ignore: unawaited_futures
-    _debugSaveEnvelopeImage(userR, refR,
-        userFrames: user.length, refFrames: reference.length); // ← temporary debug helper
+    if (PRINT_DEBUG) {
+      // ignore: unawaited_futures
+      _debugSaveEnvelopeImage(userR, refR,
+          userFrames: user.length, refFrames: reference.length);
+    }
     return _pearsonCorrelation(userR, refR);
   }
 
-  // ── TEMPORARY DEBUG ───────────────────────────────────────────────────────
+  // ── Debug: envelope chart ─────────────────────────────────────────────────
   /// Renders both resampled envelopes as a PNG chart and writes it to the
-  /// system temp directory.
+  /// system temp directory.  Only called when [PRINT_DEBUG] is true.
   ///
-  /// Android emulator : copy the file to the host with
-  ///   adb pull <printed-path> envelope_debug.png
-  /// Windows desktop  : open the printed path directly in any image viewer.
+  /// Pull the file with:
+  ///   .\pull_envelope_debug.ps1          (auto-detects connected device)
   Future<void> _debugSaveEnvelopeImage(
     List<double> userR,
     List<double> refR, {
@@ -1453,17 +1486,17 @@ class _PronunciationPracticePageState
         ..strokeWidth = 1.0;
       for (int g = 0; g <= 10; g++) {
         final y = padT + plotH - g * plotH / 10;
-        canvas.drawLine(Offset(padL, y),       Offset(padL + plotW, y),       gridPaint);
+        canvas.drawLine(Offset(padL, y),      Offset(padL + plotW, y),      gridPaint);
         final x = padL + g * plotW / 10;
-        canvas.drawLine(Offset(x, padT),       Offset(x, padT + plotH),       gridPaint);
+        canvas.drawLine(Offset(x, padT),      Offset(x, padT + plotH),      gridPaint);
       }
 
       // ── axes ────────────────────────────────────────────────────────────────
       final axisPaint = Paint()
         ..color       = const Color(0xFF222222)
         ..strokeWidth = 1.5;
-      canvas.drawLine(Offset(padL, padT),          Offset(padL, padT + plotH),         axisPaint);
-      canvas.drawLine(Offset(padL, padT + plotH),  Offset(padL + plotW, padT + plotH), axisPaint);
+      canvas.drawLine(Offset(padL, padT),         Offset(padL, padT + plotH),         axisPaint);
+      canvas.drawLine(Offset(padL, padT + plotH), Offset(padL + plotW, padT + plotH), axisPaint);
 
       // ── helper: data index + value → canvas Offset ──────────────────────────
       Offset pt(int i, double v, int n) => Offset(
@@ -1507,8 +1540,7 @@ class _PronunciationPracticePageState
         (TextPainter(
           text: TextSpan(
             text: text,
-            style: TextStyle(color: color, fontSize: fontSize,
-                fontWeight: weight),
+            style: TextStyle(color: color, fontSize: fontSize, fontWeight: weight),
           ),
           textDirection: TextDirection.ltr,
         )..layout())
@@ -1518,7 +1550,7 @@ class _PronunciationPracticePageState
       drawText(
         'Volume envelope comparison  '
         '(100-pt resample, max=${yScale.toStringAsFixed(1)}'
-        '${userFrames > 0 ? "  |  user: ${userFrames} fr≈${(userFrames*50)}ms  ref: ${refFrames} fr≈${(refFrames*50)}ms" : ""})',
+        '${userFrames > 0 ? "  |  user: $userFrames fr≈${(userFrames * 50)}ms  ref: $refFrames fr≈${(refFrames * 50)}ms" : ""})',
         const Offset(padL, 10),
         const Color(0xFF222222),
         fontSize: 13,
@@ -1529,16 +1561,14 @@ class _PronunciationPracticePageState
         Rect.fromLTWH(padL + 10, padT + 10, 18, 10),
         Paint()..color = const Color(0xFF1565C0),
       );
-      drawText('User recording',  Offset(padL + 34,  padT + 8),
-          const Color(0xFF1565C0));
+      drawText('User recording',  Offset(padL + 34,  padT + 8), const Color(0xFF1565C0));
 
       // Red legend swatch + label
       canvas.drawRect(
         Rect.fromLTWH(padL + 175, padT + 10, 18, 10),
         Paint()..color = const Color(0xFFC62828),
       );
-      drawText('Reference audio', Offset(padL + 199, padT + 8),
-          const Color(0xFFC62828));
+      drawText('Reference audio', Offset(padL + 199, padT + 8), const Color(0xFFC62828));
 
       // ── encode + write ───────────────────────────────────────────────────────
       final picture  = recorder.endRecording();
@@ -1554,17 +1584,15 @@ class _PronunciationPracticePageState
       final dir  = await getTemporaryDirectory();
       final path = '${dir.path}/envelope_debug.png';
       await File(path).writeAsBytes(byteData.buffer.asUint8List());
-      logDebug('📊  Envelope debug image saved → $path');
+      logDebug('📊  Envelope debug image saved -> $path');
       if (!kIsWeb && Platform.isAndroid) {
-        const adb = r'$env:LOCALAPPDATA\Android\Sdk\platform-tools\adb.exe';
-        logDebug('   Run in PowerShell (emulator-5554):');
-        logDebug('   & "$adb" -s emulator-5554 shell run-as com.example.language_rally cp "$path" /sdcard/envelope_debug.png ; & "$adb" -s emulator-5554 pull /sdcard/envelope_debug.png "\$env:USERPROFILE\\Desktop\\envelope_debug.png"');
+        logDebug('   Pull with: .\\pull_envelope_debug.ps1');
       }
     } catch (e, st) {
       logDebug('⚠️  _debugSaveEnvelopeImage error: $e\n$st');
     }
   }
-  // ── END TEMPORARY DEBUG ───────────────────────────────────────────────────
+  // ── END Debug: envelope chart ─────────────────────────────────────────────
 
   /// Compare rhythm by matching the relative positions of energy peaks.
   double _compareRhythmPatterns(List<double> user, List<double> reference) {
@@ -2028,52 +2056,105 @@ class _PronunciationPracticePageState
           }
         },
         child: SafeArea(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.all(isTablet ? AppTheme.spacing16 : AppTheme.spacing8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                  child: Padding(
+                    padding: EdgeInsets.all(isTablet ? AppTheme.spacing16 : AppTheme.spacing8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
 
-                // Status indicators (includes playback checkbox when using Whisper API)
-                _buildStatusIndicators(theme, l10n),
-                SizedBox(height: isTablet ? AppTheme.spacing8 : AppTheme.spacing8),
+                        // Status indicators (includes playback checkbox when using Whisper API)
+                        _buildStatusIndicators(theme, l10n),
+                        SizedBox(height: isTablet ? AppTheme.spacing8 : AppTheme.spacing8),
 
-                // Pronunciation item and tachometer - side by side on tablets, stacked on phones
-                if (isTablet)
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Item to pronounce (left side, takes 60% of width)
-                      Expanded(
-                        flex: 3,
-                        child: _buildPronunciationItem(theme, l10n, currentItem, isTablet),
-                      ),
-                      SizedBox(width: AppTheme.spacing8),
-                      // Tachometer (right side, takes 40% of width)
-                      Expanded(
-                        flex: 2,
-                        child: _buildTachometer(theme, l10n, isTablet),
-                      ),
-                    ],
-                  )
-                else ...[
-                  // Phone layout - stacked vertically
-                  _buildPronunciationItem(theme, l10n, currentItem, isTablet),
-                  SizedBox(height: AppTheme.spacing8),
-                  _buildTachometer(theme, l10n, isTablet),
-                ],
-                SizedBox(height: isTablet ? AppTheme.spacing8 : AppTheme.spacing8),
+                        // Pronunciation item and tachometer - side by side on tablets, stacked on phones
+                        if (isTablet)
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Item to pronounce (left side, takes 60% of width)
+                              Expanded(
+                                flex: 3,
+                                child: _buildPronunciationItem(theme, l10n, currentItem, isTablet),
+                              ),
+                              SizedBox(width: AppTheme.spacing8),
+                              // Tachometer (right side, takes 40% of width)
+                              Expanded(
+                                flex: 2,
+                                child: _buildTachometer(theme, l10n, isTablet),
+                              ),
+                            ],
+                          )
+                        else ...[
+                          // Phone layout - stacked vertically
+                          _buildPronunciationItem(theme, l10n, currentItem, isTablet),
+                          SizedBox(height: AppTheme.spacing8),
+                          _buildTachometer(theme, l10n, isTablet),
+                        ],
+                        SizedBox(height: isTablet ? AppTheme.spacing8 : AppTheme.spacing8),
 
-                // Navigation buttons
-                _buildNavigationButtons(theme, l10n, isTablet),
-              ],
-            ),
+                        // Navigation buttons
+                        _buildNavigationButtons(theme, l10n, isTablet),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ),
       ),
     );
   }
 
+
+  // ---------------------------------------------------------------------------
+  // Whisper hallucination filter
+  // ---------------------------------------------------------------------------
+  // When Whisper receives a silent or near-silent recording it frequently
+  // returns one of a small set of "hallucinated" subtitle credits instead of
+  // an empty string.  Treat any match as "no speech detected".
+  static const List<String> _whisperHallucinationPatterns = [
+    // Amara.org subtitle credits (appear in many languages)
+    'amara.org',
+    'subtitles by the amara',
+    'untertitel der amara',
+    'sous-titres réalisés par la communauté d\'amara',
+    'subtítulos por la comunidad de amara',
+    'sottotitoli della comunità di amara',
+    'legendas pela comunidade amara',
+    // Other common silent-audio hallucinations
+    'thank you for watching',
+    'thanks for watching',
+    'please subscribe',
+    'www.mooji.org',
+    'mooji.org',
+    'transcribed by',
+    'subtitled by',
+    'subtitle by',
+    'english subtitles',
+    // Pure music / filler
+    '♪',
+    '[ silence ]',
+    '[silence]',
+    '[ music ]',
+    '[music]',
+  ];
+
+  /// Returns true when [text] matches a known Whisper silent-audio hallucination.
+  bool _isWhisperHallucination(String text) {
+    final lower = text.trim().toLowerCase();
+    if (lower.isEmpty) return false;
+    for (final pattern in _whisperHallucinationPatterns) {
+      if (lower.contains(pattern)) return true;
+    }
+    return false;
+  }
 
   Widget _buildModeInfoAction(ThemeData theme, AppLocalizations l10n) {
     if (_useWhisperAPI) {
@@ -2442,14 +2523,14 @@ class _PronunciationPracticePageState
       if (isLandscape) {
         // Tablet landscape - compact (as just fixed)
         tachometerHeight = 150;
-        percentageFontSize = 40;
+        percentageFontSize = 36;
         labelFontSize = 13;
         titleFontSize = 16;
         topPadding = 30;
       } else {
         // Tablet portrait - can be a bit larger
         tachometerHeight = 130;
-        percentageFontSize = 44;
+        percentageFontSize = 20;
         labelFontSize = 14;
         titleFontSize = 18;
         topPadding = 35;
@@ -2520,7 +2601,7 @@ class _PronunciationPracticePageState
                               builder: (context, value, child) {
                                 return Text(
                                   '${value.toStringAsFixed(0)}%',
-                                  style: theme.textTheme.displayMedium?.copyWith(
+                                  style: theme.textTheme.displaySmall?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: _getMatchRateColor(theme, value),
                                     fontSize: percentageFontSize,

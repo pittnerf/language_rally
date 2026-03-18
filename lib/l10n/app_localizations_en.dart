@@ -1374,13 +1374,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get defaultIconLabel => 'Default';
 
   @override
-  String get icon1Label => 'Icon 1';
+  String get icon2Label => 'Open Book';
 
   @override
-  String get icon2Label => 'Icon 2';
+  String get icon3Label => 'Colored Book';
 
   @override
-  String get icon3Label => 'Icon 3';
+  String get icon4Label => 'Conversation';
+
+  @override
+  String get icon5Label => 'Graduation';
+
+  @override
+  String get icon6Label => 'Brain';
+
+  @override
+  String get icon7Label => 'Book Stack';
+
+  @override
+  String get icon8Label => 'Flashcard';
+
+  @override
+  String get icon9Label => 'Globe';
+
+  @override
+  String get icon10Label => 'Pencil';
+
+  @override
+  String get icon11Label => 'Trophy';
+
+  @override
+  String get icon12Label => 'Search';
 
   @override
   String get customIconFile => 'Custom Icon';
@@ -1686,6 +1710,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noSpeechDetected => 'No speech detected. Please try again.';
+
+  @override
+  String get noTextRecognized =>
+      'No speech was recognized in the recording. Please make sure your microphone is working and try again.';
 
   @override
   String get processingAudio => 'Processing audio with AI...';

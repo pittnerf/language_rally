@@ -2606,23 +2606,71 @@ abstract class AppLocalizations {
   /// **'Default'**
   String get defaultIconLabel;
 
-  /// No description provided for @icon1Label.
-  ///
-  /// In en, this message translates to:
-  /// **'Icon 1'**
-  String get icon1Label;
-
   /// No description provided for @icon2Label.
   ///
   /// In en, this message translates to:
-  /// **'Icon 2'**
+  /// **'Open Book'**
   String get icon2Label;
 
   /// No description provided for @icon3Label.
   ///
   /// In en, this message translates to:
-  /// **'Icon 3'**
+  /// **'Colored Book'**
   String get icon3Label;
+
+  /// No description provided for @icon4Label.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation'**
+  String get icon4Label;
+
+  /// No description provided for @icon5Label.
+  ///
+  /// In en, this message translates to:
+  /// **'Graduation'**
+  String get icon5Label;
+
+  /// No description provided for @icon6Label.
+  ///
+  /// In en, this message translates to:
+  /// **'Brain'**
+  String get icon6Label;
+
+  /// No description provided for @icon7Label.
+  ///
+  /// In en, this message translates to:
+  /// **'Book Stack'**
+  String get icon7Label;
+
+  /// No description provided for @icon8Label.
+  ///
+  /// In en, this message translates to:
+  /// **'Flashcard'**
+  String get icon8Label;
+
+  /// No description provided for @icon9Label.
+  ///
+  /// In en, this message translates to:
+  /// **'Globe'**
+  String get icon9Label;
+
+  /// No description provided for @icon10Label.
+  ///
+  /// In en, this message translates to:
+  /// **'Pencil'**
+  String get icon10Label;
+
+  /// No description provided for @icon11Label.
+  ///
+  /// In en, this message translates to:
+  /// **'Trophy'**
+  String get icon11Label;
+
+  /// No description provided for @icon12Label.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get icon12Label;
 
   /// No description provided for @customIconFile.
   ///
@@ -3151,6 +3199,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No speech detected. Please try again.'**
   String get noSpeechDetected;
+
+  /// No description provided for @noTextRecognized.
+  ///
+  /// In en, this message translates to:
+  /// **'No speech was recognized in the recording. Please make sure your microphone is working and try again.'**
+  String get noTextRecognized;
 
   /// No description provided for @processingAudio.
   ///

@@ -1,0 +1,22 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Trophy / Achievement — rounded rect gold background -->
+  <rect x="8" y="8" width="112" height="112" rx="24" fill="#FFFBEB" stroke="#D97706" stroke-width="3"/>
+  <!-- Trophy cup body -->
+  <path d="M36 24 L36 68 Q36 84 64 84 Q92 84 92 68 L92 24 Z" fill="#FCD34D" stroke="#D97706" stroke-width="2.5"/>
+  <!-- Cup inner highlight/shine -->
+  <path d="M46 32 L46 66 Q46 76 58 78" stroke="rgba(255,255,255,0.7)" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <!-- Left handle -->
+  <path d="M36 34 Q18 34 18 52 Q18 70 36 70" stroke="#D97706" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+  <!-- Right handle -->
+  <path d="M92 34 Q110 34 110 52 Q110 70 92 70" stroke="#D97706" stroke-width="4.5" fill="none" stroke-linecap="round"/>
+  <!-- Stem -->
+  <rect x="56" y="84" width="16" height="14" fill="#F59E0B"/>
+  <!-- Base -->
+  <rect x="36" y="98" width="56" height="12" rx="4" fill="#B45309"/>
+  <!-- Base highlight -->
+  <rect x="38" y="98" width="52" height="6" rx="2" fill="#D97706"/>
+  <!-- Star inside cup -->
+  <path d="M64 38 L67.5 49 L79 49 L70 56 L73.5 67 L64 60 L54.5 67 L58 56 L49 49 L60.5 49 Z"
+        fill="#F59E0B" stroke="#D97706" stroke-width="1.5"/>
+</svg>
+

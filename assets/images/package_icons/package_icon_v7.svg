@@ -1,0 +1,25 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Stack of Books — circular coral/red background -->
+  <circle cx="64" cy="64" r="56" fill="#FFF1F2" stroke="#E11D48" stroke-width="3"/>
+  <!-- Bottom book (red) -->
+  <rect x="22" y="82" width="84" height="18" rx="4" fill="#E11D48"/>
+  <rect x="22" y="82" width="12" height="18" rx="2" fill="#9F1239"/>
+  <line x1="34" y1="82" x2="34" y2="100" stroke="#7F1D1D" stroke-width="1"/>
+  <line x1="42" y1="89" x2="96" y2="89" stroke="rgba(255,255,255,0.35)" stroke-width="2" stroke-linecap="round"/>
+  <line x1="42" y1="95" x2="88" y2="95" stroke="rgba(255,255,255,0.35)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Middle book (blue) -->
+  <rect x="26" y="60" width="76" height="18" rx="4" fill="#3B82F6"/>
+  <rect x="26" y="60" width="12" height="18" rx="2" fill="#1D4ED8"/>
+  <line x1="38" y1="60" x2="38" y2="78" stroke="#1E40AF" stroke-width="1"/>
+  <line x1="46" y1="67" x2="92" y2="67" stroke="rgba(255,255,255,0.35)" stroke-width="2" stroke-linecap="round"/>
+  <line x1="46" y1="73" x2="84" y2="73" stroke="rgba(255,255,255,0.35)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Top book (amber) -->
+  <rect x="30" y="38" width="68" height="18" rx="4" fill="#F59E0B"/>
+  <rect x="30" y="38" width="12" height="18" rx="2" fill="#D97706"/>
+  <line x1="42" y1="38" x2="42" y2="56" stroke="#B45309" stroke-width="1"/>
+  <line x1="50" y1="45" x2="88" y2="45" stroke="rgba(255,255,255,0.35)" stroke-width="2" stroke-linecap="round"/>
+  <line x1="50" y1="51" x2="80" y2="51" stroke="rgba(255,255,255,0.35)" stroke-width="2" stroke-linecap="round"/>
+  <!-- Red bookmark ribbon on top book -->
+  <path d="M86 38 L86 55 L80 49 L74 55 L74 38 Z" fill="#EF4444"/>
+</svg>
+

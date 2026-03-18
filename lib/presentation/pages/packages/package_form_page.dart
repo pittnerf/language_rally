@@ -85,9 +85,17 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
   List<String?> _availableIcons = [
     null, // Default icon
     'assets/images/package_icons/default_package_icon.svg',
-    'assets/images/package_icons/package_icon_v1.svg',
-    'assets/images/package_icons/package_icon_v2.png',
+    'assets/images/package_icons/package_icon_v2.svg',
     'assets/images/package_icons/package_icon_v3.png',
+    'assets/images/package_icons/package_icon_v4.svg',
+    'assets/images/package_icons/package_icon_v5.svg',
+    'assets/images/package_icons/package_icon_v6.svg',
+    'assets/images/package_icons/package_icon_v7.svg',
+    'assets/images/package_icons/package_icon_v8.svg',
+    'assets/images/package_icons/package_icon_v9.svg',
+    'assets/images/package_icons/package_icon_v10.svg',
+    'assets/images/package_icons/package_icon_v11.svg',
+    'assets/images/package_icons/package_icon_v12.svg',
   ];
 
   @override
@@ -183,8 +191,17 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         null, // Default icon
         'assets/images/package_icons/default_package_icon.svg',
         'assets/images/package_icons/package_icon_v1.svg',
-        'assets/images/package_icons/package_icon_v2.png',
+        'assets/images/package_icons/package_icon_v2.svg',
         'assets/images/package_icons/package_icon_v3.png',
+        'assets/images/package_icons/package_icon_v4.svg',
+        'assets/images/package_icons/package_icon_v5.svg',
+        'assets/images/package_icons/package_icon_v6.svg',
+        'assets/images/package_icons/package_icon_v7.svg',
+        'assets/images/package_icons/package_icon_v8.svg',
+        'assets/images/package_icons/package_icon_v9.svg',
+        'assets/images/package_icons/package_icon_v10.svg',
+        'assets/images/package_icons/package_icon_v11.svg',
+        'assets/images/package_icons/package_icon_v12.svg',
       ];
 
       // Use a Set to collect custom icons (prevents duplicates)
@@ -888,9 +905,17 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
 
     // Handle asset icons
     if (fileName == 'default_package_icon') return l10n.defaultIconLabel;
-    if (fileName == 'package_icon_v1') return l10n.icon1Label;
     if (fileName == 'package_icon_v2') return l10n.icon2Label;
     if (fileName == 'package_icon_v3') return l10n.icon3Label;
+    if (fileName == 'package_icon_v4') return l10n.icon4Label;
+    if (fileName == 'package_icon_v5') return l10n.icon5Label;
+    if (fileName == 'package_icon_v6') return l10n.icon6Label;
+    if (fileName == 'package_icon_v7') return l10n.icon7Label;
+    if (fileName == 'package_icon_v8') return l10n.icon8Label;
+    if (fileName == 'package_icon_v9') return l10n.icon9Label;
+    if (fileName == 'package_icon_v10') return l10n.icon10Label;
+    if (fileName == 'package_icon_v11') return l10n.icon11Label;
+    if (fileName == 'package_icon_v12') return l10n.icon12Label;
 
     // Handle custom icons - show "Custom Icon" for uploaded ones
     if (iconPath.contains('custom_package_icons') ||
@@ -1113,6 +1138,12 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                 itemBuilder: (context, index) {
                   final option = options.elementAt(index);
                   return ListTile(
+                    dense: true,
+                    visualDensity: VisualDensity.compact,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: AppTheme.spacing8,
+                      vertical: 0,
+                    ),
                     title: Text(
                       option.value,
                       style: theme.textTheme.bodyMedium,
@@ -1283,7 +1314,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                     SizedBox(width: AppTheme.spacing8),
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: _fieldsEnabled ? _showImportItemsDialog : null,
+                        onPressed: _showImportItemsDialog ,
                         icon: const Icon(Icons.file_upload),
                         label: Text(l10n.importItems),
                         style: ElevatedButton.styleFrom(
@@ -1412,7 +1443,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                       children: [
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: _fieldsEnabled ? _showImportItemsDialog : null,
+                            onPressed:  _showImportItemsDialog,
                             icon: const Icon(Icons.file_upload),
                             label: Text(l10n.importItems),
                             style: ElevatedButton.styleFrom(
