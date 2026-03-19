@@ -1,0 +1,7 @@
+# Drop your exported .zip language package files here.
+# They will be automatically imported on the application's first launch.
+# To add a new seed package:
+#   1. Export it from the app (Package → Export as ZIP)
+#   2. Place the .zip file in this folder
+#   3. Add its asset path to _seedPackageAssets in app_initialization_service.dart
+

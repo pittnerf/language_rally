@@ -1384,9 +1384,11 @@ class _PackageCardState extends State<PackageCard> {
           // Training Rally button (left)
           _buildTrainingRallyButton(context, l10n),
           SizedBox(width: AppTheme.spacing8),
-          // AI Import button
-          _buildAIButton(context, l10n),
-          SizedBox(width: AppTheme.spacing8),
+          // AI Import button – hidden for purchased packages
+          if (!widget.package.isPurchased) ...[
+            _buildAIButton(context, l10n),
+            SizedBox(width: AppTheme.spacing8),
+          ],
           // Browse Items button (middle)
           _buildBrowseItemsButton(context, l10n),
           SizedBox(width: AppTheme.spacing8),

@@ -17,11 +17,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../data/models/training_settings.dart';
 import '../../../data/models/language_package.dart';
+import '../../../data/models/language_package_group.dart';
 import '../../../data/models/category.dart';
 import '../../../data/repositories/category_repository.dart';
 import '../../../data/repositories/training_settings_repository.dart';
 import '../../../data/repositories/app_settings_repository.dart';
 import '../../../data/repositories/language_package_repository.dart';
+import '../../../data/repositories/language_package_group_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import 'training_rally_page.dart';
 import 'pronunciation_practice_page.dart';
@@ -46,10 +48,15 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
   final _categoryRepo = CategoryRepository();
   final _appSettingsRepo = AppSettingsRepository();
   final _packageRepo = LanguagePackageRepository();
+  final _groupRepo = LanguagePackageGroupRepository();
 
   // Current selected package
   LanguagePackage? _currentPackage;
   List<LanguagePackage> _availablePackages = [];
+
+  // Package group filter (only used when widget.package == null)
+  List<LanguagePackageGroup> _groups = [];
+  LanguagePackageGroup? _selectedGroup;
 
   // Settings values  – initialised to safe defaults so the build method never
   // reads an uninitialised late field (e.g. when _loadSettings() throws before
@@ -75,52 +82,71 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
     setState(() => _isLoading = true);
 
     try {
-      // Load all available packages
-      final packages = await _packageRepo.getAllPackages();
+      // ── Groups (only relevant in free-selection mode) ──────────────────
+      List<LanguagePackageGroup> groups = [];
+      LanguagePackageGroup? selectedGroup;
 
-      // Determine which package to use
-      LanguagePackage? packageToUse;
-
-      if (widget.package != null) {
-        // Package was provided (coming from package list)
-        packageToUse = widget.package;
-      } else {
-        // No package provided (coming from home page)
-        // Try to load last trained package
-        final appSettings = await _appSettingsRepo.loadSettings();
-        if (appSettings.lastTrainedPackageId != null) {
-          packageToUse = packages.firstWhere(
-            (p) => p.id == appSettings.lastTrainedPackageId,
-            orElse: () => packages.isNotEmpty
-                ? packages.first
-                : throw Exception('No packages available'),
-          );
-        } else {
-          // No last trained package, use first available
-          if (packages.isEmpty) {
-            throw Exception('No packages available');
+      if (widget.package == null) {
+        groups = await _groupRepo.getAllGroups();
+        if (groups.isNotEmpty) {
+          final savedGroupId =
+              await _appSettingsRepo.loadTrainingSelectedGroupId();
+          if (savedGroupId != null) {
+            try {
+              selectedGroup =
+                  groups.firstWhere((g) => g.id == savedGroupId);
+            } catch (_) {
+              selectedGroup = groups.first; // saved group no longer exists
+            }
+          } else {
+            selectedGroup = groups.first;
           }
-          packageToUse = packages.first;
         }
       }
 
-      if (packageToUse == null) {
+      // ── Packages (filtered by group when in free-selection mode) ───────
+      final allPackages = widget.package == null && selectedGroup != null
+          ? await _packageRepo.getPackagesByGroupId(selectedGroup.id)
+          : await _packageRepo.getAllPackages();
+      final sortedPackages = _sortPackages(allPackages);
+
+      // ── Determine which package to use ─────────────────────────────────
+      LanguagePackage? packageToUse;
+
+      if (widget.package != null) {
+        packageToUse = widget.package;
+      } else {
+        final appSettings = await _appSettingsRepo.loadSettings();
+        if (appSettings.lastTrainedPackageId != null &&
+            sortedPackages.isNotEmpty) {
+          packageToUse = sortedPackages.firstWhere(
+            (p) => p.id == appSettings.lastTrainedPackageId,
+            orElse: () => sortedPackages.first,
+          );
+        } else if (sortedPackages.isNotEmpty) {
+          packageToUse = sortedPackages.first;
+        }
+        // packageToUse stays null when no packages exist for the group
+      }
+
+      if (packageToUse == null && widget.package != null) {
         throw Exception('No valid package found');
       }
 
-      // Load saved settings or create default
-      final settings = await _trainingSettingsRepo.getSettingsForPackage(
-        packageToUse.id,
-      );
+      // ── Training settings & categories ─────────────────────────────────
+      final settings = packageToUse != null
+          ? await _trainingSettingsRepo.getSettingsForPackage(packageToUse.id)
+          : null;
 
-      // Load categories
-      final categories = await _categoryRepo.getCategoriesForPackage(
-        packageToUse.id,
-      );
+      final categories = packageToUse != null
+          ? await _categoryRepo.getCategoriesForPackage(packageToUse.id)
+          : <Category>[];
 
       if (mounted) {
         setState(() {
-          _availablePackages = packages;
+          _groups = groups;
+          _selectedGroup = selectedGroup;
+          _availablePackages = sortedPackages;
           _currentPackage = packageToUse;
 
           if (settings != null) {
@@ -132,7 +158,6 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
             _selectedCategoryIds = List.from(settings.selectedCategoryIds);
             _dontKnowThreshold = settings.dontKnowThreshold;
           } else {
-            // Default values
             _itemScope = ItemScope.all;
             _lastNItems = 20;
             _itemOrder = ItemOrder.random;
@@ -208,6 +233,101 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
         );
       }
     }
+  }
+
+  /// Sort packages alphabetically (case-insensitive) by display name.
+  List<LanguagePackage> _sortPackages(List<LanguagePackage> packages) {
+    final sorted = List<LanguagePackage>.from(packages);
+    sorted.sort((a, b) {
+      final nameA =
+          (a.packageName?.isNotEmpty == true
+                  ? a.packageName!
+                  : '${a.languageName1} - ${a.languageName2}')
+              .toLowerCase();
+      final nameB =
+          (b.packageName?.isNotEmpty == true
+                  ? b.packageName!
+                  : '${b.languageName1} - ${b.languageName2}')
+              .toLowerCase();
+      return nameA.compareTo(nameB);
+    });
+    return sorted;
+  }
+
+  /// Called when the user picks a different group in the filter row.
+  Future<void> _onGroupChanged(LanguagePackageGroup? newGroup) async {
+    if (newGroup == null || newGroup.id == _selectedGroup?.id) return;
+
+    setState(() => _selectedGroup = newGroup);
+    await _appSettingsRepo.saveTrainingSelectedGroupId(newGroup.id);
+
+    try {
+      final packages =
+          await _packageRepo.getPackagesByGroupId(newGroup.id);
+      final sorted = _sortPackages(packages);
+      if (!mounted) return;
+
+      final firstPackage = sorted.isNotEmpty ? sorted.first : null;
+      setState(() {
+        _availablePackages = sorted;
+        _currentPackage = firstPackage;
+        // Reset category list until new package's categories are loaded
+        _allCategories = [];
+        _selectedCategoryIds = [];
+      });
+
+      if (firstPackage != null) {
+        await _reloadSettingsForPackage(firstPackage);
+      }
+    } catch (e) {
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.errorLoadingSettings(e.toString())),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    }
+  }
+
+  /// Compact group-filter row shown inside _buildPackageInfo.
+  Widget _buildGroupFilterRow(ThemeData theme, AppLocalizations l10n) {
+    final colorScheme = theme.colorScheme;
+    return Row(
+      children: [
+        Icon(
+          Icons.folder_outlined,
+          size: 18,
+          color: colorScheme.onSurfaceVariant,
+        ),
+        SizedBox(width: AppTheme.spacing8),
+        Text(
+          l10n.groupLabel,
+          style: theme.textTheme.titleSmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        SizedBox(width: AppTheme.spacing8),
+        Expanded(
+          child: DropdownButton<LanguagePackageGroup>(
+            value: _selectedGroup,
+            isExpanded: true,
+            isDense: true,
+            underline: Container(height: 1, color: colorScheme.outline),
+            items: _groups.map((group) {
+              return DropdownMenuItem<LanguagePackageGroup>(
+                value: group,
+                child: Text(group.name, style: theme.textTheme.bodyMedium),
+              );
+            }).toList(),
+            onChanged: _onGroupChanged,
+          ),
+        ),
+      ],
+    );
   }
 
   Future<void> _saveSettings() async {
@@ -396,6 +516,8 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isLandscape = MediaQuery.of(context).size.width >= 600;
+    // Tablets have a large shortest side even in portrait; phones do not.
+    final isTablet = MediaQuery.of(context).size.shortestSide >= 600;
 
     if (_isLoading) {
       return Scaffold(
@@ -432,7 +554,7 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                     right: AppTheme.spacing8,
                     top: AppTheme.spacing8,
                     bottom:
-                        (isLandscape ? 130 : 80) +
+                        (isTablet ? 155 : isLandscape ? 130 : 80) +
                         bottomPadding, // Space for floating buttons + system navigation
                   ),
                   child: Column(
@@ -510,11 +632,14 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: theme.colorScheme.secondaryContainer,
                                         foregroundColor: theme.colorScheme.onSecondaryContainer,
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: isTablet ? 12 : 6,
+                                          vertical:   isTablet ? 10 : 4,
+                                        ),
                                         elevation: 6,
                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                       ),
-                                      icon: const Icon(Icons.refresh, size: 14),
+                                      icon: Icon(Icons.refresh, size: isTablet ? 16: 14),
                                       label: Text(l10n.clearCounters, style: theme.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
                                     ),
                                   ),
@@ -525,11 +650,14 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: theme.colorScheme.tertiaryContainer,
                                         foregroundColor: theme.colorScheme.onTertiaryContainer,
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: isTablet ? 12 : 6,
+                                          vertical:   isTablet ? 10 : 4,
+                                        ),
                                         elevation: 6,
                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                       ),
-                                      icon: const Icon(Icons.help_outline, size: 14),
+                                      icon: Icon(Icons.help_outline, size: isTablet ? 16: 14),
                                       label: Text(l10n.help, style: theme.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
                                     ),
                                   ),
@@ -545,11 +673,14 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: theme.colorScheme.errorContainer,
                                         foregroundColor: theme.colorScheme.onErrorContainer,
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: isTablet ? 12 : 6,
+                                          vertical:   isTablet ? 10 : 4,
+                                        ),
                                         elevation: 6,
                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                       ),
-                                      icon: const Icon(Icons.clear_all, size: 14),
+                                      icon: Icon(Icons.clear_all, size: isTablet ? 16: 14),
                                       label: Text(l10n.clearTrainingSettings, style: theme.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
                                     ),
                                   ),
@@ -560,11 +691,14 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: theme.colorScheme.primary,
                                         foregroundColor: theme.colorScheme.onPrimary,
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: isTablet ? 12 : 6,
+                                          vertical:   isTablet ? 10 : 4,
+                                        ),
                                         elevation: 6,
                                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                       ),
-                                      icon: const Icon(Icons.play_arrow, size: 16),
+                                      icon: Icon(Icons.play_arrow, size: isTablet ? 16: 16),
                                       label: Text(
                                         widget.isPronunciationMode ? l10n.startPractice : l10n.startTrainingRally,
                                         style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onPrimary),
@@ -576,7 +710,9 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                               ),
                             ],
                           )
-                        // Portrait: single row with all 4 buttons
+                        // Landscape: single row with all 4 buttons.
+                        // On tablets the vertical padding is larger so the
+                        // buttons are easier to tap on a large touch screen.
                         : Row(
                             children: [
                               // Clear Counters  (flex 2)
@@ -587,14 +723,21 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: theme.colorScheme.secondaryContainer,
                                     foregroundColor: theme.colorScheme.onSecondaryContainer,
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: isTablet ? 12 : 6,
+                                      vertical:   isTablet ? 10 : 4,
+                                    ),
                                     minimumSize: Size.zero,
                                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                     elevation: 6,
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                   ),
-                                  icon: const Icon(Icons.refresh, size: 12),
-                                  label: Text(l10n.clearCounters, style: theme.textTheme.labelSmall, overflow: TextOverflow.ellipsis),
+                                  icon: Icon(Icons.refresh, size: isTablet ? 16 : 12),
+                                  label: Text(
+                                    l10n.clearCounters,
+                                    style: isTablet ? theme.textTheme.bodySmall : theme.textTheme.labelSmall,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 4),
@@ -606,14 +749,21 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: theme.colorScheme.errorContainer,
                                     foregroundColor: theme.colorScheme.onErrorContainer,
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: isTablet ? 12 : 6,
+                                      vertical:   isTablet ? 10 : 4,
+                                    ),
                                     minimumSize: Size.zero,
                                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                     elevation: 6,
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                   ),
-                                  icon: const Icon(Icons.clear_all, size: 12),
-                                  label: Text(l10n.clearTrainingSettings, style: theme.textTheme.labelSmall, overflow: TextOverflow.ellipsis),
+                                  icon: Icon(Icons.clear_all, size: isTablet ? 16 : 12),
+                                  label: Text(
+                                    l10n.clearTrainingSettings,
+                                    style: isTablet ? theme.textTheme.bodySmall : theme.textTheme.labelSmall,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 4),
@@ -625,14 +775,21 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: theme.colorScheme.tertiaryContainer,
                                     foregroundColor: theme.colorScheme.onTertiaryContainer,
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: isTablet ? 12 : 6,
+                                      vertical:   isTablet ? 10 : 4,
+                                    ),
                                     minimumSize: Size.zero,
                                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                     elevation: 6,
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                   ),
-                                  icon: const Icon(Icons.help_outline, size: 12),
-                                  label: Text(l10n.help, style: theme.textTheme.labelSmall, overflow: TextOverflow.ellipsis),
+                                  icon: Icon(Icons.help_outline, size: isTablet ? 16 : 12),
+                                  label: Text(
+                                    l10n.help,
+                                    style: isTablet ? theme.textTheme.bodySmall : theme.textTheme.labelSmall,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
                                 ),
                               ),
                               const SizedBox(width: 4),
@@ -644,16 +801,20 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: theme.colorScheme.primary,
                                     foregroundColor: theme.colorScheme.onPrimary,
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: isTablet ? 12 : 6,
+                                      vertical:   isTablet ? 10 : 4,
+                                    ),
                                     minimumSize: Size.zero,
                                     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                                     elevation: 6,
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                   ),
-                                  icon: const Icon(Icons.play_arrow, size: 14),
+                                  icon: Icon(Icons.play_arrow, size: isTablet ? 18 : 14),
                                   label: Text(
                                     widget.isPronunciationMode ? l10n.startPractice : l10n.startTrainingRally,
-                                    style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onPrimary),
+                                    style: (isTablet ? theme.textTheme.bodySmall : theme.textTheme.labelSmall)
+                                        ?.copyWith(color: theme.colorScheme.onPrimary),
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
@@ -671,134 +832,153 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
   }
 
   Widget _buildPackageInfo(ThemeData theme, AppLocalizations l10n) {
-    if (_currentPackage == null) {
+    final isSmallScreen = MediaQuery.of(context).size.width < 600;
+
+    // ── Fixed-package mode (arrived from package list) ───────────────────
+    if (widget.package != null) {
+      if (_currentPackage == null) {
+        return Card(
+          elevation: 1,
+          child: Padding(
+            padding: const EdgeInsets.all(AppTheme.spacing8),
+            child: Text(
+              l10n.noPackagesAvailable,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.error,
+              ),
+            ),
+          ),
+        );
+      }
       return Card(
         elevation: 1,
         child: Padding(
           padding: const EdgeInsets.all(AppTheme.spacing8),
-          child: Text(
-            l10n.noPackagesAvailable,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.error,
-            ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  _currentPackage!.packageName ??
+                      '${_currentPackage!.languageName1} - ${_currentPackage!.languageName2}',
+                  style: (isSmallScreen
+                          ? theme.textTheme.titleSmall
+                          : theme.textTheme.titleMedium)
+                      ?.copyWith(
+                        color: theme.colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              Text(
+                '${_currentPackage!.languageCode1.split('-')[0].toUpperCase()} → ${_currentPackage!.languageCode2.split('-')[0].toUpperCase()}',
+                style: (isSmallScreen
+                        ? theme.textTheme.labelSmall
+                        : theme.textTheme.bodySmall)
+                    ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              ),
+            ],
           ),
         ),
       );
     }
 
-    final isSmallScreen = MediaQuery.of(context).size.width < 600;
-
+    // ── Free-selection mode (arrived from home page) ─────────────────────
     return Card(
       elevation: 1,
       child: Padding(
         padding: const EdgeInsets.all(AppTheme.spacing8),
-        child: widget.package == null
-            ? Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.selectPackage,
-                    style:
-                        (isSmallScreen
-                                ? theme.textTheme.bodyMedium
-                                : theme.textTheme.titleSmall)
-                            ?.copyWith(
-                              color: theme.colorScheme.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                  ),
-                  //const SizedBox(height: AppTheme.spacing8),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: DropdownButtonFormField<String>(
-                          initialValue: _currentPackage!.id,
-                          decoration: InputDecoration(
-                            border: const OutlineInputBorder(),
-                            contentPadding: EdgeInsets.symmetric(
-                              horizontal: isSmallScreen
-                                  ? AppTheme.spacing4
-                                  : AppTheme.spacing8,
-                              vertical: isSmallScreen
-                                  ? AppTheme.spacing4
-                                  : AppTheme.spacing8,
-                            ),
-                            isDense: isSmallScreen,
-                          ),
-                          isExpanded: true,
-                          items: _availablePackages.map((package) {
-                            return DropdownMenuItem<String>(
-                              value: package.id,
-                              child: Text(
-                                package.packageName ??
-                                    '${package.languageName1} - ${package.languageName2}',
-                                style: isSmallScreen
-                                    ? theme.textTheme.bodySmall
-                                    : theme.textTheme.bodyMedium,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (String? newValue) async {
-                            if (newValue != null &&
-                                newValue != _currentPackage!.id) {
-                              final newPackage = _availablePackages.firstWhere(
-                                (p) => p.id == newValue,
-                              );
-                              // Reload settings for the new package
-                              await _reloadSettingsForPackage(newPackage);
-                            }
-                          },
-                        ),
-                      ),
-                      const SizedBox(width: AppTheme.spacing4),
-                      Flexible(
-                        child: Text(
-                          '${_currentPackage!.languageCode1.split('-')[0].toUpperCase()} → ${_currentPackage!.languageCode2.split('-')[0].toUpperCase()}',
-                          style:
-                              (isSmallScreen
-                                      ? theme.textTheme.labelSmall
-                                      : theme.textTheme.bodySmall)
-                                  ?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Group filter row
+            if (_groups.isNotEmpty) ...[
+              _buildGroupFilterRow(theme, l10n),
+              SizedBox(height: AppTheme.spacing8),
+            ],
+
+            // No packages available for the selected group
+            if (_currentPackage == null)
+              Text(
+                l10n.noPackagesAvailable,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.error,
+                ),
               )
-            : Row(
+            else ...[
+              // Package selector label
+              Text(
+                l10n.selectPackage,
+                style: (isSmallScreen
+                        ? theme.textTheme.bodyMedium
+                        : theme.textTheme.titleSmall)
+                    ?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              // Package dropdown + language pair
+              Row(
                 children: [
                   Expanded(
+                    child: DropdownButtonFormField<String>(
+                      initialValue: _currentPackage!.id,
+                      decoration: InputDecoration(
+                        border: const OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: isSmallScreen
+                              ? AppTheme.spacing4
+                              : AppTheme.spacing8,
+                          vertical: isSmallScreen
+                              ? AppTheme.spacing4
+                              : AppTheme.spacing8,
+                        ),
+                        isDense: isSmallScreen,
+                      ),
+                      isExpanded: true,
+                      // Packages are already sorted alphabetically
+                      items: _availablePackages.map((package) {
+                        return DropdownMenuItem<String>(
+                          value: package.id,
+                          child: Text(
+                            package.packageName ??
+                                '${package.languageName1} - ${package.languageName2}',
+                            style: isSmallScreen
+                                ? theme.textTheme.bodySmall
+                                : theme.textTheme.bodyMedium,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (String? newValue) async {
+                        if (newValue != null &&
+                            newValue != _currentPackage!.id) {
+                          final newPackage = _availablePackages.firstWhere(
+                            (p) => p.id == newValue,
+                          );
+                          await _reloadSettingsForPackage(newPackage);
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: AppTheme.spacing4),
+                  Flexible(
                     child: Text(
-                      _currentPackage!.packageName ??
-                          '${_currentPackage!.languageName1} - ${_currentPackage!.languageName2}',
-                      style:
-                          (isSmallScreen
-                                  ? theme.textTheme.titleSmall
-                                  : theme.textTheme.titleMedium)
-                              ?.copyWith(
-                                color: theme.colorScheme.primary,
-                                fontWeight: FontWeight.bold,
-                              ),
+                      '${_currentPackage!.languageCode1.split('-')[0].toUpperCase()} → ${_currentPackage!.languageCode2.split('-')[0].toUpperCase()}',
+                      style: (isSmallScreen
+                              ? theme.textTheme.labelSmall
+                              : theme.textTheme.bodySmall)
+                          ?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  //const SizedBox(width: AppTheme.spacing8),
-                  Text(
-                    '${_currentPackage!.languageCode1.split('-')[0].toUpperCase()} → ${_currentPackage!.languageCode2.split('-')[0].toUpperCase()}',
-                    style:
-                        (isSmallScreen
-                                ? theme.textTheme.labelSmall
-                                : theme.textTheme.bodySmall)
-                            ?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                  ),
                 ],
               ),
+            ],
+          ],
+        ),
       ),
     );
   }

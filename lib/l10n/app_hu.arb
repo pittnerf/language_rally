@@ -617,7 +617,7 @@
 
   "help": "Súgó",
   "trainingHelpTitle": "Tippek a hatékony tanuláshoz",
-  "trainingHelpText": "Ahhoz, hogy a gyakorlás a lehető leghatékonyabb legyen, kövesd az alábbi lépéseket:\n1. Kattints a 'Számlálók törlése' gombra, hogy az összes elem ebben a csomagban ismertként legyen jelölve."
+  "trainingHelpText": "Ahhoz, hogy a gyakorlás a lehető leghatékonyabb legyen, kövesd az alábbi lépéseket:\n1. Kattints a 'Számlálók törlése' gombra, hogy a csomag minden eleme ismertként legyen megjelölve.\n2. Állítsd az 'Elemek köre' opciót „Összes elem' értékre.\n3. Állítsd az 'Elemek sorrendje' opciót „Véletlenszerű' értékre.\n4. Válaszd ki az anyanyelvedet a 'Megjelenítési nyelv' beállításnál.\n5. Indítsd el a tanulást, és folytasd addig, amíg körülbelül 20–30 számodra ismeretlen elemet nem érsz el.\n6. Térj vissza a tanulási beállításokhoz, és állítsd az 'Elemek köre' opciót 'Csak ismeretlen elemek' értékre.\n7. Indítsd újra a tanulást, és folytasd addig, amíg az összes korábban ismeretlen elemet meg nem tanulod."
 }
 
 

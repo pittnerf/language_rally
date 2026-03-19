@@ -68,6 +68,8 @@ flutter:
     - assets/images/
     - assets/images/badges/
     - assets/images/package_icons/
+    - assets/images/tour_images/
+    - assets/seed_packages/
     - assets/fonts/
 
   fonts:

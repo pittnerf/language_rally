@@ -23,6 +23,7 @@ import '../../../data/models/training_session.dart';
 import '../../../data/models/training_statistics.dart';
 import '../../../data/models/badge_event.dart';
 import '../../../core/utils/debug_print.dart';
+import '../../../core/services/app_initialization_service.dart';
 
 class TestDataPage extends StatefulWidget {
   const TestDataPage({super.key});
@@ -599,21 +600,60 @@ class _TestDataPageState extends State<TestDataPage> {
   Future<void> _clearData() async {
     setState(() {
       _isLoading = true;
-      _statusMessage = 'Clearing all data...';
+      _statusMessage = '';
     });
 
     try {
+      _log('🗑️ Clearing all data...\n');
+
+      // 1. Delete all packages.
+      //    deletePackageWithAllData uses a transaction and lets the ON DELETE
+      //    CASCADE foreign-key rules remove:
+      //      • categories
+      //      • items  (→ item_categories, item_language_data, example_sentences)
+      //      • training_settings
+      //      • training_sessions
+      //      • training_statistics
       final packages = await _packageRepo.getAllPackages();
       for (final package in packages) {
-        await _packageRepo.deletePackage(package.id);
+        await _packageRepo.deletePackageWithAllData(package.id);
       }
-      setState(() {
-        _statusMessage = '✅ All test data cleared!';
-      });
+      _log('✓ Deleted ${packages.length} package(s) and all related data');
+
+      // 2. Delete all package groups.
+      //    Must come AFTER packages because the FK on language_packages.group_id
+      //    is ON DELETE RESTRICT — deleting a group while packages still
+      //    reference it would throw a constraint error.
+      final groups = await _groupRepo.getAllGroups();
+      for (final group in groups) {
+        await _groupRepo.deleteGroup(group.id);
+      }
+      _log('✓ Deleted ${groups.length} group(s)');
+
+      // 3. Remove the custom package-icons directory from the file system.
+      try {
+        final appDir = await getApplicationDocumentsDirectory();
+        final customIconsDir = Directory(
+          join(appDir.path, 'custom_package_icons'),
+        );
+        if (await customIconsDir.exists()) {
+          await customIconsDir.delete(recursive: true);
+          _log('✓ Deleted custom icons directory');
+        } else {
+          _log('  (no custom icons directory found)');
+        }
+      } catch (e) {
+        _log('⚠ Could not delete custom icons: $e');
+      }
+
+      // 4. Reset the seed-package SharedPreferences flag so that the next
+      //    app launch re-imports all bundled packages from assets/seed_packages/.
+      await AppInitializationService.resetSeedFlags();
+      _log('✓ Seed-package import flag reset');
+
+      _log('\n✅ All data cleared! Restart the app to re-import seed packages.');
     } catch (e) {
-      setState(() {
-        _statusMessage = '❌ Error: $e';
-      });
+      _log('❌ Error: $e');
     } finally {
       setState(() {
         _isLoading = false;
@@ -677,6 +717,10 @@ class _TestDataPageState extends State<TestDataPage> {
       _log('\n✅ Database reset complete!');
       _log('The app will now restart to recreate the database.');
       _log('\nPlease close and reopen the app, then run "Populate Test Data".');
+
+      // Reset the seed-package flag so the fresh process re-imports bundles.
+      await AppInitializationService.resetSeedFlags();
+      _log('✓ Seed-package import flag reset');
 
       // Force app exit after a delay
       await Future.delayed(const Duration(seconds: 2));

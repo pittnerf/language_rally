@@ -56,48 +56,67 @@ class _AppTourPageState extends State<AppTourPage> {
         description: l10n.tourPage1Desc,
         icon: Icons.psychology,
         iconColor: Colors.purple,
+        imagePaths: [
+          'assets/images/tour_images/tour_1_1.jpg',
+          'assets/images/tour_images/tour_1_2.jpg',
+          'assets/images/tour_images/tour_1_3.jpg',
+        ],
       ),
       TourPageData(
         title: l10n.tourPage2Title,
         description: l10n.tourPage2Desc,
         icon: Icons.create,
         iconColor: Colors.blue,
+        imagePaths: [
+          'assets/images/tour_images/tour_2.jpg',
+          'assets/images/tour_images/tour_2_2.jpg',
+          'assets/images/tour_images/tour_2_3.jpg',
+        ],
       ),
       TourPageData(
         title: l10n.tourPage3Title,
         description: l10n.tourPage3Desc,
         icon: Icons.auto_awesome,
         iconColor: Colors.amber,
+        imagePaths: [
+          'assets/images/tour_images/tour_3_1.jpg',
+          'assets/images/tour_images/tour_3_2.jpg',
+        ],
       ),
       TourPageData(
         title: l10n.tourPage4Title,
         description: l10n.tourPage4Desc,
         icon: Icons.translate,
         iconColor: Colors.teal,
+        imagePaths: ['assets/images/tour_images/tour_4.jpg'],
       ),
       TourPageData(
         title: l10n.tourPage5Title,
         description: l10n.tourPage5Desc,
         icon: Icons.folder_special,
         iconColor: Colors.orange,
+        imagePaths: ['assets/images/tour_images/tour_5.jpg'],
       ),
       TourPageData(
         title: l10n.tourPage6Title,
         description: l10n.tourPage6Desc,
         icon: Icons.record_voice_over,
         iconColor: Colors.pink,
+        imagePaths: ['assets/images/tour_images/tour_6.jpg'],
       ),
       TourPageData(
         title: l10n.tourPage7Title,
         description: l10n.tourPage7Desc,
         icon: Icons.school,
         iconColor: Colors.green,
+        imagePaths: ['assets/images/tour_images/tour_7.jpg'],
       ),
       TourPageData(
         title: l10n.tourPage8Title,
         description: l10n.tourPage8Desc,
         icon: Icons.key,
         iconColor: Colors.deepPurple,
+        imagePaths: ['assets/images/tour_images/tour_8.jpg'],
       ),
     ];
   }
@@ -286,12 +305,13 @@ class _AppTourPageState extends State<AppTourPage> {
                 ),
               ),
               const SizedBox(width: AppTheme.spacing32),
-              // Right side: Screenshot (maximized with height constraint)
+              // Right side: Screenshot gallery (maximized with height constraint)
               Expanded(
                 flex: 3,
-                child: SizedBox(
+                child: _TourImageGallery(
+                  imagePaths: pageData.imagePaths,
+                  theme: theme,
                   height: availableHeight,
-                  child: _buildMaximizedScreenshot(theme),
                 ),
               ),
             ],
@@ -326,7 +346,12 @@ class _AppTourPageState extends State<AppTourPage> {
           const SizedBox(height: AppTheme.spacing8),
           _buildDescription(pageData, theme),
           const SizedBox(height: AppTheme.spacing8),
-          _buildPlaceholderScreenshot(theme),
+          if (pageData.imagePaths.isNotEmpty)
+            _TourImageGallery(
+              imagePaths: pageData.imagePaths,
+              theme: theme,
+              height: 240,
+            ),
         ],
       ),
     );
@@ -353,7 +378,12 @@ class _AppTourPageState extends State<AppTourPage> {
             const SizedBox(height: AppTheme.spacing12),
             _buildDescription(pageData, theme),
             const SizedBox(height: AppTheme.spacing12),
-            _buildPlaceholderScreenshot(theme),
+            if (pageData.imagePaths.isNotEmpty)
+              _TourImageGallery(
+                imagePaths: pageData.imagePaths,
+                theme: theme,
+                height: 320,
+              ),
           ],
         ),
       ),
@@ -386,105 +416,6 @@ class _AppTourPageState extends State<AppTourPage> {
           style: theme.textTheme.bodyMedium,
         ),
       ),
-    );
-  }
-
-  Widget _buildPlaceholderScreenshot(ThemeData theme) {
-    return Container(
-      height: 200,
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: theme.colorScheme.outlineVariant,
-          width: 2,
-        ),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.image,
-              size: 48,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-            const SizedBox(height: AppTheme.spacing8),
-            Text(
-              'Screenshot placeholder',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMaximizedScreenshot(ThemeData theme) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        // Use the constrained dimensions from parent
-        final maxWidth = constraints.maxWidth;
-        final maxHeight = constraints.maxHeight;
-
-        // Use 9:16 aspect ratio for a portrait screenshot
-        final aspectRatio = 9 / 16;
-        double width, height;
-
-        if (maxWidth * (1 / aspectRatio) <= maxHeight) {
-          // Width is the limiting factor
-          width = maxWidth;
-          height = width * (1 / aspectRatio);
-        } else {
-          // Height is the limiting factor
-          height = maxHeight;
-          width = height * aspectRatio;
-        }
-
-        return Center(
-          child: Container(
-            width: width,
-            height: height,
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: theme.colorScheme.outlineVariant,
-                width: 2,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
-            ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.image,
-                    size: 64,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(height: AppTheme.spacing12),
-                  Text(
-                    'Screenshot placeholder',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 
@@ -593,12 +524,230 @@ class TourPageData {
   final String description;
   final IconData icon;
   final Color iconColor;
+  final List<String> imagePaths;
 
   TourPageData({
     required this.title,
     required this.description,
     required this.icon,
     required this.iconColor,
+    this.imagePaths = const [],
   });
+}
+
+// ---------------------------------------------------------------------------
+// Multi-image gallery widget used inside every tour page
+// ---------------------------------------------------------------------------
+
+/// A swipeable image gallery with:
+///  - [PageView] for flipping between screenshots
+///  - Overlaid dot indicators (tap to jump)
+///  - Left / right arrow buttons
+///  - [InteractiveViewer] per image for pinch-to-zoom
+class _TourImageGallery extends StatefulWidget {
+  final List<String> imagePaths;
+  final ThemeData theme;
+
+  /// Height of the entire widget (image area + overlay dots).
+  final double height;
+
+  const _TourImageGallery({
+    required this.imagePaths,
+    required this.theme,
+    required this.height,
+  });
+
+  @override
+  State<_TourImageGallery> createState() => _TourImageGalleryState();
+}
+
+class _TourImageGalleryState extends State<_TourImageGallery> {
+  final PageController _ctrl = PageController();
+  int _current = 0;
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  void _goTo(int index) => _ctrl.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    final paths = widget.imagePaths;
+    final multi = paths.length > 1;
+
+    return SizedBox(
+      height: widget.height,
+      child: Stack(
+        children: [
+          // ── Image carousel ────────────────────────────────────────────────
+          Container(
+            decoration: BoxDecoration(
+              color: widget.theme.colorScheme.surfaceContainerLowest,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: widget.theme.colorScheme.outlineVariant,
+                width: 1.5,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.12),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(10.5),
+              child: PageView.builder(
+                controller: _ctrl,
+                onPageChanged: (i) => setState(() => _current = i),
+                itemCount: paths.length,
+                itemBuilder: (_, i) => _buildImageItem(paths[i]),
+              ),
+            ),
+          ),
+
+          // ── Dot indicators (overlaid, bottom-centre) ──────────────────────
+          if (multi)
+            Positioned(
+              bottom: 10,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withValues(alpha: 0.40),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: List.generate(
+                      paths.length,
+                      (i) => GestureDetector(
+                        onTap: () => _goTo(i),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          margin: const EdgeInsets.symmetric(horizontal: 3),
+                          width: _current == i ? 18 : 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: _current == i
+                                ? Colors.white
+                                : Colors.white.withValues(alpha: 0.45),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+          // ── Left arrow ────────────────────────────────────────────────────
+          if (multi && _current > 0)
+            Positioned(
+              left: 8,
+              top: 0,
+              bottom: 0,
+              child: Center(
+                child: _ArrowButton(
+                  icon: Icons.arrow_back_ios_new,
+                  onTap: () => _ctrl.previousPage(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  ),
+                ),
+              ),
+            ),
+
+          // ── Right arrow ───────────────────────────────────────────────────
+          if (multi && _current < paths.length - 1)
+            Positioned(
+              right: 8,
+              top: 0,
+              bottom: 0,
+              child: Center(
+                child: _ArrowButton(
+                  icon: Icons.arrow_forward_ios,
+                  onTap: () => _ctrl.nextPage(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  ),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildImageItem(String path) {
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: InteractiveViewer(
+        minScale: 0.8,
+        maxScale: 5.0,
+        child: Image.asset(
+          path,
+          fit: BoxFit.contain,
+          width: double.infinity,
+          height: double.infinity,
+          errorBuilder: (_, __, ___) => Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.broken_image,
+                  size: 48,
+                  color: widget.theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Image unavailable',
+                  style: widget.theme.textTheme.bodySmall?.copyWith(
+                    color: widget.theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+
+class _ArrowButton extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const _ArrowButton({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.black.withValues(alpha: 0.38),
+          shape: BoxShape.circle,
+        ),
+        child: Icon(icon, color: Colors.white, size: 18),
+      ),
+    );
+  }
 }
 

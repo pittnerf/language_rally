@@ -29,6 +29,13 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
     }
   }
 
+  /// Refresh settings from persistent storage **without** resetting the
+  /// current state first.  This avoids the race-condition window where the
+  /// state temporarily holds empty/default settings (and therefore no API
+  /// keys) between the invalidation and the async SharedPreferences read.
+  /// Use this on app-resume instead of [ref.invalidate].
+  Future<void> refreshFromStorage() => _loadSettings();
+
   Future<void> setUserLanguage({required String languageCode, required String languageName}) async {
     await _repository.saveUserLanguage(languageCode: languageCode, languageName: languageName);
     state = state.copyWith(userLanguageCode: languageCode, userLanguageName: languageName);

@@ -17,6 +17,7 @@ class AppSettingsRepository {
   static const String _keyMinItemsForBadges = 'min_items_for_badges';
   static const String _keyLastTrainedPackageId = 'last_trained_package_id';
   static const String _keySelectedGroupId = 'selected_group_id';
+  static const String _keyTrainingSelectedGroupId = 'training_selected_group_id';
   static const String _keyShowTrainingExamples = 'show_training_examples';
   static const String _keyShowTrainingStatistics = 'show_training_statistics';
 
@@ -204,6 +205,22 @@ class AppSettingsRepository {
   Future<String?> loadSelectedGroupId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString(_keySelectedGroupId);
+  }
+
+  /// Save the group last selected on the Training Settings page
+  Future<void> saveTrainingSelectedGroupId(String? groupId) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (groupId == null || groupId.isEmpty) {
+      await prefs.remove(_keyTrainingSelectedGroupId);
+    } else {
+      await prefs.setString(_keyTrainingSelectedGroupId, groupId);
+    }
+  }
+
+  /// Load the group last selected on the Training Settings page
+  Future<String?> loadTrainingSelectedGroupId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString(_keyTrainingSelectedGroupId);
   }
 
   /// Save training examples visibility

@@ -28,6 +28,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../widgets/package_icon.dart';
 import '../ai_import/ai_text_analysis_page.dart';
 import '../items/item_edit_page.dart';
+import 'package_group_admin_page.dart';
 import '../../../core/utils/debug_print.dart';
 
 /// Page for creating or editing a language package
@@ -136,6 +137,48 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     }
   }
 
+  /// Reload groups after returning from [PackageGroupAdminPage], preserving
+  /// the user's current combo-box selection if the group still exists.
+  Future<void> _refreshGroupsAfterAdmin() async {
+    try {
+      final groups = await _groupRepo.getAllGroups();
+      final previousId = _selectedGroup?.id;
+      setState(() {
+        _groups = groups;
+        if (groups.isEmpty) {
+          _selectedGroup = null;
+        } else if (previousId != null) {
+          _selectedGroup = groups.firstWhere(
+            (g) => g.id == previousId,
+            orElse: () => groups.first,
+          );
+        } else {
+          _selectedGroup = groups.first;
+        }
+      });
+    } catch (e) {
+      logDebug('Error refreshing groups: $e');
+    }
+  }
+
+  /// Opens [PackageGroupAdminPage] and refreshes the group list on return.
+  Future<void> _openGroupAdmin(BuildContext context) async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const PackageGroupAdminPage()),
+    );
+    await _refreshGroupsAfterAdmin();
+  }
+
+  /// Small gear icon-button placed next to the group dropdown.
+  Widget _buildGroupAdminButton(BuildContext context, ColorScheme colorScheme) {
+    return IconButton(
+      onPressed: () => _openGroupAdmin(context),
+      icon: const Icon(Icons.settings_outlined),
+      tooltip: 'Manage groups',
+      color: colorScheme.primary,
+    );
+  }
+
   Future<void> _loadItemCount() async {
     if (!_isEditMode || widget.package == null) return;
     try {
@@ -190,7 +233,6 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
       final assetIcons = [
         null, // Default icon
         'assets/images/package_icons/default_package_icon.svg',
-        'assets/images/package_icons/package_icon_v1.svg',
         'assets/images/package_icons/package_icon_v2.svg',
         'assets/images/package_icons/package_icon_v3.png',
         'assets/images/package_icons/package_icon_v4.svg',
@@ -753,6 +795,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                         },
                       ),
                     ),
+                    _buildGroupAdminButton(context, colorScheme),
                   ],
                 ),
                 SizedBox(height: AppTheme.spacing8),
@@ -812,6 +855,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                   },
                 ),
               ),
+              _buildGroupAdminButton(context, colorScheme),
               SizedBox(width: AppTheme.spacing8),
               // Package icon dropdown (moved here, no label)
               Expanded(
@@ -1314,7 +1358,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                     SizedBox(width: AppTheme.spacing8),
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: _showImportItemsDialog ,
+                        onPressed: _isPurchased ? null : _showImportItemsDialog,
                         icon: const Icon(Icons.file_upload),
                         label: Text(l10n.importItems),
                         style: ElevatedButton.styleFrom(
@@ -1338,7 +1382,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                     SizedBox(width: AppTheme.spacing8),
                     Expanded(
                       child: ElevatedButton.icon(
-                        onPressed: _openAddNewItem,
+                        onPressed: _isPurchased ? null : _openAddNewItem,
                         icon: const Icon(Icons.add),
                         label: Text(l10n.addNewItem),
                         style: ElevatedButton.styleFrom(
@@ -1443,7 +1487,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                       children: [
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed:  _showImportItemsDialog,
+                            onPressed: _isPurchased ? null : _showImportItemsDialog,
                             icon: const Icon(Icons.file_upload),
                             label: Text(l10n.importItems),
                             style: ElevatedButton.styleFrom(
@@ -1474,7 +1518,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                       children: [
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: _openAddNewItem,
+                            onPressed: _isPurchased ? null : _openAddNewItem,
                             icon: const Icon(Icons.add),
                             label: Text(l10n.addNewItem),
                             style: ElevatedButton.styleFrom(

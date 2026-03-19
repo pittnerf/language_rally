@@ -359,14 +359,20 @@ class ImportExportRepository {
 
   /// Export a package to ZIP file including all data and icon
   /// Returns the file path of the created ZIP file
-  Future<String> exportPackageToZip(String packageId, String destinationPath) async {
+  Future<String> exportPackageToZip(
+    String packageId,
+    String destinationPath, {
+    /// When [forceExport] is true the [canExport] guard is skipped.
+    /// Only use this from trusted admin / seeding code.
+    bool forceExport = false,
+  }) async {
     final package = await _packageRepo.getPackageById(packageId);
     if (package == null) {
       throw Exception('Package not found: $packageId');
     }
 
-    // Check if package can be exported
-    if (!package.canExport) {
+    // Check if package can be exported (skipped when called from admin tools)
+    if (!forceExport && !package.canExport) {
       throw Exception('Cannot export purchased packages');
     }
 
@@ -414,6 +420,8 @@ class ImportExportRepository {
         'author_webpage': package.authorWebpage,
         'version': package.version,
         'package_type': package.packageType.name,
+        'is_purchased': package.isPurchased,
+        'purchased_at': package.purchasedAt?.toIso8601String(),
         'created_at': package.createdAt.toIso8601String(),
       },
       'categories': categories.map((c) => {
@@ -512,6 +520,69 @@ class ImportExportRepository {
       } catch (e) {
         // Ignore cleanup errors
       }
+    }
+  }
+
+  /// Import a package directly from ZIP bytes (e.g. read from Flutter asset bundle).
+  /// Equivalent to [importPackageFromZip] but accepts raw bytes instead of a
+  /// file path — no intermediate temp ZIP file is written.
+  /// Always generates fresh UUIDs for the package, categories and items so
+  /// multiple installations never clash on IDs.
+  Future<ImportResult> importPackageFromZipBytes(List<int> bytes) async {
+    final tempDir = await getTemporaryDirectory();
+    final extractDir = Directory(
+      '${tempDir.path}/seed_import_${DateTime.now().millisecondsSinceEpoch}',
+    );
+    await extractDir.create(recursive: true);
+
+    try {
+      // Decode the archive from the raw bytes
+      final archive = ZipDecoder().decodeBytes(bytes);
+      for (final file in archive) {
+        if (file.isFile) {
+          final extractedFile = File('${extractDir.path}/${file.name}');
+          await extractedFile.create(recursive: true);
+          await extractedFile.writeAsBytes(file.content as List<int>);
+        }
+      }
+
+      // Read and validate the package manifest
+      final jsonFile = File('${extractDir.path}/package_data.json');
+      if (!await jsonFile.exists()) {
+        throw Exception('Invalid package ZIP: missing package_data.json');
+      }
+
+      final data = jsonDecode(await jsonFile.readAsString()) as Map<String, dynamic>;
+      if (data['version'] == null || data['package'] == null) {
+        throw Exception('Invalid package file format');
+      }
+
+      final packageData = data['package'] as Map<String, dynamic>;
+
+      // Always generate fresh IDs so every installation is independent
+      packageData['id'] = const Uuid().v4();
+
+      final categoriesData = data['categories'] as List<dynamic>;
+      final itemsData     = data['items']      as List<dynamic>;
+
+      final categoryIdMap = <String, String>{};
+      for (final catData in categoriesData) {
+        final oldId = catData['id'] as String;
+        final newId = const Uuid().v4();
+        categoryIdMap[oldId] = newId;
+        catData['id'] = newId;
+      }
+
+      for (final itemData in itemsData) {
+        itemData['id'] = const Uuid().v4();
+        final oldIds = itemData['categoryIds'] as List<dynamic>;
+        itemData['categoryIds'] =
+            oldIds.map((old) => categoryIdMap[old as String] ?? old).toList();
+      }
+
+      return await _importPackageData(packageData, data, extractDir);
+    } finally {
+      await extractDir.delete(recursive: true).catchError((_) => extractDir);
     }
   }
 
@@ -852,6 +923,18 @@ class ImportExportRepository {
       groupName = defaultGroupName;
     }
 
+    // Restore package_type from exported data (fall back to userCreated for old ZIPs)
+    final exportedTypeName = packageData['package_type'] as String?;
+    final restoredPackageType = PackageType.values.firstWhere(
+      (t) => t.name == exportedTypeName,
+      orElse: () => PackageType.userCreated,
+    );
+    final restoredIsPurchased =
+        (packageData['is_purchased'] as bool?) ?? (restoredPackageType == PackageType.purchased);
+    final purchasedAtRaw = packageData['purchased_at'] as String?;
+    final restoredPurchasedAt =
+        purchasedAtRaw != null ? DateTime.tryParse(purchasedAtRaw) : null;
+
     // Create package with the correct group ID
     final package = LanguagePackage(
       id: packageId,
@@ -867,7 +950,9 @@ class ImportExportRepository {
       authorEmail: packageData['author_email'] as String?,
       authorWebpage: packageData['author_webpage'] as String?,
       version: (packageData['version'] as String?) ?? '1.0.0',
-      packageType: PackageType.userCreated,
+      packageType: restoredPackageType,
+      isPurchased: restoredIsPurchased,
+      purchasedAt: restoredPurchasedAt,
       createdAt: DateTime.now(),
     );
 

@@ -1940,5 +1940,5 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get trainingHelpText =>
-      'To make your training as effective as possible, follow these steps:\n1. Click the \'Clear counters\' button so that all items in this package are marked as known.';
+      'To make your training as effective as possible, follow these steps:\n1. Click the \'Clear counters\' button so that all items in this package are marked as known.\n2. Set \'Item scope\' to \'All items\'\n3. Set \'Item order\' to \'Random\'\n4. Choose your native language under \'Display language\'\n5. Start the training and continue until you identify approximately 20–30 items you do not know.\n6. Return to the training settings and change \'Item scope\' to \'Only unknown items\'\n7. Resume training and continue until you have learned all previously unknown items.';
 }

@@ -315,32 +315,40 @@ class DatabaseMigrations {
     ''');
     developer.log('  ✓ Created language_package_groups table', name: 'DatabaseMigrations');
 
-    // Step 2: Create default group
-    const defaultGroupId = 'default-group-id';
-    const defaultGroupName = 'Default';
-
-    // Check if default group already exists
-    final existingGroups = await db.query(
-      'language_package_groups',
-      where: 'id = ?',
-      whereArgs: [defaultGroupId],
-    );
-
-    if (existingGroups.isEmpty) {
-      await db.insert('language_package_groups', {
-        'id': defaultGroupId,
-        'name': defaultGroupName,
-      });
-      developer.log('  ✓ Created default package group', name: 'DatabaseMigrations');
-    } else {
-      developer.log('  ⚠️  Default package group already exists', name: 'DatabaseMigrations');
-    }
-
-    // Step 3: Check if group_id column already exists in language_packages
+    // Step 2: Check if group_id column already exists in language_packages
     final result = await db.rawQuery('PRAGMA table_info(language_packages)');
     final columnExists = result.any((column) => column['name'] == 'group_id');
 
     if (!columnExists) {
+      // Step 3: Count existing packages — only create the default group if there
+      //         are packages that actually need to be assigned to it.
+      const defaultGroupId = 'default-group-id';
+      const defaultGroupName = 'Default';
+
+      final countResult = await db.rawQuery('SELECT COUNT(*) AS cnt FROM language_packages');
+      final packageCount = (countResult.first['cnt'] as int?) ?? 0;
+
+      if (packageCount > 0) {
+        // Create default group only when there are packages to migrate
+        final existingGroups = await db.query(
+          'language_package_groups',
+          where: 'id = ?',
+          whereArgs: [defaultGroupId],
+        );
+
+        if (existingGroups.isEmpty) {
+          await db.insert('language_package_groups', {
+            'id': defaultGroupId,
+            'name': defaultGroupName,
+          });
+          developer.log('  ✓ Created default package group', name: 'DatabaseMigrations');
+        } else {
+          developer.log('  ⚠️  Default package group already exists', name: 'DatabaseMigrations');
+        }
+      } else {
+        developer.log('  ℹ️  No existing packages — skipping default group creation in migration', name: 'DatabaseMigrations');
+      }
+
       // Step 4: Add group_id column to language_packages
       await db.execute('''
         ALTER TABLE language_packages 
@@ -348,12 +356,14 @@ class DatabaseMigrations {
       ''');
       developer.log('  ✓ Added group_id column to language_packages', name: 'DatabaseMigrations');
 
-      // Step 5: Update all existing packages to use the default group
-      await db.execute('''
-        UPDATE language_packages 
-        SET group_id = ?
-      ''', [defaultGroupId]);
-      developer.log('  ✓ Assigned all existing packages to default group', name: 'DatabaseMigrations');
+      // Step 5: Assign existing packages to the default group (only if any exist)
+      if (packageCount > 0) {
+        await db.execute('''
+          UPDATE language_packages 
+          SET group_id = ?
+        ''', [defaultGroupId]);
+        developer.log('  ✓ Assigned all existing packages to default group', name: 'DatabaseMigrations');
+      }
     } else {
       developer.log('  ⚠️  Column group_id already exists in language_packages, skipping', name: 'DatabaseMigrations');
     }

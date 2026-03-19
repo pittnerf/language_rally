@@ -71,8 +71,14 @@ class _LanguageRallyAppState extends ConsumerState<LanguageRallyApp>
         _checkAndReinitialize();
         // Force refresh providers to ensure fresh data
         if (mounted) {
-          // Invalidate providers to force reload - especially important for settings/API keys
-          ref.invalidate(appSettingsProvider);
+          // Refresh settings without blanking them first – calling
+          // ref.invalidate() would immediately reset the state to the
+          // empty default (no API keys) and only restore them after the
+          // async SharedPreferences load completes, creating a window where
+          // the keys appear missing.
+          ref.read(appSettingsProvider.notifier).refreshFromStorage();
+          // Locale and theme providers can be fully invalidated safely
+          // because they have no critical "missing key" problem.
           ref.invalidate(localeProvider);
           ref.invalidate(themeProvider);
         }
