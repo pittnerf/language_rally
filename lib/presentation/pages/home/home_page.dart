@@ -10,7 +10,6 @@ import '../training/training_settings_page.dart';
 import '../dev/test_data_page.dart';
 import '../settings/app_settings_page.dart';
 import '../app_tour/app_tour_page.dart';
-import '../test/windows_audio_recording_test_page.dart';
 import '../../../core/utils/debug_print.dart';
 import '../dev/bulk_package_import_page.dart';
 

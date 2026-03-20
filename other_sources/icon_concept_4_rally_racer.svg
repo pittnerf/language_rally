@@ -1,0 +1,365 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <!-- Background: deep indigo → vivid violet (same palette as concept 1) -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#1A237E"/>
+      <stop offset="55%"  stop-color="#4527A0"/>
+      <stop offset="100%" stop-color="#6A1B9A"/>
+    </linearGradient>
+
+    <!-- Helmet: warm orange with radial sheen -->
+    <radialGradient id="helmetGrad" cx="38%" cy="30%" r="62%">
+      <stop offset="0%"   stop-color="#FFCC02"/>
+      <stop offset="45%"  stop-color="#FF6D00"/>
+      <stop offset="100%" stop-color="#BF360C"/>
+    </radialGradient>
+
+    <!-- Suit: clean white -->
+    <linearGradient id="suitGrad" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%"   stop-color="#FAFAFA"/>
+      <stop offset="100%" stop-color="#E0E0E0"/>
+    </linearGradient>
+
+    <!-- Dictionary cover: deep navy -->
+    <linearGradient id="bookGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#1565C0"/>
+      <stop offset="100%" stop-color="#0A3677"/>
+    </linearGradient>
+
+    <!-- Hair: amber gold -->
+    <linearGradient id="hairGrad" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%"   stop-color="#FFD54F"/>
+      <stop offset="60%"  stop-color="#FFB300"/>
+      <stop offset="100%" stop-color="#FF8F00"/>
+    </linearGradient>
+
+    <!-- Checkered tile -->
+    <pattern id="checker" x="0" y="0" width="128" height="128" patternUnits="userSpaceOnUse">
+      <rect x="0"  y="0"  width="64" height="64" fill="white" opacity="0.18"/>
+      <rect x="64" y="64" width="64" height="64" fill="white" opacity="0.18"/>
+    </pattern>
+
+    <!-- Drop shadow -->
+    <filter id="sh" x="-25%" y="-25%" width="150%" height="150%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="11" result="blur"/>
+      <feOffset dx="5" dy="8" in="blur" result="off"/>
+      <feFlood flood-color="#000" flood-opacity="0.30" result="flood"/>
+      <feComposite in="flood" in2="off" operator="in" result="cs"/>
+      <feMerge><feMergeNode in="cs"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <!-- Soft glow (hair + particles) -->
+    <filter id="glow" x="-60%" y="-60%" width="220%" height="220%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="7" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+
+    <!-- Speed blur for lines -->
+    <filter id="speedBlur" x="-5%" y="-30%" width="110%" height="160%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="3 0"/>
+    </filter>
+  </defs>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- 1. BACKGROUND                                                  -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+
+  <!-- Distant sparkle stars -->
+  <circle cx="80"  cy="85"  r="4"  fill="#C5CAE9" opacity="0.40"/>
+  <circle cx="940" cy="65"  r="7"  fill="#C5CAE9" opacity="0.28"/>
+  <circle cx="975" cy="270" r="3"  fill="#C5CAE9" opacity="0.28"/>
+  <circle cx="55"  cy="490" r="4"  fill="#C5CAE9" opacity="0.22"/>
+  <circle cx="960" cy="720" r="6"  fill="#C5CAE9" opacity="0.18"/>
+  <circle cx="120" cy="830" r="3"  fill="#C5CAE9" opacity="0.18"/>
+  <circle cx="870" cy="200" r="5"  fill="#C5CAE9" opacity="0.20"/>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- 2. SPEED LINES (far-left, character rushing rightward)         -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <g filter="url(#speedBlur)" stroke="white" stroke-linecap="round" opacity="0.28">
+    <line x1="18" y1="345" x2="235" y2="345" stroke-width="8"/>
+    <line x1="18" y1="382" x2="162" y2="382" stroke-width="4"/>
+    <line x1="18" y1="428" x2="255" y2="428" stroke-width="7"/>
+    <line x1="18" y1="468" x2="148" y2="468" stroke-width="4"/>
+    <line x1="18" y1="515" x2="220" y2="515" stroke-width="8"/>
+    <line x1="18" y1="554" x2="165" y2="554" stroke-width="4"/>
+    <line x1="18" y1="600" x2="238" y2="600" stroke-width="7"/>
+    <line x1="18" y1="640" x2="145" y2="640" stroke-width="4"/>
+    <line x1="18" y1="682" x2="200" y2="682" stroke-width="6"/>
+  </g>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- 3. CHECKERED RACING STRIP (bottom)                            -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <rect x="0" y="880" width="1024" height="144" fill="url(#checker)"/>
+  <rect x="0" y="877" width="1024" height="5"   fill="white" opacity="0.22"/>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- 4. WHEELS                                                      -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <g filter="url(#sh)">
+    <!-- LEFT WHEEL (cy=868 → overlaps checker nicely, like rolling on it) -->
+    <circle cx="282" cy="868" r="54" fill="#1A1A1A"/>
+    <circle cx="282" cy="868" r="40" fill="#2E2E2E"/>
+    <circle cx="282" cy="868" r="16" fill="#555"/>
+    <!-- Spokes -->
+    <g stroke="#666" stroke-width="6" stroke-linecap="round">
+      <line x1="282" y1="828" x2="282" y2="908"/>
+      <line x1="242" y1="868" x2="322" y2="868"/>
+      <line x1="254" y1="840" x2="310" y2="896"/>
+      <line x1="310" y1="840" x2="254" y2="896"/>
+    </g>
+    <!-- Tyre sheen -->
+    <path d="M 248 832 Q 238 858 244 880" stroke="white" stroke-width="5"
+          stroke-linecap="round" fill="none" opacity="0.18"/>
+
+    <!-- RIGHT WHEEL -->
+    <circle cx="748" cy="850" r="54" fill="#1A1A1A"/>
+    <circle cx="748" cy="850" r="40" fill="#2E2E2E"/>
+    <circle cx="748" cy="850" r="16" fill="#555"/>
+    <g stroke="#666" stroke-width="6" stroke-linecap="round">
+      <line x1="748" y1="810" x2="748" y2="890"/>
+      <line x1="708" y1="850" x2="788" y2="850"/>
+      <line x1="720" y1="822" x2="776" y2="878"/>
+      <line x1="776" y1="822" x2="720" y2="878"/>
+    </g>
+    <path d="M 714 814 Q 704 840 710 862" stroke="white" stroke-width="5"
+          stroke-linecap="round" fill="none" opacity="0.18"/>
+  </g>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- 5. DICTIONARY (the vehicle) — nose-up tilt to the right        -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <g filter="url(#sh)">
+    <!-- Main cover top face (trapezoid: right/front higher = smaller y) -->
+    <polygon points="162,790  858,758  858,842  162,874" fill="url(#bookGrad)"/>
+
+    <!-- Gold title band across cover -->
+    <polygon points="252,803  808,774  808,814  252,844" fill="#F9A825"/>
+
+    <!-- Title text lines (decorative) -->
+    <line x1="285" y1="817" x2="775" y2="790" stroke="#E65100" stroke-width="8"  stroke-linecap="round"/>
+    <line x1="308" y1="833" x2="738" y2="807" stroke="#E65100" stroke-width="5"  stroke-linecap="round" opacity="0.65"/>
+
+    <!-- Right edge (book thickness / spine) -->
+    <polygon points="858,758  908,763  908,847  858,842" fill="#083166"/>
+
+    <!-- Bottom pages (cream) -->
+    <polygon points="162,874  858,842  908,847  162,890" fill="#ECEFF1" opacity="0.88"/>
+
+    <!-- Embossed "D" letter on gold band for dictionary feel -->
+    <text x="295" y="828" font-family="Georgia, 'Times New Roman', serif"
+          font-weight="700" font-size="32" fill="#BF360C" opacity="0.80">DICTIONARY</text>
+  </g>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- 6. CHARACTER — LEGS (straddling the dictionary)               -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- Left leg visible to the left of the book -->
+  <path d="M 408,738 Q 348,752 298,784 Q 268,806 268,830
+           Q 268,844 284,844 Q 300,844 310,829
+           Q 346,802 396,772 Z"
+        fill="#FF6D00"/>
+  <!-- Left boot -->
+  <ellipse cx="276" cy="840" rx="40" ry="19" fill="#1A237E"/>
+  <!-- Boot toe highlight -->
+  <ellipse cx="260" cy="834" rx="15" ry="8" fill="#283593" opacity="0.60"/>
+
+  <!-- Right leg visible to the right of the book -->
+  <path d="M 616,722 Q 676,738 726,772 Q 756,794 755,818
+           Q 754,833 738,832 Q 722,832 713,818
+           Q 682,792 630,756 Z"
+        fill="#FF6D00"/>
+  <!-- Right boot -->
+  <ellipse cx="744" cy="828" rx="40" ry="19" fill="#1A237E"/>
+  <ellipse cx="760" cy="822" rx="15" ry="8" fill="#283593" opacity="0.60"/>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- 7. TORSO (white racing suit)                                   -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <g filter="url(#sh)">
+    <!-- Body: trapezoid, wider at shoulders, narrower at waist -->
+    <polygon points="418,520  600,520  572,700  450,700" fill="url(#suitGrad)"/>
+
+    <!-- Left shoulder racing stripe -->
+    <polygon points="418,520  462,520  446,578  416,562" fill="#FF6D00"/>
+    <!-- Right shoulder racing stripe -->
+    <polygon points="600,520  556,520  572,578  602,562" fill="#FF6D00"/>
+    <!-- Center vertical racing stripe -->
+    <rect x="501" y="525" width="20" height="168" rx="7" fill="#FF6D00" opacity="0.55"/>
+
+    <!-- Race number circle -->
+    <circle cx="511" cy="628" r="36" fill="#FF6D00" opacity="0.28"/>
+    <!-- Number "1" as a thick rectangle (font-independent) -->
+    <rect x="507" y="603" width="11" height="44" rx="4" fill="#FF6D00" opacity="0.85"/>
+    <rect x="500" y="645" width="24" height="7"  rx="3" fill="#FF6D00" opacity="0.85"/>
+    <polygon points="507,603  499,617  507,617" fill="#FF6D00" opacity="0.85"/>
+
+    <!-- Collar line at top -->
+    <path d="M 462,520 Q 511,510 560,520" fill="none" stroke="#BDBDBD" stroke-width="5"/>
+  </g>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- 8. ARMS                                                        -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- LEFT ARM: extends forward-left (gripping wind / handlebar) -->
+  <path d="M 422,542 Q 362,558 306,590 Q 284,604 283,618
+           L 298,624 Q 326,610 364,588 Q 406,565 430,556 Z"
+        fill="white" stroke="#E0E0E0" stroke-width="2"/>
+  <!-- Left glove -->
+  <ellipse cx="288" cy="620" rx="31" ry="22" fill="#1A237E"/>
+  <g stroke="#283593" stroke-width="5" stroke-linecap="round">
+    <line x1="274" y1="610" x2="303" y2="606"/>
+    <line x1="273" y1="620" x2="303" y2="617"/>
+    <line x1="274" y1="630" x2="303" y2="627"/>
+  </g>
+
+  <!-- RIGHT ARM: raised high — pumping fist, holding flag -->
+  <path d="M 598,540 Q 650,516 706,466 Q 724,446 720,432
+           L 734,440 Q 736,458 720,476 Q 666,528 610,555 Z"
+        fill="white" stroke="#E0E0E0" stroke-width="2"/>
+  <!-- Right glove / fist -->
+  <ellipse cx="727" cy="437" rx="30" ry="27" fill="#1A237E"
+           transform="rotate(-22, 727, 437)"/>
+  <!-- Knuckle lines -->
+  <g stroke="#283593" stroke-width="5" stroke-linecap="round"
+     transform="rotate(-22, 727, 437)">
+    <line x1="712" y1="424" x2="742" y2="420"/>
+    <line x1="712" y1="434" x2="742" y2="430"/>
+  </g>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- 9. NECK                                                        -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <rect x="491" y="488" width="42" height="42" rx="14" fill="#FFCCBC"/>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- 10. HELMET                                                     -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <g filter="url(#sh)">
+    <!-- Main dome -->
+    <circle cx="512" cy="385" r="120" fill="url(#helmetGrad)"/>
+
+    <!-- White centre stripe (top of helmet) -->
+    <path d="M 503,265 L 521,265 L 522,400
+             Q 517,406 512,406 Q 507,406 502,400 Z"
+          fill="white" opacity="0.88"/>
+
+    <!-- Chin-guard extension -->
+    <path d="M 406,432 Q 386,472 396,504
+             Q 428,522 512,522 Q 596,522 628,504
+             Q 638,472 618,432 Z"
+          fill="url(#helmetGrad)"/>
+
+    <!-- ── VISOR (dark tinted) ── -->
+    <path d="M 418,408 Q 422,454 512,458 Q 602,454 606,408
+             Q 600,386 512,384 Q 424,386 418,408 Z"
+          fill="#0C1748" opacity="0.94"/>
+    <!-- Visor top-left highlight -->
+    <path d="M 424,398 Q 462,410 502,407 Q 490,386 458,389 Z"
+          fill="white" opacity="0.42"/>
+
+    <!-- ── GOGGLES ── -->
+    <!-- Left lens -->
+    <ellipse cx="476" cy="422" rx="44" ry="29" fill="none" stroke="white" stroke-width="7"/>
+    <ellipse cx="476" cy="422" rx="37" ry="22" fill="#1A237E" opacity="0.62"/>
+    <ellipse cx="462" cy="411" rx="12" ry="8"  fill="white" opacity="0.52"/>
+    <!-- Right lens -->
+    <ellipse cx="548" cy="422" rx="44" ry="29" fill="none" stroke="white" stroke-width="7"/>
+    <ellipse cx="548" cy="422" rx="37" ry="22" fill="#1A237E" opacity="0.62"/>
+    <ellipse cx="534" cy="411" rx="12" ry="8"  fill="white" opacity="0.52"/>
+    <!-- Bridge -->
+    <line x1="520" y1="422" x2="504" y2="422" stroke="white" stroke-width="7"/>
+    <!-- Goggle straps (around sides of helmet) -->
+    <path d="M 390,422 Q 388,392 406,380" fill="none" stroke="white"
+          stroke-width="7" stroke-linecap="round" opacity="0.72"/>
+    <path d="M 634,422 Q 636,392 618,380" fill="none" stroke="white"
+          stroke-width="7" stroke-linecap="round" opacity="0.72"/>
+
+    <!-- Chin-strap detail -->
+    <path d="M 396,504 Q 402,526 440,532 Q 512,537 584,532 Q 622,526 628,504"
+          fill="none" stroke="#BF360C" stroke-width="8" stroke-linecap="round"/>
+
+    <!-- Air vents at top -->
+    <rect x="494" y="268" width="13" height="30" rx="4" fill="#8B2200" opacity="0.82"/>
+    <rect x="512" y="268" width="13" height="30" rx="4" fill="#8B2200" opacity="0.82"/>
+
+    <!-- Small sponsor logo area (star shape on side of helmet) -->
+    <polygon points="385,360  390,348  395,360  383,353  397,353"
+             fill="white" opacity="0.55"/>
+    <polygon points="635,355  640,343  645,355  633,348  647,348"
+             fill="white" opacity="0.55"/>
+  </g>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- 11. HAIR — flowing dramatically to the LEFT (wind-blown)       -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <g fill="url(#hairGrad)" filter="url(#glow)">
+    <!-- Thick lock 1 (middle) -->
+    <path d="M 400,322 Q 318,294 230,278 Q 188,272 166,288
+             Q 202,296 238,303 Q 316,318 376,345 Z"/>
+    <!-- Thick lock 2 (lower) -->
+    <path d="M 394,352 Q 305,334 218,332 Q 174,332 155,350
+             Q 192,356 230,358 Q 304,363 378,375 Z"/>
+    <!-- High wild strand (above helmet level) -->
+    <path d="M 410,308 Q 344,262 268,244 Q 230,237 215,252
+             Q 252,258 282,268 Q 342,286 402,322 Z"/>
+    <!-- Low trailing strand -->
+    <path d="M 388,378 Q 308,376 244,386 Q 204,394 190,413
+             Q 226,407 260,400 Q 328,390 384,398 Z"/>
+    <!-- Wispy top strand -->
+    <path d="M 416,295 Q 372,246 306,228 Q 270,221 256,235
+             Q 288,240 314,252 Q 366,272 408,308 Z"/>
+    <!-- Fine loose wisp at back -->
+    <path d="M 392,398 Q 338,404 288,418 Q 254,428 242,446
+             Q 272,440 300,432 Q 348,420 388,410 Z"/>
+    <!-- Root tufts escaping from helmet sides -->
+    <path d="M 400,318 Q 394,298 398,280 Q 404,268 412,270
+             Q 408,280 406,296 Z" opacity="0.75"/>
+  </g>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- 12. WIND PARTICLES & DUST (swept left off the hair)           -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <g fill="white" filter="url(#glow)">
+    <circle cx="218" cy="288" r="5"  opacity="0.72"/>
+    <circle cx="180" cy="330" r="3"  opacity="0.58"/>
+    <circle cx="200" cy="370" r="4"  opacity="0.62"/>
+    <circle cx="165" cy="410" r="3"  opacity="0.52"/>
+    <circle cx="235" cy="445" r="5"  opacity="0.46"/>
+    <circle cx="190" cy="476" r="3"  opacity="0.50"/>
+    <circle cx="150" cy="318" r="4"  opacity="0.55"/>
+    <circle cx="248" cy="255" r="3"  opacity="0.45"/>
+    <!-- 4-point sparkle stars -->
+    <path d="M 160 308 L 165 298 L 170 308 L 160 304 L 170 304 Z" opacity="0.62"/>
+    <path d="M 152 416 L 157 406 L 162 416 L 152 412 L 162 412 Z" opacity="0.52"/>
+    <path d="M 196 248 L 201 238 L 206 248 L 196 244 L 206 244 Z" opacity="0.48"/>
+    <path d="M 245 474 L 250 464 L 255 474 L 245 470 L 255 470 Z" opacity="0.44"/>
+  </g>
+
+  <!-- Warm amber glow trail behind hair (colour echo) -->
+  <g fill="#FFB300" opacity="0.12" filter="url(#glow)">
+    <ellipse cx="200" cy="340" rx="90" ry="55"/>
+    <ellipse cx="190" cy="400" rx="70" ry="40"/>
+  </g>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- 13. CHECKERED FLAG in raised right hand                        -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <g transform="translate(728, 408) rotate(18)">
+    <!-- Pole -->
+    <rect x="-3" y="-75" width="6" height="95" rx="2" fill="white"/>
+    <!-- 3 × 3 flag -->
+    <rect x="3"  y="-75" width="23" height="23" fill="white"/>
+    <rect x="26" y="-75" width="23" height="23" fill="#1A1A1A"/>
+    <rect x="3"  y="-52" width="23" height="23" fill="#1A1A1A"/>
+    <rect x="26" y="-52" width="23" height="23" fill="white"/>
+    <rect x="3"  y="-29" width="23" height="23" fill="white"/>
+    <rect x="26" y="-29" width="23" height="23" fill="#1A1A1A"/>
+    <!-- Flag flutter shadow -->
+    <rect x="3"  y="-75" width="46" height="69" fill="none"
+          stroke="white" stroke-width="2" opacity="0.35"/>
+  </g>
+</svg>
+

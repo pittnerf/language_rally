@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <!-- Background: deep teal → forest green -->
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#004D40"/>
+      <stop offset="55%"  stop-color="#00695C"/>
+      <stop offset="100%" stop-color="#1B5E20"/>
+    </linearGradient>
+
+    <!-- Globe face fill -->
+    <radialGradient id="globeFill" cx="42%" cy="38%" r="58%">
+      <stop offset="0%"   stop-color="#4DB6AC" stop-opacity="0.55"/>
+      <stop offset="100%" stop-color="#00796B" stop-opacity="0.20"/>
+    </radialGradient>
+
+    <!-- Speech bubble: light teal/mint -->
+    <linearGradient id="bubbleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#E0F2F1"/>
+      <stop offset="100%" stop-color="#B2DFDB"/>
+    </linearGradient>
+
+    <!-- Drop shadow -->
+    <filter id="sh" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="14" result="blur"/>
+      <feOffset dx="6" dy="10" in="blur" result="offsetBlur"/>
+      <feFlood flood-color="#000" flood-opacity="0.30" result="flood"/>
+      <feComposite in="flood" in2="offsetBlur" operator="in" result="cs"/>
+      <feMerge>
+        <feMergeNode in="cs"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Clip globe lines to circle -->
+    <clipPath id="globeClip">
+      <circle cx="370" cy="620" r="295"/>
+    </clipPath>
+  </defs>
+
+  <!-- ── Background ─────────────────────────────────────────────────── -->
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+
+  <!-- Decorative background rings -->
+  <circle cx="370" cy="620" r="440" fill="none" stroke="white" stroke-width="2" opacity="0.05"/>
+  <circle cx="370" cy="620" r="360" fill="none" stroke="white" stroke-width="2" opacity="0.05"/>
+  <circle cx="900" cy="200" r="160" fill="white" opacity="0.04"/>
+
+  <!-- ── Globe ─────────────────────────────────────────────────────── -->
+  <g filter="url(#sh)">
+    <!-- Globe fill -->
+    <circle cx="370" cy="620" r="295" fill="url(#globeFill)"
+            stroke="#80CBC4" stroke-width="10"/>
+
+    <!-- Latitude / longitude grid, clipped to globe -->
+    <g clip-path="url(#globeClip)" fill="none" stroke="#80CBC4"
+       stroke-width="6" stroke-dasharray="22 12">
+      <!-- Equator -->
+      <line x1="75"  y1="620" x2="665" y2="620"/>
+      <!-- Upper parallel -->
+      <path d="M 135 480 Q 370 420 605 480"/>
+      <!-- Lower parallel -->
+      <path d="M 135 760 Q 370 820 605 760"/>
+      <!-- Central meridian (full ellipse) -->
+      <ellipse cx="370" cy="620" rx="105" ry="295"/>
+      <!-- Wide meridian -->
+      <ellipse cx="370" cy="620" rx="220" ry="295"/>
+    </g>
+  </g>
+
+  <!-- ── Speech bubble (top-right) ─────────────────────────────────── -->
+  <!-- body: x=460 y=90 w=510 h=350 rx=70 -->
+  <g filter="url(#sh)">
+    <rect x="460" y="90" width="510" height="350" rx="70" fill="url(#bubbleGrad)"/>
+    <!-- Tail pointing down-left toward the globe -->
+    <!-- base overlaps rect bottom by ~8px to avoid gap -->
+    <polygon points="560,433  470,555  680,433" fill="#C8E6C4"/>
+    <!-- Re-draw body on top so tail seam is hidden -->
+    <rect x="460" y="90" width="510" height="350" rx="70" fill="url(#bubbleGrad)"/>
+  </g>
+
+  <!-- Three conversation dots inside the bubble -->
+  <!-- Bubble center: x=460+510/2=715, y=90+350/2=265 -->
+  <circle cx="620" cy="265" r="38" fill="#00796B"/>
+  <circle cx="715" cy="265" r="38" fill="#00796B"/>
+  <circle cx="810" cy="265" r="38" fill="#00796B"/>
+
+  <!-- ── "Language Rally" tagline at very bottom ───────────────────── -->
+  <text x="512" y="970"
+        font-family="'Arial Black','Helvetica Neue',Arial,sans-serif"
+        font-weight="900" font-size="56" fill="white" opacity="0.70"
+        text-anchor="middle" dominant-baseline="central"
+        letter-spacing="6">LANGUAGE RALLY</text>
+</svg>
+
