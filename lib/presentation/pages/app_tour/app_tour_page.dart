@@ -702,7 +702,7 @@ class _TourImageGalleryState extends State<_TourImageGallery> {
           fit: BoxFit.contain,
           width: double.infinity,
           height: double.infinity,
-          errorBuilder: (_, __, ___) => Center(
+          errorBuilder: (_, _, _) => Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
