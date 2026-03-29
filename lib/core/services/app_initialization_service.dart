@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../data/database_helper.dart';
@@ -9,6 +11,26 @@ import '../../data/repositories/import_export_repository.dart';
 import '../../data/models/language_package_group.dart';
 import '../utils/debug_print.dart';
 
+// ---------------------------------------------------------------------------
+// Progress model
+// ---------------------------------------------------------------------------
+
+/// Carries the current seeding state for the [SplashScreen] to display.
+class SeedingProgress {
+  final int current;   // packages imported so far in this run
+  final int total;     // total packages that need importing
+  final bool isActive; // true while seeding is ongoing
+
+  const SeedingProgress({
+    this.current = 0,
+    this.total = 0,
+    this.isActive = false,
+  });
+
+  /// 0.0 → 1.0 progress fraction; safe when total == 0.
+  double get fraction => total > 0 ? current / total : 0.0;
+}
+
 /// Service responsible for app initialization tasks
 /// Performs heavy operations that might block the UI during startup
 class AppInitializationService {
@@ -16,16 +38,98 @@ class AppInitializationService {
   static const String defaultGroupId = 'default-group-id';
   static const String defaultGroupName = 'Default';
 
+  // ---------------------------------------------------------------------------
+  // Progress notifier — SplashScreen listens to this
+  // ---------------------------------------------------------------------------
+  static final ValueNotifier<SeedingProgress> seedingProgress =
+      ValueNotifier(const SeedingProgress());
+
   /// SharedPreferences key that marks seed-package import as done.
   /// Bump the version suffix (v1 → v2 …) when you add new seed packages so
   /// existing installations pick them up on the next update.
   static const String _seedFlagKey = 'seed_packages_v1_imported';
 
+  /// Key that stores a JSON-encoded list of already-imported asset paths.
+  /// Used to resume an interrupted seeding run on the next launch.
+  static const String _seedProgressKey = 'seed_packages_v1_done_list';
+
   /// Asset paths of language packages that are bundled with the app.
   /// Add a new entry here whenever you drop a new .zip into assets/seed_packages/.
   static const List<String> _seedPackageAssets = [
-    'assets/seed_packages/package_en-UK_de-DE.zip',
-    // 'assets/seed_packages/english_french_basic.zip',
+    // A1 - EN-DE
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378257775.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378260444.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378263494.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378266041.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378269032.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378271453.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378273973.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378276582.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378279644.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378282176.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378284586.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378287175.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378289632.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378292483.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378294992.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378297685.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378300104.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378302651.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378304962.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378307726.zip',
+    // A2 - EN-DE
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378310200.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378313190.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378315617.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378318592.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378321052.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378323965.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378326376.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378329166.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378331665.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378335203.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378337681.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378340373.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378342719.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378345598.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378348007.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378350838.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378353315.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378356234.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378358615.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378360994.zip',
+
+    // B1 - EN-DE
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378363629.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378366023.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378368624.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378371008.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378373623.zip',
+
+
+    // B2
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378415376.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378417822.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378420799.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378423343.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378425779.zip',
+
+    // C1
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378466342.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378468806.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378471418.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378473813.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378476496.zip',
+
+    // C2
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378524244.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378527274.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378530452.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378533823.zip',
+    'assets/seed_packages/package_en-UK_German (Germany)_1774378536906.zip',
+
+
+
   ];
 
   /// Initialize the app with necessary setup tasks
@@ -106,58 +210,110 @@ class AppInitializationService {
   /// On the very first launch, import every ZIP listed in [_seedPackageAssets]
   /// from the Flutter asset bundle into the database.
   ///
-  /// A [SharedPreferences] flag prevents re-importing on subsequent launches.
-  /// To ship additional packages in a later app version, create a new flag key
-  /// (e.g. _seedFlagKey = 'seed_packages_v2_imported') and add the new paths.
+  /// Progress is reported through [seedingProgress] so the SplashScreen can
+  /// display a real-time progress indicator.
+  ///
+  /// Each successfully imported package is recorded in SharedPreferences
+  /// immediately, so the process can be **resumed** from where it stopped if
+  /// the app is sent to the background or the screen saver fires mid-seeding.
   static Future<void> _seedDefaultPackages() async {
     if (_seedPackageAssets.isEmpty) return;
 
     try {
       final prefs = await SharedPreferences.getInstance();
 
+      // Fast-path: all packages were already imported (old or completed runs).
       if (prefs.getBool(_seedFlagKey) == true) {
         logDebug('  ✓ Seed packages already imported, skipping');
         return;
       }
 
-      logDebug('🌱 Seeding default packages…');
+      // Load the set of packages already imported in previous (interrupted) runs.
+      final doneJson = prefs.getString(_seedProgressKey) ?? '[]';
+      final doneSet = Set<String>.from(
+        (jsonDecode(doneJson) as List<dynamic>).cast<String>(),
+      );
+
+      final total = _seedPackageAssets.length;
+
+      // If all paths are already done, set the fast-path flag and exit.
+      if (doneSet.length >= total) {
+        await prefs.setBool(_seedFlagKey, true);
+        await prefs.remove(_seedProgressKey);
+        logDebug('  ✓ All seed packages already done (via progress set)');
+        return;
+      }
+
+      final pending =
+          _seedPackageAssets.where((p) => !doneSet.contains(p)).toList();
+
+      logDebug(
+        '🌱 Seeding packages: ${doneSet.length} already done, '
+        '${pending.length} pending (total $total)…',
+      );
+
+      // Announce the overall progress so the SplashScreen can show a bar.
+      seedingProgress.value = SeedingProgress(
+        current: doneSet.length,
+        total: total,
+        isActive: true,
+      );
 
       final importRepo = ImportExportRepository(
         packageRepo: LanguagePackageRepository(),
-        groupRepo:   LanguagePackageGroupRepository(),
+        groupRepo: LanguagePackageGroupRepository(),
         categoryRepo: CategoryRepository(),
-        itemRepo:    ItemRepository(),
+        itemRepo: ItemRepository(),
       );
 
-      int successCount = 0;
-
-      for (final assetPath in _seedPackageAssets) {
+      for (final assetPath in pending) {
         try {
           final byteData = await rootBundle.load(assetPath);
           final bytes = byteData.buffer.asUint8List();
-          final result = await importRepo.importPackageFromZipBytes(bytes);
+
+          // Use the seeding-optimised importer (single DB transaction per package).
+          final result =
+              await importRepo.importPackageFromZipBytesSeeding(bytes);
+
+          // Persist the completion of this individual package immediately.
+          doneSet.add(assetPath);
+          await prefs.setString(_seedProgressKey, jsonEncode(doneSet.toList()));
+
           logDebug(
             '  ✓ Seeded $assetPath'
             ' — ${result.itemCount} items in group "${result.groupName}"',
           );
-          successCount++;
         } catch (e) {
-          // A single bad ZIP must not block the rest
+          // A single bad ZIP must not block the rest.
           logDebug('  ⚠️  Failed to seed $assetPath: $e');
         }
+
+        // Update progress after every attempt (success or failure).
+        seedingProgress.value = SeedingProgress(
+          current: doneSet.length,
+          total: total,
+          isActive: true,
+        );
       }
 
-      // Mark done only after at least one package was imported
-      if (successCount > 0) {
+      // When all packages are done, set the fast-path flag and clean up.
+      if (doneSet.length >= total) {
         await prefs.setBool(_seedFlagKey, true);
+        await prefs.remove(_seedProgressKey);
       }
 
       logDebug(
-        '✓ Seeding complete: $successCount / ${_seedPackageAssets.length} packages imported',
+        '✓ Seeding complete: ${doneSet.length}/$total packages imported',
       );
     } catch (e) {
-      // Seeding is non-critical — the app works fine without seed data
       logDebug('⚠️  Error during package seeding: $e');
+    } finally {
+      // Always clear the "active" flag so the SplashScreen stops showing progress.
+      seedingProgress.value = SeedingProgress(
+        current: seedingProgress.value.current,
+        total: seedingProgress.value.total,
+        isActive: false,
+      );
     }
   }
 
@@ -174,7 +330,8 @@ class AppInitializationService {
       final prefs = await SharedPreferences.getInstance();
       // Remove every known seed flag; add new ones here when you bump the key.
       await prefs.remove(_seedFlagKey);
-      logDebug('  ✓ Seed-package import flag cleared');
+      await prefs.remove(_seedProgressKey);
+      logDebug('  ✓ Seed-package import flags cleared');
     } catch (e) {
       logDebug('  ⚠️  Could not clear seed flags: $e');
     }
@@ -183,4 +340,3 @@ class AppInitializationService {
     _isInitialized = false;
   }
 }
-

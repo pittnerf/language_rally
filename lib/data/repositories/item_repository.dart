@@ -159,6 +159,31 @@ class ItemRepository {
     return Future.wait(maps.map((map) => _mapToItem(map)));
   }
 
+  /// Insert an item within an already-open [DatabaseExecutor] (e.g. a
+  /// caller-owned [Transaction]).  Unlike [insertItem] this does NOT start its
+  /// own inner transaction, so many items can be batched inside one outer
+  /// `db.transaction()` call for maximum write throughput.
+  Future<void> insertItemInTransaction(DatabaseExecutor txn, Item item) async {
+    await txn.insert('items', _itemToMap(item),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+    await txn.insert(
+        'item_language_data', _languageDataToMap(item.id, item.language1Data, 1),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+    await txn.insert(
+        'item_language_data', _languageDataToMap(item.id, item.language2Data, 2),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+    for (final example in item.examples) {
+      await txn.insert(
+          'example_sentences', _exampleToMap(item.id, example),
+          conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+    for (final categoryId in item.categoryIds) {
+      await txn.insert(
+          'item_categories', {'item_id': item.id, 'category_id': categoryId},
+          conflictAlgorithm: ConflictAlgorithm.replace);
+    }
+  }
+
   // Update
   Future<void> updateItem(Item item) async {
     await insertItem(item); // Use insert with REPLACE conflict resolution

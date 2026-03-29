@@ -16,6 +16,13 @@ class CategoryRepository {
     );
   }
 
+  /// Insert a category within an already-open [DatabaseExecutor].
+  Future<void> insertCategoryInTransaction(
+      DatabaseExecutor txn, Category category) async {
+    await txn.insert('categories', _categoryToMap(category),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
   // Read
   Future<List<Category>> getCategoriesForPackage(String packageId) async {
     final db = await _dbHelper.database;

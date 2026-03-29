@@ -16,6 +16,13 @@ class LanguagePackageRepository {
     );
   }
 
+  /// Insert a package within an already-open [DatabaseExecutor].
+  Future<void> insertPackageInTransaction(
+      DatabaseExecutor txn, LanguagePackage package) async {
+    await txn.insert('language_packages', _packageToMap(package),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
   // Read
   Future<List<LanguagePackage>> getAllPackages() async {
     final db = await _dbHelper.database;

@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:archive/archive_io.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
+import '../database_helper.dart';
 import '../models/language_package.dart';
 import '../models/language_package_group.dart';
 import '../models/category.dart';
@@ -581,6 +582,173 @@ class ImportExportRepository {
       }
 
       return await _importPackageData(packageData, data, extractDir);
+    } finally {
+      await extractDir.delete(recursive: true).catchError((_) => extractDir);
+    }
+  }
+
+  /// Seeding-optimised variant of [importPackageFromZipBytes].
+  ///
+  /// Same logic for ZIP decoding, ID generation and group resolution, but
+  /// wraps **all** database writes (package + categories + items) inside a
+  /// single SQLite transaction.  This eliminates the per-item BEGIN/COMMIT
+  /// overhead and can be an order of magnitude faster when seeding many
+  /// packages on first launch.
+  Future<ImportResult> importPackageFromZipBytesSeeding(List<int> bytes) async {
+    final tempDir = await getTemporaryDirectory();
+    final extractDir = Directory(
+      '${tempDir.path}/seed_import_${DateTime.now().millisecondsSinceEpoch}',
+    );
+    await extractDir.create(recursive: true);
+
+    try {
+      // ── 1. Decode ZIP ────────────────────────────────────────────────────
+      final archive = ZipDecoder().decodeBytes(bytes);
+      for (final file in archive) {
+        if (file.isFile) {
+          final out = File('${extractDir.path}/${file.name}');
+          await out.create(recursive: true);
+          await out.writeAsBytes(file.content as List<int>);
+        }
+      }
+
+      // ── 2. Read & validate JSON ──────────────────────────────────────────
+      final jsonFile = File('${extractDir.path}/package_data.json');
+      if (!await jsonFile.exists()) {
+        throw Exception('Invalid seed ZIP: missing package_data.json');
+      }
+      final data =
+          jsonDecode(await jsonFile.readAsString()) as Map<String, dynamic>;
+      if (data['version'] == null || data['package'] == null) {
+        throw Exception('Invalid seed package format');
+      }
+
+      final packageData = data['package'] as Map<String, dynamic>;
+      final categoriesData = data['categories'] as List<dynamic>;
+      final itemsData = data['items'] as List<dynamic>;
+
+      // ── 3. Generate fresh UUIDs ──────────────────────────────────────────
+      packageData['id'] = const Uuid().v4();
+      final categoryIdMap = <String, String>{};
+      for (final catData in categoriesData) {
+        final oldId = catData['id'] as String;
+        final newId = const Uuid().v4();
+        categoryIdMap[oldId] = newId;
+        catData['id'] = newId;
+      }
+      for (final itemData in itemsData) {
+        itemData['id'] = const Uuid().v4();
+        final oldIds = itemData['categoryIds'] as List<dynamic>;
+        itemData['categoryIds'] =
+            oldIds.map((old) => categoryIdMap[old as String] ?? old).toList();
+      }
+
+      // ── 4. Resolve / create group (OUTSIDE the write transaction) ────────
+      //      The group repository uses its own db.query() calls, which must
+      //      not be nested inside our outer db.transaction().
+      final String groupId;
+      final String groupName;
+      final exportedGroupId = packageData['group_id'] as String?;
+      final exportedGroupName = packageData['group_name'] as String?;
+
+      if (exportedGroupId != null && exportedGroupName != null) {
+        var group = await _groupRepo.getGroupByName(exportedGroupName);
+        if (group == null) {
+          var newGroupId = exportedGroupId;
+          final conflicting = await _groupRepo.getGroupById(exportedGroupId);
+          if (conflicting != null) newGroupId = const Uuid().v4();
+          group = LanguagePackageGroup(id: newGroupId, name: exportedGroupName);
+          await _groupRepo.insertGroup(group);
+        }
+        groupId = group.id;
+        groupName = group.name;
+      } else {
+        const fallbackId = 'default-group-id';
+        const fallbackName = 'Default';
+        var g = await _groupRepo.getGroupById(fallbackId);
+        if (g == null) {
+          g = LanguagePackageGroup(id: fallbackId, name: fallbackName);
+          await _groupRepo.insertGroup(g);
+        }
+        groupId = fallbackId;
+        groupName = fallbackName;
+      }
+
+      // ── 5. Build Dart model objects ──────────────────────────────────────
+      final packageId = packageData['id'] as String;
+
+      // Seed ZIPs never embed custom icons; asset-path icons are kept as-is.
+      final iconPath = packageData['icon'] as String?;
+
+      final exportedTypeName = packageData['package_type'] as String?;
+      final restoredType = PackageType.values.firstWhere(
+        (t) => t.name == exportedTypeName,
+        orElse: () => PackageType.userCreated,
+      );
+      final restoredIsPurchased =
+          (packageData['is_purchased'] as bool?) ??
+          (restoredType == PackageType.purchased);
+      final purchasedAtRaw = packageData['purchased_at'] as String?;
+      final restoredPurchasedAt =
+          purchasedAtRaw != null ? DateTime.tryParse(purchasedAtRaw) : null;
+
+      final package = LanguagePackage(
+        id: packageId,
+        groupId: groupId,
+        packageName: packageData['name'] as String?,
+        languageCode1: packageData['language_code1'] as String,
+        languageName1: packageData['language_name1'] as String,
+        languageCode2: packageData['language_code2'] as String,
+        languageName2: packageData['language_name2'] as String,
+        description: packageData['description'] as String?,
+        icon: iconPath,
+        authorName: packageData['author_name'] as String?,
+        authorEmail: packageData['author_email'] as String?,
+        authorWebpage: packageData['author_webpage'] as String?,
+        version: (packageData['version'] as String?) ?? '1.0.0',
+        packageType: restoredType,
+        isPurchased: restoredIsPurchased,
+        purchasedAt: restoredPurchasedAt,
+        createdAt: DateTime.now(),
+      );
+
+      final categories = categoriesData.map((c) {
+        final m = c as Map<String, dynamic>;
+        return Category(
+          id: m['id'] as String,
+          packageId: packageId,
+          name: m['name'] as String,
+          description: m['description'] as String?,
+        );
+      }).toList();
+
+      final items = <Item>[];
+      for (final itemData in itemsData) {
+        try {
+          final item =
+              Item.fromJson(itemData as Map<String, dynamic>).copyWith(
+            packageId: packageId,
+          );
+          items.add(item);
+        } catch (_) {
+          // Skip any malformed item rather than aborting the whole package.
+        }
+      }
+
+      // ── 6. Single transaction for ALL database writes ────────────────────
+      //      One BEGIN/COMMIT instead of (1 + categories + items) cycles.
+      final db = await DatabaseHelper.instance.database;
+      await db.transaction((txn) async {
+        await _packageRepo.insertPackageInTransaction(txn, package);
+        for (final cat in categories) {
+          await _categoryRepo.insertCategoryInTransaction(txn, cat);
+        }
+        for (final item in items) {
+          await _itemRepo.insertItemInTransaction(txn, item);
+        }
+      });
+
+      return ImportResult(items.length, groupName);
     } finally {
       await extractDir.delete(recursive: true).catchError((_) => extractDir);
     }

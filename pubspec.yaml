@@ -58,6 +58,7 @@ dev_dependencies:
   intl_utils: ^2.8.14
   build_runner: ^2.11.1
   json_serializable: ^6.13.0
+  flutter_launcher_icons: ^0.14.3
 
 
 flutter:
@@ -65,6 +66,7 @@ flutter:
   generate: true
 
   assets:
+    - assets/app_icons/
     - assets/images/
     - assets/images/badges/
     - assets/images/package_icons/
