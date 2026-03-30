@@ -522,7 +522,7 @@
   "noItemsFoundOrAllDuplicates": "No items found in the text, or all items already exist in the package",
   "aboutLanguageRally": "About Language Rally",
   "welcomeTitle": "🚀 Welcome to Language Rally",
-  "welcomeSubtitle": "Level up your language skills — the smart and playful way.",
+  "welcomeSubtitle": "Unlock the fantastic power of language learning with approximately 4,000 words, 4,000 expressions, and just as many example sentences—carefully curated for every proficiency level!\nLevel up your language skills — the smart and playful way.",
   "welcomeIntro": "Learn vocabulary and expressions efficiently by practicing what you actually care about. No boring lists. No wasted time.",
   "sectionPlayYourGame": "🎮 Play Your Own Game",
   "sectionPlayYourGameDesc": "Create your own vocabulary packages. Train only the words and expressions you want to master. Already know it? It will be marked and skipped!",
@@ -675,7 +675,29 @@
 
   "help": "Help",
   "trainingHelpTitle": "Training Tips",
-  "trainingHelpText": "To make your training as effective as possible, follow these steps:\n1. Click the 'Clear counters' button so that all items in this package are marked as known.\n2. Set 'Item scope' to 'All items'\n3. Set 'Item order' to 'Random'\n4. Choose your native language under 'Display language'\n5. Start the training and continue until you identify approximately 20–30 items you do not know.\n6. Return to the training settings and change 'Item scope' to 'Only unknown items'\n7. Resume training and continue until you have learned all previously unknown items."
+  "trainingHelpText": "To make your training as effective as possible, follow these steps:\n1. Click the 'Clear counters' button so that all items in this package are marked as known.\n2. Set 'Item scope' to 'All items'\n3. Set 'Item order' to 'Random'\n4. Choose your native language under 'Display language'\n5. Start the training and continue until you identify approximately 20–30 items you do not know.\n6. Return to the training settings and change 'Item scope' to 'Only unknown items'\n7. Resume training and continue until you have learned all previously unknown items.",
+
+  "onboardingWelcomeTitle": "Welcome to Language Rally!",
+  "onboardingSetupSubtitle": "Let's set up the app for you.",
+  "onboardingSelectUiLanguage": "Interface Language",
+  "onboardingUiLanguageNote": "You can change this later in Settings → UI Language.",
+  "onboardingNext": "Next",
+  "onboardingBack": "Back",
+  "onboardingSelectPackagesTitle": "Choose Language Packages",
+  "onboardingSelectPackagesSubtitle": "Select which vocabulary packages to import. You can always add more later from the main menu.",
+  "onboardingAnalyzingPackages": "Analyzing available packages…",
+  "onboardingImportSelected": "Import Selected",
+  "onboardingSkipImport": "Skip",
+  "onboardingSelectAll": "Select All",
+  "onboardingDeselectAll": "Deselect All",
+  "onboardingNPackages": "{count} packages",
+  "@onboardingNPackages": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "onboardingGetStarted": "Get Started",
+  "onboardingImportCompleteTitle": "Import Complete!"
 }
 
 

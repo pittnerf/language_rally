@@ -503,9 +503,20 @@ class ImportExportRepository {
       final zipEncoder = ZipEncoder();
       final zipData = zipEncoder.encode(archive);
 
-      // Write ZIP file to destination
-      final timestamp = DateTime.now().millisecondsSinceEpoch;
-      final fileName = 'package_${package.languageName1}_${package.languageName2}_$timestamp.zip';
+      // Write ZIP file to destination.
+      // Filename format: pgg_<code1>_<code2>_<packageName>.zip
+      // e.g. pgg_en_de_A1_Basic_Words.zip
+      final code1 = package.languageCode1.split('-').first.toLowerCase();
+      final code2 = package.languageCode2.split('-').first.toLowerCase();
+      final rawName = (package.packageName ?? '').trim();
+      // Keep only word characters and spaces/dashes; collapse whitespace to '_'
+      final safeName = rawName
+          .replaceAll(RegExp(r'[^\w\s\-]'), '')
+          .replaceAll(RegExp(r'\s+'), '_')
+          .replaceAll(RegExp(r'_+'), '_')
+          .replaceAll(RegExp(r'-+'), '-');
+      final nameSegment = safeName.isNotEmpty ? safeName : 'package';
+      final fileName = 'pkg_${code1}_${code2}_$nameSegment.zip';
       final zipFilePath = path.join(destinationPath, fileName);
       final zipFile = File(zipFilePath);
       await zipFile.writeAsBytes(zipData);

@@ -464,7 +464,7 @@
   "noItemsFoundOrAllDuplicates": "Nem található elem a szövegben, vagy minden elem már létezik a csomagban",
   "aboutLanguageRally": "A Language Rally-ról",
   "welcomeTitle": "🚀 Üdvözöljük a Language Rally-ban",
-  "welcomeSubtitle": "Fejlessze nyelvi készségeit — okosan és játékosan.",
+  "welcomeSubtitle": "Élvezze a nyelvi szintenként a ~4000 szó, ~ 4000 kifejezés és ugyanennyi példamondat által nyújtotta fantasztikus tudást!\nFejlessze nyelvi készségeit — okosan és játékosan.",
   "welcomeIntro": "Tanulja meg hatékonyan a szókincset és kifejezéseket azáltal, hogy azt gyakorolja, ami valóban fontos önnek. Nincsenek unalmas listák. Nincs pazarolt idő.",
   "sectionPlayYourGame": "🎮 Játssza a saját játékát",
   "sectionPlayYourGameDesc": "Hozzon létre saját szókészlet-csomagokat. Csak azokat a szavakat és kifejezéseket gyakorolja, amelyeket valóban el akar sajátítani. Már ismeri? Megjelölésre kerül és átugorja!",
@@ -617,7 +617,29 @@
 
   "help": "Súgó",
   "trainingHelpTitle": "Tippek a hatékony tanuláshoz",
-  "trainingHelpText": "Ahhoz, hogy a gyakorlás a lehető leghatékonyabb legyen, kövesd az alábbi lépéseket:\n1. Kattints a 'Számlálók törlése' gombra, hogy a csomag minden eleme ismertként legyen megjelölve.\n2. Állítsd az 'Elemek köre' opciót „Összes elem' értékre.\n3. Állítsd az 'Elemek sorrendje' opciót „Véletlenszerű' értékre.\n4. Válaszd ki az anyanyelvedet a 'Megjelenítési nyelv' beállításnál.\n5. Indítsd el a tanulást, és folytasd addig, amíg körülbelül 20–30 számodra ismeretlen elemet nem érsz el.\n6. Térj vissza a tanulási beállításokhoz, és állítsd az 'Elemek köre' opciót 'Csak ismeretlen elemek' értékre.\n7. Indítsd újra a tanulást, és folytasd addig, amíg az összes korábban ismeretlen elemet meg nem tanulod."
+  "trainingHelpText": "Ahhoz, hogy a gyakorlás a lehető leghatékonyabb legyen, kövesd az alábbi lépéseket:\n1. Kattints a 'Számlálók törlése' gombra, hogy a csomag minden eleme ismertként legyen megjelölve.\n2. Állítsd az 'Elemek köre' opciót „Összes elem' értékre.\n3. Állítsd az 'Elemek sorrendje' opciót „Véletlenszerű' értékre.\n4. Válaszd ki az anyanyelvedet a 'Megjelenítési nyelv' beállításnál.\n5. Indítsd el a tanulást, és folytasd addig, amíg körülbelül 20–30 számodra ismeretlen elemet nem érsz el.\n6. Térj vissza a tanulási beállításokhoz, és állítsd az 'Elemek köre' opciót 'Csak ismeretlen elemek' értékre.\n7. Indítsd újra a tanulást, és folytasd addig, amíg az összes korábban ismeretlen elemet meg nem tanulod.",
+
+  "onboardingWelcomeTitle": "Üdvözöl a Language Rally!",
+  "onboardingSetupSubtitle": "Állítsuk be az alkalmazást számodra.",
+  "onboardingSelectUiLanguage": "Felhasználói felület nyelve",
+  "onboardingUiLanguageNote": "Ezt később a Beállítások → UI nyelv menüpontban módosíthatod.",
+  "onboardingNext": "Tovább",
+  "onboardingBack": "Vissza",
+  "onboardingSelectPackagesTitle": "Válassz nyelvi csomagokat",
+  "onboardingSelectPackagesSubtitle": "Válaszd ki, melyik szókincscsomagokat importálod. Később a főmenüből bármikor importálhatsz többet.",
+  "onboardingAnalyzingPackages": "Elérhető csomagok elemzése…",
+  "onboardingImportSelected": "Kijelöltek importálása",
+  "onboardingSkipImport": "Kihagyás",
+  "onboardingSelectAll": "Összes kijelölése",
+  "onboardingDeselectAll": "Kijelölés törlése",
+  "onboardingNPackages": "{count} csomag",
+  "@onboardingNPackages": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "onboardingGetStarted": "Kezdjük!",
+  "onboardingImportCompleteTitle": "Importálás kész!"
 }
 
 

@@ -2789,7 +2789,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcomeSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Level up your language skills — the smart and playful way.'**
+  /// **'Unlock the fantastic power of language learning with approximately 4,000 words, 4,000 expressions, and just as many example sentences—carefully curated for every proficiency level!\nLevel up your language skills — the smart and playful way.'**
   String get welcomeSubtitle;
 
   /// No description provided for @welcomeIntro.
@@ -3637,6 +3637,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'To make your training as effective as possible, follow these steps:\n1. Click the \'Clear counters\' button so that all items in this package are marked as known.\n2. Set \'Item scope\' to \'All items\'\n3. Set \'Item order\' to \'Random\'\n4. Choose your native language under \'Display language\'\n5. Start the training and continue until you identify approximately 20–30 items you do not know.\n6. Return to the training settings and change \'Item scope\' to \'Only unknown items\'\n7. Resume training and continue until you have learned all previously unknown items.'**
   String get trainingHelpText;
+
+  /// No description provided for @onboardingWelcomeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Language Rally!'**
+  String get onboardingWelcomeTitle;
+
+  /// No description provided for @onboardingSetupSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s set up the app for you.'**
+  String get onboardingSetupSubtitle;
+
+  /// No description provided for @onboardingSelectUiLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Interface Language'**
+  String get onboardingSelectUiLanguage;
+
+  /// No description provided for @onboardingUiLanguageNote.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change this later in Settings → UI Language.'**
+  String get onboardingUiLanguageNote;
+
+  /// No description provided for @onboardingNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get onboardingNext;
+
+  /// No description provided for @onboardingBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get onboardingBack;
+
+  /// No description provided for @onboardingSelectPackagesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Language Packages'**
+  String get onboardingSelectPackagesTitle;
+
+  /// No description provided for @onboardingSelectPackagesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select which vocabulary packages to import. You can always add more later from the main menu.'**
+  String get onboardingSelectPackagesSubtitle;
+
+  /// No description provided for @onboardingAnalyzingPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing available packages…'**
+  String get onboardingAnalyzingPackages;
+
+  /// No description provided for @onboardingImportSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Selected'**
+  String get onboardingImportSelected;
+
+  /// No description provided for @onboardingSkipImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get onboardingSkipImport;
+
+  /// No description provided for @onboardingSelectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Select All'**
+  String get onboardingSelectAll;
+
+  /// No description provided for @onboardingDeselectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect All'**
+  String get onboardingDeselectAll;
+
+  /// No description provided for @onboardingNPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} packages'**
+  String onboardingNPackages(int count);
+
+  /// No description provided for @onboardingGetStarted.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Started'**
+  String get onboardingGetStarted;
+
+  /// No description provided for @onboardingImportCompleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Complete!'**
+  String get onboardingImportCompleteTitle;
 }
 
 class _AppLocalizationsDelegate

@@ -29,6 +29,7 @@ import 'package_group_admin_page.dart';
 import '../items/item_browser_page.dart';
 import '../training/training_settings_page.dart';
 import '../ai_import/ai_text_analysis_page.dart';
+import '../onboarding/onboarding_screen.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../core/utils/debug_print.dart';
 
@@ -262,6 +263,24 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
               onPressed: _createNewPackage,
               tooltip: l10n.createNewPackage,
               child: const Icon(Icons.add, size: 20),
+            ),
+            SizedBox(width: AppTheme.spacing8),
+            SizedBox(
+              height: 40,
+              child: FloatingActionButton.extended(
+                heroTag: 'importBuiltIn',
+                onPressed: _openBuiltInImport,
+                icon: const Icon(Icons.inventory_2_outlined, size: 18),
+                label: const Text(
+                  'Import built-in pkg',
+                  style: TextStyle(fontSize: 12),
+                ),
+                tooltip: 'Import bundled language packages',
+                extendedPadding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                  vertical: 0,
+                ),
+              ),
             ),
             SizedBox(width: AppTheme.spacing8),
             SizedBox(
@@ -740,6 +759,19 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
 
   /// Shows the unified import dialog that lets the user choose between a
   /// local ZIP file and a remote URL.
+  /// Opens the built-in package importer (OnboardingScreen step 2) and
+  /// reloads the package list when the user returns.
+  Future<void> _openBuiltInImport() async {
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const OnboardingScreen(startAtStep: 1),
+      ),
+    );
+    // Reload packages once the import screen is closed, regardless of whether
+    // the user imported anything or just cancelled.
+    await _loadGroupsAndPackages();
+  }
+
   Future<void> _showImportDialog() async {
     final l10n = AppLocalizations.of(context)!;
     final urlController = TextEditingController();

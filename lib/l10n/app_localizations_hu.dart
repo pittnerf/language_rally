@@ -1484,7 +1484,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get welcomeSubtitle =>
-      'Fejlessze nyelvi készségeit — okosan és játékosan.';
+      'Élvezze a nyelvi szintenként a ~4000 szó, ~ 4000 kifejezés és ugyanennyi példamondat által nyújtotta fantasztikus tudást!\nFejlessze nyelvi készségeit — okosan és játékosan.';
 
   @override
   String get welcomeIntro =>
@@ -1951,4 +1951,56 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get trainingHelpText =>
       'Ahhoz, hogy a gyakorlás a lehető leghatékonyabb legyen, kövesd az alábbi lépéseket:\n1. Kattints a \'Számlálók törlése\' gombra, hogy a csomag minden eleme ismertként legyen megjelölve.\n2. Állítsd az \'Elemek köre\' opciót „Összes elem\' értékre.\n3. Állítsd az \'Elemek sorrendje\' opciót „Véletlenszerű\' értékre.\n4. Válaszd ki az anyanyelvedet a \'Megjelenítési nyelv\' beállításnál.\n5. Indítsd el a tanulást, és folytasd addig, amíg körülbelül 20–30 számodra ismeretlen elemet nem érsz el.\n6. Térj vissza a tanulási beállításokhoz, és állítsd az \'Elemek köre\' opciót \'Csak ismeretlen elemek\' értékre.\n7. Indítsd újra a tanulást, és folytasd addig, amíg az összes korábban ismeretlen elemet meg nem tanulod.';
+
+  @override
+  String get onboardingWelcomeTitle => 'Üdvözöl a Language Rally!';
+
+  @override
+  String get onboardingSetupSubtitle => 'Állítsuk be az alkalmazást számodra.';
+
+  @override
+  String get onboardingSelectUiLanguage => 'Felhasználói felület nyelve';
+
+  @override
+  String get onboardingUiLanguageNote =>
+      'Ezt később a Beállítások → UI nyelv menüpontban módosíthatod.';
+
+  @override
+  String get onboardingNext => 'Tovább';
+
+  @override
+  String get onboardingBack => 'Vissza';
+
+  @override
+  String get onboardingSelectPackagesTitle => 'Válassz nyelvi csomagokat';
+
+  @override
+  String get onboardingSelectPackagesSubtitle =>
+      'Válaszd ki, melyik szókincscsomagokat importálod. Később a főmenüből bármikor importálhatsz többet.';
+
+  @override
+  String get onboardingAnalyzingPackages => 'Elérhető csomagok elemzése…';
+
+  @override
+  String get onboardingImportSelected => 'Kijelöltek importálása';
+
+  @override
+  String get onboardingSkipImport => 'Kihagyás';
+
+  @override
+  String get onboardingSelectAll => 'Összes kijelölése';
+
+  @override
+  String get onboardingDeselectAll => 'Kijelölés törlése';
+
+  @override
+  String onboardingNPackages(int count) {
+    return '$count csomag';
+  }
+
+  @override
+  String get onboardingGetStarted => 'Kezdjük!';
+
+  @override
+  String get onboardingImportCompleteTitle => 'Importálás kész!';
 }

@@ -72,6 +72,8 @@ flutter:
     - assets/images/package_icons/
     - assets/images/tour_images/
     - assets/seed_packages/
+    - assets/seed_packages/words/
+    - assets/seed_packages/expressions/
     - assets/fonts/
 
   fonts:

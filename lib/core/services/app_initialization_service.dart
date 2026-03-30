@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:archive/archive.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -35,6 +36,7 @@ class SeedingProgress {
 /// Performs heavy operations that might block the UI during startup
 class AppInitializationService {
   static bool _isInitialized = false;
+  static bool _needsOnboarding = false;
   static const String defaultGroupId = 'default-group-id';
   static const String defaultGroupName = 'Default';
 
@@ -53,80 +55,127 @@ class AppInitializationService {
   /// Used to resume an interrupted seeding run on the next launch.
   static const String _seedProgressKey = 'seed_packages_v1_done_list';
 
+  /// Key that marks the first-launch onboarding wizard as completed.
+  static const String _onboardingFlagKey = 'onboarding_v1_complete';
+
+  /// True when the onboarding wizard has not yet been completed.
+  /// Set during [initialize]; safe to read after [initialize] returns.
+  static bool get needsOnboarding => _needsOnboarding;
+
   /// Asset paths of language packages that are bundled with the app.
   /// Add a new entry here whenever you drop a new .zip into assets/seed_packages/.
   static const List<String> _seedPackageAssets = [
+    // Expressions - EN-DE
+    //A1
+    'assets/seed_packages/expressions/pkg_en_de_A1_Animals.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A1_Basic_daily_routines.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A1_Basic_health_feeling_sick_doctor.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A1_Body_parts.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A1_Clothing_colors.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A1_Countries_nationalities.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A1_Directions_left_right_near.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A1_Family_relationships.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A1_Food_drinks.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A1_Furniture_household_items.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A1_Greetings_introductions.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A1_Home_rooms.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A1_Leisure_activities.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A1_Numbers_dates_time.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A1_School_classroom.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A1_Shopping_basic_items_prices.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A1_Sports_basic.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A1_Transport_bus_train_taxi.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A1_Weather.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A1_Work_basic_jobs.zip',
+
+    // A2
+    'assets/seed_packages/expressions/pkg_en_de_A2_Basic_grammar_topics_presentpastfuture_simple_conditionals.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A2_City_places_bank_post_office.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A2_Communication_phone_messages.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A2_Daily_routines_detailed.zip',
+    'assets/seed_packages/expressions/pkg_en_de_A2_Directions_navigation.zip',
+    // B1
+    'assets/seed_packages/expressions/pkg_en_de_B1_Basic_politics_society.zip',
+    'assets/seed_packages/expressions/pkg_en_de_B1_City_vs_countryside.zip',
+    'assets/seed_packages/expressions/pkg_en_de_B1_Communication_language_learning.zip',
+    'assets/seed_packages/expressions/pkg_en_de_B1_Culture_traditions.zip',
+    'assets/seed_packages/expressions/pkg_en_de_B1_Education_systems.zip',
+    // B2
+    'assets/seed_packages/expressions/pkg_en_de_B2_Business_basics.zip',
+    'assets/seed_packages/expressions/pkg_en_de_B2_Career_development.zip',
+    'assets/seed_packages/expressions/pkg_en_de_B2_Crime_law_basic.zip',
+    'assets/seed_packages/expressions/pkg_en_de_B2_Culture_identity.zip',
+    'assets/seed_packages/expressions/pkg_en_de_B2_Debate_argumentation.zip',
+    // C1
+    'assets/seed_packages/expressions/pkg_en_de_C1_Academic_writing_rhetoric.zip',
+    'assets/seed_packages/expressions/pkg_en_de_C1_Advanced_technology_AI_digitalization.zip',
+    'assets/seed_packages/expressions/pkg_en_de_C1_Art_literature_interpretation.zip',
+    'assets/seed_packages/expressions/pkg_en_de_C1_Business_strategy.zip',
+    'assets/seed_packages/expressions/pkg_en_de_C1_Communication_strategies.zip',
+    // C2
+    'assets/seed_packages/expressions/pkg_en_de_C2_Advanced_business_corporate_strategy.zip',
+    'assets/seed_packages/expressions/pkg_en_de_C2_Advanced_economics_finance.zip',
+    'assets/seed_packages/expressions/pkg_en_de_C2_Advanced_rhetoric_persuasion.zip',
+    'assets/seed_packages/expressions/pkg_en_de_C2_Cultural_discourse_identity_theory.zip',
+    'assets/seed_packages/expressions/pkg_en_de_C2_Ethics_in_technology_AI_bioethics.zip',
+
+
     // A1 - EN-DE
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378257775.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378260444.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378263494.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378266041.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378269032.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378271453.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378273973.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378276582.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378279644.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378282176.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378284586.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378287175.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378289632.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378292483.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378294992.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378297685.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378300104.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378302651.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378304962.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378307726.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Greetings_introductions.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Numbers_dates_time.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Family_relationships.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Food_drinks.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Basic_daily_routines.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Home_rooms.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Furniture_household_items.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Clothing_colors.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Body_parts.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Basic_health_feeling_sick_doctor.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Weather.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Shopping_basic_items_prices.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Transport_bus_train_taxi.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Directions_left_right_near.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Work_basic_jobs.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_School_classroom.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Leisure_activities.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Sports_basic.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Animals.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Countries_nationalities.zip',
     // A2 - EN-DE
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378310200.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378313190.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378315617.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378318592.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378321052.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378323965.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378326376.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378329166.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378331665.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378335203.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378337681.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378340373.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378342719.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378345598.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378348007.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378350838.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378353315.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378356234.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378358615.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378360994.zip',
+    'assets/seed_packages/words/pkg_en_de_A2_Travel_holidays.zip',
+    'assets/seed_packages/words/pkg_en_de_A2_Hotels_accommodation.zip',
+    'assets/seed_packages/words/pkg_en_de_A2_Restaurants_ordering_food.zip',
+    'assets/seed_packages/words/pkg_en_de_A2_Shopping_clothes_sizes_preferences.zip',
+    'assets/seed_packages/words/pkg_en_de_A2_Daily_routines_detailed.zip',
 
     // B1 - EN-DE
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378363629.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378366023.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378368624.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378371008.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378373623.zip',
+    'assets/seed_packages/words/pkg_en_de_B1_Travel_experiences_problems.zip',
+    'assets/seed_packages/words/pkg_en_de_B1_Culture_traditions.zip',
+    'assets/seed_packages/words/pkg_en_de_B1_Food_culture_cooking.zip',
+    'assets/seed_packages/words/pkg_en_de_B1_Work_career.zip',
+    'assets/seed_packages/words/pkg_en_de_B1_Education_systems.zip',
 
 
     // B2
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378415376.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378417822.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378420799.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378423343.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378425779.zip',
+    'assets/seed_packages/words/pkg_en_de_B2_Society_social_issues.zip',
+    'assets/seed_packages/words/pkg_en_de_B2_Education_systems.zip',
+    'assets/seed_packages/words/pkg_en_de_B2_Work-life_balance.zip',
+    'assets/seed_packages/words/pkg_en_de_B2_Career_development.zip',
+    'assets/seed_packages/words/pkg_en_de_B2_Business_basics.zip',
 
     // C1
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378466342.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378468806.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378471418.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378473813.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378476496.zip',
+    'assets/seed_packages/words/pkg_en_de_C1_Politics_governance.zip',
+    'assets/seed_packages/words/pkg_en_de_C1_Economics_global_markets.zip',
+    'assets/seed_packages/words/pkg_en_de_C1_Philosophy_ethics.zip',
+    'assets/seed_packages/words/pkg_en_de_C1_Psychology_behavior.zip',
+    'assets/seed_packages/words/pkg_en_de_C1_Advanced_technology_AI_digitalization.zip',
 
     // C2
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378524244.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378527274.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378530452.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378533823.zip',
-    'assets/seed_packages/package_en-UK_German (Germany)_1774378536906.zip',
+    'assets/seed_packages/words/pkg_en_de_C2_Political_theory_ideology.zip',
+    'assets/seed_packages/words/pkg_en_de_C2_Advanced_economics_finance.zip',
+    'assets/seed_packages/words/pkg_en_de_C2_Legal_systems_case_analysis.zip',
+    'assets/seed_packages/words/pkg_en_de_C2_Philosophy_deep_analysis.zip',
+    'assets/seed_packages/words/pkg_en_de_C2_Linguistics_language_theory.zip',
 
 
 
@@ -143,11 +192,30 @@ class AppInitializationService {
       // Database must be ready before anything else
       await _initializeDatabase();
 
-      // Asset warm-up and package seeding can run in parallel
-      await Future.wait([
-        _warmUpAssets(),
-        _seedDefaultPackages(),
-      ]);
+      // Determine whether the first-run onboarding wizard is still pending.
+      // Show onboarding ONLY when:
+      //  (a) the onboarding-complete flag has never been set, AND
+      //  (b) the database is genuinely empty (no packages imported yet).
+      // This prevents the wizard appearing for users who already have data
+      // (e.g. after an app update that accidentally cleared SharedPreferences).
+      final prefs = await SharedPreferences.getInstance();
+      final flagMissing = prefs.getBool(_onboardingFlagKey) != true;
+      final dbEmpty = flagMissing &&
+          await LanguagePackageRepository().getPackageCount() == 0;
+      _needsOnboarding = flagMissing && dbEmpty;
+
+      if (_needsOnboarding) {
+        // Onboarding hasn't been completed yet – skip automatic seeding.
+        // The wizard will call importSelectedGroups() after the user picks
+        // the packages they want.
+        await _warmUpAssets();
+      } else {
+        // Asset warm-up and package seeding can run in parallel
+        await Future.wait([
+          _warmUpAssets(),
+          _seedDefaultPackages(),
+        ]);
+      }
 
       _isInitialized = true;
       return true;
@@ -207,15 +275,36 @@ class AppInitializationService {
     logDebug('✓ Assets warmed up');
   }
 
+  /// Reads a ZIP byte array and returns the value of `package.name` from
+  /// its embedded `package_data.json`, or null if it cannot be determined.
+  /// The ZIP is fully decoded to access the JSON entry.
+  static String? _extractPackageName(List<int> bytes) {
+    try {
+      final archive = ZipDecoder().decodeBytes(bytes, verify: false);
+      for (final entry in archive) {
+        if (entry.isFile && entry.name == 'package_data.json') {
+          final jsonStr = utf8.decode(entry.content as List<int>);
+          final data = jsonDecode(jsonStr) as Map<String, dynamic>;
+          final pkgData = data['package'] as Map<String, dynamic>?;
+          return pkgData?['name'] as String?;
+        }
+      }
+    } catch (_) {}
+    return null;
+  }
+
   /// On the very first launch, import every ZIP listed in [_seedPackageAssets]
   /// from the Flutter asset bundle into the database.
+  ///
+  /// Before importing each file, the package name is extracted from the ZIP and
+  /// checked against the database.  Packages that already exist by name are
+  /// silently skipped, making the seeder safe to re-run after partial imports.
   ///
   /// Progress is reported through [seedingProgress] so the SplashScreen can
   /// display a real-time progress indicator.
   ///
-  /// Each successfully imported package is recorded in SharedPreferences
-  /// immediately, so the process can be **resumed** from where it stopped if
-  /// the app is sent to the background or the screen saver fires mid-seeding.
+  /// Each successfully processed path is recorded in SharedPreferences
+  /// immediately, so the process can be **resumed** if interrupted.
   static Future<void> _seedDefaultPackages() async {
     if (_seedPackageAssets.isEmpty) return;
 
@@ -259,8 +348,9 @@ class AppInitializationService {
         isActive: true,
       );
 
+      final packageRepo = LanguagePackageRepository();
       final importRepo = ImportExportRepository(
-        packageRepo: LanguagePackageRepository(),
+        packageRepo: packageRepo,
         groupRepo: LanguagePackageGroupRepository(),
         categoryRepo: CategoryRepository(),
         itemRepo: ItemRepository(),
@@ -270,6 +360,21 @@ class AppInitializationService {
         try {
           final byteData = await rootBundle.load(assetPath);
           final bytes = byteData.buffer.asUint8List();
+
+          // Req 2: skip if a package with this name already exists in the DB.
+          final pkgName = _extractPackageName(bytes);
+          if (pkgName != null && await packageRepo.existsByName(pkgName)) {
+            logDebug('  ✓ Skipping "$pkgName" — already in DB');
+            doneSet.add(assetPath);
+            await prefs.setString(
+                _seedProgressKey, jsonEncode(doneSet.toList()));
+            seedingProgress.value = SeedingProgress(
+              current: doneSet.length,
+              total: total,
+              isActive: true,
+            );
+            continue;
+          }
 
           // Use the seeding-optimised importer (single DB transaction per package).
           final result =
@@ -331,6 +436,7 @@ class AppInitializationService {
       // Remove every known seed flag; add new ones here when you bump the key.
       await prefs.remove(_seedFlagKey);
       await prefs.remove(_seedProgressKey);
+      await prefs.remove(_onboardingFlagKey);
       logDebug('  ✓ Seed-package import flags cleared');
     } catch (e) {
       logDebug('  ⚠️  Could not clear seed flags: $e');
@@ -338,5 +444,182 @@ class AppInitializationService {
     // Also reset the in-process flag so initialize() will re-run seeding
     // if called again in the same process (e.g. after a hot-restart in dev).
     _isInitialized = false;
+    _needsOnboarding = false;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Onboarding helpers
+  // ---------------------------------------------------------------------------
+
+  /// Marks the first-launch onboarding wizard as complete and also ensures
+  /// the seed-package flag is set so automatic seeding is skipped on the
+  /// next launch (whether or not the user imported anything during onboarding).
+  static Future<void> markOnboardingComplete() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(_onboardingFlagKey, true);
+      // Ensure seeding is also marked done so the background seeder is skipped.
+      await prefs.setBool(_seedFlagKey, true);
+      await prefs.remove(_seedProgressKey);
+      logDebug('  ✓ Onboarding marked complete');
+    } catch (e) {
+      logDebug('  ⚠️  Could not mark onboarding complete: $e');
+    }
+    _needsOnboarding = false;
+  }
+
+  /// Quickly scans all seed-package ZIPs to discover the unique group names
+  /// they belong to, **without** importing anything into the database.
+  ///
+  /// Returns a map of `group_name → [assetPath, …]` sorted by group name.
+  /// Suitable for driving the onboarding package-selection UI.
+  static Future<Map<String, List<String>>> scanSeedPackageGroups() async {
+    final result = <String, List<String>>{};
+
+    for (final assetPath in _seedPackageAssets) {
+      try {
+        final byteData = await rootBundle.load(assetPath);
+        final bytes = byteData.buffer.asUint8List();
+
+        // Decode ZIP and search for package_data.json
+        final archive = ZipDecoder().decodeBytes(bytes);
+        ArchiveFile? jsonEntry;
+        for (final entry in archive) {
+          if (entry.isFile && entry.name == 'package_data.json') {
+            jsonEntry = entry;
+            break;
+          }
+        }
+
+        if (jsonEntry != null) {
+          final jsonStr = utf8.decode(jsonEntry.content as List<int>);
+          final data = jsonDecode(jsonStr) as Map<String, dynamic>;
+          final packageData = data['package'] as Map<String, dynamic>?;
+          if (packageData != null) {
+            final groupName =
+                (packageData['group_name'] as String?) ?? 'Default';
+            result.putIfAbsent(groupName, () => []).add(assetPath);
+          }
+        }
+      } catch (e) {
+        logDebug('  ⚠️  Failed to scan $assetPath for group name: $e');
+      }
+    }
+
+    // Return sorted by group name
+    return Map.fromEntries(
+      result.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
+    );
+  }
+
+  /// Import only the seed packages whose group name is in [selectedGroupNames].
+  ///
+  /// [groupToAssets] is the map returned by [scanSeedPackageGroups].
+  /// Progress is reported through [seedingProgress].
+  ///
+  /// After all selected packages are imported, [markOnboardingComplete] is
+  /// called automatically so the app moves to the home screen.
+  static Future<void> importSelectedGroups(
+    Set<String> selectedGroupNames,
+    Map<String, List<String>> groupToAssets,
+  ) async {
+    // Flatten the selected asset paths.
+    final toImport = <String>[];
+    for (final groupName in selectedGroupNames) {
+      toImport.addAll(groupToAssets[groupName] ?? []);
+    }
+
+    if (toImport.isEmpty) {
+      await markOnboardingComplete();
+      return;
+    }
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      // Resume any partially-completed import.
+      final doneJson = prefs.getString(_seedProgressKey) ?? '[]';
+      final doneSet = Set<String>.from(
+        (jsonDecode(doneJson) as List<dynamic>).cast<String>(),
+      );
+
+      final total = toImport.length;
+      final pending = toImport.where((p) => !doneSet.contains(p)).toList();
+
+      logDebug(
+        '🌱 Onboarding import: ${doneSet.length} already done, '
+        '${pending.length} pending (total $total)…',
+      );
+
+      seedingProgress.value = SeedingProgress(
+        current: doneSet.length,
+        total: total,
+        isActive: true,
+      );
+
+      final packageRepo = LanguagePackageRepository();
+      final importRepo = ImportExportRepository(
+        packageRepo: packageRepo,
+        groupRepo: LanguagePackageGroupRepository(),
+        categoryRepo: CategoryRepository(),
+        itemRepo: ItemRepository(),
+      );
+
+      for (final assetPath in pending) {
+        try {
+          final byteData = await rootBundle.load(assetPath);
+          final bytes = byteData.buffer.asUint8List();
+
+          // Req 2: skip if a package with this name already exists in the DB.
+          final pkgName = _extractPackageName(bytes);
+          if (pkgName != null && await packageRepo.existsByName(pkgName)) {
+            logDebug('  ✓ Skipping "$pkgName" — already in DB');
+            doneSet.add(assetPath);
+            await prefs.setString(
+                _seedProgressKey, jsonEncode(doneSet.toList()));
+            seedingProgress.value = SeedingProgress(
+              current: doneSet.length,
+              total: total,
+              isActive: true,
+            );
+            continue;
+          }
+
+          final result =
+              await importRepo.importPackageFromZipBytesSeeding(bytes);
+
+          doneSet.add(assetPath);
+          await prefs.setString(
+              _seedProgressKey, jsonEncode(doneSet.toList()));
+
+          logDebug(
+            '  ✓ Seeded $assetPath'
+            ' — ${result.itemCount} items in group "${result.groupName}"',
+          );
+        } catch (e) {
+          logDebug('  ⚠️  Failed to seed $assetPath: $e');
+        }
+
+        seedingProgress.value = SeedingProgress(
+          current: doneSet.length,
+          total: total,
+          isActive: true,
+        );
+      }
+
+      logDebug(
+        '✓ Onboarding import done: ${doneSet.length}/$total packages',
+      );
+    } catch (e) {
+      logDebug('⚠️  Error during onboarding import: $e');
+    } finally {
+      seedingProgress.value = SeedingProgress(
+        current: seedingProgress.value.current,
+        total: seedingProgress.value.total,
+        isActive: false,
+      );
+    }
+
+    await markOnboardingComplete();
   }
 }

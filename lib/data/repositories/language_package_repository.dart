@@ -24,6 +24,30 @@ class LanguagePackageRepository {
   }
 
   // Read
+
+  /// Returns the total number of packages in the database.
+  /// A count of 0 indicates a fresh install (used by the onboarding check).
+  Future<int> getPackageCount() async {
+    final db = await _dbHelper.database;
+    final result = await db.rawQuery(
+        'SELECT COUNT(*) AS cnt FROM language_packages');
+    return (result.first['cnt'] as int?) ?? 0;
+  }
+
+  /// Returns true if a package whose `package_name` matches [name] already
+  /// exists in the database. The comparison is case-insensitive.
+  Future<bool> existsByName(String name) async {
+    final db = await _dbHelper.database;
+    final result = await db.query(
+      'language_packages',
+      columns: ['id'],
+      where: 'LOWER(package_name) = LOWER(?)',
+      whereArgs: [name],
+      limit: 1,
+    );
+    return result.isNotEmpty;
+  }
+
   Future<List<LanguagePackage>> getAllPackages() async {
     final db = await _dbHelper.database;
     final maps = await db.query(

@@ -9,6 +9,7 @@ import 'core/theme/app_theme.dart';
 import 'core/services/app_initialization_service.dart';
 import 'data/database_helper.dart';
 import 'presentation/pages/home/home_page.dart';
+import 'presentation/pages/onboarding/onboarding_screen.dart';
 import 'presentation/providers/locale_provider.dart';
 import 'presentation/providers/theme_provider.dart';
 import 'presentation/providers/app_settings_provider.dart';
@@ -40,6 +41,7 @@ class LanguageRallyApp extends ConsumerStatefulWidget {
 class _LanguageRallyAppState extends ConsumerState<LanguageRallyApp>
     with WidgetsBindingObserver {
   bool _isInitialized = false;
+  bool _needsOnboarding = false;
 
   @override
   void initState() {
@@ -126,6 +128,7 @@ class _LanguageRallyAppState extends ConsumerState<LanguageRallyApp>
     if (mounted) {
       setState(() {
         _isInitialized = success;
+        _needsOnboarding = AppInitializationService.needsOnboarding;
       });
     }
   }
@@ -173,7 +176,13 @@ class _LanguageRallyAppState extends ConsumerState<LanguageRallyApp>
       // Ensure app always starts at home when restored
       initialRoute: '/',
       routes: {
-        '/': (context) => const HomePage(),
+        '/': (context) => _needsOnboarding
+            ? OnboardingScreen(
+                onComplete: () {
+                  setState(() => _needsOnboarding = false);
+                },
+              )
+            : const HomePage(),
       },
     );
   }

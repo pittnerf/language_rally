@@ -1474,7 +1474,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get welcomeSubtitle =>
-      'Level up your language skills — the smart and playful way.';
+      'Unlock the fantastic power of language learning with approximately 4,000 words, 4,000 expressions, and just as many example sentences—carefully curated for every proficiency level!\nLevel up your language skills — the smart and playful way.';
 
   @override
   String get welcomeIntro =>
@@ -1941,4 +1941,56 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get trainingHelpText =>
       'To make your training as effective as possible, follow these steps:\n1. Click the \'Clear counters\' button so that all items in this package are marked as known.\n2. Set \'Item scope\' to \'All items\'\n3. Set \'Item order\' to \'Random\'\n4. Choose your native language under \'Display language\'\n5. Start the training and continue until you identify approximately 20–30 items you do not know.\n6. Return to the training settings and change \'Item scope\' to \'Only unknown items\'\n7. Resume training and continue until you have learned all previously unknown items.';
+
+  @override
+  String get onboardingWelcomeTitle => 'Welcome to Language Rally!';
+
+  @override
+  String get onboardingSetupSubtitle => 'Let\'s set up the app for you.';
+
+  @override
+  String get onboardingSelectUiLanguage => 'Interface Language';
+
+  @override
+  String get onboardingUiLanguageNote =>
+      'You can change this later in Settings → UI Language.';
+
+  @override
+  String get onboardingNext => 'Next';
+
+  @override
+  String get onboardingBack => 'Back';
+
+  @override
+  String get onboardingSelectPackagesTitle => 'Choose Language Packages';
+
+  @override
+  String get onboardingSelectPackagesSubtitle =>
+      'Select which vocabulary packages to import. You can always add more later from the main menu.';
+
+  @override
+  String get onboardingAnalyzingPackages => 'Analyzing available packages…';
+
+  @override
+  String get onboardingImportSelected => 'Import Selected';
+
+  @override
+  String get onboardingSkipImport => 'Skip';
+
+  @override
+  String get onboardingSelectAll => 'Select All';
+
+  @override
+  String get onboardingDeselectAll => 'Deselect All';
+
+  @override
+  String onboardingNPackages(int count) {
+    return '$count packages';
+  }
+
+  @override
+  String get onboardingGetStarted => 'Get Started';
+
+  @override
+  String get onboardingImportCompleteTitle => 'Import Complete!';
 }

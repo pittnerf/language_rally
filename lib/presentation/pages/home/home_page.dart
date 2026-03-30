@@ -536,6 +536,20 @@ class _HomePageState extends ConsumerState<HomePage> {
     final contentWidget = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // App icon
+        Center(
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(20),
+            child: Image.asset(
+              'assets/app_icons/language_rally_race.png',
+              width: 96,
+              height: 96,
+              fit: BoxFit.contain,
+            ),
+          ),
+        ),
+        const SizedBox(height: AppTheme.spacing24),
+
         // Title
         Text(
           localizations.welcomeTitle,
