@@ -217,7 +217,7 @@
 
   "voiceInput": "Hangbemenet",
   "settings": "Beállítások",
-  "uiLanguage": "Felület Nyelve",
+  "uiLanguage": "Megjelenítés nyelve",
   "uiLanguageDescription": "Az alkalmazás felületének nyelve",
   "uiLanguageHelper": "Válaszd ki a menük, gombok és címkék nyelvét",
   "userLanguage": "Felhasználói nyelv",
@@ -464,20 +464,20 @@
   "noItemsFoundOrAllDuplicates": "Nem található elem a szövegben, vagy minden elem már létezik a csomagban",
   "aboutLanguageRally": "A Language Rally-ról",
   "welcomeTitle": "🚀 Üdvözöljük a Language Rally-ban",
-  "welcomeSubtitle": "Élvezze a nyelvi szintenként a ~4000 szó, ~ 4000 kifejezés és ugyanennyi példamondat által nyújtotta fantasztikus tudást!\nFejlessze nyelvi készségeit — okosan és játékosan.",
+  "welcomeSubtitle": "Élvezze a szintenként a több mint 4000 szó, 4000 kifejezés és ugyanennyi példamondat által nyújtotta fantasztikus tudást!\n\nFejlessze nyelvi készségeit — okosan és játékosan.",
   "welcomeIntro": "Tanulja meg hatékonyan a szókincset és kifejezéseket azáltal, hogy azt gyakorolja, ami valóban fontos önnek. Nincsenek unalmas listák. Nincs pazarolt idő.",
-  "sectionPlayYourGame": "🎮 Játssza a saját játékát",
+  "sectionPlayYourGame": "🎮 Tanuljon játszva",
   "sectionPlayYourGameDesc": "Hozzon létre saját szókészlet-csomagokat. Csak azokat a szavakat és kifejezéseket gyakorolja, amelyeket valóban el akar sajátítani. Már ismeri? Megjelölésre kerül és átugorja!",
   "sectionAITeammate": "🤖 AI mint csapattárs",
-  "sectionAITeammateDesc": "Illesszen be bármilyen szöveget és hagyja, hogy az AI:\n• Kivonja a hasznos szókincset\n• Válasszon olyan kifejezéseket, amelyek megfelelnek az ön szintjének\n• Másodpercek alatt építsen gyakorlásra kész csomagokat",
+  "sectionAITeammateDesc": "Illesszen be bármilyen szöveget és hagyja, hogy a mesterséges intelligencia:\n• Kivonatolja a hasznos szókincset\n• Válasszon olyan kifejezéseket, amelyek megfelelnek az ön szintjének\n• Másodpercek alatt építsen gyakorlásra kész nyelvi csomagokat",
   "sectionTrainSmart": "🔁 Okos gyakorlás",
-  "sectionTrainSmartDesc": "Az időközönkénti ismétlési rendszerünk pontosan akkor mutatja meg az elemeket, amikor az agyának szüksége van rájuk. Maximális haladás. Minimális erőfeszítés.",
+  "sectionTrainSmartDesc": "A szeméylre szabott ismétlési rendszerünk pontosan akkor mutatja meg az elemeket Önnek, amikor a memória hatékony építéséhez azokra Önnek a leginkább szüksége van. Maximális haladás. Minimális erőfeszítés.",
   "sectionRealExamples": "🌍 Valós példák. Kiváló fordítások.",
   "sectionRealExamplesDesc": "Szerezzen valós használati példákat. Fordítson prémium minőségben a DeepL-lel. Gyakorolja a kiejtést és legyen magabiztos.",
   "sectionTeachersWelcome": "👩‍🏫 Tanárok örömmel fogadtatnak",
   "sectionTeachersWelcomeDesc": "Csomag létrehozása → Exportálás → A tételek bemásolása vagy az AI-val való kinyerése, fordítása, példák keresése → Feltöltés/Küldés → Kész. A tanulók importálják és azonnal elkezdhetik a gyakorlást.",
-  "sectionUnlockAI": "🔑 Teljes AI erő feloldása",
-  "sectionUnlockAIDesc": "Kiváló minőségű fordításhoz és AI funkciókhoz egyszerűen:\n1. Hozza létre DeepL API kulcsát\n   https://www.deepl.com/pro-api\n2. Hozza létre OpenAI API kulcsát\n   https://platform.openai.com/api-keys\n3. Illessze be mindkét kulcsot a Beállításokba\n\nEgy kis befektetés erőteljes, professzionális szintű nyelvi eszközöket nyit meg.\n(Fizetős API hozzáférés használatát javasoljuk a legjobb eredményekhez.)",
+  "sectionUnlockAI": "🔑 Engedje szabadjára a Mesterséges intelligencia teljes erejét",
+  "sectionUnlockAIDesc": "Kiváló minőségű fordításhoz és AI funkciókhoz egyszerűen:\n\n1. Hozza létre DeepL API kulcsát\n   https://www.deepl.com/pro-api\n2. Hozza létre OpenAI API kulcsát\n   https://platform.openai.com/api-keys\n3. Illessze be mindkét kulcsot a Beállításokba\n\nEgy apró befektetés erőteljes professzionális szintű nyelvi eszközöket nyit meg az Ön számára. Miért hanyá ki?\n(Fizetős API hozzáférés használatát javasoljuk a legjobb eredményekhez.)",
   "readyToStart": "Készen áll, hogy elindítsa a rally-t? 🏁",
   "welcomeDescription": "A Language Rally az ön átfogó nyelvtanuló társa. Hozzon létre egyéni szókészlet-csomagokat, rendszerezze az elemeket kategóriák szerint, és tanuljon intelligens időközönkénti ismétlési rendszerrel.",
   "browseStore": "Áruház böngészése",
@@ -619,14 +619,14 @@
   "trainingHelpTitle": "Tippek a hatékony tanuláshoz",
   "trainingHelpText": "Ahhoz, hogy a gyakorlás a lehető leghatékonyabb legyen, kövesd az alábbi lépéseket:\n1. Kattints a 'Számlálók törlése' gombra, hogy a csomag minden eleme ismertként legyen megjelölve.\n2. Állítsd az 'Elemek köre' opciót „Összes elem' értékre.\n3. Állítsd az 'Elemek sorrendje' opciót „Véletlenszerű' értékre.\n4. Válaszd ki az anyanyelvedet a 'Megjelenítési nyelv' beállításnál.\n5. Indítsd el a tanulást, és folytasd addig, amíg körülbelül 20–30 számodra ismeretlen elemet nem érsz el.\n6. Térj vissza a tanulási beállításokhoz, és állítsd az 'Elemek köre' opciót 'Csak ismeretlen elemek' értékre.\n7. Indítsd újra a tanulást, és folytasd addig, amíg az összes korábban ismeretlen elemet meg nem tanulod.",
 
-  "onboardingWelcomeTitle": "Üdvözöl a Language Rally!",
+  "onboardingWelcomeTitle": "Üdvözöllek a Language Rally-ban!",
   "onboardingSetupSubtitle": "Állítsuk be az alkalmazást számodra.",
   "onboardingSelectUiLanguage": "Felhasználói felület nyelve",
-  "onboardingUiLanguageNote": "Ezt később a Beállítások → UI nyelv menüpontban módosíthatod.",
+  "onboardingUiLanguageNote": "Ezt később a Beállítások → Megjelenítés nyelve menüpontban módosíthatod.",
   "onboardingNext": "Tovább",
   "onboardingBack": "Vissza",
   "onboardingSelectPackagesTitle": "Válassz nyelvi csomagokat",
-  "onboardingSelectPackagesSubtitle": "Válaszd ki, melyik szókincscsomagokat importálod. Később a főmenüből bármikor importálhatsz többet.",
+  "onboardingSelectPackagesSubtitle": "Válaszd ki, melyik nyelvi csomagot importálod. Később a főmenüből bármikor importálhatsz többet is (Csomagok megtekintése).",
   "onboardingAnalyzingPackages": "Elérhető csomagok elemzése…",
   "onboardingImportSelected": "Kijelöltek importálása",
   "onboardingSkipImport": "Kihagyás",
@@ -639,7 +639,10 @@
     }
   },
   "onboardingGetStarted": "Kezdjük!",
-  "onboardingImportCompleteTitle": "Importálás kész!"
+  "onboardingImportCompleteTitle": "Importálás kész!",
+
+  "importBuiltInPkg": "Alapcsomag importálása",
+  "importBuiltInPkgTooltip": "Beépített nyelvi csomagok importálása"
 }
 
 

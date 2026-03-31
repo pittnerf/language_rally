@@ -471,10 +471,15 @@ class AppInitializationService {
   /// Quickly scans all seed-package ZIPs to discover the unique group names
   /// they belong to, **without** importing anything into the database.
   ///
+  /// Packages whose name already exists in the database are **excluded** from
+  /// the result, so only groups that have at least one not-yet-imported
+  /// package are returned.
+  ///
   /// Returns a map of `group_name → [assetPath, …]` sorted by group name.
   /// Suitable for driving the onboarding package-selection UI.
   static Future<Map<String, List<String>>> scanSeedPackageGroups() async {
     final result = <String, List<String>>{};
+    final packageRepo = LanguagePackageRepository();
 
     for (final assetPath in _seedPackageAssets) {
       try {
@@ -498,6 +503,14 @@ class AppInitializationService {
           if (packageData != null) {
             final groupName =
                 (packageData['group_name'] as String?) ?? 'Default';
+            final pkgName = packageData['name'] as String?;
+
+            // Skip packages that already exist in the database.
+            if (pkgName != null && await packageRepo.existsByName(pkgName)) {
+              logDebug('  ✓ Scan: skipping "$pkgName" — already in DB');
+              continue;
+            }
+
             result.putIfAbsent(groupName, () => []).add(assetPath);
           }
         }

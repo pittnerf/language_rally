@@ -271,11 +271,11 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
                 heroTag: 'importBuiltIn',
                 onPressed: _openBuiltInImport,
                 icon: const Icon(Icons.inventory_2_outlined, size: 18),
-                label: const Text(
-                  'Import built-in pkg',
-                  style: TextStyle(fontSize: 12),
+                label: Text(
+                  l10n.importBuiltInPkg,
+                  style: const TextStyle(fontSize: 12),
                 ),
-                tooltip: 'Import bundled language packages',
+                tooltip: l10n.importBuiltInPkgTooltip,
                 extendedPadding: const EdgeInsets.symmetric(
                   horizontal: 8,
                   vertical: 0,

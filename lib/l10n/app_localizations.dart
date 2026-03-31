@@ -2831,7 +2831,7 @@ abstract class AppLocalizations {
   /// No description provided for @sectionTrainSmartDesc.
   ///
   /// In en, this message translates to:
-  /// **'Our spaced repetition system shows items exactly when your brain needs them. Maximum progress. Minimum effort.'**
+  /// **'Our fine-tuned repetition system shows items exactly when your brain needs them in order to effectively memorize them. Maximum progress. Minimum effort.'**
   String get sectionTrainSmartDesc;
 
   /// No description provided for @sectionRealExamples.
@@ -2867,7 +2867,7 @@ abstract class AppLocalizations {
   /// No description provided for @sectionUnlockAIDesc.
   ///
   /// In en, this message translates to:
-  /// **'For high-quality translation and AI features, simply:\n1. Create your DeepL API key\n   https://www.deepl.com/pro-api\n2. Create your OpenAI API key\n   https://platform.openai.com/api-keys\n3. Paste both keys into Settings\n\nA small investment unlocks powerful, professional-grade language tools.\n(We recommend using paid API access for best results.)'**
+  /// **'For high-quality translation and AI features, simply:\n\n1. Create your DeepL API key\n   https://www.deepl.com/pro-api\n2. Create your OpenAI API key\n   https://platform.openai.com/api-keys\n3. Paste both keys into Settings\n\nA small investment unlocks powerful, professional-grade language tools.Why would you miss it out?\n(We recommend using paid API access for best results.)'**
   String get sectionUnlockAIDesc;
 
   /// No description provided for @readyToStart.
@@ -3683,7 +3683,7 @@ abstract class AppLocalizations {
   /// No description provided for @onboardingSelectPackagesSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Select which vocabulary packages to import. You can always add more later from the main menu.'**
+  /// **'Select which vocabulary packages to import. You can always add more later from the main menu (View Packages).'**
   String get onboardingSelectPackagesSubtitle;
 
   /// No description provided for @onboardingAnalyzingPackages.
@@ -3733,6 +3733,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Import Complete!'**
   String get onboardingImportCompleteTitle;
+
+  /// No description provided for @importBuiltInPkg.
+  ///
+  /// In en, this message translates to:
+  /// **'Import built-in pkg'**
+  String get importBuiltInPkg;
+
+  /// No description provided for @importBuiltInPkgTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Import bundled language packages'**
+  String get importBuiltInPkgTooltip;
 }
 
 class _AppLocalizationsDelegate

@@ -681,7 +681,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get settings => 'Beállítások';
 
   @override
-  String get uiLanguage => 'Felület Nyelve';
+  String get uiLanguage => 'Megjelenítés nyelve';
 
   @override
   String get uiLanguageDescription => 'Az alkalmazás felületének nyelve';
@@ -1484,14 +1484,14 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get welcomeSubtitle =>
-      'Élvezze a nyelvi szintenként a ~4000 szó, ~ 4000 kifejezés és ugyanennyi példamondat által nyújtotta fantasztikus tudást!\nFejlessze nyelvi készségeit — okosan és játékosan.';
+      'Élvezze a szintenként a több mint 4000 szó, 4000 kifejezés és ugyanennyi példamondat által nyújtotta fantasztikus tudást!\n\nFejlessze nyelvi készségeit — okosan és játékosan.';
 
   @override
   String get welcomeIntro =>
       'Tanulja meg hatékonyan a szókincset és kifejezéseket azáltal, hogy azt gyakorolja, ami valóban fontos önnek. Nincsenek unalmas listák. Nincs pazarolt idő.';
 
   @override
-  String get sectionPlayYourGame => '🎮 Játssza a saját játékát';
+  String get sectionPlayYourGame => '🎮 Tanuljon játszva';
 
   @override
   String get sectionPlayYourGameDesc =>
@@ -1502,14 +1502,14 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get sectionAITeammateDesc =>
-      'Illesszen be bármilyen szöveget és hagyja, hogy az AI:\n• Kivonja a hasznos szókincset\n• Válasszon olyan kifejezéseket, amelyek megfelelnek az ön szintjének\n• Másodpercek alatt építsen gyakorlásra kész csomagokat';
+      'Illesszen be bármilyen szöveget és hagyja, hogy a mesterséges intelligencia:\n• Kivonatolja a hasznos szókincset\n• Válasszon olyan kifejezéseket, amelyek megfelelnek az ön szintjének\n• Másodpercek alatt építsen gyakorlásra kész nyelvi csomagokat';
 
   @override
   String get sectionTrainSmart => '🔁 Okos gyakorlás';
 
   @override
   String get sectionTrainSmartDesc =>
-      'Az időközönkénti ismétlési rendszerünk pontosan akkor mutatja meg az elemeket, amikor az agyának szüksége van rájuk. Maximális haladás. Minimális erőfeszítés.';
+      'A szeméylre szabott ismétlési rendszerünk pontosan akkor mutatja meg az elemeket Önnek, amikor a memória hatékony építéséhez azokra Önnek a leginkább szüksége van. Maximális haladás. Minimális erőfeszítés.';
 
   @override
   String get sectionRealExamples => '🌍 Valós példák. Kiváló fordítások.';
@@ -1526,11 +1526,12 @@ class AppLocalizationsHu extends AppLocalizations {
       'Csomag létrehozása → Exportálás → A tételek bemásolása vagy az AI-val való kinyerése, fordítása, példák keresése → Feltöltés/Küldés → Kész. A tanulók importálják és azonnal elkezdhetik a gyakorlást.';
 
   @override
-  String get sectionUnlockAI => '🔑 Teljes AI erő feloldása';
+  String get sectionUnlockAI =>
+      '🔑 Engedje szabadjára a Mesterséges intelligencia teljes erejét';
 
   @override
   String get sectionUnlockAIDesc =>
-      'Kiváló minőségű fordításhoz és AI funkciókhoz egyszerűen:\n1. Hozza létre DeepL API kulcsát\n   https://www.deepl.com/pro-api\n2. Hozza létre OpenAI API kulcsát\n   https://platform.openai.com/api-keys\n3. Illessze be mindkét kulcsot a Beállításokba\n\nEgy kis befektetés erőteljes, professzionális szintű nyelvi eszközöket nyit meg.\n(Fizetős API hozzáférés használatát javasoljuk a legjobb eredményekhez.)';
+      'Kiváló minőségű fordításhoz és AI funkciókhoz egyszerűen:\n\n1. Hozza létre DeepL API kulcsát\n   https://www.deepl.com/pro-api\n2. Hozza létre OpenAI API kulcsát\n   https://platform.openai.com/api-keys\n3. Illessze be mindkét kulcsot a Beállításokba\n\nEgy apró befektetés erőteljes professzionális szintű nyelvi eszközöket nyit meg az Ön számára. Miért hanyá ki?\n(Fizetős API hozzáférés használatát javasoljuk a legjobb eredményekhez.)';
 
   @override
   String get readyToStart => 'Készen áll, hogy elindítsa a rally-t? 🏁';
@@ -1953,7 +1954,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Ahhoz, hogy a gyakorlás a lehető leghatékonyabb legyen, kövesd az alábbi lépéseket:\n1. Kattints a \'Számlálók törlése\' gombra, hogy a csomag minden eleme ismertként legyen megjelölve.\n2. Állítsd az \'Elemek köre\' opciót „Összes elem\' értékre.\n3. Állítsd az \'Elemek sorrendje\' opciót „Véletlenszerű\' értékre.\n4. Válaszd ki az anyanyelvedet a \'Megjelenítési nyelv\' beállításnál.\n5. Indítsd el a tanulást, és folytasd addig, amíg körülbelül 20–30 számodra ismeretlen elemet nem érsz el.\n6. Térj vissza a tanulási beállításokhoz, és állítsd az \'Elemek köre\' opciót \'Csak ismeretlen elemek\' értékre.\n7. Indítsd újra a tanulást, és folytasd addig, amíg az összes korábban ismeretlen elemet meg nem tanulod.';
 
   @override
-  String get onboardingWelcomeTitle => 'Üdvözöl a Language Rally!';
+  String get onboardingWelcomeTitle => 'Üdvözöllek a Language Rally-ban!';
 
   @override
   String get onboardingSetupSubtitle => 'Állítsuk be az alkalmazást számodra.';
@@ -1963,7 +1964,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get onboardingUiLanguageNote =>
-      'Ezt később a Beállítások → UI nyelv menüpontban módosíthatod.';
+      'Ezt később a Beállítások → Megjelenítés nyelve menüpontban módosíthatod.';
 
   @override
   String get onboardingNext => 'Tovább';
@@ -1976,7 +1977,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get onboardingSelectPackagesSubtitle =>
-      'Válaszd ki, melyik szókincscsomagokat importálod. Később a főmenüből bármikor importálhatsz többet.';
+      'Válaszd ki, melyik nyelvi csomagot importálod. Később a főmenüből bármikor importálhatsz többet is (Csomagok megtekintése).';
 
   @override
   String get onboardingAnalyzingPackages => 'Elérhető csomagok elemzése…';
@@ -2003,4 +2004,10 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get onboardingImportCompleteTitle => 'Importálás kész!';
+
+  @override
+  String get importBuiltInPkg => 'Alapcsomag importálása';
+
+  @override
+  String get importBuiltInPkgTooltip => 'Beépített nyelvi csomagok importálása';
 }

@@ -69,3 +69,7 @@ app.*.map.json
 # OS
 .DS_Store
 Thumbs.db
+# Android signing — never commit these
+android/key.properties
+android/*.jks
+android/*.keystore
