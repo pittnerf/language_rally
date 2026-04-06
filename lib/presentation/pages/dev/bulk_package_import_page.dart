@@ -1801,6 +1801,8 @@ const List<PackageDef> _packageDefinitions = [
 
 
 
+
+
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -1839,6 +1841,9 @@ class _BulkPackageImportPageState extends State<BulkPackageImportPage> {
     (_) => _PackageResult(_ImportStatus.idle, ''),
   );
   bool _isRunning = false;
+  /// When true, any existing package with the same name is deleted first so
+  /// that it can be re-imported fresh (useful after a category fix).
+  bool _forceReimport = false;
 
   @override
   void dispose() {
@@ -1985,10 +1990,19 @@ class _BulkPackageImportPageState extends State<BulkPackageImportPage> {
               def.packageName.toLowerCase()),
     );
     if (existing.isNotEmpty) {
-      throw Exception(
-        'Package "${def.packageName}" already exists in '
-        'group "${def.groupName}" — skipped.',
-      );
+      if (_forceReimport) {
+        // Delete the existing package (and its categories/items via cascade)
+        for (final p in existing) {
+          await _packageRepo.deletePackage(p.id);
+        }
+        _appendLog('    ├ ⚠  Deleted existing package (force re-import)');
+      } else {
+        throw Exception(
+          'Package "${def.packageName}" already exists in '
+          'group "${def.groupName}" — skipped. '
+          'Enable "Force re-import" to delete and re-import.',
+        );
+      }
     }
 
     // 3. Resolve language names ────────────────────────────────────────────
@@ -2050,13 +2064,14 @@ class _BulkPackageImportPageState extends State<BulkPackageImportPage> {
     _appendLog('    ├ Read ${itemList.length} item(s) from JSON');
 
     // 7. Import items ─────────────────────────────────────────────────────
-    final importedCount = await _importItems(
+    final result = await _importItems(
       packageId: packageId,
       langCode1: def.langCode1,
       langCode2: def.langCode2,
       items: itemList,
     );
-    _appendLog('    ├ $importedCount / ${itemList.length} items imported');
+    _appendLog('    ├ ${result.imported} / ${itemList.length} items imported'
+        '  •  ${result.categories} unique categor${result.categories == 1 ? "y" : "ies"} created');
 
     // 8. Auto-export to ZIP (bypasses the purchased-package guard) ────────
     final zipPath = await _exportToZip(packageId);
@@ -2067,12 +2082,12 @@ class _BulkPackageImportPageState extends State<BulkPackageImportPage> {
       _appendLog('    └ ⚠  ZIP export skipped (see warning above)');
     }
 
-    return '$importedCount / ${itemList.length} items imported'
+    return '${result.imported} / ${itemList.length} items · ${result.categories} categories'
         '${zipPath != null ? " · ZIP saved" : " · export failed"}';
   }
 
   /// Mirrors the logic of _processJsonImportItems in package_form_page.dart.
-  Future<int> _importItems({
+  Future<({int imported, int categories})> _importItems({
     required String packageId,
     required String langCode1,
     required String langCode2,
@@ -2135,7 +2150,14 @@ class _BulkPackageImportPageState extends State<BulkPackageImportPage> {
         final catsJson = j['categories'] as List<dynamic>?;
         if (catsJson != null) {
           for (final c in catsJson) {
-            if (c is String && c.trim().isNotEmpty) catNames.add(c.trim());
+            if (c is String && c.trim().isNotEmpty) {
+              catNames.add(c.trim());
+            } else if (c is Map<String, dynamic>) {
+              // Handle {"category_name": "..."} or {"name": "..."} object format
+              final name = (c['category_name'] as String?)?.trim() ??
+                           (c['name'] as String?)?.trim();
+              if (name != null && name.isNotEmpty) catNames.add(name);
+            }
           }
         }
         if (catNames.isEmpty) catNames.add('Imported');
@@ -2188,7 +2210,7 @@ class _BulkPackageImportPageState extends State<BulkPackageImportPage> {
         _appendLog('    ⚠  Item ${idx + 1} failed: $e');
       }
     }
-    return importedCount;
+    return (imported: importedCount, categories: categoryMap.length);
   }
 
   // ── UI ─────────────────────────────────────────────────────────────────────
@@ -2224,6 +2246,26 @@ class _BulkPackageImportPageState extends State<BulkPackageImportPage> {
                     style: theme.textTheme.bodySmall
                         ?.copyWith(color: cs.onErrorContainer),
                   ),
+                ),
+                const SizedBox(width: 8),
+                // Force re-import toggle
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Switch(
+                      value: _forceReimport,
+                      onChanged: _isRunning
+                          ? null
+                          : (v) => setState(() => _forceReimport = v),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      'Force re-import',
+                      style: theme.textTheme.labelSmall
+                          ?.copyWith(color: cs.onErrorContainer),
+                    ),
+                  ],
                 ),
                 const SizedBox(width: 12),
                 FilledButton.icon(

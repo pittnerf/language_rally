@@ -65,6 +65,7 @@ class AppInitializationService {
   /// Asset paths of language packages that are bundled with the app.
   /// Add a new entry here whenever you drop a new .zip into assets/seed_packages/.
   static const List<String> _seedPackageAssets = [
+
     // Expressions - EN-DE
     //A1
     'assets/seed_packages/expressions/pkg_en_de_A1_Animals.zip',

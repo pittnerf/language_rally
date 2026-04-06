@@ -6,7 +6,7 @@
 
 /// Global flag to control debug printing
 /// Set to false in production to disable all debug prints
-const bool PRINT_DEBUG = false;
+const bool PRINT_DEBUG = true;
 
 /// Debug print function that only prints if PRINT_DEBUG is true
 /// Use this instead of regular print() throughout the application
