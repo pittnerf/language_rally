@@ -34,8 +34,15 @@ import 'item_edit_page.dart';
 /// Item browser page for viewing and filtering items in a package
 class ItemBrowserPage extends ConsumerStatefulWidget {
   final LanguagePackage package;
+  /// When provided the item with this ID is pre-selected (and scrolled to)
+  /// after the page loads.
+  final String? initialItemId;
 
-  const ItemBrowserPage({super.key, required this.package});
+  const ItemBrowserPage({
+    super.key,
+    required this.package,
+    this.initialItemId,
+  });
 
   @override
   ConsumerState<ItemBrowserPage> createState() => _ItemBrowserPageState();
@@ -50,6 +57,11 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
   List<Category> _allCategories = [];
   bool _isLoading = true;
   Item? _selectedItem;
+
+  // Scroll controller used to jump to the pre-selected item.
+  // Not final so it can be recreated with a correct initialScrollOffset
+  // before the ListView is first built (see _loadItems).
+  ScrollController _listScrollController = ScrollController();
 
   // Filter state
   final _language1Controller = TextEditingController();
@@ -91,6 +103,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
     _ttsService.stop();
     _language1Controller.dispose();
     _language2Controller.dispose();
+    _listScrollController.dispose();
     super.dispose();
   }
 
@@ -107,14 +120,58 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
         a.language1Data.text.toLowerCase().compareTo(b.language1Data.text.toLowerCase())
       );
 
+      // Determine which item to pre-select:
+      // • if initialItemId is given, find that item; otherwise fall back to first.
+      Item? preSelected;
+      int preSelectedIndex = 0;
+      if (widget.initialItemId != null) {
+        final idx = items.indexWhere((i) => i.id == widget.initialItemId);
+        if (idx >= 0) {
+          preSelected = items[idx];
+          preSelectedIndex = idx;
+        }
+      }
+      preSelected ??= items.isNotEmpty ? items.first : null;
+
+      // ── Scroll to the pre-selected item ──────────────────────────────────
+      // We recreate the ScrollController with the correct initialScrollOffset
+      // BEFORE calling setState (which will set _isLoading = false and render
+      // the ListView for the first time).  This is safe because _isLoading is
+      // still true here, so the ListView is not yet in the widget tree and
+      // _listScrollController has no clients.
+      //
+      // Why not addPostFrameCallback?
+      //   – ListView.builder is lazy; maxScrollExtent may still be 0 on the
+      //     first post-frame callback, causing clamp(offset, 0) = 0 (no scroll).
+      //   – initialScrollOffset is applied when the position is first created,
+      //     so it always works regardless of timing.
+      //
+      // Item height estimate: each Card has
+      //   vertical margin 4 dp × 2  = 8 dp
+      //   inner padding   2 dp × 2  = 4 dp
+      //   two bodySmall text rows  ≈ 30 dp  (12 sp × 1.2 lh × 2 rows ≈ 29 dp)
+      //   1 dp gap between rows
+      //   ─────────────────────────────────────────────────────────────────
+      //   total                    ≈ 43 dp  → we use 48 dp for a little slack
+      //
+      // The ListView itself has padding: EdgeInsets.all(spacing8) = 8 dp top.
+      if (widget.initialItemId != null &&
+          preSelectedIndex > 0 &&
+          !_listScrollController.hasClients) {
+        const listTopPadding = AppTheme.spacing8; // 8.0
+        const estimatedItemHeight = 48.0;
+        final initialOffset =
+            listTopPadding + preSelectedIndex * estimatedItemHeight;
+        _listScrollController.dispose();
+        _listScrollController =
+            ScrollController(initialScrollOffset: initialOffset);
+      }
+
       setState(() {
         _allItems = items;
         _filteredItems = items;
         _allCategories = categories;
-        // Auto-select first item on initial load
-        if (items.isNotEmpty) {
-          _selectedItem = items.first;
-        }
+        _selectedItem = preSelected;
         _isLoading = false;
       });
     } catch (e) {
@@ -870,6 +927,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
     }
 
     return ListView.builder(
+      controller: _listScrollController,
       padding: const EdgeInsets.all(AppTheme.spacing8),
       itemCount: _filteredItems.length,
       itemBuilder: (context, index) {

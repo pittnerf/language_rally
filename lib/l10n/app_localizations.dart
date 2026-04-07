@@ -3745,6 +3745,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Import bundled language packages'**
   String get importBuiltInPkgTooltip;
+
+  /// No description provided for @globalSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Global Search'**
+  String get globalSearch;
+
+  /// No description provided for @globalSearchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Across All Packages'**
+  String get globalSearchTitle;
+
+  /// No description provided for @globalSearchSelectLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Language Code'**
+  String get globalSearchSelectLanguage;
+
+  /// No description provided for @globalSearchEnterWord.
+  ///
+  /// In en, this message translates to:
+  /// **'Word(s) to search'**
+  String get globalSearchEnterWord;
+
+  /// No description provided for @globalSearchEnterWordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. \"der\", \"order\" — finds partial matches'**
+  String get globalSearchEnterWordHint;
+
+  /// No description provided for @globalSearchButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get globalSearchButton;
+
+  /// No description provided for @globalSearchResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Results'**
+  String get globalSearchResults;
+
+  /// No description provided for @globalSearchNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found for \"{query}\"'**
+  String globalSearchNoResults(String query);
+
+  /// No description provided for @globalSearchResultsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} result(s) found'**
+  String globalSearchResultsCount(int count);
+
+  /// No description provided for @globalSearchSearching.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching…'**
+  String get globalSearchSearching;
+
+  /// No description provided for @globalSearchSelectLanguageFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a language code first'**
+  String get globalSearchSelectLanguageFirst;
+
+  /// No description provided for @globalSearchEnterTermFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a search term'**
+  String get globalSearchEnterTermFirst;
+
+  /// No description provided for @globalSearchMatchInExamples.
+  ///
+  /// In en, this message translates to:
+  /// **'Found in examples'**
+  String get globalSearchMatchInExamples;
+
+  /// No description provided for @globalSearchViewItem.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get globalSearchViewItem;
+
+  /// No description provided for @globalSearchGoToPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Package'**
+  String get globalSearchGoToPackage;
+
+  /// No description provided for @globalSearchLoadingPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading packages…'**
+  String get globalSearchLoadingPackages;
+
+  /// No description provided for @globalSearchNoPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'No language packages installed yet'**
+  String get globalSearchNoPackages;
+
+  /// No description provided for @globalSearchCancelSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Search'**
+  String get globalSearchCancelSearch;
+
+  /// No description provided for @globalSearchProgressOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Searching package {current} of {total}…'**
+  String globalSearchProgressOf(int current, int total);
+
+  /// No description provided for @globalSearchCancelledMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Search cancelled — {count} result(s) found so far'**
+  String globalSearchCancelledMessage(int count);
 }
 
 class _AppLocalizationsDelegate

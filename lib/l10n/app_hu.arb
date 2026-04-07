@@ -642,7 +642,49 @@
   "onboardingImportCompleteTitle": "Importálás kész!",
 
   "importBuiltInPkg": "Alapcsomag importálása",
-  "importBuiltInPkgTooltip": "Beépített nyelvi csomagok importálása"
+  "importBuiltInPkgTooltip": "Beépített nyelvi csomagok importálása",
+
+  "globalSearch": "Globális keresés",
+  "globalSearchTitle": "Keresés az összes csomagban",
+  "globalSearchSelectLanguage": "Válassz nyelvkódot",
+  "globalSearchEnterWord": "Keresendő szó(k)",
+  "globalSearchEnterWordHint": "pl. \"der\", \"tanul\" — részleges egyezést is megtalál",
+  "globalSearchButton": "Keresés",
+  "globalSearchResults": "Eredmények",
+  "globalSearchNoResults": "Nincs találat a(z) \"{query}\" keresésre",
+  "@globalSearchNoResults": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "globalSearchResultsCount": "{count} találat",
+  "@globalSearchResultsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "globalSearchSearching": "Keresés…",
+  "globalSearchSelectLanguageFirst": "Kérlek, válassz nyelvkódot",
+  "globalSearchEnterTermFirst": "Kérlek, adj meg keresési kifejezést",
+  "globalSearchMatchInExamples": "Példamondatban található",
+  "globalSearchViewItem": "Megtekintés",
+  "globalSearchGoToPackage": "Ugrás a csomaghoz",
+  "globalSearchLoadingPackages": "Csomagok betöltése…",
+  "globalSearchNoPackages": "Még nincs telepített csomag",
+  "globalSearchCancelSearch": "Keresés leállítása",
+  "globalSearchProgressOf": "{current}. csomag a(z) {total}-ból…",
+  "@globalSearchProgressOf": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total":   { "type": "int" }
+    }
+  },
+  "globalSearchCancelledMessage": "Keresés megszakítva — {count} találat eddig",
+  "@globalSearchCancelledMessage": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }
 
 

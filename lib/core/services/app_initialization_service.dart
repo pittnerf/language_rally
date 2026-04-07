@@ -68,6 +68,7 @@ class AppInitializationService {
 
     // Expressions - EN-DE
     //A1
+
     'assets/seed_packages/expressions/pkg_en_de_A1_Animals.zip',
     'assets/seed_packages/expressions/pkg_en_de_A1_Basic_daily_routines.zip',
     'assets/seed_packages/expressions/pkg_en_de_A1_Basic_health_feeling_sick_doctor.zip',
@@ -122,61 +123,61 @@ class AppInitializationService {
 
 
     // A1 - EN-DE
-    'assets/seed_packages/words/pkg_en_de_A1_Greetings_introductions.zip',
-    'assets/seed_packages/words/pkg_en_de_A1_Numbers_dates_time.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Animals.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Basic_daily_routines.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Basic_health_feeling_sick_doctor.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Body_parts.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Clothing_colors.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Countries_nationalities.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Directions_left_right_near.zip',
     'assets/seed_packages/words/pkg_en_de_A1_Family_relationships.zip',
     'assets/seed_packages/words/pkg_en_de_A1_Food_drinks.zip',
-    'assets/seed_packages/words/pkg_en_de_A1_Basic_daily_routines.zip',
-    'assets/seed_packages/words/pkg_en_de_A1_Home_rooms.zip',
     'assets/seed_packages/words/pkg_en_de_A1_Furniture_household_items.zip',
-    'assets/seed_packages/words/pkg_en_de_A1_Clothing_colors.zip',
-    'assets/seed_packages/words/pkg_en_de_A1_Body_parts.zip',
-    'assets/seed_packages/words/pkg_en_de_A1_Basic_health_feeling_sick_doctor.zip',
-    'assets/seed_packages/words/pkg_en_de_A1_Weather.zip',
-    'assets/seed_packages/words/pkg_en_de_A1_Shopping_basic_items_prices.zip',
-    'assets/seed_packages/words/pkg_en_de_A1_Transport_bus_train_taxi.zip',
-    'assets/seed_packages/words/pkg_en_de_A1_Directions_left_right_near.zip',
-    'assets/seed_packages/words/pkg_en_de_A1_Work_basic_jobs.zip',
-    'assets/seed_packages/words/pkg_en_de_A1_School_classroom.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Greetings_introductions.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Home_rooms.zip',
     'assets/seed_packages/words/pkg_en_de_A1_Leisure_activities.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Numbers_dates_time.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_School_classroom.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Shopping_basic_items_prices.zip',
     'assets/seed_packages/words/pkg_en_de_A1_Sports_basic.zip',
-    'assets/seed_packages/words/pkg_en_de_A1_Animals.zip',
-    'assets/seed_packages/words/pkg_en_de_A1_Countries_nationalities.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Transport_bus_train_taxi.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Weather.zip',
+    'assets/seed_packages/words/pkg_en_de_A1_Work_basic_jobs.zip',
     // A2 - EN-DE
-    'assets/seed_packages/words/pkg_en_de_A2_Travel_holidays.zip',
-    'assets/seed_packages/words/pkg_en_de_A2_Hotels_accommodation.zip',
-    'assets/seed_packages/words/pkg_en_de_A2_Restaurants_ordering_food.zip',
-    'assets/seed_packages/words/pkg_en_de_A2_Shopping_clothes_sizes_preferences.zip',
+    'assets/seed_packages/words/pkg_en_de_A2_Basic_grammar_topics_presentpastfuture_simple_conditionals.zip',
+    'assets/seed_packages/words/pkg_en_de_A2_City_places_bank_post_office.zip',
+    'assets/seed_packages/words/pkg_en_de_A2_Communication_phone_messages.zip',
     'assets/seed_packages/words/pkg_en_de_A2_Daily_routines_detailed.zip',
+    'assets/seed_packages/words/pkg_en_de_A2_Directions_navigation.zip',
 
     // B1 - EN-DE
-    'assets/seed_packages/words/pkg_en_de_B1_Travel_experiences_problems.zip',
+    'assets/seed_packages/words/pkg_en_de_B1_Basic_politics_society.zip',
+    'assets/seed_packages/words/pkg_en_de_B1_City_vs_countryside.zip',
+    'assets/seed_packages/words/pkg_en_de_B1_Communication_language_learning.zip',
     'assets/seed_packages/words/pkg_en_de_B1_Culture_traditions.zip',
-    'assets/seed_packages/words/pkg_en_de_B1_Food_culture_cooking.zip',
-    'assets/seed_packages/words/pkg_en_de_B1_Work_career.zip',
     'assets/seed_packages/words/pkg_en_de_B1_Education_systems.zip',
 
 
     // B2
-    'assets/seed_packages/words/pkg_en_de_B2_Society_social_issues.zip',
-    'assets/seed_packages/words/pkg_en_de_B2_Education_systems.zip',
-    'assets/seed_packages/words/pkg_en_de_B2_Work-life_balance.zip',
-    'assets/seed_packages/words/pkg_en_de_B2_Career_development.zip',
     'assets/seed_packages/words/pkg_en_de_B2_Business_basics.zip',
+    'assets/seed_packages/words/pkg_en_de_B2_Career_development.zip',
+    'assets/seed_packages/words/pkg_en_de_B2_Crime_law_basic.zip',
+    'assets/seed_packages/words/pkg_en_de_B2_Culture_identity.zip',
+    'assets/seed_packages/words/pkg_en_de_B2_Debate_argumentation.zip',
 
     // C1
-    'assets/seed_packages/words/pkg_en_de_C1_Politics_governance.zip',
-    'assets/seed_packages/words/pkg_en_de_C1_Economics_global_markets.zip',
-    'assets/seed_packages/words/pkg_en_de_C1_Philosophy_ethics.zip',
-    'assets/seed_packages/words/pkg_en_de_C1_Psychology_behavior.zip',
+    'assets/seed_packages/words/pkg_en_de_C1_Academic_writing_rhetoric.zip',
     'assets/seed_packages/words/pkg_en_de_C1_Advanced_technology_AI_digitalization.zip',
+    'assets/seed_packages/words/pkg_en_de_C1_Art_literature_interpretation.zip',
+    'assets/seed_packages/words/pkg_en_de_C1_Business_strategy.zip',
+    'assets/seed_packages/words/pkg_en_de_C1_Communication_strategies.zip',
 
     // C2
-    'assets/seed_packages/words/pkg_en_de_C2_Political_theory_ideology.zip',
+    'assets/seed_packages/words/pkg_en_de_C2_Advanced_business_corporate_strategy.zip',
     'assets/seed_packages/words/pkg_en_de_C2_Advanced_economics_finance.zip',
-    'assets/seed_packages/words/pkg_en_de_C2_Legal_systems_case_analysis.zip',
-    'assets/seed_packages/words/pkg_en_de_C2_Philosophy_deep_analysis.zip',
-    'assets/seed_packages/words/pkg_en_de_C2_Linguistics_language_theory.zip',
+    'assets/seed_packages/words/pkg_en_de_C2_Advanced_rhetoric_persuasion.zip',
+    'assets/seed_packages/words/pkg_en_de_C2_Cultural_discourse_identity_theory.zip',
+    'assets/seed_packages/words/pkg_en_de_C2_Ethics_in_technology_AI_bioethics.zip',
 
 
 

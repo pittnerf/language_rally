@@ -2010,4 +2010,74 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get importBuiltInPkgTooltip => 'Beépített nyelvi csomagok importálása';
+
+  @override
+  String get globalSearch => 'Globális keresés';
+
+  @override
+  String get globalSearchTitle => 'Keresés az összes csomagban';
+
+  @override
+  String get globalSearchSelectLanguage => 'Válassz nyelvkódot';
+
+  @override
+  String get globalSearchEnterWord => 'Keresendő szó(k)';
+
+  @override
+  String get globalSearchEnterWordHint =>
+      'pl. \"der\", \"tanul\" — részleges egyezést is megtalál';
+
+  @override
+  String get globalSearchButton => 'Keresés';
+
+  @override
+  String get globalSearchResults => 'Eredmények';
+
+  @override
+  String globalSearchNoResults(String query) {
+    return 'Nincs találat a(z) \"$query\" keresésre';
+  }
+
+  @override
+  String globalSearchResultsCount(int count) {
+    return '$count találat';
+  }
+
+  @override
+  String get globalSearchSearching => 'Keresés…';
+
+  @override
+  String get globalSearchSelectLanguageFirst => 'Kérlek, válassz nyelvkódot';
+
+  @override
+  String get globalSearchEnterTermFirst =>
+      'Kérlek, adj meg keresési kifejezést';
+
+  @override
+  String get globalSearchMatchInExamples => 'Példamondatban található';
+
+  @override
+  String get globalSearchViewItem => 'Megtekintés';
+
+  @override
+  String get globalSearchGoToPackage => 'Ugrás a csomaghoz';
+
+  @override
+  String get globalSearchLoadingPackages => 'Csomagok betöltése…';
+
+  @override
+  String get globalSearchNoPackages => 'Még nincs telepített csomag';
+
+  @override
+  String get globalSearchCancelSearch => 'Keresés leállítása';
+
+  @override
+  String globalSearchProgressOf(int current, int total) {
+    return '$current. csomag a(z) $total-ból…';
+  }
+
+  @override
+  String globalSearchCancelledMessage(int count) {
+    return 'Keresés megszakítva — $count találat eddig';
+  }
 }

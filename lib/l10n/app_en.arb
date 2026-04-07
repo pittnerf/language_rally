@@ -700,7 +700,49 @@
   "onboardingImportCompleteTitle": "Import Complete!",
 
   "importBuiltInPkg": "Import built-in pkg",
-  "importBuiltInPkgTooltip": "Import bundled language packages"
+  "importBuiltInPkgTooltip": "Import bundled language packages",
+
+  "globalSearch": "Global Search",
+  "globalSearchTitle": "Search Across All Packages",
+  "globalSearchSelectLanguage": "Select Language Code",
+  "globalSearchEnterWord": "Word(s) to search",
+  "globalSearchEnterWordHint": "e.g. \"der\", \"order\" — finds partial matches",
+  "globalSearchButton": "Search",
+  "globalSearchResults": "Results",
+  "globalSearchNoResults": "No results found for \"{query}\"",
+  "@globalSearchNoResults": {
+    "placeholders": {
+      "query": { "type": "String" }
+    }
+  },
+  "globalSearchResultsCount": "{count} result(s) found",
+  "@globalSearchResultsCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "globalSearchSearching": "Searching…",
+  "globalSearchSelectLanguageFirst": "Please select a language code first",
+  "globalSearchEnterTermFirst": "Please enter a search term",
+  "globalSearchMatchInExamples": "Found in examples",
+  "globalSearchViewItem": "View",
+  "globalSearchGoToPackage": "Go to Package",
+  "globalSearchLoadingPackages": "Loading packages…",
+  "globalSearchNoPackages": "No language packages installed yet",
+  "globalSearchCancelSearch": "Cancel Search",
+  "globalSearchProgressOf": "Searching package {current} of {total}…",
+  "@globalSearchProgressOf": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total":   { "type": "int" }
+    }
+  },
+  "globalSearchCancelledMessage": "Search cancelled — {count} result(s) found so far",
+  "@globalSearchCancelledMessage": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  }
 }
 
 

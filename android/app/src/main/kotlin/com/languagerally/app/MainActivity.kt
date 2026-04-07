@@ -1,4 +1,4 @@
-package com.example.language_rally
+package com.languagerally.app
 
 import io.flutter.embedding.android.FlutterActivity
 
@@ -16,3 +16,4 @@ class MainActivity : FlutterActivity() {
         }
     }
 }
+

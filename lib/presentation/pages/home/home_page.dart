@@ -12,6 +12,7 @@ import '../settings/app_settings_page.dart';
 import '../app_tour/app_tour_page.dart';
 import '../../../core/utils/debug_print.dart';
 import '../dev/bulk_package_import_page.dart';
+import '../items/global_search_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -351,7 +352,24 @@ class _HomePageState extends ConsumerState<HomePage> {
         ),
         const SizedBox(height: AppTheme.spacing12),
 
-        // Start Training Rally Button (Second)
+        // Global Search Button
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const GlobalSearchPage()),
+            );
+          },
+          icon: Icon(Icons.manage_search, size: iconSize),
+          label: Text(
+            localizations.globalSearch,
+            style: TextStyle(fontSize: fontSize),
+          ),
+          style: ElevatedButton.styleFrom(
+            padding: buttonPadding,
+          ),
+        ),
+        const SizedBox(height: AppTheme.spacing12),
         FilledButton.icon(
           onPressed: () {
             Navigator.push(

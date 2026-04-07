@@ -1999,4 +1999,74 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get importBuiltInPkgTooltip => 'Import bundled language packages';
+
+  @override
+  String get globalSearch => 'Global Search';
+
+  @override
+  String get globalSearchTitle => 'Search Across All Packages';
+
+  @override
+  String get globalSearchSelectLanguage => 'Select Language Code';
+
+  @override
+  String get globalSearchEnterWord => 'Word(s) to search';
+
+  @override
+  String get globalSearchEnterWordHint =>
+      'e.g. \"der\", \"order\" — finds partial matches';
+
+  @override
+  String get globalSearchButton => 'Search';
+
+  @override
+  String get globalSearchResults => 'Results';
+
+  @override
+  String globalSearchNoResults(String query) {
+    return 'No results found for \"$query\"';
+  }
+
+  @override
+  String globalSearchResultsCount(int count) {
+    return '$count result(s) found';
+  }
+
+  @override
+  String get globalSearchSearching => 'Searching…';
+
+  @override
+  String get globalSearchSelectLanguageFirst =>
+      'Please select a language code first';
+
+  @override
+  String get globalSearchEnterTermFirst => 'Please enter a search term';
+
+  @override
+  String get globalSearchMatchInExamples => 'Found in examples';
+
+  @override
+  String get globalSearchViewItem => 'View';
+
+  @override
+  String get globalSearchGoToPackage => 'Go to Package';
+
+  @override
+  String get globalSearchLoadingPackages => 'Loading packages…';
+
+  @override
+  String get globalSearchNoPackages => 'No language packages installed yet';
+
+  @override
+  String get globalSearchCancelSearch => 'Cancel Search';
+
+  @override
+  String globalSearchProgressOf(int current, int total) {
+    return 'Searching package $current of $total…';
+  }
+
+  @override
+  String globalSearchCancelledMessage(int count) {
+    return 'Search cancelled — $count result(s) found so far';
+  }
 }
