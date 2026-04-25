@@ -1,17 +1,18 @@
 // lib/data/database_helper.dart
+import 'dart:async';
 import 'dart:io';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'database_migrations.dart';
-import '../core/utils/debug_print.dart';
-
 // Import this to ensure SQLite native libraries are bundled
 
 class DatabaseHelper {
   static final DatabaseHelper instance = DatabaseHelper._init();
   static Database? _database;
   static bool _isInitialized = false;
+  /// Guards against concurrent _initDB() calls.
+  static Completer<Database>? _openingCompleter;
 
   DatabaseHelper._init();
 
@@ -32,29 +33,26 @@ class DatabaseHelper {
   }
 
   Future<Database> get database async {
-    // Check if existing connection is still valid
-    if (_database != null) {
-      try {
-        // Test the connection with a simple query
-        await _database!.rawQuery('SELECT 1');
-        return _database!;
-      } catch (e) {
-        // Connection is stale, close it and create a new one
-        logDebug('Database connection is stale, recreating: $e');
-        try {
-          await _database!.close();
-        } catch (_) {
-          // Ignore errors when closing stale connection
-        }
-        _database = null;
-      }
-    }
+    // Fast path: connection already open.
+    if (_database != null) return _database!;
 
-    // Ensure database factory is initialized for desktop
-    initializeDatabaseFactory();
-    
-    _database = await _initDB('language_rally.db');
-    return _database!;
+    // If another caller is already opening the database, wait for it.
+    if (_openingCompleter != null) return _openingCompleter!.future;
+
+    // First caller – open the database.
+    _openingCompleter = Completer<Database>();
+    try {
+      initializeDatabaseFactory();
+      final db = await _initDB('language_rally.db');
+      _database = db;
+      _openingCompleter!.complete(db);
+      return db;
+    } catch (e) {
+      _openingCompleter!.completeError(e);
+      rethrow;
+    } finally {
+      _openingCompleter = null;
+    }
   }
 
   Future<Database> _initDB(String filePath) async {
