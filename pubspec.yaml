@@ -72,8 +72,18 @@ flutter:
     - assets/images/package_icons/
     - assets/images/tour_images/
     - assets/seed_packages/
-    - assets/seed_packages/words/
-    - assets/seed_packages/expressions/
+    - assets/seed_packages/AR/
+    - assets/seed_packages/DE/
+    - assets/seed_packages/ES/
+    - assets/seed_packages/FR/
+    - assets/seed_packages/HU/
+    - assets/seed_packages/IT/
+    - assets/seed_packages/JA/
+    - assets/seed_packages/KO/
+    - assets/seed_packages/PT/
+    - assets/seed_packages/RO/
+    - assets/seed_packages/RU/
+    - assets/seed_packages/ZH/
     - assets/fonts/
 
   fonts:

@@ -48,6 +48,28 @@ class LanguagePackageRepository {
     return result.isNotEmpty;
   }
 
+  /// Returns true if a package with the given [name] already exists **inside**
+  /// the group identified by [groupName]. Both comparisons are case-insensitive.
+  ///
+  /// Use this instead of [existsByName] when you want to allow the same package
+  /// name to be imported under a different group (e.g. the same topic for a
+  /// different language pair stored in a different group).
+  Future<bool> existsByNameAndGroup(String name, String groupName) async {
+    final db = await _dbHelper.database;
+    final result = await db.rawQuery(
+      '''
+      SELECT lp.id
+      FROM language_packages lp
+      JOIN language_package_groups lpg ON lp.group_id = lpg.id
+      WHERE LOWER(lp.package_name) = LOWER(?)
+        AND LOWER(lpg.name) = LOWER(?)
+      LIMIT 1
+      ''',
+      [name, groupName],
+    );
+    return result.isNotEmpty;
+  }
+
   Future<List<LanguagePackage>> getAllPackages() async {
     final db = await _dbHelper.database;
     final maps = await db.query(
