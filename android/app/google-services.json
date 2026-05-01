@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "843181823200",
+    "project_id": "languagerally",
+    "storage_bucket": "languagerally.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:843181823200:android:5ad57bb1f0ee7e18b02c85",
+        "android_client_info": {
+          "package_name": "com.languagerally.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDNvcwxgimeZ5aOYLgf3yREaPZOW_i9wpk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

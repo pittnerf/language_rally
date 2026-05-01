@@ -1,0 +1,49 @@
+Setup steps you still need to do
+1. Firebase project
+Create a Firebase project at console.firebase.google.com
+Add Android + iOS apps, download google-services.json (to android/app/) and GoogleService-Info.plist (to ios/Runner/)
+Run flutterfire configure to generate firebase_options.dart
+Enable Firebase Storage and Cloud Firestore in the console
+Deploy the Cloud Function: cd functions && npm install && firebase deploy --only functions
+Set the RevenueCat secret: firebase functions:secrets:set REVENUECAT_SECRET_KEY
+2. Initialise Firebase in main.dart
+await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+await IAPService.instance.initialise();
+3. RevenueCat account
+Create an account at app.revenuecat.com
+Create a project, add Google Play app
+Fill in _kRevenueCatAndroidKey / _kRevenueCatIosKey in iap_service.dart
+Create one entitlement per product (ID = productId, e.g. lang_pkg_en_de_a1_animals)
+4. Firestore product catalog
+Upload one document per product to the store_products collection:
+{
+  "productId": "lang_pkg_en_de_a1_animals",
+  "title": "Animals (EN→DE, A1)",
+  "description": "Essential animal vocabulary",
+  "groupName": "English → German",
+  "languageCode1": "en",
+  "languageCode2": "de",
+  "level": "A1",
+  "storagePath": "packages/DE/pkg_en_de_A1_Animals.zip",
+  "isActive": true
+}
+5. Firebase Storage
+Upload your ZIP files matching the storagePath values in Firestore.
+6. Navigate to StorePage
+Add a "Store" button/tab in your app that navigates to StorePage().
+
+Apple Budle ID: com.github.pittnerf.languagerally
+
+Platform Bundle/App ID Status
+iOS com.github.pittnerf.languagerally ✅ Just updated
+iOS Tests com.github.pittnerf.languagerally.RunnerTests ✅ Updated
+Android com.languagerally.app
+
+
+These are external steps that can't be done in code:
+RevenueCat — create account, add your Android (com.languagerally.app) and iOS (com.github.pittnerf.languagerally) apps, fill in the two API keys in lib/core/services/iap_service.dart (_kRevenueCatAndroidKey / _kRevenueCatIosKey)
+Firebase Storage — upload your ZIP files under packages/DE/, packages/ZH/, etc.
+Firestore — create the store_products collection with one document per purchasable package
+Firebase Cloud Function — cd functions && npm install && firebase deploy --only functions, then set the secret: firebase functions:secrets:set REVENUECAT_SECRET_KEY
+Google Play Console / App Store Connect — register each product ID matching your Firestore productId values
+Navigate to StorePage — add a Store button/tab in your UI pointing to StorePage()

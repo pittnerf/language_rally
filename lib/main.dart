@@ -15,8 +15,11 @@ import 'presentation/providers/theme_provider.dart';
 import 'presentation/providers/app_settings_provider.dart';
 import 'presentation/widgets/splash_screen.dart';
 import '../../core/utils/debug_print.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+import 'core/services/iap_service.dart';
 
-void main() {
+void main() async {
   // Ensure Flutter binding is initialized
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -27,6 +30,9 @@ void main() {
 
   // Initialize database factory for desktop platforms
   DatabaseHelper.initializeDatabaseFactory();
+
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await IAPService.instance.initialise();
 
   runApp(const ProviderScope(child: LanguageRallyApp()));
 }

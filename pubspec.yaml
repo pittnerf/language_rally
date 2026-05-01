@@ -51,6 +51,15 @@ dependencies:
   record: ^6.2.0
   wakelock_plus: ^1.2.10
 
+  # In-App Purchases (RevenueCat — Android + iOS)
+  purchases_flutter: ^8.9.6
+
+  # Firebase (catalog + secure content delivery)
+  firebase_core: ^3.13.1
+  firebase_storage: ^12.4.5
+  cloud_firestore: ^5.6.5
+  cloud_functions: ^5.3.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
