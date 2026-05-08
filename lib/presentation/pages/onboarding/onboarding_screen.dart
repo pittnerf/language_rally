@@ -42,8 +42,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   // ── Step 2: scan state ────────────────────────────────────────────────────
   bool _isScanning = false;
   bool _scanDone = false;
-  Map<String, List<String>> _groupToAssets = {};
+  Map<String, SeedPackageGroupInfo> _groupToInfo = {};
   Set<String> _selectedGroups = {};
+  Set<String> _selectedLanguages = {};
+  String _searchQuery = '';
 
   // ── Step 2: import state ──────────────────────────────────────────────────
   bool _isImporting = false;
@@ -102,8 +104,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       setState(() {
         _step = 0;
         _scanDone = false;
-        _groupToAssets = {};
+        _groupToInfo = {};
         _selectedGroups = {};
+        _selectedLanguages = {};
+        _searchQuery = '';
         _isImporting = false;
         _importDone = false;
       });
@@ -128,8 +132,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final groups = await AppInitializationService.scanSeedPackageGroups();
     if (!mounted) return;
     setState(() {
-      _groupToAssets = groups;
-      _selectedGroups = Set.from(groups.keys); // pre-select everything
+      _groupToInfo = groups;
+      _selectedGroups = <String>{}; // Start with no preselection.
+      _selectedLanguages = <String>{};
+      _searchQuery = '';
       _isScanning = false;
       _scanDone = true;
     });
@@ -141,7 +147,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     setState(() => _isImporting = true);
     await AppInitializationService.importSelectedGroups(
       _selectedGroups,
-      _groupToAssets,
+      _groupToInfo,
     );
     // _onProgress() will flip _isImporting → false and _importDone → true
     // but guard here in case the notifier fires before we return
@@ -175,10 +181,68 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     });
   }
 
-  void _selectAll() =>
-      setState(() => _selectedGroups = Set.from(_groupToAssets.keys));
+  List<MapEntry<String, SeedPackageGroupInfo>> _filteredGroupEntries() {
+    final query = _searchQuery.trim().toLowerCase();
+    return _groupToInfo.entries.where((entry) {
+      final info = entry.value;
 
-  void _deselectAll() => setState(() => _selectedGroups.clear());
+      if (_selectedLanguages.isNotEmpty) {
+        final lang1 = info.languageName1?.trim();
+        final lang2 = info.languageName2?.trim();
+        final matchesLanguage = _selectedLanguages.contains(lang1) ||
+            _selectedLanguages.contains(lang2);
+        if (!matchesLanguage) return false;
+      }
+
+      if (query.isEmpty) return true;
+      final topicText = info.topics.join(' ').toLowerCase();
+      final groupText = entry.key.toLowerCase();
+      final languageText =
+          '${info.languageName1 ?? ''} ${info.languageName2 ?? ''}'.toLowerCase();
+      return groupText.contains(query) ||
+          topicText.contains(query) ||
+          languageText.contains(query);
+    }).toList();
+  }
+
+  List<String> _availableLanguages() {
+    final languages = <String>{};
+    for (final info in _groupToInfo.values) {
+      final lang1 = info.languageName1?.trim();
+      final lang2 = info.languageName2?.trim();
+      if (lang1 != null && lang1.isNotEmpty) languages.add(lang1);
+      if (lang2 != null && lang2.isNotEmpty) languages.add(lang2);
+    }
+    final sorted = languages.toList()..sort();
+    return sorted;
+  }
+
+  void _selectAll() {
+    final visible = _filteredGroupEntries().map((entry) => entry.key).toSet();
+    setState(() => _selectedGroups = {..._selectedGroups, ...visible});
+  }
+
+  void _deselectAll() {
+    final visible = _filteredGroupEntries().map((entry) => entry.key).toSet();
+    setState(() => _selectedGroups.removeAll(visible));
+  }
+
+  void _toggleLanguageFilter(String language) {
+    setState(() {
+      if (_selectedLanguages.contains(language)) {
+        _selectedLanguages.remove(language);
+      } else {
+        _selectedLanguages.add(language);
+      }
+    });
+  }
+
+  String _topicsPreview(List<String> topics, {int maxItems = 4}) {
+    if (topics.isEmpty) return '';
+    if (topics.length <= maxItems) return topics.join(', ');
+    final head = topics.take(maxItems).join(', ');
+    return '$head +${topics.length - maxItems} more';
+  }
 
   // ── Build ──────────────────────────────────────────────────────────────────
 
@@ -381,6 +445,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     AppLocalizations l10n,
     ThemeData theme,
   ) {
+    final filteredEntries = _filteredGroupEntries();
+
     if (_isScanning) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 48),
@@ -414,7 +480,34 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         ),
         const SizedBox(height: AppTheme.spacing16),
 
-        if (_scanDone && _groupToAssets.isNotEmpty) ...[
+        if (_scanDone && _groupToInfo.isNotEmpty) ...[
+          TextField(
+            onChanged: (value) => setState(() => _searchQuery = value),
+            decoration: InputDecoration(
+              hintText: 'Search topics, group, or language',
+              prefixIcon: const Icon(Icons.search),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppTheme.radiusMedium),
+              ),
+              isDense: true,
+            ),
+          ),
+          const SizedBox(height: AppTheme.spacing12),
+          Wrap(
+            spacing: AppTheme.spacing8,
+            runSpacing: AppTheme.spacing8,
+            children: _availableLanguages().map((language) {
+              return FilterChip(
+                label: Text(language),
+                selected: _selectedLanguages.contains(language),
+                onSelected: (_) => _toggleLanguageFilter(language),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: AppTheme.spacing12),
+        ],
+
+        if (_scanDone && _groupToInfo.isNotEmpty) ...[
           Row(
             children: [
               TextButton.icon(
@@ -434,9 +527,27 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         ],
 
         if (_scanDone)
-          ..._groupToAssets.entries.map(
-            (entry) =>
-                _buildGroupTile(entry.key, entry.value.length, l10n, theme),
+          ...filteredEntries.map(
+            (entry) => _buildGroupTile(
+              entry.key,
+              entry.value.assets.length,
+              entry.value.languageName1,
+              entry.value.languageName2,
+              entry.value.topics,
+              l10n,
+              theme,
+            ),
+          ),
+
+        if (_scanDone && filteredEntries.isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: AppTheme.spacing16),
+            child: Text(
+              'No package groups match the current filters.',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
           ),
       ],
     );
@@ -445,10 +556,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   Widget _buildGroupTile(
     String groupName,
     int packageCount,
+    String? languageName1,
+    String? languageName2,
+    List<String> topics,
     AppLocalizations l10n,
     ThemeData theme,
   ) {
     final isChecked = _selectedGroups.contains(groupName);
+    final hasLanguageNames = languageName1 != null && languageName2 != null;
     return Card(
       margin: const EdgeInsets.only(bottom: AppTheme.spacing8),
       shape: RoundedRectangleBorder(
@@ -471,11 +586,32 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
             fontWeight: FontWeight.w600,
           ),
         ),
-        subtitle: Text(
-          l10n.onboardingNPackages(packageCount),
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (hasLanguageNames)
+              Text(
+                '$languageName1 → $languageName2',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            Text(
+              l10n.onboardingNPackages(packageCount),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            if (topics.isNotEmpty)
+              Text(
+                _topicsPreview(topics),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+          ],
         ),
         secondary: Icon(
           Icons.library_books_outlined,

@@ -1,8 +1,8 @@
 name: language_rally
-description: "A new Flutter project."
+description: "A rally to learn languages in a very fast way"
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.1.1+8
 
 environment:
   sdk: ^3.10.8
@@ -52,13 +52,16 @@ dependencies:
   wakelock_plus: ^1.2.10
 
   # In-App Purchases (RevenueCat — Android + iOS)
-  purchases_flutter: ^8.9.6
+  purchases_flutter: ^10.0.1
 
   # Firebase (catalog + secure content delivery)
   firebase_core: ^3.13.1
   firebase_storage: ^12.4.5
   cloud_firestore: ^5.6.5
   cloud_functions: ^5.3.5
+  purchases_ui_flutter: ^10.0.1
+  firebase_auth: ^5.0.0 #
+  firebase_app_check: ^0.3.2+10
 
 dev_dependencies:
   flutter_test:

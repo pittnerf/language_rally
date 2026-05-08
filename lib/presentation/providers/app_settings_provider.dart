@@ -8,13 +8,26 @@ final appSettingsProvider = NotifierProvider<AppSettingsNotifier, AppSettings>((
 class AppSettingsNotifier extends Notifier<AppSettings> {
   final _repository = AppSettingsRepository();
 
+  /// In-flight load future – reused by concurrent callers so we never run
+  /// two simultaneous SharedPreferences reads.
+  Future<void>? _pendingLoad;
+
   @override
   AppSettings build() {
     _loadSettings();
     return const AppSettings();
   }
 
-  Future<void> _loadSettings() async {
+  Future<void> _loadSettings() {
+    // If a load is already in progress, return the same Future so concurrent
+    // callers (e.g. build() + refreshFromStorage() firing at the same time on
+    // app-resume) share one SharedPreferences round-trip instead of racing.
+    return _pendingLoad ??= _doLoadSettings().whenComplete(() {
+      _pendingLoad = null;
+    });
+  }
+
+  Future<void> _doLoadSettings() async {
     logDebug('🔄 AppSettingsProvider._loadSettings() called');
     try {
       final loadedSettings = await _repository.loadSettings();

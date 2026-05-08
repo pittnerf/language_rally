@@ -64,3 +64,11 @@ android {
 flutter {
     source = "../.."
 }
+
+tasks.configureEach {
+    if (name.startsWith("compileFlutterBuild")) {
+        // Work around Gradle input snapshotting on generated Flutter asset outputs.
+        doNotTrackState("Flutter assets are generated and can disappear between task snapshots.")
+    }
+}
+

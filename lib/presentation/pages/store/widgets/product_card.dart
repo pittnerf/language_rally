@@ -1,22 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:language_rally/l10n/app_localizations.dart';
 import '../../../../data/models/store_product.dart';
 
 /// A card that displays a single [StoreProduct] in the store catalog.
 ///
 /// States:
-///  • **Not purchased** — shows price and a "Buy" button
+///  • **Not purchased** — shows price and an "Add to Cart" / "Remove" button
 ///  • **Purchased, not imported** — shows a "Download" button
 ///  • **Downloading** — shows a linear progress indicator
 ///  • **Imported** — shows a "✓ Installed" chip (greyed out)
+///
+/// The action is placed in the same row as the description to keep the card
+/// as compact as possible.
 class ProductCard extends StatelessWidget {
   final StoreProduct product;
-  final VoidCallback? onBuy;
+  final AppLocalizations l;
+  final bool isInCart;
+  final VoidCallback? onAddToCart;
+  final VoidCallback? onRemoveFromCart;
   final VoidCallback? onDownload;
 
   const ProductCard({
     super.key,
     required this.product,
-    this.onBuy,
+    required this.l,
+    this.isInCart = false,
+    this.onAddToCart,
+    this.onRemoveFromCart,
     this.onDownload,
   });
 
@@ -26,71 +36,80 @@ class ProductCard extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ── Title row ────────────────────────────────────────────────
+            // ── Title row ─────────────────────────────────────────────────
             Row(
               children: [
                 Expanded(
                   child: Text(
                     product.title,
-                    style: theme.textTheme.titleMedium
-                        ?.copyWith(fontWeight: FontWeight.w600),
+                    style: theme.textTheme.titleSmall,
                   ),
                 ),
                 _LevelBadge(level: product.level),
               ],
             ),
 
-            if (product.description.isNotEmpty) ...[
-              const SizedBox(height: 6),
-              Text(
-                product.description,
-                style: theme.textTheme.bodySmall
-                    ?.copyWith(color: colorScheme.onSurfaceVariant),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
+            const SizedBox(height: 4),
 
-            const SizedBox(height: 12),
-
-            // ── Action row ───────────────────────────────────────────────
+            // ── Description + action row ───────────────────────────────────
             if (product.isDownloading)
-              _DownloadProgress(progress: product.downloadProgress)
+              _DownloadProgress(progress: product.downloadProgress, l: l)
             else
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  // Description (takes all available space)
+                  if (product.description.isNotEmpty)
+                    Expanded(
+                      child: Text(
+                        product.description,
+                        style: theme.textTheme.bodySmall
+                            ?.copyWith(color: colorScheme.onSurfaceVariant),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    )
+                  else
+                    const Spacer(),
+
+                  // Action area
                   if (product.isImported)
-                    _InstalledChip(colorScheme: colorScheme)
+                    _InstalledChip(colorScheme: colorScheme, l: l)
                   else if (product.isPurchased)
-                    _ActionButton(
-                      label: 'Download',
+                    _CartIconButton(
+                      tooltip: l.storeDownload,
                       icon: Icons.download_rounded,
+                      active: false,
                       onPressed: onDownload,
                       colorScheme: colorScheme,
                     )
                   else ...[
-                    if (product.localizedPrice != null)
-                      Padding(
-                        padding: const EdgeInsets.only(right: 12),
-                        child: Text(
-                          product.localizedPrice!,
-                          style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: colorScheme.primary,
-                          ),
+                    if (product.localizedPrice != null) ...[
+                      const SizedBox(width: 8),
+                      Text(
+                        product.localizedPrice!,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: colorScheme.primary,
                         ),
                       ),
-                    _ActionButton(
-                      label: 'Buy',
-                      icon: Icons.shopping_cart_rounded,
-                      onPressed: onBuy,
+                    ],
+                    const SizedBox(width: 4),
+                    _CartIconButton(
+                      tooltip: isInCart
+                          ? l.storeRemoveFromCart
+                          : l.storeAddToCart,
+                      icon: isInCart
+                          ? Icons.shopping_cart_rounded
+                          : Icons.add_shopping_cart_rounded,
+                      active: isInCart,
+                      onPressed: isInCart ? onRemoveFromCart : onAddToCart,
                       colorScheme: colorScheme,
                     ),
                   ],
@@ -103,7 +122,7 @@ class ProductCard extends StatelessWidget {
   }
 }
 
-// ── Helper widgets ─────────────────────────────────────────────────────────────
+// ── Helper widgets ──────────────────────────────────────────────────────────────
 
 class _LevelBadge extends StatelessWidget {
   final String level;
@@ -131,47 +150,67 @@ class _LevelBadge extends StatelessWidget {
 
 class _InstalledChip extends StatelessWidget {
   final ColorScheme colorScheme;
-  const _InstalledChip({required this.colorScheme});
+  final AppLocalizations l;
+  const _InstalledChip({required this.colorScheme, required this.l});
 
   @override
   Widget build(BuildContext context) {
     return Chip(
       avatar: Icon(Icons.check_circle_rounded,
           size: 16, color: colorScheme.onSecondaryContainer),
-      label: const Text('Installed'),
+      label: Text(l.storeInstalledLabel),
       backgroundColor: colorScheme.secondaryContainer,
       labelStyle: TextStyle(color: colorScheme.onSecondaryContainer),
       padding: EdgeInsets.zero,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
     );
   }
 }
 
-class _ActionButton extends StatelessWidget {
-  final String label;
+/// Small icon button used inside the product card's action slot.
+///
+/// When [active] is true (item is in cart) the button uses the primary
+/// container colour so it feels "selected".
+class _CartIconButton extends StatelessWidget {
+  final String tooltip;
   final IconData icon;
+  final bool active;
   final VoidCallback? onPressed;
   final ColorScheme colorScheme;
 
-  const _ActionButton({
-    required this.label,
+  const _CartIconButton({
+    required this.tooltip,
     required this.icon,
+    required this.active,
     required this.onPressed,
     required this.colorScheme,
   });
 
   @override
   Widget build(BuildContext context) {
-    return FilledButton.icon(
+    return IconButton(
+      tooltip: tooltip,
+      icon: Icon(icon),
+      style: IconButton.styleFrom(
+        foregroundColor: active
+            ? colorScheme.onPrimaryContainer
+            : colorScheme.primary,
+        backgroundColor: active
+            ? colorScheme.primaryContainer
+            : colorScheme.surfaceContainerHighest,
+        padding: const EdgeInsets.all(6),
+        minimumSize: const Size(36, 36),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
       onPressed: onPressed,
-      icon: Icon(icon, size: 18),
-      label: Text(label),
     );
   }
 }
 
 class _DownloadProgress extends StatelessWidget {
   final double progress;
-  const _DownloadProgress({required this.progress});
+  final AppLocalizations l;
+  const _DownloadProgress({required this.progress, required this.l});
 
   @override
   Widget build(BuildContext context) {
@@ -194,10 +233,9 @@ class _DownloadProgress extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 4),
-        Text('Downloading…',
+        Text(l.storeDownloading,
             style: Theme.of(context).textTheme.bodySmall),
       ],
     );
   }
 }
-

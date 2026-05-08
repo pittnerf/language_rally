@@ -48,6 +48,27 @@ class LanguagePackageRepository {
     return result.isNotEmpty;
   }
 
+  /// Returns the package whose `package_name` matches [name] inside the group
+  /// identified by [groupName]. Both comparisons are case-insensitive.
+  /// Returns null if no such package exists.
+  Future<LanguagePackage?> getPackageByNameAndGroup(
+      String name, String groupName) async {
+    final db = await _dbHelper.database;
+    final result = await db.rawQuery(
+      '''
+      SELECT lp.*
+      FROM language_packages lp
+      JOIN language_package_groups lpg ON lp.group_id = lpg.id
+      WHERE LOWER(lp.package_name) = LOWER(?)
+        AND LOWER(lpg.name) = LOWER(?)
+      LIMIT 1
+      ''',
+      [name, groupName],
+    );
+    if (result.isEmpty) return null;
+    return _mapToPackage(result.first);
+  }
+
   /// Returns true if a package with the given [name] already exists **inside**
   /// the group identified by [groupName]. Both comparisons are case-insensitive.
   ///

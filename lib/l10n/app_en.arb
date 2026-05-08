@@ -742,6 +742,89 @@
     "placeholders": {
       "count": { "type": "int" }
     }
+  },
+
+  "storeTitle": "Language Package Store",
+  "storeRestorePurchases": "Restore purchases",
+  "storeRefresh": "Refresh",
+  "storeSearchHint": "Search packages…",
+  "storeNoPackagesMatchSearch": "No packages match your search.",
+  "storeNoPackagesAvailable": "No packages available.",
+  "storeInstalledCount": "{installed} / {total} installed",
+  "@storeInstalledCount": {
+    "placeholders": {
+      "installed": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "storeLoadErrorTitle": "Could not load the store.",
+  "storeIapNotAvailableMessage": "In-app purchases are not available on this platform. Visit our website to purchase packages.",
+  "storeOpenWebsite": "Open website",
+  "storePurchaseSuccess": "{title} installed successfully!",
+  "@storePurchaseSuccess": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "storePurchaseCancelled": "Purchase cancelled.",
+  "storePurchaseAlreadyOwned": "{title} is already installed.",
+  "@storePurchaseAlreadyOwned": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "storePurchaseError": "Something went wrong. Please try again.",
+  "storePurchasesRestored": "Purchases restored",
+  "storeAllLevels": "All Levels",
+  "storeAllGroups": "All Languages",
+  "storeFilterLevel": "Level",
+  "storeFilterLanguage": "Language",
+  "storeDownload": "Download",
+  "storeBuy": "Buy",
+  "storeInstalledLabel": "Installed",
+  "storeDownloading": "Downloading…",
+  "storeRetry": "Retry",
+  "storeIapAndroidOnly": "Purchases available on Android and iOS only.",
+  "storeDismiss": "Dismiss",
+  "storeAddToCart": "Add to Cart",
+  "storeRemoveFromCart": "Remove",
+  "storeCartTitle": "Shopping Cart",
+  "storeCartEmpty": "Your cart is empty",
+  "storeCartClearAll": "Clear All",
+  "storeCartCheckout": "Checkout",
+  "storeCartItemCount": "{count, plural, =1{1 item} other{{count} items}}",
+  "@storeCartItemCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "storePackageDuplicateTitle": "Package Already Exists",
+  "storePackageDuplicateMessage": "The package \"{packageName}\" already exists in group \"{groupName}\". Do you want to overwrite it? The existing package and all its training progress will be permanently deleted.",
+  "@storePackageDuplicateMessage": {
+    "placeholders": {
+      "packageName": { "type": "String" },
+      "groupName": { "type": "String" }
+    }
+  },
+  "storePackageDuplicateOverwrite": "Overwrite",
+  "storePackageDuplicateKeep": "Keep existing",
+
+  "splashSettingUpPackages": "Setting up packages: {current} / {total}",
+  "@splashSettingUpPackages": {
+    "description": "Splash screen progress label shown while seed packages are being imported",
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "splashThisHappensOnce": "This only happens once.",
+  "@splashThisHappensOnce": {
+    "description": "Subtitle shown below the progress bar on the splash screen"
+  },
+  "splashLoading": "Loading…",
+  "@splashLoading": {
+    "description": "Indeterminate loading label on the splash screen"
   }
 }
 

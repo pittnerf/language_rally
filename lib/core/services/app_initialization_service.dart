@@ -16,6 +16,18 @@ import '../utils/debug_print.dart';
 // Progress model
 // ---------------------------------------------------------------------------
 
+/// Metadata about a group of seed packages returned by [AppInitializationService.scanSeedPackageGroups].
+/// [assets]        – asset paths belonging to this group.
+/// [languageName1] – human-readable name of the first (source) language.
+/// [languageName2] – human-readable name of the second (target) language.
+/// [topics]        – merged topic labels parsed from package descriptions.
+typedef SeedPackageGroupInfo = ({
+  List<String> assets,
+  String? languageName1,
+  String? languageName2,
+  List<String> topics,
+});
+
 /// Carries the current seeding state for the [SplashScreen] to display.
 class SeedingProgress {
   final int current;   // packages imported so far in this run
@@ -30,6 +42,31 @@ class SeedingProgress {
 
   /// 0.0 → 1.0 progress fraction; safe when total == 0.
   double get fraction => total > 0 ? current / total : 0.0;
+}
+
+// ---------------------------------------------------------------------------
+// Top-level helper for compute() — must NOT be inside the class.
+// Decodes a seed ZIP in a background isolate and returns the four metadata
+// strings from package_data.json without blocking the main thread.
+// ---------------------------------------------------------------------------
+(String?, String?, String?, String?) _extractZipPkgInfo(List<int> bytes) {
+  try {
+    final archive = ZipDecoder().decodeBytes(bytes, verify: false);
+    for (final entry in archive) {
+      if (entry.isFile && entry.name == 'package_data.json') {
+        final jsonStr = utf8.decode(entry.content as List<int>);
+        final data = jsonDecode(jsonStr) as Map<String, dynamic>;
+        final pkgData = data['package'] as Map<String, dynamic>?;
+        return (
+          pkgData?['name'] as String?,
+          pkgData?['group_name'] as String?,
+          pkgData?['language_name1'] as String?,
+          pkgData?['language_name2'] as String?,
+        );
+      }
+    }
+  } catch (_) {}
+  return (null, null, null, null);
 }
 
 /// Service responsible for app initialization tasks
@@ -433,38 +470,6 @@ class AppInitializationService {
     'assets/seed_packages/ZH/pkg_en_zh_C2_Advanced_economics_finance.zip',
 
 
-    // A2
-
-    // B1
-
-    // B2
-
-    // C1
-
-    // C2
-
-
-
-    // A1 - EN-DE
-
-    // A2 - EN-DE
-
-
-    // B1 - EN-DE
-
-
-
-    // B2
-
-
-    // C1
-
-
-    // C2
-
-
-
-
   ];
 
   /// Initialize the app with necessary setup tasks
@@ -570,7 +575,7 @@ class AppInitializationService {
 
   /// Reads a ZIP byte array and returns `(packageName, groupName)` from its
   /// embedded `package_data.json`.  Either field can be null if missing/unreadable.
-  static (String?, String?) _extractPackageInfo(List<int> bytes) {
+  static (String?, String?, String?, String?) _extractPackageInfo(List<int> bytes) {
     try {
       final archive = ZipDecoder().decodeBytes(bytes, verify: false);
       for (final entry in archive) {
@@ -580,11 +585,33 @@ class AppInitializationService {
           final pkgData = data['package'] as Map<String, dynamic>?;
           final pkgName = pkgData?['name'] as String?;
           final groupName = pkgData?['group_name'] as String?;
-          return (pkgName, groupName);
+          final languageName1 = pkgData?['language_name1'] as String?;
+          final languageName2 = pkgData?['language_name2'] as String?;
+          return (pkgName, groupName, languageName1, languageName2);
         }
       }
     } catch (_) {}
-    return (null, null);
+    return (null, null, null, null);
+  }
+
+  /// Extracts a compact topic label from package metadata description.
+  ///
+  /// Example:
+  ///   "Vocabulary for Animals at A1 level." -> "Animals"
+  static String? _extractTopicFromDescription(String? description) {
+    if (description == null) return null;
+    final trimmed = description.trim();
+    if (trimmed.isEmpty) return null;
+
+    final match = RegExp(
+      r'^Vocabulary\s+for\s+(.+?)\s+at\s+[A-C][12]\s+level\.?$',
+      caseSensitive: false,
+    ).firstMatch(trimmed);
+    if (match != null) {
+      final topic = match.group(1)?.trim();
+      if (topic != null && topic.isNotEmpty) return topic;
+    }
+    return null;
   }
 
   /// On the very first launch, import every ZIP listed in [_seedPackageAssets]
@@ -651,12 +678,19 @@ class AppInitializationService {
       );
 
       for (final assetPath in pending) {
+        // Yield to the event loop before every package so the Flutter
+        // rendering pipeline can process frame requests even while the
+        // import is running — this prevents the blank/dark screen that
+        // appears when the user foregrounds the app during a long import.
+        await Future<void>.delayed(Duration.zero);
         try {
           final byteData = await rootBundle.load(assetPath);
           final bytes = byteData.buffer.asUint8List();
 
           // Skip if the same package name already exists within the same group.
-          final (pkgName, groupName) = _extractPackageInfo(bytes);
+          // Use compute() so the zip decode runs off the main thread.
+          final (pkgName, groupName, language_name1, language_name2) =
+              await compute(_extractZipPkgInfo, bytes);
           if (pkgName != null &&
               groupName != null &&
               await packageRepo.existsByNameAndGroup(pkgName, groupName)) {
@@ -771,10 +805,19 @@ class AppInitializationService {
   /// the result, so only groups that have at least one not-yet-imported
   /// package are returned.
   ///
-  /// Returns a map of `group_name → [assetPath, …]` sorted by group name.
+  /// Returns a map of `group_name → SeedPackageGroupInfo` sorted by group name,
+  /// where [SeedPackageGroupInfo] carries the asset paths and the language names
+  /// extracted from the first package in the group, plus merged topic labels
+  /// parsed from package descriptions.
   /// Suitable for driving the onboarding package-selection UI.
-  static Future<Map<String, List<String>>> scanSeedPackageGroups() async {
-    final result = <String, List<String>>{};
+  static Future<Map<String, SeedPackageGroupInfo>> scanSeedPackageGroups() async {
+    // Mutable intermediate: groupName → (mutable asset list, lang1, lang2)
+    final raw = <String, ({
+      List<String> assets,
+      String? languageName1,
+      String? languageName2,
+      Set<String> topics,
+    })>{};
     final packageRepo = LanguagePackageRepository();
 
     for (final assetPath in _seedPackageAssets) {
@@ -800,6 +843,11 @@ class AppInitializationService {
             final groupName =
                 (packageData['group_name'] as String?) ?? 'Default';
             final pkgName = packageData['name'] as String?;
+            final languageName1 = packageData['language_name1'] as String?;
+            final languageName2 = packageData['language_name2'] as String?;
+            final description = packageData['description'] as String?;
+            final topic =
+                _extractTopicFromDescription(description) ?? pkgName?.trim();
 
             // Skip packages where the same name already exists in the same group.
             if (pkgName != null &&
@@ -808,7 +856,18 @@ class AppInitializationService {
               continue;
             }
 
-            result.putIfAbsent(groupName, () => []).add(assetPath);
+            if (!raw.containsKey(groupName)) {
+              raw[groupName] = (
+                assets: [],
+                languageName1: languageName1,
+                languageName2: languageName2,
+                topics: <String>{},
+              );
+            }
+            raw[groupName]!.assets.add(assetPath);
+            if (topic != null && topic.isNotEmpty) {
+              raw[groupName]!.topics.add(topic);
+            }
           }
         }
       } catch (e) {
@@ -816,7 +875,16 @@ class AppInitializationService {
       }
     }
 
-    // Return sorted by group name
+    // Convert to the public typedef and sort by group name.
+    final result = <String, SeedPackageGroupInfo>{};
+    for (final entry in raw.entries) {
+      result[entry.key] = (
+        assets: entry.value.assets,
+        languageName1: entry.value.languageName1,
+        languageName2: entry.value.languageName2,
+        topics: entry.value.topics.toList()..sort(),
+      );
+    }
     return Map.fromEntries(
       result.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
     );
@@ -824,19 +892,19 @@ class AppInitializationService {
 
   /// Import only the seed packages whose group name is in [selectedGroupNames].
   ///
-  /// [groupToAssets] is the map returned by [scanSeedPackageGroups].
+  /// [groupToInfo] is the map returned by [scanSeedPackageGroups].
   /// Progress is reported through [seedingProgress].
   ///
   /// After all selected packages are imported, [markOnboardingComplete] is
   /// called automatically so the app moves to the home screen.
   static Future<void> importSelectedGroups(
     Set<String> selectedGroupNames,
-    Map<String, List<String>> groupToAssets,
+    Map<String, SeedPackageGroupInfo> groupToInfo,
   ) async {
     // Flatten the selected asset paths.
     final toImport = <String>[];
     for (final groupName in selectedGroupNames) {
-      toImport.addAll(groupToAssets[groupName] ?? []);
+      toImport.addAll(groupToInfo[groupName]?.assets ?? []);
     }
 
     if (toImport.isEmpty) {
@@ -876,12 +944,19 @@ class AppInitializationService {
       );
 
       for (final assetPath in pending) {
+        // Yield to the event loop before every package so the Flutter
+        // rendering pipeline can process frame requests even while the
+        // import is running — this prevents the blank/dark screen that
+        // appears when the user foregrounds the app during a long import.
+        await Future<void>.delayed(Duration.zero);
         try {
           final byteData = await rootBundle.load(assetPath);
           final bytes = byteData.buffer.asUint8List();
 
           // Skip if the same package name already exists within the same group.
-          final (pkgName, groupName) = _extractPackageInfo(bytes);
+          // Use compute() so the zip decode runs off the main thread.
+          final (pkgName, groupName, language_name1, language_name2) =
+              await compute(_extractZipPkgInfo, bytes);
           if (pkgName != null &&
               groupName != null &&
               await packageRepo.existsByNameAndGroup(pkgName, groupName)) {

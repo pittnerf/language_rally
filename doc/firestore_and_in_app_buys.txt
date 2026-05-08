@@ -47,3 +47,36 @@ Firestore — create the store_products collection with one document per purchas
 Firebase Cloud Function — cd functions && npm install && firebase deploy --only functions, then set the secret: firebase functions:secrets:set REVENUECAT_SECRET_KEY
 Google Play Console / App Store Connect — register each product ID matching your Firestore productId values
 Navigate to StorePage — add a Store button/tab in your UI pointing to StorePage()
+
+
+
+Miért a "Google Play Számlázás" menüben vagy?
+Ott fogod majd létrehozni azt a 300 terméket.
+
+Keresd az Alkalmazáson belüli termékek (In-app products) almenüt.
+
+Itt kell majd egyesével (vagy CSV-vel) feltöltened a ZIP fájlokhoz tartozó "termékeket".
+
+Minden ZIP-nek adj egy egyedi azonosítót (Product ID), például: zip_aktak_001, zip_aktak_002.
+
+Összegezve: A JSON kulcs a "kulcs a zárba", a Google Play Számlázás pedig a "bolt", ahol a termékeid sorakoznak. Ha a 2. lépésben meghívtad a robotot és a RevenueCat elfogadta a JSON-t, a rendszer összeállt!
+
+Sikerült az email címet meghívottként hozzáadni?
+
+
+
+// Ezt tarthatod egy külön fájlban, vagy akár le is kérheted Firestore-ból
+final Map<String, String> zipRegistry = {
+  'pkg_animals_a1': 'pkg_en_ar_A1_Animals.zip',
+
+};
+
+const String bucketUrl = 'gs://languagerally.firebasestorage.app';
+
+SHA256 fingerprint
+13:D0:7B:62:EF:CC:26:9A:B1:3C:A5:CD:CF:7C:61:E6:C3:5B:C7:4B:79:18:64:7E:A8:AC:41:52:69:ED:1E:97
+
+
+Note: This is your upload key fingerprint (used for Play Store submissions). If Google Play re-signs your app with its own app signing key (which happens when Play App Signing is enabled), you'll also need the Google-managed fingerprint. You can find that in: Google Play Console → your app → Setup → App integrity → App signing key certificate → SHA-256 certificate fingerprint Add that one too in Firebase App Check.
+
+Firabase debug token: 426f1aa2-2d63-4340-a816-cdc1bd868a04

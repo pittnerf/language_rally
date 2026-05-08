@@ -2080,4 +2080,139 @@ class AppLocalizationsHu extends AppLocalizations {
   String globalSearchCancelledMessage(int count) {
     return 'Keresés megszakítva — $count találat eddig';
   }
+
+  @override
+  String get storeTitle => 'Nyelvi csomag áruház';
+
+  @override
+  String get storeRestorePurchases => 'Vásárlások visszaállítása';
+
+  @override
+  String get storeRefresh => 'Frissítés';
+
+  @override
+  String get storeSearchHint => 'Csomagok keresése…';
+
+  @override
+  String get storeNoPackagesMatchSearch =>
+      'Nincs a keresésnek megfelelő csomag.';
+
+  @override
+  String get storeNoPackagesAvailable => 'Nincs elérhető csomag.';
+
+  @override
+  String storeInstalledCount(int installed, int total) {
+    return '$installed / $total telepítve';
+  }
+
+  @override
+  String get storeLoadErrorTitle => 'Az áruház nem tölthető be.';
+
+  @override
+  String get storeIapNotAvailableMessage =>
+      'Az alkalmazáson belüli vásárlás ezen a platformon nem érhető el. Látogassa meg weboldalunkat a csomagok megvásárlásához.';
+
+  @override
+  String get storeOpenWebsite => 'Weboldal megnyitása';
+
+  @override
+  String storePurchaseSuccess(String title) {
+    return '$title sikeresen telepítve!';
+  }
+
+  @override
+  String get storePurchaseCancelled => 'Vásárlás megszakítva.';
+
+  @override
+  String storePurchaseAlreadyOwned(String title) {
+    return '$title már telepítve van.';
+  }
+
+  @override
+  String get storePurchaseError => 'Hiba történt. Kérjük, próbálja újra.';
+
+  @override
+  String get storePurchasesRestored => 'Vásárlások visszaállítva';
+
+  @override
+  String get storeAllLevels => 'Minden szint';
+
+  @override
+  String get storeAllGroups => 'Minden nyelv';
+
+  @override
+  String get storeFilterLevel => 'Szint';
+
+  @override
+  String get storeFilterLanguage => 'Nyelv';
+
+  @override
+  String get storeDownload => 'Letöltés';
+
+  @override
+  String get storeBuy => 'Megvásárlás';
+
+  @override
+  String get storeInstalledLabel => 'Telepítve';
+
+  @override
+  String get storeDownloading => 'Letöltés…';
+
+  @override
+  String get storeRetry => 'Újra';
+
+  @override
+  String get storeIapAndroidOnly =>
+      'Vásárlás csak Android és iOS rendszeren érhető el.';
+
+  @override
+  String get storeDismiss => 'Bezárás';
+
+  @override
+  String get storeAddToCart => 'Kosárba';
+
+  @override
+  String get storeRemoveFromCart => 'Eltávolítás';
+
+  @override
+  String get storeCartTitle => 'Bevásárlókosár';
+
+  @override
+  String get storeCartEmpty => 'A kosár üres';
+
+  @override
+  String get storeCartClearAll => 'Összes törlése';
+
+  @override
+  String get storeCartCheckout => 'Vásárlás';
+
+  @override
+  String storeCartItemCount(int count) {
+    return '$count tétel';
+  }
+
+  @override
+  String get storePackageDuplicateTitle => 'A csomag már létezik';
+
+  @override
+  String storePackageDuplicateMessage(String packageName, String groupName) {
+    return 'A(z) \"$packageName\" nevű csomag már létezik a(z) \"$groupName\" csoportban. Szeretné felülírni? A meglévő csomag és az összes hozzá tartozó tanulási eredmény véglegesen törlésre kerül.';
+  }
+
+  @override
+  String get storePackageDuplicateOverwrite => 'Felülírás';
+
+  @override
+  String get storePackageDuplicateKeep => 'Meglévő megtartása';
+
+  @override
+  String splashSettingUpPackages(int current, int total) {
+    return 'Csomagok előkészítése: $current / $total';
+  }
+
+  @override
+  String get splashThisHappensOnce => 'Ez csak egyszer történik meg.';
+
+  @override
+  String get splashLoading => 'Betöltés…';
 }

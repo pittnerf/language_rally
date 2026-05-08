@@ -684,6 +684,89 @@
     "placeholders": {
       "count": { "type": "int" }
     }
+  },
+
+  "storeTitle": "Nyelvi csomag áruház",
+  "storeRestorePurchases": "Vásárlások visszaállítása",
+  "storeRefresh": "Frissítés",
+  "storeSearchHint": "Csomagok keresése…",
+  "storeNoPackagesMatchSearch": "Nincs a keresésnek megfelelő csomag.",
+  "storeNoPackagesAvailable": "Nincs elérhető csomag.",
+  "storeInstalledCount": "{installed} / {total} telepítve",
+  "@storeInstalledCount": {
+    "placeholders": {
+      "installed": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "storeLoadErrorTitle": "Az áruház nem tölthető be.",
+  "storeIapNotAvailableMessage": "Az alkalmazáson belüli vásárlás ezen a platformon nem érhető el. Látogassa meg weboldalunkat a csomagok megvásárlásához.",
+  "storeOpenWebsite": "Weboldal megnyitása",
+  "storePurchaseSuccess": "{title} sikeresen telepítve!",
+  "@storePurchaseSuccess": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "storePurchaseCancelled": "Vásárlás megszakítva.",
+  "storePurchaseAlreadyOwned": "{title} már telepítve van.",
+  "@storePurchaseAlreadyOwned": {
+    "placeholders": {
+      "title": { "type": "String" }
+    }
+  },
+  "storePurchaseError": "Hiba történt. Kérjük, próbálja újra.",
+  "storePurchasesRestored": "Vásárlások visszaállítva",
+  "storeAllLevels": "Minden szint",
+  "storeAllGroups": "Minden nyelv",
+  "storeFilterLevel": "Szint",
+  "storeFilterLanguage": "Nyelv",
+  "storeDownload": "Letöltés",
+  "storeBuy": "Megvásárlás",
+  "storeInstalledLabel": "Telepítve",
+  "storeDownloading": "Letöltés…",
+  "storeRetry": "Újra",
+  "storeIapAndroidOnly": "Vásárlás csak Android és iOS rendszeren érhető el.",
+  "storeDismiss": "Bezárás",
+  "storeAddToCart": "Kosárba",
+  "storeRemoveFromCart": "Eltávolítás",
+  "storeCartTitle": "Bevásárlókosár",
+  "storeCartEmpty": "A kosár üres",
+  "storeCartClearAll": "Összes törlése",
+  "storeCartCheckout": "Vásárlás",
+  "storeCartItemCount": "{count} tétel",
+  "@storeCartItemCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+
+  "storePackageDuplicateTitle": "A csomag már létezik",
+  "storePackageDuplicateMessage": "A(z) \"{packageName}\" nevű csomag már létezik a(z) \"{groupName}\" csoportban. Szeretné felülírni? A meglévő csomag és az összes hozzá tartozó tanulási eredmény véglegesen törlésre kerül.",
+  "@storePackageDuplicateMessage": {
+    "placeholders": {
+      "packageName": { "type": "String" },
+      "groupName": { "type": "String" }
+    }
+  },
+  "storePackageDuplicateOverwrite": "Felülírás",
+  "storePackageDuplicateKeep": "Meglévő megtartása",
+
+  "splashSettingUpPackages": "Csomagok előkészítése: {current} / {total}",
+  "@splashSettingUpPackages": {
+    "description": "Splash képernyő folyamatjelző felirata a seed csomagok importálása közben",
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "splashThisHappensOnce": "Ez csak egyszer történik meg.",
+  "@splashThisHappensOnce": {
+    "description": "A folyamatjelző alatt megjelenő felirat a splash képernyőn"
+  },
+  "splashLoading": "Betöltés…",
+  "@splashLoading": {
+    "description": "Határozatlan betöltési felirat a splash képernyőn"
   }
 }
 

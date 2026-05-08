@@ -2069,4 +2069,144 @@ class AppLocalizationsEn extends AppLocalizations {
   String globalSearchCancelledMessage(int count) {
     return 'Search cancelled — $count result(s) found so far';
   }
+
+  @override
+  String get storeTitle => 'Language Package Store';
+
+  @override
+  String get storeRestorePurchases => 'Restore purchases';
+
+  @override
+  String get storeRefresh => 'Refresh';
+
+  @override
+  String get storeSearchHint => 'Search packages…';
+
+  @override
+  String get storeNoPackagesMatchSearch => 'No packages match your search.';
+
+  @override
+  String get storeNoPackagesAvailable => 'No packages available.';
+
+  @override
+  String storeInstalledCount(int installed, int total) {
+    return '$installed / $total installed';
+  }
+
+  @override
+  String get storeLoadErrorTitle => 'Could not load the store.';
+
+  @override
+  String get storeIapNotAvailableMessage =>
+      'In-app purchases are not available on this platform. Visit our website to purchase packages.';
+
+  @override
+  String get storeOpenWebsite => 'Open website';
+
+  @override
+  String storePurchaseSuccess(String title) {
+    return '$title installed successfully!';
+  }
+
+  @override
+  String get storePurchaseCancelled => 'Purchase cancelled.';
+
+  @override
+  String storePurchaseAlreadyOwned(String title) {
+    return '$title is already installed.';
+  }
+
+  @override
+  String get storePurchaseError => 'Something went wrong. Please try again.';
+
+  @override
+  String get storePurchasesRestored => 'Purchases restored';
+
+  @override
+  String get storeAllLevels => 'All Levels';
+
+  @override
+  String get storeAllGroups => 'All Languages';
+
+  @override
+  String get storeFilterLevel => 'Level';
+
+  @override
+  String get storeFilterLanguage => 'Language';
+
+  @override
+  String get storeDownload => 'Download';
+
+  @override
+  String get storeBuy => 'Buy';
+
+  @override
+  String get storeInstalledLabel => 'Installed';
+
+  @override
+  String get storeDownloading => 'Downloading…';
+
+  @override
+  String get storeRetry => 'Retry';
+
+  @override
+  String get storeIapAndroidOnly =>
+      'Purchases available on Android and iOS only.';
+
+  @override
+  String get storeDismiss => 'Dismiss';
+
+  @override
+  String get storeAddToCart => 'Add to Cart';
+
+  @override
+  String get storeRemoveFromCart => 'Remove';
+
+  @override
+  String get storeCartTitle => 'Shopping Cart';
+
+  @override
+  String get storeCartEmpty => 'Your cart is empty';
+
+  @override
+  String get storeCartClearAll => 'Clear All';
+
+  @override
+  String get storeCartCheckout => 'Checkout';
+
+  @override
+  String storeCartItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '1 item',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get storePackageDuplicateTitle => 'Package Already Exists';
+
+  @override
+  String storePackageDuplicateMessage(String packageName, String groupName) {
+    return 'The package \"$packageName\" already exists in group \"$groupName\". Do you want to overwrite it? The existing package and all its training progress will be permanently deleted.';
+  }
+
+  @override
+  String get storePackageDuplicateOverwrite => 'Overwrite';
+
+  @override
+  String get storePackageDuplicateKeep => 'Keep existing';
+
+  @override
+  String splashSettingUpPackages(int current, int total) {
+    return 'Setting up packages: $current / $total';
+  }
+
+  @override
+  String get splashThisHappensOnce => 'This only happens once.';
+
+  @override
+  String get splashLoading => 'Loading…';
 }

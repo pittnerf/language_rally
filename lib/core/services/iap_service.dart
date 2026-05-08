@@ -1,5 +1,6 @@
 import 'dart:io';
-import 'package:cloud_functions/cloud_functions.dart';
+import 'dart:typed_data';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:purchases_flutter/purchases_flutter.dart' as rc;
@@ -9,14 +10,12 @@ import '../../data/repositories/language_package_group_repository.dart';
 import '../../data/repositories/language_package_repository.dart';
 import '../../data/repositories/category_repository.dart';
 import '../../data/repositories/item_repository.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 import '../utils/debug_print.dart';
 
 // ---------------------------------------------------------------------------
 // ⚙️  Configuration — fill these in from your RevenueCat dashboard
 // ---------------------------------------------------------------------------
-const _kRevenueCatAndroidKey = 'YOUR_REVENUECAT_ANDROID_PUBLIC_KEY';
+const _kRevenueCatAndroidKey = 'goog_gyAPWDNhOZyYfFcVXvxOvFCJhxp';
 const _kRevenueCatIosKey     = 'YOUR_REVENUECAT_IOS_PUBLIC_KEY';
 // ---------------------------------------------------------------------------
 
@@ -25,29 +24,27 @@ enum IAPResult { success, cancelled, alreadyOwned, error }
 
 /// Central service for in-app purchases and content delivery.
 ///
-/// Responsibilities:
-///  1. Configure and initialise RevenueCat.
-///  2. Expose available offerings/products.
-///  3. Trigger a purchase, then download the ZIP from Firebase Storage and
-///     import it into the local SQLite database.
-///  4. Restore prior purchases.
+/// Platform support:
+///  • **Android** — Google Play via RevenueCat
+///  • **iOS**     — App Store via RevenueCat
+///  • **Windows / Linux / macOS** — not supported; [isSupported] returns false
 ///
-/// Windows is not supported by RevenueCat; [isSupported] returns false there
-/// and all purchase calls are no-ops that return [IAPResult.error].
+/// After a successful purchase the ZIP is downloaded directly from
+/// Firebase Storage and imported into the local SQLite database.
 class IAPService {
   static final IAPService instance = IAPService._();
   IAPService._();
 
   bool _initialised = false;
 
-  /// True on Android and iOS, false on Windows/Linux/macOS (no IAP support yet).
+  /// True on Android and iOS, false on Desktop platforms.
   bool get isSupported => Platform.isAndroid || Platform.isIOS;
 
   // ---------------------------------------------------------------------------
   // Initialisation
   // ---------------------------------------------------------------------------
 
-  /// Call once during app startup (after Firebase is initialised).
+  /// Call once during app startup (after Firebase.initializeApp).
   Future<void> initialise({String? userId}) async {
     if (!isSupported || _initialised) return;
     try {
@@ -58,7 +55,7 @@ class IAPService {
         await rc.Purchases.logIn(userId);
       }
       _initialised = true;
-      logDebug('✓ IAPService: RevenueCat initialised');
+      logDebug('✓ IAPService: RevenueCat initialised (${Platform.isAndroid ? "Android" : "iOS"})');
     } catch (e) {
       logDebug('⚠️ IAPService: initialisation failed — $e');
     }
@@ -69,12 +66,39 @@ class IAPService {
   // ---------------------------------------------------------------------------
 
   /// Returns the current RevenueCat offering's package list.
-  /// Each package wraps a store-level product (price, title, etc.).
   Future<List<rc.Package>> getAvailablePackages() async {
-    if (!isSupported || !_initialised) return [];
+    if (!isSupported || !_initialised) {
+      logDebug('⚠️ IAPService: getAvailablePackages skipped — isSupported=$isSupported, _initialised=$_initialised');
+      return [];
+    }
     try {
       final offerings = await rc.Purchases.getOfferings();
-      return offerings.current?.availablePackages ?? [];
+
+      // ── Debug: dump all offerings ──────────────────────────────────────────
+      logDebug('🛍️ IAPService: all offerings count = ${offerings.all.length}');
+      offerings.all.forEach((offeringId, offering) {
+        logDebug('  offering "$offeringId": ${offering.availablePackages.length} package(s)');
+        for (final pkg in offering.availablePackages) {
+          logDebug(
+            '    pkg "${pkg.identifier}" → productId="${pkg.storeProduct.identifier}"'
+            ' price="${pkg.storeProduct.priceString}"',
+          );
+        }
+      });
+
+      final current = offerings.current;
+      if (current == null) {
+        logDebug('⚠️ IAPService: offerings.current is NULL — no default offering set in RevenueCat dashboard');
+        logDebug('⚠️ IAPService: falling back to ALL offerings packages combined');
+        // Collect all packages from all offerings as a fallback
+        final allPackages = offerings.all.values
+            .expand((o) => o.availablePackages)
+            .toList();
+        logDebug('✅ IAPService: fallback found ${allPackages.length} package(s) across all offerings');
+        return allPackages;
+      }
+      logDebug('✅ IAPService: current offering "${current.identifier}" has ${current.availablePackages.length} package(s)');
+      return current.availablePackages;
     } catch (e) {
       logDebug('⚠️ IAPService: getOfferings failed — $e');
       return [];
@@ -82,12 +106,17 @@ class IAPService {
   }
 
   /// Returns the set of product IDs the current user has already purchased.
+  /// Includes both entitlement-based and non-consumable (allPurchasedProductIdentifiers).
   Future<Set<String>> getPurchasedProductIds() async {
     if (!isSupported || !_initialised) return {};
     try {
       final info = await rc.Purchases.getCustomerInfo();
-      // Active entitlements map 1-to-1 with product IDs in our setup
-      return info.entitlements.active.keys.toSet();
+      final activeEntitlements = info.entitlements.active.keys.toSet();
+      final allPurchased = info.allPurchasedProductIdentifiers;
+      logDebug('🛍️ IAPService: active entitlements (${activeEntitlements.length}): ${activeEntitlements.join(", ")}');
+      logDebug('🛍️ IAPService: allPurchasedProductIdentifiers: ${allPurchased.toList().join(", ")}');
+      // Combine both so non-consumables (no entitlement) are still detected
+      return {...activeEntitlements, ...allPurchased};
     } catch (e) {
       logDebug('⚠️ IAPService: getCustomerInfo failed — $e');
       return {};
@@ -98,20 +127,24 @@ class IAPService {
   // Purchase + download + import pipeline
   // ---------------------------------------------------------------------------
 
-  /// Purchases [product] via the store, then downloads the ZIP from Firebase
-  /// Storage and imports it.
+  /// Purchases [product] via the platform store (Google Play / App Store),
+  /// then downloads the ZIP from Firebase Storage and imports it.
   ///
   /// [onProgress] receives download progress values 0.0 – 1.0.
+  /// [onDuplicate] is called when a local package with the same group name and
+  /// package name already exists. Return `true` to overwrite it or `false` to
+  /// abort the import.
   Future<IAPResult> purchaseAndDownload(
     StoreProduct product, {
     ValueChanged<double>? onProgress,
+    Future<bool> Function(String groupName, String packageName)? onDuplicate,
   }) async {
     if (!isSupported) {
       logDebug('⚠️ IAPService: IAP not supported on this platform');
       return IAPResult.error;
     }
 
-    // ── 1. Find the matching RevenueCat package ────────────────────────────
+    // ── 1. Find the matching RevenueCat package ──────────────────────────
     final packages = await getAvailablePackages();
     rc.Package? rcPackage;
     for (final pkg in packages) {
@@ -126,16 +159,23 @@ class IAPService {
       return IAPResult.error;
     }
 
-    // ── 2. Trigger store purchase ──────────────────────────────────────────
+    // ── 2. Trigger store purchase (Google Play / App Store dialog) ───────
     try {
-      final customerInfo = await rc.Purchases.purchasePackage(rcPackage);
+      final purchaseResult = await rc.Purchases.purchase(rc.PurchaseParams.package(rcPackage));
+      final customerInfo = purchaseResult.customerInfo;
+
+      // For non-consumables, check allPurchasedProductIdentifiers (entitlements
+      // only work if an Entitlement is configured in RevenueCat dashboard).
+      final purchased = customerInfo.allPurchasedProductIdentifiers
+          .contains(product.productId);
       final entitlementActive =
           customerInfo.entitlements.active.containsKey(product.productId);
-      if (!entitlementActive) {
-        logDebug('⚠️ IAPService: entitlement not active after purchase');
+
+      if (!purchased && !entitlementActive) {
+        logDebug('⚠️ IAPService: purchase not confirmed — productId not in purchased list or entitlements');
         return IAPResult.error;
       }
-      logDebug('✓ IAPService: purchase successful for ${product.productId}');
+      logDebug('✓ IAPService: purchase successful for ${product.productId} (entitlement=$entitlementActive, purchased=$purchased)');
     } on rc.PurchasesErrorCode catch (code) {
       if (code == rc.PurchasesErrorCode.purchaseCancelledError) {
         return IAPResult.cancelled;
@@ -147,34 +187,43 @@ class IAPService {
       return IAPResult.error;
     }
 
-    // ── 3. Download ZIP from Firebase Storage ──────────────────────────────
+    // ── 3. Download ZIP from Firebase Storage and import ────────────────
     try {
-      final zipBytes = await _downloadFromStorage(
+      final zipBytes = await _downloadFromFirebaseStorage(
         product.storagePath,
         onProgress: onProgress,
       );
-      await _importZip(zipBytes);
-      logDebug('✓ IAPService: imported ${product.productId}');
-      return IAPResult.success;
+      final importResult = await _importZip(zipBytes, onDuplicate: onDuplicate);
+      logDebug('✓ IAPService: import result for ${product.productId}: $importResult');
+      return importResult;
     } catch (e) {
       logDebug('⚠️ IAPService: download/import failed — $e');
       return IAPResult.error;
     }
   }
 
-  /// Downloads a product that is already purchased (e.g. after restore or
-  /// on a new device) but not yet in the local DB.
+  /// Downloads a product that was already purchased (e.g. after restore or
+  /// on a new device) but is not yet in the local database.
+  ///
+  /// [onDuplicate] is called when a package with the same group name and
+  /// package name already exists in the local database.  It receives the
+  /// group name and package name of the conflicting package and should return
+  /// `true` if the existing package should be overwritten or `false` to keep
+  /// the existing package and abort the import.  When [onDuplicate] is `null`
+  /// (e.g. during background resume) duplicates are silently skipped and
+  /// [IAPResult.cancelled] is returned so the caller can clear the pending
+  /// queue entry.
   Future<IAPResult> downloadPurchased(
     StoreProduct product, {
     ValueChanged<double>? onProgress,
+    Future<bool> Function(String groupName, String packageName)? onDuplicate,
   }) async {
     try {
-      final zipBytes = await _downloadFromStorage(
+      final zipBytes = await _downloadFromFirebaseStorage(
         product.storagePath,
         onProgress: onProgress,
       );
-      await _importZip(zipBytes);
-      return IAPResult.success;
+      return await _importZip(zipBytes, onDuplicate: onDuplicate);
     } catch (e) {
       logDebug('⚠️ IAPService: downloadPurchased failed — $e');
       return IAPResult.error;
@@ -204,64 +253,85 @@ class IAPService {
   // Internal helpers
   // ---------------------------------------------------------------------------
 
-  Future<Uint8List> _downloadFromStorage(
+  /// Downloads a file from Firebase Storage using [storagePath] (relative to
+  /// the default bucket, e.g. "packages/DE/pkg_en_de_A1_Animals.zip").
+  ///
+  /// The user must be signed in (anonymously or otherwise) so that Firebase
+  /// Storage security rules can gate access to authenticated users.
+  Future<Uint8List> _downloadFromFirebaseStorage(
     String storagePath, {
     ValueChanged<double>? onProgress,
   }) async {
-    // ── 1. Call Cloud Function to get a signed URL ─────────────────────────
-    // The function verifies the RevenueCat entitlement server-side before
-    // issuing the URL, so the download is fully gated on a valid purchase.
-    final callable = FirebaseFunctions.instance
-        .httpsCallable('getPackageDownloadUrl');
+    logDebug('⬇️  IAPService: downloading $storagePath from Firebase Storage');
 
-    // RevenueCat user ID (anonymous ID if the user hasn't signed in)
-    String rcUserId;
-    try {
-      final info = await rc.Purchases.getCustomerInfo();
-      rcUserId = info.originalAppUserId;
-    } catch (_) {
-      rcUserId = 'anonymous';
-    }
+    // Get a public download URL (requires auth if Storage rules require it)
+    final ref = FirebaseStorage.instance.ref(storagePath);
+    final downloadUrl = await ref.getDownloadURL();
 
-    final result = await callable.call<Map<String, dynamic>>({
-      'productId': p.basenameWithoutExtension(storagePath)
-          .replaceAll('pkg_', 'lang_pkg_'),
-      'revenueCatUserId': rcUserId,
-    });
-
-    final downloadUrl = result.data['downloadUrl'] as String;
-
-    // ── 2. Stream download to a temp file ─────────────────────────────────
-    final tempDir = await getTemporaryDirectory();
-    final fileName = p.basename(storagePath);
-    final tempFile = File(p.join(tempDir.path, fileName));
-
+    // Stream download for progress reporting
     final request = http.Request('GET', Uri.parse(downloadUrl));
     final response = await request.send();
     final total = response.contentLength ?? 0;
     int received = 0;
 
-    final sink = tempFile.openWrite();
-    await response.stream.map((chunk) {
+    final builder = BytesBuilder(copy: false);
+    await response.stream.forEach((chunk) {
       received += chunk.length;
+      builder.add(chunk);
       if (total > 0) onProgress?.call(received / total);
-      return chunk;
-    }).pipe(sink);
+    });
 
-    final bytes = await tempFile.readAsBytes();
-    await tempFile.delete();
+    final bytes = builder.toBytes();
+    logDebug('✓ IAPService: downloaded ${bytes.length} bytes from $storagePath');
     return bytes;
   }
 
-  Future<void> _importZip(Uint8List bytes) async {
+  Future<IAPResult> _importZip(
+    Uint8List bytes, {
+    Future<bool> Function(String groupName, String packageName)? onDuplicate,
+  }) async {
     final packageRepo = LanguagePackageRepository();
+    final groupRepo = LanguagePackageGroupRepository();
     final importRepo = ImportExportRepository(
       packageRepo: packageRepo,
-      groupRepo: LanguagePackageGroupRepository(),
+      groupRepo: groupRepo,
       categoryRepo: CategoryRepository(),
       itemRepo: ItemRepository(),
     );
+
+    // ── Duplicate check ──────────────────────────────────────────────────────
+    final existingPackage = await importRepo.checkDuplicateInZipBytes(bytes);
+    if (existingPackage != null) {
+      final group = await groupRepo.getGroupById(existingPackage.groupId);
+      final groupName = group?.name ?? '';
+      final packageName = existingPackage.packageName ?? '';
+
+      if (onDuplicate == null) {
+        // Background resume with no UI handler — skip silently so the
+        // pending-queue entry is cleared and the user can decide manually.
+        logDebug(
+          '⚠️ IAPService: duplicate package "$packageName" in group "$groupName" found during background resume — skipping',
+        );
+        return IAPResult.cancelled;
+      }
+
+      final shouldOverwrite = await onDuplicate(groupName, packageName);
+      if (!shouldOverwrite) {
+        logDebug(
+          '⚠️ IAPService: user chose to keep existing package "$packageName" — import aborted',
+        );
+        return IAPResult.cancelled;
+      }
+
+      // Delete the old package before importing the new one.
+      logDebug(
+        '🗑️  IAPService: overwriting existing package "${existingPackage.id}" ("$packageName" in "$groupName")',
+      );
+      await packageRepo.deletePackageWithAllData(existingPackage.id);
+    }
+
     await importRepo.importPackageFromZipBytesSeeding(bytes);
+    return IAPResult.success;
   }
 }
 

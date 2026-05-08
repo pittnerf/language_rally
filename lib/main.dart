@@ -13,9 +13,12 @@ import 'presentation/pages/onboarding/onboarding_screen.dart';
 import 'presentation/providers/locale_provider.dart';
 import 'presentation/providers/theme_provider.dart';
 import 'presentation/providers/app_settings_provider.dart';
+import 'presentation/providers/store_provider.dart';
 import 'presentation/widgets/splash_screen.dart';
 import '../../core/utils/debug_print.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'firebase_options.dart';
 import 'core/services/iap_service.dart';
 
@@ -32,9 +35,54 @@ void main() async {
   DatabaseHelper.initializeDatabaseFactory();
 
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Activate App Check so Firebase services (Auth, Firestore, Storage) accept
+  // requests from this app.  Play Integrity is used on Android (production),
+  // debug provider on all other platforms / debug builds.
+  await _initAppCheck();
+
+  // Sign in anonymously so Firebase Storage and Firestore rules can
+  // restrict access to authenticated users.
+  await _signInAnonymously();
+
   await IAPService.instance.initialise();
 
   runApp(const ProviderScope(child: LanguageRallyApp()));
+}
+
+/// Activates Firebase App Check.
+///
+/// - Android release builds → Play Integrity (attestation by Google Play).
+/// - Everywhere else (debug / iOS / web) → debug provider so the app can
+///   still reach Firebase services during development without a real device.
+Future<void> _initAppCheck() async {
+  try {
+    await FirebaseAppCheck.instance.activate(
+      // TODO: switch to AndroidProvider.playIntegrity once the app is live on
+      // Google Play.  For now the debug provider lets the app reach Firebase
+      // without Play attestation (add the printed debug token in the Firebase
+      // Console under App Check → your app → Debug tokens).
+      androidProvider: AndroidProvider.debug,
+      appleProvider: AppleProvider.debug,
+    );
+    logDebug('✓ Firebase App Check activated');
+  } catch (e) {
+    logDebug('⚠️ Firebase App Check activation failed — $e');
+  }
+}
+
+/// Signs in anonymously to Firebase so that Storage and Firestore security
+/// rules can require authentication without forcing the user to log in.
+Future<void> _signInAnonymously() async {
+  try {
+    final auth = FirebaseAuth.instance;
+    if (auth.currentUser == null) {
+      await auth.signInAnonymously();
+    }
+    logDebug('✓ Firebase: signed in anonymously (uid=${auth.currentUser?.uid})');
+  } catch (e) {
+    logDebug('⚠️ Firebase: anonymous sign-in failed — $e');
+  }
 }
 
 class LanguageRallyApp extends ConsumerStatefulWidget {
@@ -89,6 +137,7 @@ class _LanguageRallyAppState extends ConsumerState<LanguageRallyApp>
           // because they have no critical "missing key" problem.
           ref.invalidate(localeProvider);
           ref.invalidate(themeProvider);
+          _resumePendingStoreDownloads();
         }
         break;
       case AppLifecycleState.paused:
@@ -131,12 +180,20 @@ class _LanguageRallyAppState extends ConsumerState<LanguageRallyApp>
     // Perform heavy initialization tasks
     final success = await AppInitializationService.initialize();
 
+    if (success) {
+      await _resumePendingStoreDownloads();
+    }
+
     if (mounted) {
       setState(() {
         _isInitialized = success;
         _needsOnboarding = AppInitializationService.needsOnboarding;
       });
     }
+  }
+
+  Future<void> _resumePendingStoreDownloads() async {
+    await ref.read(storeCatalogProvider.notifier).resumePendingDownloads();
   }
 
   @override

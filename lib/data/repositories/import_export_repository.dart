@@ -1,6 +1,7 @@
 // lib/data/repositories/import_export_repository.dart
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/foundation.dart' show compute;
 import 'package:path_provider/path_provider.dart';
 import 'package:archive/archive_io.dart';
 import 'package:path/path.dart' as path;
@@ -14,6 +15,24 @@ import 'language_package_repository.dart';
 import 'language_package_group_repository.dart';
 import 'category_repository.dart';
 import 'item_repository.dart';
+
+// ---------------------------------------------------------------------------
+// Top-level helper — must be top-level (not a closure) for compute().
+// Decodes a ZIP archive in a background isolate and returns every contained
+// file as a map of relative path → raw bytes.  Using compute() keeps the
+// main thread free for frame rendering so the app never shows a blank/dark
+// screen when foregrounded during a long import.
+// ---------------------------------------------------------------------------
+Map<String, List<int>> _extractZipFiles(List<int> bytes) {
+  final archive = ZipDecoder().decodeBytes(bytes, verify: false);
+  final result = <String, List<int>>{};
+  for (final file in archive) {
+    if (file.isFile) {
+      result[file.name] = file.content as List<int>;
+    }
+  }
+  return result;
+}
 
 /// Custom exception for duplicate package
 class PackageAlreadyExistsException implements Exception {
@@ -535,6 +554,34 @@ class ImportExportRepository {
     }
   }
 
+  /// Parses [bytes] as a ZIP package and checks whether a package with the
+  /// same group name AND package name already exists in the local database.
+  ///
+  /// Returns the existing [LanguagePackage] if a duplicate is found, or
+  /// `null` if no duplicate exists.  Only the package manifest JSON inside
+  /// the ZIP is read; no database writes are performed.
+  Future<LanguagePackage?> checkDuplicateInZipBytes(List<int> bytes) async {
+    // Decode the archive in a background isolate to keep the main thread free.
+    final files = await compute(_extractZipFiles, bytes);
+
+    final jsonBytes = files['package_data.json'];
+    if (jsonBytes == null) return null;
+
+    final data =
+        jsonDecode(utf8.decode(jsonBytes)) as Map<String, dynamic>?;
+    if (data == null) return null;
+
+    final packageData = data['package'] as Map<String, dynamic>?;
+    if (packageData == null) return null;
+
+    final groupName = packageData['group_name'] as String?;
+    final packageName = packageData['name'] as String?;
+
+    if (groupName == null || packageName == null) return null;
+
+    return _packageRepo.getPackageByNameAndGroup(packageName, groupName);
+  }
+
   /// Import a package directly from ZIP bytes (e.g. read from Flutter asset bundle).
   /// Equivalent to [importPackageFromZip] but accepts raw bytes instead of a
   /// file path — no intermediate temp ZIP file is written.
@@ -600,45 +647,31 @@ class ImportExportRepository {
 
   /// Seeding-optimised variant of [importPackageFromZipBytes].
   ///
-  /// Same logic for ZIP decoding, ID generation and group resolution, but
-  /// wraps **all** database writes (package + categories + items) inside a
-  /// single SQLite transaction.  This eliminates the per-item BEGIN/COMMIT
-  /// overhead and can be an order of magnitude faster when seeding many
-  /// packages on first launch.
+  /// ZIP decoding runs in a background isolate via [compute] so the main
+  /// thread stays free for rendering frames — this prevents the blank/dark
+  /// screen that would otherwise appear when the user foregrounds the app
+  /// during a long import.  The temp-directory round-trip is also eliminated:
+  /// file contents are held in memory and the JSON is parsed directly.
   Future<ImportResult> importPackageFromZipBytesSeeding(List<int> bytes) async {
-    final tempDir = await getTemporaryDirectory();
-    final extractDir = Directory(
-      '${tempDir.path}/seed_import_${DateTime.now().millisecondsSinceEpoch}',
-    );
-    await extractDir.create(recursive: true);
+    // ── 1. Decode ZIP in background isolate ──────────────────────────────────
+    final files = await compute(_extractZipFiles, bytes);
 
-    try {
-      // ── 1. Decode ZIP ────────────────────────────────────────────────────
-      final archive = ZipDecoder().decodeBytes(bytes);
-      for (final file in archive) {
-        if (file.isFile) {
-          final out = File('${extractDir.path}/${file.name}');
-          await out.create(recursive: true);
-          await out.writeAsBytes(file.content as List<int>);
-        }
-      }
+    // ── 2. Read & validate JSON ──────────────────────────────────────────────
+    final jsonBytes = files['package_data.json'];
+    if (jsonBytes == null) {
+      throw Exception('Invalid seed ZIP: missing package_data.json');
+    }
+    final data =
+        jsonDecode(utf8.decode(jsonBytes)) as Map<String, dynamic>;
+    if (data['version'] == null || data['package'] == null) {
+      throw Exception('Invalid seed package format');
+    }
 
-      // ── 2. Read & validate JSON ──────────────────────────────────────────
-      final jsonFile = File('${extractDir.path}/package_data.json');
-      if (!await jsonFile.exists()) {
-        throw Exception('Invalid seed ZIP: missing package_data.json');
-      }
-      final data =
-          jsonDecode(await jsonFile.readAsString()) as Map<String, dynamic>;
-      if (data['version'] == null || data['package'] == null) {
-        throw Exception('Invalid seed package format');
-      }
+    final packageData = data['package'] as Map<String, dynamic>;
+    final categoriesData = data['categories'] as List<dynamic>;
+    final itemsData = data['items'] as List<dynamic>;
 
-      final packageData = data['package'] as Map<String, dynamic>;
-      final categoriesData = data['categories'] as List<dynamic>;
-      final itemsData = data['items'] as List<dynamic>;
-
-      // ── 3. Generate fresh UUIDs ──────────────────────────────────────────
+    // ── 3. Generate fresh UUIDs ──────────────────────────────────────────────
       packageData['id'] = const Uuid().v4();
       final categoryIdMap = <String, String>{};
       for (final catData in categoriesData) {
@@ -760,9 +793,6 @@ class ImportExportRepository {
       });
 
       return ImportResult(items.length, groupName);
-    } finally {
-      await extractDir.delete(recursive: true).catchError((_) => extractDir);
-    }
   }
 
   /// Import a package from ZIP file including custom icons

@@ -13,6 +13,7 @@ import '../app_tour/app_tour_page.dart';
 import '../../../core/utils/debug_print.dart';
 import '../dev/bulk_package_import_page.dart';
 import '../items/global_search_page.dart';
+import '../store/store_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -432,12 +433,9 @@ class _HomePageState extends ConsumerState<HomePage> {
         // Browse Store Button
         ElevatedButton.icon(
           onPressed: () {
-            // TODO: Navigate to package store page when implemented
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('${localizations.browseStore} - Coming soon!'),
-                duration: const Duration(seconds: 2),
-              ),
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const StorePage()),
             );
           },
           icon: Icon(Icons.storefront, size: iconSize),

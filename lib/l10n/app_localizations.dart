@@ -3865,6 +3865,246 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Search cancelled — {count} result(s) found so far'**
   String globalSearchCancelledMessage(int count);
+
+  /// No description provided for @storeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Language Package Store'**
+  String get storeTitle;
+
+  /// No description provided for @storeRestorePurchases.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore purchases'**
+  String get storeRestorePurchases;
+
+  /// No description provided for @storeRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get storeRefresh;
+
+  /// No description provided for @storeSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search packages…'**
+  String get storeSearchHint;
+
+  /// No description provided for @storeNoPackagesMatchSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'No packages match your search.'**
+  String get storeNoPackagesMatchSearch;
+
+  /// No description provided for @storeNoPackagesAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No packages available.'**
+  String get storeNoPackagesAvailable;
+
+  /// No description provided for @storeInstalledCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{installed} / {total} installed'**
+  String storeInstalledCount(int installed, int total);
+
+  /// No description provided for @storeLoadErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load the store.'**
+  String get storeLoadErrorTitle;
+
+  /// No description provided for @storeIapNotAvailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'In-app purchases are not available on this platform. Visit our website to purchase packages.'**
+  String get storeIapNotAvailableMessage;
+
+  /// No description provided for @storeOpenWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Open website'**
+  String get storeOpenWebsite;
+
+  /// No description provided for @storePurchaseSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} installed successfully!'**
+  String storePurchaseSuccess(String title);
+
+  /// No description provided for @storePurchaseCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase cancelled.'**
+  String get storePurchaseCancelled;
+
+  /// No description provided for @storePurchaseAlreadyOwned.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} is already installed.'**
+  String storePurchaseAlreadyOwned(String title);
+
+  /// No description provided for @storePurchaseError.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again.'**
+  String get storePurchaseError;
+
+  /// No description provided for @storePurchasesRestored.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchases restored'**
+  String get storePurchasesRestored;
+
+  /// No description provided for @storeAllLevels.
+  ///
+  /// In en, this message translates to:
+  /// **'All Levels'**
+  String get storeAllLevels;
+
+  /// No description provided for @storeAllGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'All Languages'**
+  String get storeAllGroups;
+
+  /// No description provided for @storeFilterLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'Level'**
+  String get storeFilterLevel;
+
+  /// No description provided for @storeFilterLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get storeFilterLanguage;
+
+  /// No description provided for @storeDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get storeDownload;
+
+  /// No description provided for @storeBuy.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy'**
+  String get storeBuy;
+
+  /// No description provided for @storeInstalledLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Installed'**
+  String get storeInstalledLabel;
+
+  /// No description provided for @storeDownloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading…'**
+  String get storeDownloading;
+
+  /// No description provided for @storeRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get storeRetry;
+
+  /// No description provided for @storeIapAndroidOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchases available on Android and iOS only.'**
+  String get storeIapAndroidOnly;
+
+  /// No description provided for @storeDismiss.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get storeDismiss;
+
+  /// No description provided for @storeAddToCart.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to Cart'**
+  String get storeAddToCart;
+
+  /// No description provided for @storeRemoveFromCart.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get storeRemoveFromCart;
+
+  /// No description provided for @storeCartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Shopping Cart'**
+  String get storeCartTitle;
+
+  /// No description provided for @storeCartEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Your cart is empty'**
+  String get storeCartEmpty;
+
+  /// No description provided for @storeCartClearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All'**
+  String get storeCartClearAll;
+
+  /// No description provided for @storeCartCheckout.
+  ///
+  /// In en, this message translates to:
+  /// **'Checkout'**
+  String get storeCartCheckout;
+
+  /// No description provided for @storeCartItemCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 item} other{{count} items}}'**
+  String storeCartItemCount(int count);
+
+  /// No description provided for @storePackageDuplicateTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Package Already Exists'**
+  String get storePackageDuplicateTitle;
+
+  /// No description provided for @storePackageDuplicateMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The package \"{packageName}\" already exists in group \"{groupName}\". Do you want to overwrite it? The existing package and all its training progress will be permanently deleted.'**
+  String storePackageDuplicateMessage(String packageName, String groupName);
+
+  /// No description provided for @storePackageDuplicateOverwrite.
+  ///
+  /// In en, this message translates to:
+  /// **'Overwrite'**
+  String get storePackageDuplicateOverwrite;
+
+  /// No description provided for @storePackageDuplicateKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep existing'**
+  String get storePackageDuplicateKeep;
+
+  /// Splash screen progress label shown while seed packages are being imported
+  ///
+  /// In en, this message translates to:
+  /// **'Setting up packages: {current} / {total}'**
+  String splashSettingUpPackages(int current, int total);
+
+  /// Subtitle shown below the progress bar on the splash screen
+  ///
+  /// In en, this message translates to:
+  /// **'This only happens once.'**
+  String get splashThisHappensOnce;
+
+  /// Indeterminate loading label on the splash screen
+  ///
+  /// In en, this message translates to:
+  /// **'Loading…'**
+  String get splashLoading;
 }
 
 class _AppLocalizationsDelegate
