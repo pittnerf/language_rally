@@ -317,11 +317,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       Icon(Icons.translate,
                           color: theme.colorScheme.primary, size: 22),
                       const SizedBox(width: AppTheme.spacing8),
-                      Text(
-                        l10n.onboardingSelectUiLanguage,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: theme.colorScheme.primary,
+                      Expanded(
+                        child: Text(
+                          l10n.onboardingSelectUiLanguage,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            color: theme.colorScheme.primary,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
@@ -352,7 +356,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                               ),
                             ),
                             const SizedBox(width: AppTheme.spacing8),
-                            Text(entry.value),
+                            Expanded(
+                              child: Text(
+                                entry.value,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
                           ],
                         ),
                       );
@@ -508,14 +518,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         ],
 
         if (_scanDone && _groupToInfo.isNotEmpty) ...[
-          Row(
+          Wrap(
+            spacing: AppTheme.spacing8,
+            runSpacing: AppTheme.spacing8,
             children: [
               TextButton.icon(
                 onPressed: _selectAll,
                 icon: const Icon(Icons.check_box, size: 18),
                 label: Text(l10n.onboardingSelectAll),
               ),
-              const SizedBox(width: AppTheme.spacing8),
               TextButton.icon(
                 onPressed: _deselectAll,
                 icon: const Icon(Icons.check_box_outline_blank, size: 18),

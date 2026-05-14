@@ -273,6 +273,27 @@
 
   "errorTranscribing": "Error transcribing audio",
   "trainingSettings": "Training Settings",
+  "trainingPresetTitle": "Quick Setup",
+  "trainingPresetHint": "Choose a preset and the settings below will be configured automatically.",
+  "trainingPresetComboLabel": "Preset",
+  "trainingPresetAllExamplesForeignLanguage": "All examples, foreign language",
+  "trainingPresetAllExamplesRandomLanguage": "All examples, random language",
+  "trainingPresetFavouriteItemsForeignLanguage": "Favourite items, foreign language",
+  "trainingPresetFavouriteItemsRandomLanguage": "Favourite items, random language",
+  "trainingPresetImportantItemsForeignLanguage": "Important items, foreign language",
+  "trainingPresetImportantItemsRandomLanguage": "Important items, random language",
+  "trainingPresetRandomItemsRandomLanguage": "Random items, random language",
+  "trainingPresetUnknownItemsForeignLanguage": "Not known items, foreign language",
+  "trainingPresetUnknownItemsRandomLanguage": "Not known items, random language",
+  "trainingPresetAppliedTapStart": "Preset applied. Tap \"{actionLabel}\" to begin.",
+  "trainingPresetSelectPackageFirst": "Please select a package first.",
+  "@trainingPresetAppliedTapStart": {
+    "placeholders": {
+      "actionLabel": {
+        "type": "String"
+      }
+    }
+  },
   "itemScope": "Item Scope",
   "lastNItems": "Last N items",
   "onlyUnknown": "Only unknown items",
@@ -299,7 +320,7 @@
   "confirmClearTrainingSettings": "Are you sure you want to reset all training settings to default values?",
   "trainingSettingsCleared": "Training settings have been cleared",
   "startingTraining": "Starting training...",
-  "noMoreItemsToDisplay": "No more items to display based on your filter settings.",
+  "noMoreItemsToDisplay": "No items to display based on your filter settings.",
   "noItems": "No Items",
   "trainingComplete": "Training Complete",
   "allItemsCompleted": "Congratulations! You have completed all items in this training session.",
@@ -620,7 +641,7 @@
   "practiced": "Practiced",
 
   "windowsAudioTestPageTitle": "Windows Audio Test (RTAudio)",
-  "configureWindowsAudio": "Test and configure audio input on Windows",
+  "configureWindowsAudio": "Test and configure audio\ninput on Windows",
   "configureWindowsAudioDescription": "Record, play back and transcribe audio using the native Windows RTAudio driver",
   "audioTestTitle": "Windows Audio Recording Test",
   "audioTestSubtitle": "RTAudio — Native Windows audio recording",
@@ -676,6 +697,7 @@
   "help": "Help",
   "trainingHelpTitle": "Training Tips",
   "trainingHelpText": "To make your training as effective as possible, follow these steps:\n1. Click the 'Clear counters' button so that all items in this package are marked as known.\n2. Set 'Item scope' to 'All items'\n3. Set 'Item order' to 'Random'\n4. Choose your native language under 'Display language'\n5. Start the training and continue until you identify approximately 20–30 items you do not know.\n6. Return to the training settings and change 'Item scope' to 'Only unknown items'\n7. Resume training and continue until you have learned all previously unknown items.",
+  "trainingProTip": "Pro tip: Start with all items; later, focus only on the unknowns.",
 
   "onboardingWelcomeTitle": "Welcome to Language Rally!",
   "onboardingSetupSubtitle": "Let's set up the app for you.",
@@ -699,8 +721,8 @@
   "onboardingGetStarted": "Get Started",
   "onboardingImportCompleteTitle": "Import Complete!",
 
-  "importBuiltInPkg": "Import built-in pkg",
-  "importBuiltInPkgTooltip": "Import bundled language packages",
+  "importBuiltInPkg": "Free packages",
+  "importBuiltInPkgTooltip": "Import free bundled language packages",
 
   "globalSearch": "Global Search",
   "globalSearchTitle": "Search Across All Packages",

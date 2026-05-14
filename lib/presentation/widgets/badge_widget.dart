@@ -306,7 +306,13 @@ class BadgeEarnedDialog extends StatelessWidget {
             color: Theme.of(context).colorScheme.tertiary,
           ),
           const SizedBox(width: 8),
-          Text(l10n.badgeEarned),
+          Expanded(
+            child: Text(
+              l10n.badgeEarned,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
         ],
       ),
       content: Column(

@@ -1253,9 +1253,13 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
                     constraints: const BoxConstraints(),
                   ),
                   const SizedBox(width: AppTheme.spacing8),
-                  Text(
-                    l10n.itemDetails,
-                    style: reduceFontSize(theme.textTheme.headlineSmall),
+                  Expanded(
+                    child: Text(
+                      l10n.itemDetails,
+                      style: reduceFontSize(theme.textTheme.headlineSmall),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ],
               ),
@@ -2681,8 +2685,15 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
             children: [
               Icon(Icons.label_outline, size: 18),
               const SizedBox(width: AppTheme.spacing4),
-              Text('Filter by Categories', style: theme.textTheme.titleSmall),
-              const Spacer(),
+              Expanded(
+                child: Text(
+                  'Filter by Categories',
+                  style: theme.textTheme.titleSmall,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: AppTheme.spacing8),
               if (tempSelectedIds.isNotEmpty)
                 TextButton(
                   onPressed: () {

@@ -16,6 +16,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/tts_service.dart';
 import '../../../data/models/item.dart';
@@ -62,6 +63,8 @@ class GlobalSearchPage extends ConsumerStatefulWidget {
 }
 
 class _GlobalSearchPageState extends ConsumerState<GlobalSearchPage> {
+  static const _lastLanguageCodeKey = 'global_search_last_language_code';
+
   // Repositories
   final _packageRepo = LanguagePackageRepository();
   final _itemRepo = ItemRepository();
@@ -113,10 +116,13 @@ class _GlobalSearchPageState extends ConsumerState<GlobalSearchPage> {
         if (pkg.languageCode2.isNotEmpty) codeSet.add(pkg.languageCode2);
       }
       final sortedCodes = codeSet.toList()..sort();
+      final prefs = await SharedPreferences.getInstance();
+      final savedCode = prefs.getString(_lastLanguageCodeKey);
       if (mounted) {
         setState(() {
           _allPackages = packages;
           _uniqueLanguageCodes = sortedCodes;
+          _selectedLanguageCode = sortedCodes.contains(savedCode) ? savedCode : _selectedLanguageCode;
           _isLoadingPackages = false;
         });
       }
@@ -158,6 +164,9 @@ class _GlobalSearchPageState extends ConsumerState<GlobalSearchPage> {
       _progressCurrent = 0;
       _progressTotal = 0;
     });
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_lastLanguageCodeKey, _selectedLanguageCode!);
 
     try {
       final results = await _doSearch(
@@ -674,6 +683,8 @@ class _GlobalSearchPageState extends ConsumerState<GlobalSearchPage> {
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.w600,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             const Spacer(),
             IconButton(
@@ -877,8 +888,15 @@ class _GlobalSearchPageState extends ConsumerState<GlobalSearchPage> {
                         ),
                       )
                       .toList(),
-                  onChanged: (value) =>
-                      setState(() => _selectedLanguageCode = value),
+                  onChanged: (value) async {
+                    setState(() => _selectedLanguageCode = value);
+                    final prefs = await SharedPreferences.getInstance();
+                    if (value == null) {
+                      await prefs.remove(_lastLanguageCodeKey);
+                    } else {
+                      await prefs.setString(_lastLanguageCodeKey, value);
+                    }
+                  },
                 ),
               ),
             ),
@@ -1164,11 +1182,15 @@ class _GlobalSearchPageState extends ConsumerState<GlobalSearchPage> {
                             color: theme.colorScheme.tertiary,
                           ),
                           const SizedBox(width: 4),
-                          Text(
-                            l10n.globalSearchMatchInExamples,
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.tertiary,
-                              fontWeight: FontWeight.bold,
+                          Expanded(
+                            child: Text(
+                              l10n.globalSearchMatchInExamples,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.tertiary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ],
@@ -1223,6 +1245,8 @@ class _GlobalSearchPageState extends ConsumerState<GlobalSearchPage> {
                     label: Text(
                       l10n.globalSearchViewItem,
                       style: theme.textTheme.labelSmall,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                     style: TextButton.styleFrom(
                       minimumSize: Size.zero,

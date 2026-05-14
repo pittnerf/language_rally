@@ -225,6 +225,8 @@ class _AppTourPageState extends State<AppTourPage> {
                     fontWeight: FontWeight.bold,
                     color: theme.colorScheme.primary,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 Text(
                   l10n.appTourSubtitle,
@@ -337,6 +339,8 @@ class _AppTourPageState extends State<AppTourPage> {
                     fontWeight: FontWeight.bold,
                     color: theme.colorScheme.primary,
                   ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               const SizedBox(width: AppTheme.spacing8),
@@ -454,7 +458,12 @@ class _AppTourPageState extends State<AppTourPage> {
             child: OutlinedButton.icon(
               onPressed: _currentPage > 0 ? _previousPage : null,
               icon: Icon(Icons.arrow_back, size: isPhone ? 16 : 20),
-              label: Text(l10n.previousPage, style: buttonTextStyle),
+              label: Text(
+                l10n.previousPage,
+                style: buttonTextStyle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
               style: OutlinedButton.styleFrom(
                 padding: buttonPadding,
               ),
@@ -481,6 +490,8 @@ class _AppTourPageState extends State<AppTourPage> {
                 fontWeight: FontWeight.bold,
                 fontSize: isPhone ? 12 : null,
               ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
             ),
           ),
 
@@ -491,7 +502,12 @@ class _AppTourPageState extends State<AppTourPage> {
             child: FilledButton.icon(
               onPressed: _currentPage < _totalPages - 1 ? _nextPage : null,
               icon: Icon(Icons.arrow_forward, size: isPhone ? 16 : 20),
-              label: Text(l10n.nextPage, style: buttonTextStyle),
+              label: Text(
+                l10n.nextPage,
+                style: buttonTextStyle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
               style: FilledButton.styleFrom(
                 padding: buttonPadding,
               ),

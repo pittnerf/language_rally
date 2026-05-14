@@ -2628,7 +2628,13 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
                 color: Theme.of(context).colorScheme.error,
               ),
               const SizedBox(width: AppTheme.spacing8),
-              Text(l10n.languageMismatch),
+              Expanded(
+                child: Text(
+                  l10n.languageMismatch,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
           content: Column(

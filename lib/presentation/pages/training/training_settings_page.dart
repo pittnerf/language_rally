@@ -28,6 +28,18 @@ import '../../../l10n/app_localizations.dart';
 import 'training_rally_page.dart';
 import 'pronunciation_practice_page.dart';
 
+enum _TrainingQuickPreset {
+  allExamplesForeignLanguage,
+  allExamplesRandomLanguage,
+  favouriteItemsForeignLanguage,
+  favouriteItemsRandomLanguage,
+  importantItemsForeignLanguage,
+  importantItemsRandomLanguage,
+  randomItemsRandomLanguage,
+  unknownItemsForeignLanguage,
+  unknownItemsRandomLanguage,
+}
+
 class TrainingSettingsPage extends ConsumerStatefulWidget {
   final LanguagePackage? package;
   final bool isPronunciationMode;
@@ -68,6 +80,7 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
   ItemType _itemType = ItemType.dictionaryItems;
   List<String> _selectedCategoryIds = [];
   int _dontKnowThreshold = 3;
+  _TrainingQuickPreset? _selectedQuickPreset;
 
   List<Category> _allCategories = [];
   bool _isLoading = true;
@@ -167,6 +180,7 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
             _dontKnowThreshold = 3;
           }
           _allCategories = categories;
+          _selectedQuickPreset = null;
           _isLoading = false;
         });
       }
@@ -220,6 +234,7 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
             _dontKnowThreshold = 3;
           }
           _allCategories = categories;
+          _selectedQuickPreset = null;
         });
       }
     } catch (e) {
@@ -303,11 +318,15 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
           color: colorScheme.onSurfaceVariant,
         ),
         SizedBox(width: AppTheme.spacing8),
-        Text(
-          l10n.groupLabel,
-          style: theme.textTheme.titleSmall?.copyWith(
-            color: colorScheme.onSurfaceVariant,
-            fontWeight: FontWeight.w600,
+        Flexible(
+          child: Text(
+            l10n.groupLabel,
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              fontWeight: FontWeight.w600,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
         SizedBox(width: AppTheme.spacing8),
@@ -453,7 +472,13 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
           children: [
             Icon(Icons.help_outline, color: theme.colorScheme.primary),
             const SizedBox(width: 8),
-            Text(l10n.trainingHelpTitle),
+            Expanded(
+              child: Text(
+                l10n.trainingHelpTitle,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
         content: Text(l10n.trainingHelpText),
@@ -511,6 +536,193 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
     }
   }
 
+  String _quickPresetLabel(
+    AppLocalizations l10n,
+    _TrainingQuickPreset preset,
+  ) {
+    switch (preset) {
+      case _TrainingQuickPreset.randomItemsRandomLanguage:
+        return l10n.trainingPresetRandomItemsRandomLanguage;
+      case _TrainingQuickPreset.allExamplesForeignLanguage:
+        return l10n.trainingPresetAllExamplesForeignLanguage;
+      case _TrainingQuickPreset.allExamplesRandomLanguage:
+        return l10n.trainingPresetAllExamplesRandomLanguage;
+      case _TrainingQuickPreset.unknownItemsForeignLanguage:
+        return l10n.trainingPresetUnknownItemsForeignLanguage;
+      case _TrainingQuickPreset.importantItemsForeignLanguage:
+        return l10n.trainingPresetImportantItemsForeignLanguage;
+      case _TrainingQuickPreset.favouriteItemsForeignLanguage:
+        return l10n.trainingPresetFavouriteItemsForeignLanguage;
+      case _TrainingQuickPreset.unknownItemsRandomLanguage:
+        return l10n.trainingPresetUnknownItemsRandomLanguage;
+      case _TrainingQuickPreset.importantItemsRandomLanguage:
+        return l10n.trainingPresetImportantItemsRandomLanguage;
+      case _TrainingQuickPreset.favouriteItemsRandomLanguage:
+        return l10n.trainingPresetFavouriteItemsRandomLanguage;
+    }
+  }
+
+  void _applyQuickPreset(_TrainingQuickPreset preset, AppLocalizations l10n) {
+    if (_currentPackage == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.trainingPresetSelectPackageFirst),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _selectedQuickPreset = preset;
+      _itemOrder = ItemOrder.random;
+      _displayLanguage = DisplayLanguage.random;
+      _itemType = ItemType.dictionaryItems;
+      _selectedCategoryIds = [];
+      _lastNItems = 20;
+
+      switch (preset) {
+        case _TrainingQuickPreset.allExamplesForeignLanguage:
+          _itemScope = ItemScope.all;
+          _itemType = ItemType.examples;
+          _displayLanguage = DisplayLanguage.targetLanguage;
+          break;
+        case _TrainingQuickPreset.allExamplesRandomLanguage:
+          _itemScope = ItemScope.all;
+          _itemType = ItemType.examples;
+          _displayLanguage = DisplayLanguage.random;
+          break;
+        case _TrainingQuickPreset.favouriteItemsForeignLanguage:
+          _itemScope = ItemScope.onlyFavourite;
+          _displayLanguage = DisplayLanguage.targetLanguage;
+          break;
+        case _TrainingQuickPreset.favouriteItemsRandomLanguage:
+          _itemScope = ItemScope.onlyFavourite;
+          break;
+        case _TrainingQuickPreset.importantItemsForeignLanguage:
+          _itemScope = ItemScope.onlyImportant;
+          _displayLanguage = DisplayLanguage.targetLanguage;
+          break;
+        case _TrainingQuickPreset.importantItemsRandomLanguage:
+          _itemScope = ItemScope.onlyImportant;
+          break;
+        case _TrainingQuickPreset.randomItemsRandomLanguage:
+          _itemScope = ItemScope.all;
+          break;
+        case _TrainingQuickPreset.unknownItemsForeignLanguage:
+          _itemScope = ItemScope.onlyUnknown;
+          _displayLanguage = DisplayLanguage.targetLanguage;
+          break;
+        case _TrainingQuickPreset.unknownItemsRandomLanguage:
+          _itemScope = ItemScope.onlyUnknown;
+          break;
+      }
+    });
+
+    final actionLabel =
+        widget.isPronunciationMode ? l10n.startPractice : l10n.startTrainingRally;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(l10n.trainingPresetAppliedTapStart(actionLabel)),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+      ),
+    );
+  }
+
+  Widget _buildQuickPresetSection(ThemeData theme, AppLocalizations l10n) {
+    final sortedPresets = _TrainingQuickPreset.values.toList()
+      ..sort(
+        (a, b) => _quickPresetLabel(
+          l10n,
+          a,
+        ).toLowerCase().compareTo(_quickPresetLabel(l10n, b).toLowerCase()),
+      );
+
+    return Card(
+      elevation: 1,
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.spacing8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.trainingPresetTitle,
+              style: theme.textTheme.titleSmall?.copyWith(
+                color: theme.colorScheme.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: AppTheme.spacing4),
+            Text(
+              l10n.trainingPresetHint,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: AppTheme.spacing8),
+            DropdownButtonFormField<_TrainingQuickPreset>(
+              initialValue: _selectedQuickPreset,
+              decoration: InputDecoration(
+                border: const OutlineInputBorder(),
+                isDense: true,
+                labelText: l10n.trainingPresetComboLabel,
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: AppTheme.spacing8,
+                  vertical: AppTheme.spacing8,
+                ),
+              ),
+              items: sortedPresets
+                  .map(
+                    (preset) => DropdownMenuItem<_TrainingQuickPreset>(
+                      value: preset,
+                      child: Text(
+                        _quickPresetLabel(l10n, preset),
+                        style: theme.textTheme.bodySmall?.copyWith(fontSize: 12),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (preset) {
+                if (preset == null) return;
+                _applyQuickPreset(preset, l10n);
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTrainingProTipSection(ThemeData theme, AppLocalizations l10n) {
+    return Card(
+      elevation: 1,
+      child: Padding(
+        padding: const EdgeInsets.all(AppTheme.spacing8),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(
+              Icons.tips_and_updates_outlined,
+              size: 18,
+              color: theme.colorScheme.primary,
+            ),
+            const SizedBox(width: AppTheme.spacing8),
+            Expanded(
+              child: Text(
+                l10n.trainingProTip,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -543,284 +755,292 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
-          final bottomPadding = MediaQuery.of(context).padding.bottom;
-
-          return Stack(
+          return Column(
             children: [
+              // ── Fixed action buttons at the top ──────────────────────────────
               SafeArea(
-                child: SingleChildScrollView(
-                  padding: EdgeInsets.only(
-                    left: AppTheme.spacing8,
-                    right: AppTheme.spacing8,
-                    top: AppTheme.spacing8,
-                    bottom:
-                        (isTablet ? 155 : isLandscape ? 130 : 80) +
-                        bottomPadding, // Space for floating buttons + system navigation
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      // Package info
-                      _buildPackageInfo(theme, l10n),
-                      //const SizedBox(height: AppTheme.spacing8),
-
-                      // Main settings in landscape: side by side
-                      if (isLandscape) ...[
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                bottom: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
+                  child: !isLandscape
+                      ? Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            Expanded(
-                              child: _buildItemScopeSection(theme, l10n),
-                            ),
-                            //const SizedBox(width: AppTheme.spacing8),
-                            Expanded(
-                              child: Column(
-                                children: [
-                                  _buildItemTypeSection(theme, l10n),
-                                  //const SizedBox(height: AppTheme.spacing8),
-                                  _buildItemOrderSection(theme, l10n),
-                                ],
+                            // Row 1: primary action spans the full width
+                            SizedBox(
+                              width: double.infinity,
+                              child: FilledButton.icon(
+                                onPressed: _startTraining,
+                                style: FilledButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 14,
+                                  ),
+                                  minimumSize: const Size.fromHeight(52),
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  visualDensity: VisualDensity.compact,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(18),
+                                  ),
+                                ),
+                                icon: Icon(Icons.play_arrow, size: isTablet ? 18 : 17),
+                                label: Text(
+                                  widget.isPronunciationMode
+                                      ? l10n.startPractice
+                                      : l10n.startTrainingRally,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onPrimary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ),
-                            //const SizedBox(width: AppTheme.spacing8),
+                            const SizedBox(height: 8),
+                            // Row 2: utility buttons
+                            Row(
+                              children: [
+                                Flexible(
+                                  child: FilledButton.tonalIcon(
+                                    onPressed: _confirmClearCounters,
+                                    style: FilledButton.styleFrom(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: isTablet ? 14 : 10,
+                                        vertical: isTablet ? 10 : 8,
+                                      ),
+                                      minimumSize: const Size(0, 42),
+                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      visualDensity: VisualDensity.compact,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(18),
+                                      ),
+                                    ),
+                                    icon: Icon(Icons.refresh, size: isTablet ? 16 : 15),
+                                    label: Text(
+                                      l10n.clearCounters,
+                                      style: theme.textTheme.bodySmall,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: FilledButton.tonalIcon(
+                                    onPressed: _showHelpDialog,
+                                    style: FilledButton.styleFrom(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: isTablet ? 14 : 12,
+                                        vertical: isTablet ? 10 : 8,
+                                      ),
+                                      minimumSize: const Size(0, 42),
+                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      visualDensity: VisualDensity.compact,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(18),
+                                      ),
+                                    ),
+                                    icon: Icon(Icons.help_outline, size: isTablet ? 16 : 15),
+                                    label: Text(
+                                      l10n.help,
+                                      style: theme.textTheme.bodySmall,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Flexible(
+                                  child: OutlinedButton.icon(
+                                    onPressed: _clearSettings,
+                                    style: OutlinedButton.styleFrom(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: isTablet ? 14 : 10,
+                                        vertical: isTablet ? 10 : 8,
+                                      ),
+                                      minimumSize: const Size(0, 42),
+                                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                      visualDensity: VisualDensity.compact,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(18),
+                                      ),
+                                      side: BorderSide(color: theme.colorScheme.error),
+                                      foregroundColor: theme.colorScheme.error,
+                                    ),
+                                    icon: Icon(Icons.clear_all, size: isTablet ? 16 : 15),
+                                    label: Text(
+                                      l10n.clearTrainingSettings,
+                                      style: theme.textTheme.bodySmall,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        )
+                      // Landscape: single row with all 4 buttons.
+                      : Row(
+                          children: [
+                            // Clear Counters  (flex 2)
                             Expanded(
-                              child: _buildDisplayLanguageSection(theme, l10n),
+                              flex: 2,
+                              child: ElevatedButton.icon(
+                                onPressed: _confirmClearCounters,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: theme.colorScheme.secondaryContainer,
+                                  foregroundColor: theme.colorScheme.onSecondaryContainer,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: isTablet ? 12 : 6,
+                                    vertical:   isTablet ? 10 : 4,
+                                  ),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  elevation: 6,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                ),
+                                icon: Icon(Icons.refresh, size: isTablet ? 16 : 12),
+                                label: Text(
+                                  l10n.clearCounters,
+                                  style: isTablet ? theme.textTheme.bodySmall : theme.textTheme.labelSmall,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            // Clear Settings  (flex 2)
+                            Expanded(
+                              flex: 2,
+                              child: ElevatedButton.icon(
+                                onPressed: _clearSettings,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: theme.colorScheme.errorContainer,
+                                  foregroundColor: theme.colorScheme.onErrorContainer,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: isTablet ? 12 : 6,
+                                    vertical:   isTablet ? 10 : 4,
+                                  ),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  elevation: 6,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                ),
+                                icon: Icon(Icons.clear_all, size: isTablet ? 16 : 12),
+                                label: Text(
+                                  l10n.clearTrainingSettings,
+                                  style: isTablet ? theme.textTheme.bodySmall : theme.textTheme.labelSmall,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            // Help  (flex 1 — shortest label)
+                            Expanded(
+                              flex: 1,
+                              child: ElevatedButton.icon(
+                                onPressed: _showHelpDialog,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: theme.colorScheme.tertiaryContainer,
+                                  foregroundColor: theme.colorScheme.onTertiaryContainer,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: isTablet ? 12 : 6,
+                                    vertical:   isTablet ? 10 : 4,
+                                  ),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  elevation: 6,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                ),
+                                icon: Icon(Icons.help_outline, size: isTablet ? 16 : 12),
+                                label: Text(
+                                  l10n.help,
+                                  style: isTablet ? theme.textTheme.bodySmall : theme.textTheme.labelSmall,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            // Start Training  (flex 3 — longest label)
+                            Expanded(
+                              flex: 3,
+                              child: ElevatedButton.icon(
+                                onPressed: _startTraining,
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: theme.colorScheme.primary,
+                                  foregroundColor: theme.colorScheme.onPrimary,
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: isTablet ? 12 : 6,
+                                    vertical:   isTablet ? 10 : 4,
+                                  ),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                  elevation: 6,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                ),
+                                icon: Icon(Icons.play_arrow, size: isTablet ? 18 : 14),
+                                label: Text(
+                                  widget.isPronunciationMode ? l10n.startPractice : l10n.startTrainingRally,
+                                  style: (isTablet ? theme.textTheme.bodySmall : theme.textTheme.labelSmall)
+                                      ?.copyWith(color: theme.colorScheme.onPrimary),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
                             ),
                           ],
                         ),
-                        //const SizedBox(height: AppTheme.spacing8),
-                      ] else ...[
-                        // Portrait mode: stacked
-                        _buildItemScopeSection(theme, l10n),
-                        //const SizedBox(height: AppTheme.spacing8),
-                        _buildItemTypeSection(theme, l10n),
-                        //const SizedBox(height: AppTheme.spacing8),
-                        _buildItemOrderSection(theme, l10n),
-                        //const SizedBox(height: AppTheme.spacing8),
-                        _buildDisplayLanguageSection(theme, l10n),
-                        //const SizedBox(height: AppTheme.spacing8),
-                      ],
-
-                      // Category filter
-                      _buildCategoryFilterSection(theme, l10n),
-                    ],
-                  ),
                 ),
               ),
-              // Floating action buttons at bottom
-              // Portrait:  one row of 4 buttons
-              // Landscape: two rows of 2 buttons
-              // SafeArea handles the Android navigation bar on all orientations
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
+              const Divider(height: 1),
+              // ── Scrollable settings content ──────────────────────────────────
+              Expanded(
                 child: SafeArea(
                   top: false,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                    child: !isLandscape
-                        ? Column(
-                            mainAxisSize: MainAxisSize.min,
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(AppTheme.spacing8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        // Package info
+                        _buildPackageInfo(theme, l10n),
+
+                        // Quick presets for beginners
+                        _buildQuickPresetSection(theme, l10n),
+
+                        // Pro tip for Training Rally workflow
+                        if (!widget.isPronunciationMode)
+                          _buildTrainingProTipSection(theme, l10n),
+
+                        // Main settings in landscape: side by side
+                        if (isLandscape) ...[
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // Top row: Clear Counters + Help
-                              Row(
-                                children: [
-                                  Flexible(
-                                    child: ElevatedButton.icon(
-                                      onPressed: _confirmClearCounters,
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: theme.colorScheme.secondaryContainer,
-                                        foregroundColor: theme.colorScheme.onSecondaryContainer,
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: isTablet ? 12 : 6,
-                                          vertical:   isTablet ? 10 : 4,
-                                        ),
-                                        elevation: 6,
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                      ),
-                                      icon: Icon(Icons.refresh, size: isTablet ? 16: 14),
-                                      label: Text(l10n.clearCounters, style: theme.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Flexible(
-                                    child: ElevatedButton.icon(
-                                      onPressed: _showHelpDialog,
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: theme.colorScheme.tertiaryContainer,
-                                        foregroundColor: theme.colorScheme.onTertiaryContainer,
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: isTablet ? 12 : 6,
-                                          vertical:   isTablet ? 10 : 4,
-                                        ),
-                                        elevation: 6,
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                      ),
-                                      icon: Icon(Icons.help_outline, size: isTablet ? 16: 14),
-                                      label: Text(l10n.help, style: theme.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              // Bottom row: Clear Settings + Start Training
-                              Row(
-                                children: [
-                                  Flexible(
-                                    child: ElevatedButton.icon(
-                                      onPressed: _clearSettings,
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: theme.colorScheme.errorContainer,
-                                        foregroundColor: theme.colorScheme.onErrorContainer,
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: isTablet ? 12 : 6,
-                                          vertical:   isTablet ? 10 : 4,
-                                        ),
-                                        elevation: 6,
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                      ),
-                                      icon: Icon(Icons.clear_all, size: isTablet ? 16: 14),
-                                      label: Text(l10n.clearTrainingSettings, style: theme.textTheme.bodySmall, overflow: TextOverflow.ellipsis),
-                                    ),
-                                  ),
-                                  const SizedBox(width: AppTheme.spacing8),
-                                  Flexible(
-                                    child: ElevatedButton.icon(
-                                      onPressed: _startTraining,
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: theme.colorScheme.primary,
-                                        foregroundColor: theme.colorScheme.onPrimary,
-                                        padding: EdgeInsets.symmetric(
-                                          horizontal: isTablet ? 12 : 6,
-                                          vertical:   isTablet ? 10 : 4,
-                                        ),
-                                        elevation: 6,
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                      ),
-                                      icon: Icon(Icons.play_arrow, size: isTablet ? 16: 16),
-                                      label: Text(
-                                        widget.isPronunciationMode ? l10n.startPractice : l10n.startTrainingRally,
-                                        style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onPrimary),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          )
-                        // Landscape: single row with all 4 buttons.
-                        // On tablets the vertical padding is larger so the
-                        // buttons are easier to tap on a large touch screen.
-                        : Row(
-                            children: [
-                              // Clear Counters  (flex 2)
                               Expanded(
-                                flex: 2,
-                                child: ElevatedButton.icon(
-                                  onPressed: _confirmClearCounters,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: theme.colorScheme.secondaryContainer,
-                                    foregroundColor: theme.colorScheme.onSecondaryContainer,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: isTablet ? 12 : 6,
-                                      vertical:   isTablet ? 10 : 4,
-                                    ),
-                                    minimumSize: Size.zero,
-                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                    elevation: 6,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                  ),
-                                  icon: Icon(Icons.refresh, size: isTablet ? 16 : 12),
-                                  label: Text(
-                                    l10n.clearCounters,
-                                    style: isTablet ? theme.textTheme.bodySmall : theme.textTheme.labelSmall,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
+                                child: _buildItemScopeSection(theme, l10n),
+                              ),
+                              Expanded(
+                                child: Column(
+                                  children: [
+                                    _buildItemTypeSection(theme, l10n),
+                                    _buildItemOrderSection(theme, l10n),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(width: 4),
-                              // Clear Settings  (flex 2)
                               Expanded(
-                                flex: 2,
-                                child: ElevatedButton.icon(
-                                  onPressed: _clearSettings,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: theme.colorScheme.errorContainer,
-                                    foregroundColor: theme.colorScheme.onErrorContainer,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: isTablet ? 12 : 6,
-                                      vertical:   isTablet ? 10 : 4,
-                                    ),
-                                    minimumSize: Size.zero,
-                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                    elevation: 6,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                  ),
-                                  icon: Icon(Icons.clear_all, size: isTablet ? 16 : 12),
-                                  label: Text(
-                                    l10n.clearTrainingSettings,
-                                    style: isTablet ? theme.textTheme.bodySmall : theme.textTheme.labelSmall,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              // Help  (flex 1 — shortest label)
-                              Expanded(
-                                flex: 1,
-                                child: ElevatedButton.icon(
-                                  onPressed: _showHelpDialog,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: theme.colorScheme.tertiaryContainer,
-                                    foregroundColor: theme.colorScheme.onTertiaryContainer,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: isTablet ? 12 : 6,
-                                      vertical:   isTablet ? 10 : 4,
-                                    ),
-                                    minimumSize: Size.zero,
-                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                    elevation: 6,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                  ),
-                                  icon: Icon(Icons.help_outline, size: isTablet ? 16 : 12),
-                                  label: Text(
-                                    l10n.help,
-                                    style: isTablet ? theme.textTheme.bodySmall : theme.textTheme.labelSmall,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 4),
-                              // Start Training  (flex 3 — longest label)
-                              Expanded(
-                                flex: 3,
-                                child: ElevatedButton.icon(
-                                  onPressed: _startTraining,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: theme.colorScheme.primary,
-                                    foregroundColor: theme.colorScheme.onPrimary,
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: isTablet ? 12 : 6,
-                                      vertical:   isTablet ? 10 : 4,
-                                    ),
-                                    minimumSize: Size.zero,
-                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                    elevation: 6,
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                  ),
-                                  icon: Icon(Icons.play_arrow, size: isTablet ? 18 : 14),
-                                  label: Text(
-                                    widget.isPronunciationMode ? l10n.startPractice : l10n.startTrainingRally,
-                                    style: (isTablet ? theme.textTheme.bodySmall : theme.textTheme.labelSmall)
-                                        ?.copyWith(color: theme.colorScheme.onPrimary),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
+                                child: _buildDisplayLanguageSection(theme, l10n),
                               ),
                             ],
                           ),
+                        ] else ...[
+                          // Portrait mode: stacked
+                          _buildItemScopeSection(theme, l10n),
+                          _buildItemTypeSection(theme, l10n),
+                          _buildItemOrderSection(theme, l10n),
+                          _buildDisplayLanguageSection(theme, l10n),
+                        ],
+
+                        // Category filter
+                        _buildCategoryFilterSection(theme, l10n),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -876,6 +1096,8 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                         ? theme.textTheme.labelSmall
                         : theme.textTheme.bodySmall)
                     ?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ],
           ),
@@ -971,6 +1193,7 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                           ?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
+                      maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
@@ -1024,13 +1247,18 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          l10n.lastNValue(_lastNItems.toString()),
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.bold,
+                        Expanded(
+                          child: Text(
+                            l10n.lastNValue(_lastNItems.toString()),
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
+                        const SizedBox(width: AppTheme.spacing8),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -1239,6 +1467,8 @@ class _TrainingSettingsPageState extends ConsumerState<TrainingSettingsPage> {
                     color: theme.colorScheme.primary,
                     fontWeight: FontWeight.bold,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 Flexible(
                   child: Text(

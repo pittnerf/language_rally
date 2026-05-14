@@ -847,6 +847,61 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trainingSettings => 'Training Settings';
 
   @override
+  String get trainingPresetTitle => 'Quick Setup';
+
+  @override
+  String get trainingPresetHint =>
+      'Choose a preset and the settings below will be configured automatically.';
+
+  @override
+  String get trainingPresetComboLabel => 'Preset';
+
+  @override
+  String get trainingPresetAllExamplesForeignLanguage =>
+      'All examples, foreign language';
+
+  @override
+  String get trainingPresetAllExamplesRandomLanguage =>
+      'All examples, random language';
+
+  @override
+  String get trainingPresetFavouriteItemsForeignLanguage =>
+      'Favourite items, foreign language';
+
+  @override
+  String get trainingPresetFavouriteItemsRandomLanguage =>
+      'Favourite items, random language';
+
+  @override
+  String get trainingPresetImportantItemsForeignLanguage =>
+      'Important items, foreign language';
+
+  @override
+  String get trainingPresetImportantItemsRandomLanguage =>
+      'Important items, random language';
+
+  @override
+  String get trainingPresetRandomItemsRandomLanguage =>
+      'Random items, random language';
+
+  @override
+  String get trainingPresetUnknownItemsForeignLanguage =>
+      'Not known items, foreign language';
+
+  @override
+  String get trainingPresetUnknownItemsRandomLanguage =>
+      'Not known items, random language';
+
+  @override
+  String trainingPresetAppliedTapStart(String actionLabel) {
+    return 'Preset applied. Tap \"$actionLabel\" to begin.';
+  }
+
+  @override
+  String get trainingPresetSelectPackageFirst =>
+      'Please select a package first.';
+
+  @override
   String get itemScope => 'Item Scope';
 
   @override
@@ -929,7 +984,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noMoreItemsToDisplay =>
-      'No more items to display based on your filter settings.';
+      'No items to display based on your filter settings.';
 
   @override
   String get noItems => 'No Items';
@@ -1773,7 +1828,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get configureWindowsAudio =>
-      'Test and configure audio input on Windows';
+      'Test and configure audio\ninput on Windows';
 
   @override
   String get configureWindowsAudioDescription =>
@@ -1943,6 +1998,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'To make your training as effective as possible, follow these steps:\n1. Click the \'Clear counters\' button so that all items in this package are marked as known.\n2. Set \'Item scope\' to \'All items\'\n3. Set \'Item order\' to \'Random\'\n4. Choose your native language under \'Display language\'\n5. Start the training and continue until you identify approximately 20–30 items you do not know.\n6. Return to the training settings and change \'Item scope\' to \'Only unknown items\'\n7. Resume training and continue until you have learned all previously unknown items.';
 
   @override
+  String get trainingProTip =>
+      'Pro tip: Start with all items; later, focus only on the unknowns.';
+
+  @override
   String get onboardingWelcomeTitle => 'Welcome to Language Rally!';
 
   @override
@@ -1995,10 +2054,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingImportCompleteTitle => 'Import Complete!';
 
   @override
-  String get importBuiltInPkg => 'Import built-in pkg';
+  String get importBuiltInPkg => 'Free packages';
 
   @override
-  String get importBuiltInPkgTooltip => 'Import bundled language packages';
+  String get importBuiltInPkgTooltip => 'Import free bundled language packages';
 
   @override
   String get globalSearch => 'Global Search';

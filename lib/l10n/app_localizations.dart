@@ -1634,6 +1634,90 @@ abstract class AppLocalizations {
   /// **'Training Settings'**
   String get trainingSettings;
 
+  /// No description provided for @trainingPresetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Setup'**
+  String get trainingPresetTitle;
+
+  /// No description provided for @trainingPresetHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a preset and the settings below will be configured automatically.'**
+  String get trainingPresetHint;
+
+  /// No description provided for @trainingPresetComboLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset'**
+  String get trainingPresetComboLabel;
+
+  /// No description provided for @trainingPresetAllExamplesForeignLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'All examples, foreign language'**
+  String get trainingPresetAllExamplesForeignLanguage;
+
+  /// No description provided for @trainingPresetAllExamplesRandomLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'All examples, random language'**
+  String get trainingPresetAllExamplesRandomLanguage;
+
+  /// No description provided for @trainingPresetFavouriteItemsForeignLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Favourite items, foreign language'**
+  String get trainingPresetFavouriteItemsForeignLanguage;
+
+  /// No description provided for @trainingPresetFavouriteItemsRandomLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Favourite items, random language'**
+  String get trainingPresetFavouriteItemsRandomLanguage;
+
+  /// No description provided for @trainingPresetImportantItemsForeignLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Important items, foreign language'**
+  String get trainingPresetImportantItemsForeignLanguage;
+
+  /// No description provided for @trainingPresetImportantItemsRandomLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Important items, random language'**
+  String get trainingPresetImportantItemsRandomLanguage;
+
+  /// No description provided for @trainingPresetRandomItemsRandomLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Random items, random language'**
+  String get trainingPresetRandomItemsRandomLanguage;
+
+  /// No description provided for @trainingPresetUnknownItemsForeignLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Not known items, foreign language'**
+  String get trainingPresetUnknownItemsForeignLanguage;
+
+  /// No description provided for @trainingPresetUnknownItemsRandomLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Not known items, random language'**
+  String get trainingPresetUnknownItemsRandomLanguage;
+
+  /// No description provided for @trainingPresetAppliedTapStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Preset applied. Tap \"{actionLabel}\" to begin.'**
+  String trainingPresetAppliedTapStart(String actionLabel);
+
+  /// No description provided for @trainingPresetSelectPackageFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a package first.'**
+  String get trainingPresetSelectPackageFirst;
+
   /// No description provided for @itemScope.
   ///
   /// In en, this message translates to:
@@ -1793,7 +1877,7 @@ abstract class AppLocalizations {
   /// No description provided for @noMoreItemsToDisplay.
   ///
   /// In en, this message translates to:
-  /// **'No more items to display based on your filter settings.'**
+  /// **'No items to display based on your filter settings.'**
   String get noMoreItemsToDisplay;
 
   /// No description provided for @noItems.
@@ -3311,7 +3395,7 @@ abstract class AppLocalizations {
   /// No description provided for @configureWindowsAudio.
   ///
   /// In en, this message translates to:
-  /// **'Test and configure audio input on Windows'**
+  /// **'Test and configure audio\ninput on Windows'**
   String get configureWindowsAudio;
 
   /// No description provided for @configureWindowsAudioDescription.
@@ -3638,6 +3722,12 @@ abstract class AppLocalizations {
   /// **'To make your training as effective as possible, follow these steps:\n1. Click the \'Clear counters\' button so that all items in this package are marked as known.\n2. Set \'Item scope\' to \'All items\'\n3. Set \'Item order\' to \'Random\'\n4. Choose your native language under \'Display language\'\n5. Start the training and continue until you identify approximately 20–30 items you do not know.\n6. Return to the training settings and change \'Item scope\' to \'Only unknown items\'\n7. Resume training and continue until you have learned all previously unknown items.'**
   String get trainingHelpText;
 
+  /// No description provided for @trainingProTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro tip: Start with all items; later, focus only on the unknowns.'**
+  String get trainingProTip;
+
   /// No description provided for @onboardingWelcomeTitle.
   ///
   /// In en, this message translates to:
@@ -3737,13 +3827,13 @@ abstract class AppLocalizations {
   /// No description provided for @importBuiltInPkg.
   ///
   /// In en, this message translates to:
-  /// **'Import built-in pkg'**
+  /// **'Free packages'**
   String get importBuiltInPkg;
 
   /// No description provided for @importBuiltInPkgTooltip.
   ///
   /// In en, this message translates to:
-  /// **'Import bundled language packages'**
+  /// **'Import free bundled language packages'**
   String get importBuiltInPkgTooltip;
 
   /// No description provided for @globalSearch.

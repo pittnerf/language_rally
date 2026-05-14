@@ -72,7 +72,7 @@ class ItemRepository {
       where: 'package_id = ?',
       whereArgs: [packageId],
     );
-    return Future.wait(maps.map((map) => _mapToItem(map)));
+    return _mapItemsFromMaps(maps);
   }
 
   Future<List<Item>> getItemsForCategories(List<String> categoryIds) async {
@@ -87,13 +87,13 @@ class ItemRepository {
       WHERE ic.category_id IN ($placeholders)
     ''', categoryIds);
 
-    return Future.wait(maps.map((map) => _mapToItem(map)));
+    return _mapItemsFromMaps(maps);
   }
 
   Future<List<Item>> getAllItems() async {
     final db = await _dbHelper.database;
     final maps = await db.query('items');
-    return Future.wait(maps.map((map) => _mapToItem(map)));
+    return _mapItemsFromMaps(maps);
   }
 
   Future<Item?> getItemById(String id) async {
@@ -105,7 +105,7 @@ class ItemRepository {
       limit: 1,
     );
     if (maps.isEmpty) return null;
-    return _mapToItem(maps.first);
+    return (await _mapItemsFromMaps(maps)).first;
   }
 
   // Search and filter
@@ -156,7 +156,7 @@ class ItemRepository {
     }
 
     final maps = await db.rawQuery(query, args);
-    return Future.wait(maps.map((map) => _mapToItem(map)));
+    return _mapItemsFromMaps(maps);
   }
 
   /// Insert an item within an already-open [DatabaseExecutor] (e.g. a
@@ -267,77 +267,151 @@ class ItemRepository {
     };
   }
 
-  Future<Item> _mapToItem(Map<String, dynamic> map) async {
+  Future<List<Item>> _mapItemsFromMaps(List<Map<String, dynamic>> maps) async {
     final db = await _dbHelper.database;
-    final itemId = map['id'] as String;
+    if (maps.isEmpty) return [];
 
-    // Get category IDs
-    final categoryMaps = await db.query(
-      'item_categories',
-      where: 'item_id = ?',
-      whereArgs: [itemId],
-    );
-    final categoryIds = categoryMaps.map((m) => m['category_id'] as String).toList();
+    final itemIds = maps.map((map) => map['id'] as String).toList();
 
-    // Get language data
-    final langDataMaps = await db.query(
-      'item_language_data',
-      where: 'item_id = ?',
-      whereArgs: [itemId],
-      orderBy: 'language_number ASC',
-    );
+    final categoryIdsByItem = await _loadCategoryIdsByItemIds(db, itemIds);
+    final languageDataByItem = await _loadLanguageDataByItemIds(db, itemIds);
+    final examplesByItem = await _loadExamplesByItemIds(db, itemIds);
 
-    ItemLanguageData? lang1Data;
-    ItemLanguageData? lang2Data;
+    return maps.map((map) {
+      final itemId = map['id'] as String;
+      final langData = languageDataByItem[itemId] ?? const <int, ItemLanguageData>{};
+      final lang1Data = langData[1];
+      final lang2Data = langData[2];
 
-    for (final langMap in langDataMaps) {
-      final langData = ItemLanguageData(
-        languageCode: langMap['language_code'] as String,
-        text: langMap['text'] as String,
-        preItem: langMap['pre_item'] as String?,
-        postItem: langMap['post_item'] as String?,
+      return Item(
+        id: itemId,
+        packageId: map['package_id'] as String,
+        categoryIds: categoryIdsByItem[itemId] ?? const [],
+        language1Data: lang1Data ?? ItemLanguageData(languageCode: '', text: ''),
+        language2Data: lang2Data ?? ItemLanguageData(languageCode: '', text: ''),
+        examples: examplesByItem[itemId] ?? const [],
+        isKnown: (map['is_known'] as int) == 1,
+        isFavourite: (map['is_favourite'] as int) == 1,
+        isImportant: (map['is_important'] as int) == 1,
+        dontKnowCounter: map['dont_know_counter'] as int,
+        lastReviewedAt: map['last_reviewed_at'] != null
+            ? DateTime.fromMillisecondsSinceEpoch(map['last_reviewed_at'] as int)
+            : null,
       );
-
-      if ((langMap['language_number'] as int) == 1) {
-        lang1Data = langData;
-      } else {
-        lang2Data = langData;
-      }
-    }
-
-    // Get examples (belong to item, not language data)
-    final examples = await _getExamplesForItem(itemId);
-
-    return Item(
-      id: itemId,
-      packageId: map['package_id'] as String,
-      categoryIds: categoryIds,
-      language1Data: lang1Data ?? ItemLanguageData(languageCode: '', text: ''),
-      language2Data: lang2Data ?? ItemLanguageData(languageCode: '', text: ''),
-      examples: examples,
-      isKnown: (map['is_known'] as int) == 1,
-      isFavourite: (map['is_favourite'] as int) == 1,
-      isImportant: (map['is_important'] as int) == 1,
-      dontKnowCounter: map['dont_know_counter'] as int,
-      lastReviewedAt: map['last_reviewed_at'] != null
-          ? DateTime.fromMillisecondsSinceEpoch(map['last_reviewed_at'] as int)
-          : null,
-    );
+    }).toList();
   }
 
-  Future<List<ExampleSentence>> _getExamplesForItem(String itemId) async {
-    final db = await _dbHelper.database;
-    final maps = await db.query(
-      'example_sentences',
-      where: 'item_id = ?',
-      whereArgs: [itemId],
+  Future<Map<String, List<String>>> _loadCategoryIdsByItemIds(
+    Database db,
+    List<String> itemIds,
+  ) async {
+    final rows = await _queryRowsByItemIds(
+      db,
+      table: 'item_categories',
+      itemColumn: 'item_id',
+      itemIds: itemIds,
+      columns: const ['item_id', 'category_id'],
     );
 
-    return maps.map((map) => ExampleSentence(
-      id: map['id'] as String,
-      textLanguage1: map['text_language1'] as String,
-      textLanguage2: map['text_language2'] as String,
-    )).toList();
+    final result = <String, List<String>>{};
+    for (final row in rows) {
+      final itemId = row['item_id'] as String;
+      final categoryId = row['category_id'] as String;
+      result.putIfAbsent(itemId, () => []).add(categoryId);
+    }
+    return result;
+  }
+
+  Future<Map<String, Map<int, ItemLanguageData>>> _loadLanguageDataByItemIds(
+    Database db,
+    List<String> itemIds,
+  ) async {
+    final rows = await _queryRowsByItemIds(
+      db,
+      table: 'item_language_data',
+      itemColumn: 'item_id',
+      itemIds: itemIds,
+      columns: const [
+        'item_id',
+        'language_code',
+        'language_number',
+        'text',
+        'pre_item',
+        'post_item',
+      ],
+      orderBy: 'item_id ASC, language_number ASC',
+    );
+
+    final result = <String, Map<int, ItemLanguageData>>{};
+    for (final row in rows) {
+      final itemId = row['item_id'] as String;
+      final languageNumber = row['language_number'] as int;
+      final langData = ItemLanguageData(
+        languageCode: row['language_code'] as String,
+        text: row['text'] as String,
+        preItem: row['pre_item'] as String?,
+        postItem: row['post_item'] as String?,
+      );
+      result.putIfAbsent(itemId, () => <int, ItemLanguageData>{})[languageNumber] = langData;
+    }
+    return result;
+  }
+
+  Future<Map<String, List<ExampleSentence>>> _loadExamplesByItemIds(
+    Database db,
+    List<String> itemIds,
+  ) async {
+    final rows = await _queryRowsByItemIds(
+      db,
+      table: 'example_sentences',
+      itemColumn: 'item_id',
+      itemIds: itemIds,
+      columns: const ['id', 'item_id', 'text_language1', 'text_language2'],
+      orderBy: 'item_id ASC',
+    );
+
+    final result = <String, List<ExampleSentence>>{};
+    for (final row in rows) {
+      final itemId = row['item_id'] as String;
+      result.putIfAbsent(itemId, () => []).add(
+        ExampleSentence(
+          id: row['id'] as String,
+          textLanguage1: row['text_language1'] as String,
+          textLanguage2: row['text_language2'] as String,
+        ),
+      );
+    }
+    return result;
+  }
+
+  Future<List<Map<String, Object?>>> _queryRowsByItemIds(
+    Database db, {
+    required String table,
+    required String itemColumn,
+    required List<String> itemIds,
+    required List<String> columns,
+    String? orderBy,
+  }) async {
+    if (itemIds.isEmpty) return [];
+
+    const chunkSize = 500;
+    final rows = <Map<String, Object?>>[];
+
+    for (var start = 0; start < itemIds.length; start += chunkSize) {
+      final end = start + chunkSize > itemIds.length ? itemIds.length : start + chunkSize;
+      final chunk = itemIds.sublist(start, end);
+      final placeholders = List.filled(chunk.length, '?').join(',');
+      final part = await db.query(
+        table,
+        columns: columns,
+        where: '$itemColumn IN ($placeholders)',
+        whereArgs: chunk,
+        orderBy: orderBy,
+      );
+      rows.addAll(part);
+    }
+
+    return rows;
   }
 }
 

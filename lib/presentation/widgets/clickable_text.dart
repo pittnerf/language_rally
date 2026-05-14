@@ -55,16 +55,28 @@ class ClickableText extends StatelessWidget {
         );
       }
 
-      // Add the clickable URL
-      final url = match.group(0)!;
+      // Add the clickable URL (without common trailing punctuation).
+      final rawUrl = match.group(0)!;
+      final cleanedUrl = _trimTrailingPunctuation(rawUrl);
+      final trailingSuffix = rawUrl.substring(cleanedUrl.length);
+
       spans.add(
         TextSpan(
-          text: url,
+          text: cleanedUrl,
           style: linkStyle,
           recognizer: TapGestureRecognizer()
-            ..onTap = () => _launchUrl(context, url),
+            ..onTap = () => _launchUrl(context, cleanedUrl),
         ),
       );
+
+      if (trailingSuffix.isNotEmpty) {
+        spans.add(
+          TextSpan(
+            text: trailingSuffix,
+            style: defaultStyle,
+          ),
+        );
+      }
 
       currentPosition = match.end;
     }
@@ -98,23 +110,30 @@ class ClickableText extends StatelessWidget {
     );
   }
 
+  String _trimTrailingPunctuation(String url) {
+    const trailingChars = '.,;:!?)]}\"\'';
+    var end = url.length;
+    while (end > 0 && trailingChars.contains(url[end - 1])) {
+      end--;
+    }
+    return url.substring(0, end);
+  }
+
   Future<void> _launchUrl(BuildContext context, String urlString) async {
     try {
       final url = Uri.parse(urlString);
-      if (await canLaunchUrl(url)) {
-        await launchUrl(
-          url,
-          mode: LaunchMode.externalApplication,
+      final launched = await launchUrl(
+        url,
+        mode: LaunchMode.externalApplication,
+      );
+
+      if (!launched && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Could not open URL: $urlString'),
+            duration: const Duration(seconds: 2),
+          ),
         );
-      } else {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Could not open URL: $urlString'),
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        }
       }
     } catch (e) {
       if (context.mounted) {

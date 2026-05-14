@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:language_rally/l10n/app_localizations.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -56,6 +57,12 @@ void main() async {
 /// - Everywhere else (debug / iOS / web) → debug provider so the app can
 ///   still reach Firebase services during development without a real device.
 Future<void> _initAppCheck() async {
+  // Firebase App Check plugin methods are not implemented on desktop.
+  if (_isDesktopPlatform()) {
+    logDebug('ℹ️ Firebase App Check skipped on desktop platform');
+    return;
+  }
+
   try {
     await FirebaseAppCheck.instance.activate(
       // TODO: switch to AndroidProvider.playIntegrity once the app is live on
@@ -69,6 +76,13 @@ Future<void> _initAppCheck() async {
   } catch (e) {
     logDebug('⚠️ Firebase App Check activation failed — $e');
   }
+}
+
+bool _isDesktopPlatform() {
+  if (kIsWeb) return false;
+  return defaultTargetPlatform == TargetPlatform.windows ||
+      defaultTargetPlatform == TargetPlatform.linux ||
+      defaultTargetPlatform == TargetPlatform.macOS;
 }
 
 /// Signs in anonymously to Firebase so that Storage and Firestore security

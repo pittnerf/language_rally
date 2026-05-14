@@ -343,10 +343,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             );
           },
           icon: Icon(Icons.library_books, size: iconSize),
-          label: Text(
-            localizations.viewPackages,
-            style: TextStyle(fontSize: fontSize),
-          ),
+          label: _buttonLabel(localizations.viewPackages, fontSize),
           style: ElevatedButton.styleFrom(
             padding: buttonPadding,
           ),
@@ -362,10 +359,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             );
           },
           icon: Icon(Icons.manage_search, size: iconSize),
-          label: Text(
-            localizations.globalSearch,
-            style: TextStyle(fontSize: fontSize),
-          ),
+          label: _buttonLabel(localizations.globalSearch, fontSize),
           style: ElevatedButton.styleFrom(
             padding: buttonPadding,
           ),
@@ -379,10 +373,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             );
           },
           icon: Icon(Icons.school, size: iconSize),
-          label: Text(
-            localizations.startTrainingRally,
-            style: TextStyle(fontSize: fontSize),
-          ),
+          label: _buttonLabel(localizations.startTrainingRally, fontSize),
           style: FilledButton.styleFrom(
             padding: buttonPadding,
             elevation: 4,
@@ -401,10 +392,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             );
           },
           icon: Icon(Icons.record_voice_over, size: iconSize),
-          label: Text(
-            localizations.practicePronunciation,
-            style: TextStyle(fontSize: fontSize),
-          ),
+          label: _buttonLabel(localizations.practicePronunciation, fontSize),
           style: ElevatedButton.styleFrom(
             padding: buttonPadding,
           ),
@@ -420,10 +408,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             );
           },
           icon: Icon(Icons.add_circle_outline, size: iconSize),
-          label: Text(
-            localizations.createNewPackage,
-            style: TextStyle(fontSize: fontSize),
-          ),
+          label: _buttonLabel(localizations.createNewPackage, fontSize),
           style: ElevatedButton.styleFrom(
             padding: buttonPadding,
           ),
@@ -439,10 +424,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             );
           },
           icon: Icon(Icons.storefront, size: iconSize),
-          label: Text(
-            localizations.browseStore,
-            style: TextStyle(fontSize: fontSize),
-          ),
+          label: _buttonLabel(localizations.browseStore, fontSize),
           style: ElevatedButton.styleFrom(
             padding: buttonPadding,
           ),
@@ -458,10 +440,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             );
           },
           icon: Icon(Icons.settings, size: iconSize),
-          label: Text(
-            localizations.settings,
-            style: TextStyle(fontSize: fontSize),
-          ),
+          label: _buttonLabel(localizations.settings, fontSize),
           style: ElevatedButton.styleFrom(
             padding: buttonPadding,
           ),
@@ -479,10 +458,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             );
           },
           icon: Icon(Icons.science, size: iconSize),
-          label: Text(
-            localizations.generateTestData,
-            style: TextStyle(fontSize: fontSize),
-          ),
+          label: _buttonLabel(localizations.generateTestData, fontSize),
           style: OutlinedButton.styleFrom(
             padding: buttonPadding,
             side: BorderSide(
@@ -508,10 +484,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               );
             },
             icon: Icon(Icons.download_for_offline_outlined, size: iconSize),
-            label: Text(
-              'Bulk Package Import',
-              style: TextStyle(fontSize: fontSize),
-            ),
+            label: _buttonLabel('Bulk Package Import', fontSize),
             style: OutlinedButton.styleFrom(
               padding: buttonPadding,
               side: BorderSide(color: theme.colorScheme.error, width: 2),
@@ -520,6 +493,16 @@ class _HomePageState extends ConsumerState<HomePage> {
           ),
         ],
       ],
+    );
+  }
+
+  Widget _buttonLabel(String text, double fontSize) {
+    return Text(
+      text,
+      style: TextStyle(fontSize: fontSize),
+      textAlign: TextAlign.center,
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
     );
   }
 

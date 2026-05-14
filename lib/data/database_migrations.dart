@@ -16,7 +16,7 @@ import 'package:sqflite/sqflite.dart';
 class DatabaseMigrations {
   /// Current database version
   /// Increment this when adding a new migration
-  static const int currentVersion = 6;
+  static const int currentVersion = 7;
 
   /// Type definitions for database types
   static const idType = 'TEXT PRIMARY KEY';
@@ -44,6 +44,9 @@ class DatabaseMigrations {
 
     // Version 5 -> 6: Add current_badge column to training_statistics
     6: _migrateToVersion6,
+
+    // Version 6 -> 7: Add missing performance indexes
+    7: _migrateToVersion7,
 
     // Add future migrations here:
     // 7: _migrateToVersion7,
@@ -204,16 +207,23 @@ class DatabaseMigrations {
       )
     ''');
 
+    await _createPerformanceIndexes(db);
+  }
+
+  static Future<void> _createPerformanceIndexes(Database db) async {
     // Create indexes for better performance
-    await db.execute('CREATE INDEX idx_categories_package ON categories(package_id)');
-    await db.execute('CREATE INDEX idx_item_categories_item ON item_categories(item_id)');
-    await db.execute('CREATE INDEX idx_item_categories_category ON item_categories(category_id)');
-    await db.execute('CREATE INDEX idx_item_language_data_item ON item_language_data(item_id)');
-    await db.execute('CREATE INDEX idx_example_sentences_item ON example_sentences(item_id)');
-    await db.execute('CREATE INDEX idx_training_sessions_package ON training_sessions(package_id)');
-    await db.execute('CREATE INDEX idx_items_known ON items(is_known)');
-    await db.execute('CREATE INDEX idx_items_favourite ON items(is_favourite)');
-    await db.execute('CREATE INDEX idx_items_important ON items(is_important)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_categories_package ON categories(package_id)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_item_categories_item ON item_categories(item_id)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_item_categories_category ON item_categories(category_id)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_item_language_data_item ON item_language_data(item_id)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_example_sentences_item ON example_sentences(item_id)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_training_sessions_package ON training_sessions(package_id)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_items_known ON items(is_known)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_items_favourite ON items(is_favourite)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_items_important ON items(is_important)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_items_package ON items(package_id)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_language_packages_group ON language_packages(group_id)');
+    await db.execute('CREATE INDEX IF NOT EXISTS idx_language_packages_created_at ON language_packages(created_at)');
   }
 
   /// Upgrade database from oldVersion to newVersion
@@ -407,6 +417,13 @@ class DatabaseMigrations {
     } else {
       developer.log('  ⚠️  Column current_badge already exists in training_statistics, skipping', name: 'DatabaseMigrations');
     }
+  }
+
+  /// Migration to version 7: Add missing lookup/order indexes
+  static Future<void> _migrateToVersion7(Database db) async {
+    developer.log('  ℹ️  Adding performance indexes...', name: 'DatabaseMigrations');
+    await _createPerformanceIndexes(db);
+    developer.log('  ✓ Performance indexes created', name: 'DatabaseMigrations');
   }
 
   // /// Migration to version 7: Example future migration

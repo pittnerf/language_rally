@@ -10,6 +10,10 @@ set(BINARY_NAME "language_rally")
 # versions of CMake.
 cmake_policy(VERSION 3.14...3.25)
 
+# Silence deprecation warnings coming from vendored third-party CMake projects
+# extracted under build/windows (for example firebase_cpp_sdk_windows).
+set(CMAKE_WARN_DEPRECATED OFF CACHE BOOL "" FORCE)
+
 # Define build configuration option.
 get_property(IS_MULTICONFIG GLOBAL PROPERTY GENERATOR_IS_MULTI_CONFIG)
 if(IS_MULTICONFIG)

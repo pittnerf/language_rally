@@ -269,6 +269,27 @@
 
   "errorTranscribing": "Hiba a hangátiratban",
   "trainingSettings": "Gyakorlási Beállítások",
+  "trainingPresetTitle": "Gyors beállítás",
+  "trainingPresetHint": "Válasszon egy mintát, és az alábbi beállítások automatikusan konfigurálódnak.",
+  "trainingPresetComboLabel": "Minta",
+  "trainingPresetAllExamplesForeignLanguage": "Minden példa, idegen nyelv",
+  "trainingPresetAllExamplesRandomLanguage": "Minden példa, véletlen nyelv",
+  "trainingPresetFavouriteItemsForeignLanguage": "Kedvenc elemek, idegen nyelv",
+  "trainingPresetRandomItemsRandomLanguage": "Véletlen elemek, véletlen nyelv",
+  "trainingPresetUnknownItemsForeignLanguage": "Nem ismert elemek, idegen nyelv",
+  "trainingPresetUnknownItemsRandomLanguage": "Nem ismert elemek, véletlen nyelv",
+  "trainingPresetImportantItemsForeignLanguage": "Fontos elemek, idegen nyelv",
+  "trainingPresetImportantItemsRandomLanguage": "Fontos elemek, véletlen nyelv",
+  "trainingPresetFavouriteItemsRandomLanguage": "Kedvenc elemek, véletlen nyelv",
+  "trainingPresetAppliedTapStart": "A minta alkalmazva. Koppintson a(z) \"{actionLabel}\" gombra az indításhoz.",
+  "trainingPresetSelectPackageFirst": "Először válasszon egy csomagot.",
+  "@trainingPresetAppliedTapStart": {
+    "placeholders": {
+      "actionLabel": {
+        "type": "String"
+      }
+    }
+  },
   "itemScope": "Elemek Köre",
   "lastNItems": "Utolsó N elem",
   "onlyUnknown": "Csak ismeretlen elemek",
@@ -295,7 +316,7 @@
   "confirmClearTrainingSettings": "Biztosan visszaállítod az összes gyakorlási beállítást az alapértelmezett értékekre?",
   "trainingSettingsCleared": "A gyakorlási beállítások törölve lettek",
   "startingTraining": "Gyakorlás indítása...",
-  "noMoreItemsToDisplay": "Nincs több megjelenítendő elem a szűrési beállítások alapján.",
+  "noMoreItemsToDisplay": "Nincs megjelenítendő elem a szűrési beállítások alapján.",
   "noItems": "Nincs Elem",
   "trainingComplete": "Gyakorlás Befejezve",
   "allItemsCompleted": "Gratulálunk! Befejezted az összes elemet ebben a gyakorlásban.",
@@ -562,7 +583,7 @@
   "practiced": "Gyakorolt",
 
   "windowsAudioTestPageTitle": "Windows Hang Teszt (RTAudio)",
-  "configureWindowsAudio": "Hangbemenet tesztelése és beállítása Windows-on",
+  "configureWindowsAudio": "Hangbemenet tesztelése\nés beállítása Windows-on",
   "configureWindowsAudioDescription": "Hangfelvétel, lejátszás és átírás tesztelése a natív Windows RTAudio meghajtóval",
   "audioTestTitle": "Windows hangfelvétel teszt",
   "audioTestSubtitle": "RTAudio — Natív Windows hangfelvétel",
@@ -618,6 +639,7 @@
   "help": "Súgó",
   "trainingHelpTitle": "Tippek a hatékony tanuláshoz",
   "trainingHelpText": "Ahhoz, hogy a gyakorlás a lehető leghatékonyabb legyen, kövesd az alábbi lépéseket:\n1. Kattints a 'Számlálók törlése' gombra, hogy a csomag minden eleme ismertként legyen megjelölve.\n2. Állítsd az 'Elemek köre' opciót „Összes elem' értékre.\n3. Állítsd az 'Elemek sorrendje' opciót „Véletlenszerű' értékre.\n4. Válaszd ki az anyanyelvedet a 'Megjelenítési nyelv' beállításnál.\n5. Indítsd el a tanulást, és folytasd addig, amíg körülbelül 20–30 számodra ismeretlen elemet nem érsz el.\n6. Térj vissza a tanulási beállításokhoz, és állítsd az 'Elemek köre' opciót 'Csak ismeretlen elemek' értékre.\n7. Indítsd újra a tanulást, és folytasd addig, amíg az összes korábban ismeretlen elemet meg nem tanulod.",
+  "trainingProTip": "Pro tipp: Kezdd az összes elemmel; később fókuszálj csak az ismeretlenekre.",
 
   "onboardingWelcomeTitle": "Üdvözöllek a Language Rally-ban!",
   "onboardingSetupSubtitle": "Állítsuk be az alkalmazást számodra.",
@@ -641,14 +663,14 @@
   "onboardingGetStarted": "Kezdjük!",
   "onboardingImportCompleteTitle": "Importálás kész!",
 
-  "importBuiltInPkg": "Alapcsomag importálása",
+  "importBuiltInPkg": "Ingyenes csomagok",
   "importBuiltInPkgTooltip": "Beépített nyelvi csomagok importálása",
 
   "globalSearch": "Globális keresés",
   "globalSearchTitle": "Keresés az összes csomagban",
   "globalSearchSelectLanguage": "Válassz nyelvkódot",
-  "globalSearchEnterWord": "Keresendő szó(k)",
-  "globalSearchEnterWordHint": "pl. \"der\", \"tanul\" — részleges egyezést is megtalál",
+  "globalSearchEnterWord": "Keresendő szó",
+  "globalSearchEnterWordHint": "Pl. \"tanul\"  - részleges egyezést is megtalál",
   "globalSearchButton": "Keresés",
   "globalSearchResults": "Eredmények",
   "globalSearchNoResults": "Nincs találat a(z) \"{query}\" keresésre",

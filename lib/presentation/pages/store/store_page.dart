@@ -467,11 +467,16 @@ class _GroupSectionState extends State<_GroupSection> {
                         ?.copyWith(fontWeight: FontWeight.w700),
                   ),
                 ),
-                Text(
-                  widget.l
-                      .storeInstalledCount(installedCount, widget.products.length),
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+                Flexible(
+                  child: Text(
+                    widget.l
+                        .storeInstalledCount(installedCount, widget.products.length),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.end,
                   ),
                 ),
                 const SizedBox(width: 8),

@@ -848,6 +848,61 @@ class AppLocalizationsHu extends AppLocalizations {
   String get trainingSettings => 'Gyakorlási Beállítások';
 
   @override
+  String get trainingPresetTitle => 'Gyors beállítás';
+
+  @override
+  String get trainingPresetHint =>
+      'Válasszon egy mintát, és az alábbi beállítások automatikusan konfigurálódnak.';
+
+  @override
+  String get trainingPresetComboLabel => 'Minta';
+
+  @override
+  String get trainingPresetAllExamplesForeignLanguage =>
+      'Minden példa, idegen nyelv';
+
+  @override
+  String get trainingPresetAllExamplesRandomLanguage =>
+      'Minden példa, véletlen nyelv';
+
+  @override
+  String get trainingPresetFavouriteItemsForeignLanguage =>
+      'Kedvenc elemek, idegen nyelv';
+
+  @override
+  String get trainingPresetFavouriteItemsRandomLanguage =>
+      'Kedvenc elemek, véletlen nyelv';
+
+  @override
+  String get trainingPresetImportantItemsForeignLanguage =>
+      'Fontos elemek, idegen nyelv';
+
+  @override
+  String get trainingPresetImportantItemsRandomLanguage =>
+      'Fontos elemek, véletlen nyelv';
+
+  @override
+  String get trainingPresetRandomItemsRandomLanguage =>
+      'Véletlen elemek, véletlen nyelv';
+
+  @override
+  String get trainingPresetUnknownItemsForeignLanguage =>
+      'Nem ismert elemek, idegen nyelv';
+
+  @override
+  String get trainingPresetUnknownItemsRandomLanguage =>
+      'Nem ismert elemek, véletlen nyelv';
+
+  @override
+  String trainingPresetAppliedTapStart(String actionLabel) {
+    return 'A minta alkalmazva. Koppintson a(z) \"$actionLabel\" gombra az indításhoz.';
+  }
+
+  @override
+  String get trainingPresetSelectPackageFirst =>
+      'Először válasszon egy csomagot.';
+
+  @override
   String get itemScope => 'Elemek Köre';
 
   @override
@@ -931,7 +986,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get noMoreItemsToDisplay =>
-      'Nincs több megjelenítendő elem a szűrési beállítások alapján.';
+      'Nincs megjelenítendő elem a szűrési beállítások alapján.';
 
   @override
   String get noItems => 'Nincs Elem';
@@ -1783,7 +1838,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get configureWindowsAudio =>
-      'Hangbemenet tesztelése és beállítása Windows-on';
+      'Hangbemenet tesztelése\nés beállítása Windows-on';
 
   @override
   String get configureWindowsAudioDescription =>
@@ -1954,6 +2009,10 @@ class AppLocalizationsHu extends AppLocalizations {
       'Ahhoz, hogy a gyakorlás a lehető leghatékonyabb legyen, kövesd az alábbi lépéseket:\n1. Kattints a \'Számlálók törlése\' gombra, hogy a csomag minden eleme ismertként legyen megjelölve.\n2. Állítsd az \'Elemek köre\' opciót „Összes elem\' értékre.\n3. Állítsd az \'Elemek sorrendje\' opciót „Véletlenszerű\' értékre.\n4. Válaszd ki az anyanyelvedet a \'Megjelenítési nyelv\' beállításnál.\n5. Indítsd el a tanulást, és folytasd addig, amíg körülbelül 20–30 számodra ismeretlen elemet nem érsz el.\n6. Térj vissza a tanulási beállításokhoz, és állítsd az \'Elemek köre\' opciót \'Csak ismeretlen elemek\' értékre.\n7. Indítsd újra a tanulást, és folytasd addig, amíg az összes korábban ismeretlen elemet meg nem tanulod.';
 
   @override
+  String get trainingProTip =>
+      'Pro tipp: Kezdd az összes elemmel; később fókuszálj csak az ismeretlenekre.';
+
+  @override
   String get onboardingWelcomeTitle => 'Üdvözöllek a Language Rally-ban!';
 
   @override
@@ -2006,7 +2065,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get onboardingImportCompleteTitle => 'Importálás kész!';
 
   @override
-  String get importBuiltInPkg => 'Alapcsomag importálása';
+  String get importBuiltInPkg => 'Ingyenes csomagok';
 
   @override
   String get importBuiltInPkgTooltip => 'Beépített nyelvi csomagok importálása';
@@ -2021,11 +2080,11 @@ class AppLocalizationsHu extends AppLocalizations {
   String get globalSearchSelectLanguage => 'Válassz nyelvkódot';
 
   @override
-  String get globalSearchEnterWord => 'Keresendő szó(k)';
+  String get globalSearchEnterWord => 'Keresendő szó';
 
   @override
   String get globalSearchEnterWordHint =>
-      'pl. \"der\", \"tanul\" — részleges egyezést is megtalál';
+      'Pl. \"tanul\"  - részleges egyezést is megtalál';
 
   @override
   String get globalSearchButton => 'Keresés';

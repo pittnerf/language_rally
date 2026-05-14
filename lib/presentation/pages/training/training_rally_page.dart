@@ -1540,11 +1540,15 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  l10n.examples,
-                  style: theme.textTheme.labelLarge?.copyWith(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    l10n.examples,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 IconButton(
@@ -1779,13 +1783,18 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      l10n.trainingSessionProgress,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        color: theme.colorScheme.primary,
-                        fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: Text(
+                        l10n.trainingSessionProgress,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
+                    const SizedBox(width: AppTheme.spacing8),
                     Row(
                       children: [
                         Container(
@@ -1821,7 +1830,9 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                 ),
                 if (showStatistics) ...[
                   const SizedBox(height: AppTheme.spacing4),
-                  Row(
+                  Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
                     children: [
                       _buildStatChip(
                         theme,
@@ -1829,14 +1840,12 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                         _successfulGuesses,
                         Colors.green,
                       ),
-                      const SizedBox(width: 8),
                       _buildStatChip(
                         theme,
                         l10n.iDontKnow,
                         _totalGuesses - _successfulGuesses,
                         Colors.orange,
                       ),
-                      const SizedBox(width: 8),
                       _buildStatChip(
                         theme,
                         l10n.total,

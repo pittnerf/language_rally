@@ -315,11 +315,15 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
           children: [
             Icon(icon, color: theme.colorScheme.primary),
             const SizedBox(width: AppTheme.spacing8),
-            Text(
-              title,
-              style: theme.textTheme.titleLarge?.copyWith(
-                color: theme.colorScheme.primary,
-                fontWeight: FontWeight.bold,
+            Expanded(
+              child: Text(
+                title,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
@@ -359,6 +363,7 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
         return DropdownMenuItem<String>(
           value: entry.key,
           child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Text(
                 entry.key.toUpperCase(),
@@ -368,7 +373,14 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
                 ),
               ),
               const SizedBox(width: AppTheme.spacing8),
-              Text(entry.value),
+              Flexible(
+                fit: FlexFit.loose,
+                child: Text(
+                  entry.value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
             ],
           ),
         );
@@ -478,9 +490,13 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
       children: [
         Row(
           children: [
-            Text(
-              label,
-              style: theme.textTheme.titleMedium,
+            Expanded(
+              child: Text(
+                label,
+                style: theme.textTheme.titleMedium,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
             const SizedBox(width: AppTheme.spacing8),
             Container(

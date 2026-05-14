@@ -246,6 +246,7 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
       body: SafeArea(
         child: Column(
           children: [
+            if (!isTablet) _buildMobileHeader(context, l10n),
             // Group filter dropdown
             if (_groups.isNotEmpty) _buildGroupFilter(context),
             // Main content
@@ -255,8 +256,11 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
       ),
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(bottom: AppTheme.spacing12),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+        child: Wrap(
+          alignment: WrapAlignment.end,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: AppTheme.spacing8,
+          runSpacing: AppTheme.spacing8,
           children: [
             FloatingActionButton.small(
               heroTag: 'createPackage',
@@ -264,7 +268,6 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
               tooltip: l10n.createNewPackage,
               child: const Icon(Icons.add, size: 20),
             ),
-            SizedBox(width: AppTheme.spacing8),
             SizedBox(
               height: 40,
               child: FloatingActionButton.extended(
@@ -274,6 +277,8 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
                 label: Text(
                   l10n.importBuiltInPkg,
                   style: const TextStyle(fontSize: 12),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 tooltip: l10n.importBuiltInPkgTooltip,
                 extendedPadding: const EdgeInsets.symmetric(
@@ -282,7 +287,6 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
                 ),
               ),
             ),
-            SizedBox(width: AppTheme.spacing8),
             SizedBox(
               height: 40,
               child: FloatingActionButton.extended(
@@ -292,6 +296,8 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
                 label: Text(
                   l10n.importPackage,
                   style: const TextStyle(fontSize: 12),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 tooltip: l10n.importPackageTooltip,
                 extendedPadding: const EdgeInsets.symmetric(
@@ -302,6 +308,42 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildMobileHeader(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        AppTheme.spacing4,
+        AppTheme.spacing4,
+        AppTheme.spacing12,
+        AppTheme.spacing4,
+      ),
+      child: Row(
+        children: [
+          IconButton(
+            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.of(context).maybePop(),
+            color: colorScheme.onSurfaceVariant,
+          ),
+          const SizedBox(width: AppTheme.spacing4),
+          Expanded(
+            child: Text(
+              l10n.languagePackages,
+              style: theme.textTheme.titleLarge?.copyWith(
+                color: colorScheme.onSurface,
+                fontWeight: FontWeight.w600,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -319,23 +361,10 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
           bottom: BorderSide(color: colorScheme.outlineVariant, width: 1),
         ),
       ),
-      child: Row(
-        children: [
-          Icon(
-            Icons.folder_outlined,
-            size: 20,
-            color: colorScheme.onSurfaceVariant,
-          ),
-          SizedBox(width: AppTheme.spacing8),
-          Text(
-            l10n.groupLabel,
-            style: theme.textTheme.titleSmall?.copyWith(
-              color: colorScheme.onSurfaceVariant,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          SizedBox(width: AppTheme.spacing12),
-          Expanded(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isCompact = constraints.maxWidth < 760;
+          final dropdown = Expanded(
             child: DropdownButton<LanguagePackageGroup>(
               value: _selectedGroup,
               isExpanded: true,
@@ -344,27 +373,95 @@ class _PackageListPageState extends ConsumerState<PackageListPage> {
               items: _groups.map((group) {
                 return DropdownMenuItem<LanguagePackageGroup>(
                   value: group,
-                  child: Text(group.name, style: theme.textTheme.bodyMedium),
+                  child: Text(
+                    group.name,
+                    style: theme.textTheme.bodyMedium,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 );
               }).toList(),
               onChanged: _onGroupChanged,
             ),
-          ),
-          SizedBox(width: AppTheme.spacing8),
-          ElevatedButton.icon(
+          );
+
+          final manageButton = ElevatedButton.icon(
             onPressed: _openGroupAdminPage,
-            icon: Icon(Icons.settings, size: 18),
-            label: Text(l10n.amendGroups),
+            icon: const Icon(Icons.settings, size: 18),
+            label: Text(
+              l10n.amendGroups,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: colorScheme.primaryContainer,
               foregroundColor: colorScheme.onPrimaryContainer,
-              padding: EdgeInsets.symmetric(
+              padding: const EdgeInsets.symmetric(
                 horizontal: AppTheme.spacing8,
                 vertical: AppTheme.spacing8,
               ),
             ),
-          ),
-        ],
+          );
+
+          if (isCompact) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.folder_outlined,
+                      size: 20,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: AppTheme.spacing8),
+                    Expanded(
+                      child: Text(
+                        l10n.groupLabel,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: AppTheme.spacing8),
+                Row(
+                  children: [
+                    dropdown,
+                    const SizedBox(width: AppTheme.spacing8),
+                    Flexible(child: manageButton),
+                  ],
+                ),
+              ],
+            );
+          }
+
+          return Row(
+            children: [
+              Icon(
+                Icons.folder_outlined,
+                size: 20,
+                color: colorScheme.onSurfaceVariant,
+              ),
+              const SizedBox(width: AppTheme.spacing8),
+              Text(
+                l10n.groupLabel,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: AppTheme.spacing12),
+              dropdown,
+              const SizedBox(width: AppTheme.spacing8),
+              manageButton,
+            ],
+          );
+        },
       ),
     );
   }
@@ -1208,26 +1305,17 @@ class _PackageCardState extends State<PackageCard> {
 
   Future<void> _loadPackageData() async {
     try {
-      // Get all items for this package
-      final items = await _itemRepo.getItemsForPackage(widget.package.id);
-
-      // Get unique category IDs from all items
-      final categoryIds = <String>{};
-      for (final item in items) {
-        categoryIds.addAll(item.categoryIds);
-      }
-
-      // Get category details
-      final categories = categoryIds.isNotEmpty
-          ? await _categoryRepo.getCategoriesByIds(categoryIds.toList())
-          : <Category>[];
+      // Only load lightweight summary data here; the full item graph is only
+      // needed in ItemBrowserPage, not on the package list itself.
+      final itemCount = await _itemRepo.getItemCountForPackage(widget.package.id);
+      final categories = await _categoryRepo.getCategoriesForPackage(widget.package.id);
 
       // Get the highest badge from training sessions
       final highestBadge = await _getHighestBadge();
 
       if (mounted) {
         setState(() {
-          _itemCount = items.length;
+          _itemCount = itemCount;
           _categories = categories;
           _highestBadgeId = highestBadge;
           _isLoading = false;

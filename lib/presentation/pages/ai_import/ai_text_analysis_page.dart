@@ -397,10 +397,14 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  l10n.pasteTextHere,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Text(
+                    l10n.pasteTextHere,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 IconButton(
@@ -1132,6 +1136,8 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
                   style: Theme.of(
                     context,
                   ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 8),
                 Text(guidance, style: Theme.of(context).textTheme.bodyMedium),
@@ -1143,6 +1149,8 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
                   style: Theme.of(
                     context,
                   ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
                 initiallyExpanded: false,
                 children: [
