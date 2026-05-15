@@ -333,7 +333,7 @@ class _PackageListSimplifiedPageState extends ConsumerState<PackageListSimplifie
                     context,
                     onPressed: _createNewPackage,
                     icon: Icons.add,
-                    label: '+',
+                    label: ' ',
                     iconSize: 18,
                     textStyle: theme.textTheme.labelSmall,
                   ),

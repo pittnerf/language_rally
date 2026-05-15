@@ -521,7 +521,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get stepsUntilLearned => 'Lépés a megtanulásig';
 
   @override
-  String get examples => 'Példamondatok';
+  String get examples => 'Példák';
 
   @override
   String get noExamples => 'Nincsenek elérhető példamondatok';
@@ -1269,10 +1269,10 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get selectPackage => 'Csomag Kiválasztása';
+  String get selectPackage => 'Nyelvcsomag kiválasztása';
 
   @override
-  String get noPackagesAvailable => 'Nincsenek elérhető csomagok';
+  String get noPackagesAvailable => 'Nem elérhető nem megvásárolt csomag';
 
   @override
   String get possibleSolutions => 'Lehetséges Megoldások';
@@ -2278,4 +2278,79 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get splashLoading => 'Betöltés…';
+
+  @override
+  String get aiItemCreator => 'AI Szógyűjtő';
+
+  @override
+  String get chatWithAI => 'Csevegés az AI-val';
+
+  @override
+  String get enterYourPrompt => 'Adja meg a kérdést...';
+
+  @override
+  String get send => 'Küldés';
+
+  @override
+  String get sending => 'Küldés folyamatban...';
+
+  @override
+  String get aiResponse => 'AI Válasz';
+
+  @override
+  String get itemInputs => 'Szómegadások';
+
+  @override
+  String get language1 => '1. Nyelv';
+
+  @override
+  String get language2 => '2. Nyelv';
+
+  @override
+  String get translateLang1ToLang2 => '→ Fordítás 2. nyelvre';
+
+  @override
+  String get translateLang2ToLang1 => '← Fordítás 1. nyelvre';
+
+  @override
+  String get example => 'Példa';
+
+  @override
+  String get generating => 'Generálás...';
+
+  @override
+  String get flags => 'Jelölések';
+
+  @override
+  String get favorite => 'Kedvenc';
+
+  @override
+  String get saveItems => 'Szavak mentése';
+
+  @override
+  String get saving => 'Mentés folyamatban...';
+
+  @override
+  String get clearItems => 'Csak szavak törlése';
+
+  @override
+  String get clearAll => 'Minden mez törlése';
+
+  @override
+  String get itemSavedSuccessfully => 'Szó sikeresen mentve';
+
+  @override
+  String get promptCannotBeEmpty => 'A kérdés nem lehet üres';
+
+  @override
+  String get enterAtLeastOneItem => 'Adjon meg legalább egy szót';
+
+  @override
+  String get selectPackageFirst => 'Előbb válasszon egy csomagot';
+
+  @override
+  String get deeplKeyRequired => 'A fordításhoz szükséges a DeepL API kulcs';
+
+  @override
+  String get packageSelectionRemembered => 'Csomag kiválasztása mentve';
 }

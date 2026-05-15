@@ -2387,13 +2387,13 @@ abstract class AppLocalizations {
   /// No description provided for @selectPackage.
   ///
   /// In en, this message translates to:
-  /// **'Select Package'**
+  /// **'Select Language Package'**
   String get selectPackage;
 
   /// No description provided for @noPackagesAvailable.
   ///
   /// In en, this message translates to:
-  /// **'No packages available'**
+  /// **'No non-purchased packages available'**
   String get noPackagesAvailable;
 
   /// No description provided for @possibleSolutions.
@@ -4201,6 +4201,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Loading…'**
   String get splashLoading;
+
+  /// No description provided for @aiItemCreator.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Item Creator'**
+  String get aiItemCreator;
+
+  /// No description provided for @chatWithAI.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with AI'**
+  String get chatWithAI;
+
+  /// No description provided for @enterYourPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your prompt...'**
+  String get enterYourPrompt;
+
+  /// No description provided for @send.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get send;
+
+  /// No description provided for @sending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending...'**
+  String get sending;
+
+  /// No description provided for @aiResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Response'**
+  String get aiResponse;
+
+  /// No description provided for @itemInputs.
+  ///
+  /// In en, this message translates to:
+  /// **'Item Inputs'**
+  String get itemInputs;
+
+  /// No description provided for @language1.
+  ///
+  /// In en, this message translates to:
+  /// **'Language 1'**
+  String get language1;
+
+  /// No description provided for @language2.
+  ///
+  /// In en, this message translates to:
+  /// **'Language 2'**
+  String get language2;
+
+  /// No description provided for @translateLang1ToLang2.
+  ///
+  /// In en, this message translates to:
+  /// **'→ Translate to Lang 2'**
+  String get translateLang1ToLang2;
+
+  /// No description provided for @translateLang2ToLang1.
+  ///
+  /// In en, this message translates to:
+  /// **'← Translate to Lang 1'**
+  String get translateLang2ToLang1;
+
+  /// No description provided for @example.
+  ///
+  /// In en, this message translates to:
+  /// **'Example'**
+  String get example;
+
+  /// No description provided for @generating.
+  ///
+  /// In en, this message translates to:
+  /// **'Generating...'**
+  String get generating;
+
+  /// No description provided for @flags.
+  ///
+  /// In en, this message translates to:
+  /// **'Flags'**
+  String get flags;
+
+  /// No description provided for @favorite.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorite'**
+  String get favorite;
+
+  /// No description provided for @saveItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Items'**
+  String get saveItems;
+
+  /// No description provided for @saving.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get saving;
+
+  /// No description provided for @clearItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Items Only'**
+  String get clearItems;
+
+  /// No description provided for @clearAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear All Fields'**
+  String get clearAll;
+
+  /// No description provided for @itemSavedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Item saved successfully'**
+  String get itemSavedSuccessfully;
+
+  /// No description provided for @promptCannotBeEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Prompt cannot be empty'**
+  String get promptCannotBeEmpty;
+
+  /// No description provided for @enterAtLeastOneItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter at least one item'**
+  String get enterAtLeastOneItem;
+
+  /// No description provided for @selectPackageFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a package first'**
+  String get selectPackageFirst;
+
+  /// No description provided for @deeplKeyRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'DeepL API key is required for translation'**
+  String get deeplKeyRequired;
+
+  /// No description provided for @packageSelectionRemembered.
+  ///
+  /// In en, this message translates to:
+  /// **'Package selection saved'**
+  String get packageSelectionRemembered;
 }
 
 class _AppLocalizationsDelegate

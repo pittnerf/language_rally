@@ -848,6 +848,37 @@
   "splashLoading": "Loading…",
   "@splashLoading": {
     "description": "Indeterminate loading label on the splash screen"
-  }
+  },
+
+  "aiItemCreator": "AI Item Creator",
+  "selectPackage": "Select Language Package",
+  "chatWithAI": "Chat with AI",
+  "enterYourPrompt": "Enter your prompt...",
+  "send": "Send",
+  "sending": "Sending...",
+  "aiResponse": "AI Response",
+  "itemInputs": "Item Inputs",
+  "language1": "Language 1",
+  "language2": "Language 2",
+  "translateLang1ToLang2": "→ Translate to Lang 2",
+  "translateLang2ToLang1": "← Translate to Lang 1",
+  "examples": "Examples",
+  "example": "Example",
+  "generateExamples": "Generate Examples",
+  "generating": "Generating...",
+  "flags": "Flags",
+  "important": "Important",
+  "favorite": "Favorite",
+  "saveItems": "Save Items",
+  "saving": "Saving...",
+  "clearItems": "Clear Items Only",
+  "clearAll": "Clear All Fields",
+  "itemSavedSuccessfully": "Item saved successfully",
+  "promptCannotBeEmpty": "Prompt cannot be empty",
+  "enterAtLeastOneItem": "Please enter at least one item",
+  "selectPackageFirst": "Please select a package first",
+  "deeplKeyRequired": "DeepL API key is required for translation",
+  "noPackagesAvailable": "No non-purchased packages available",
+  "packageSelectionRemembered": "Package selection saved"
 }
 

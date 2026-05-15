@@ -4,7 +4,6 @@ import 'package:language_rally/l10n/app_localizations.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../providers/theme_provider.dart';
 import '../../widgets/clickable_text.dart';
-import '../packages/package_list_page.dart';
 import '../packages/package_list_simplified_page.dart';
 import '../packages/package_form_page.dart';
 import '../training/training_settings_page.dart';
@@ -15,6 +14,7 @@ import '../../../core/utils/debug_print.dart';
 import '../dev/bulk_package_import_page.dart';
 import '../items/global_search_page.dart';
 import '../store/store_page.dart';
+import '../ai_import/ai_item_creator_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -378,6 +378,22 @@ class _HomePageState extends ConsumerState<HomePage> {
           },
           icon: Icon(Icons.manage_search, size: iconSize),
           label: _buttonLabel(localizations.globalSearch, fontSize),
+          style: ElevatedButton.styleFrom(
+            padding: buttonPadding,
+          ),
+        ),
+        const SizedBox(height: AppTheme.spacing12),
+
+        // AI Item Creator Button
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AIItemCreatorPage()),
+            );
+          },
+          icon: Icon(Icons.auto_awesome, size: iconSize),
+          label: _buttonLabel(localizations.aiItemCreator, fontSize),
           style: ElevatedButton.styleFrom(
             padding: buttonPadding,
           ),

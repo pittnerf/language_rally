@@ -790,6 +790,37 @@
   "splashLoading": "Betöltés…",
   "@splashLoading": {
     "description": "Határozatlan betöltési felirat a splash képernyőn"
-  }
+  },
+
+  "aiItemCreator": "AI Szógyűjtő",
+  "selectPackage": "Nyelvcsomag kiválasztása",
+  "chatWithAI": "Csevegés az AI-val",
+  "enterYourPrompt": "Adja meg a kérdést...",
+  "send": "Küldés",
+  "sending": "Küldés folyamatban...",
+  "aiResponse": "AI Válasz",
+  "itemInputs": "Szómegadások",
+  "language1": "1. Nyelv",
+  "language2": "2. Nyelv",
+  "translateLang1ToLang2": "→ Fordítás 2. nyelvre",
+  "translateLang2ToLang1": "← Fordítás 1. nyelvre",
+  "examples": "Példák",
+  "example": "Példa",
+  "generateExamples": "Példák generálása",
+  "generating": "Generálás...",
+  "flags": "Jelölések",
+  "important": "Fontos",
+  "favorite": "Kedvenc",
+  "saveItems": "Szavak mentése",
+  "saving": "Mentés folyamatban...",
+  "clearItems": "Csak szavak törlése",
+  "clearAll": "Minden mez törlése",
+  "itemSavedSuccessfully": "Szó sikeresen mentve",
+  "promptCannotBeEmpty": "A kérdés nem lehet üres",
+  "enterAtLeastOneItem": "Adjon meg legalább egy szót",
+  "selectPackageFirst": "Előbb válasszon egy csomagot",
+  "deeplKeyRequired": "A fordításhoz szükséges a DeepL API kulcs",
+  "noPackagesAvailable": "Nem elérhető nem megvásárolt csomag",
+  "packageSelectionRemembered": "Csomag kiválasztása mentve"
 }
 

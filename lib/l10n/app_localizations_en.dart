@@ -1267,10 +1267,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get selectPackage => 'Select Package';
+  String get selectPackage => 'Select Language Package';
 
   @override
-  String get noPackagesAvailable => 'No packages available';
+  String get noPackagesAvailable => 'No non-purchased packages available';
 
   @override
   String get possibleSolutions => 'Possible Solutions';
@@ -2271,4 +2271,79 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get splashLoading => 'Loading…';
+
+  @override
+  String get aiItemCreator => 'AI Item Creator';
+
+  @override
+  String get chatWithAI => 'Chat with AI';
+
+  @override
+  String get enterYourPrompt => 'Enter your prompt...';
+
+  @override
+  String get send => 'Send';
+
+  @override
+  String get sending => 'Sending...';
+
+  @override
+  String get aiResponse => 'AI Response';
+
+  @override
+  String get itemInputs => 'Item Inputs';
+
+  @override
+  String get language1 => 'Language 1';
+
+  @override
+  String get language2 => 'Language 2';
+
+  @override
+  String get translateLang1ToLang2 => '→ Translate to Lang 2';
+
+  @override
+  String get translateLang2ToLang1 => '← Translate to Lang 1';
+
+  @override
+  String get example => 'Example';
+
+  @override
+  String get generating => 'Generating...';
+
+  @override
+  String get flags => 'Flags';
+
+  @override
+  String get favorite => 'Favorite';
+
+  @override
+  String get saveItems => 'Save Items';
+
+  @override
+  String get saving => 'Saving...';
+
+  @override
+  String get clearItems => 'Clear Items Only';
+
+  @override
+  String get clearAll => 'Clear All Fields';
+
+  @override
+  String get itemSavedSuccessfully => 'Item saved successfully';
+
+  @override
+  String get promptCannotBeEmpty => 'Prompt cannot be empty';
+
+  @override
+  String get enterAtLeastOneItem => 'Please enter at least one item';
+
+  @override
+  String get selectPackageFirst => 'Please select a package first';
+
+  @override
+  String get deeplKeyRequired => 'DeepL API key is required for translation';
+
+  @override
+  String get packageSelectionRemembered => 'Package selection saved';
 }
