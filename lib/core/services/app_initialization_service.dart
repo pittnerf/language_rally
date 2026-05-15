@@ -69,6 +69,41 @@ class SeedingProgress {
   return (null, null, null, null);
 }
 
+/// OPTIMIZATION: Extract both files and package metadata in a single ZIP decode.
+/// Returns (files map, pkgName, groupName, language_name1, language_name2).
+/// This avoids decoding the ZIP twice when we need both metadata and content.
+(Map<String, List<int>>, String?, String?, String?, String?) _extractZipFilesWithMetadata(
+  List<int> bytes,
+) {
+  final archive = ZipDecoder().decodeBytes(bytes, verify: false);
+  final files = <String, List<int>>{};
+  String? pkgName;
+  String? groupName;
+  String? language_name1;
+  String? language_name2;
+
+  for (final entry in archive) {
+    if (entry.isFile) {
+      files[entry.name] = entry.content as List<int>;
+
+      // Extract metadata from package_data.json if we haven't already
+      if (entry.name == 'package_data.json' && pkgName == null) {
+        try {
+          final jsonStr = utf8.decode(entry.content as List<int>);
+          final data = jsonDecode(jsonStr) as Map<String, dynamic>;
+          final pkgData = data['package'] as Map<String, dynamic>?;
+          pkgName = pkgData?['name'] as String?;
+          groupName = pkgData?['group_name'] as String?;
+          language_name1 = pkgData?['language_name1'] as String?;
+          language_name2 = pkgData?['language_name2'] as String?;
+        } catch (_) {}
+      }
+    }
+  }
+
+  return (files, pkgName, groupName, language_name1, language_name2);
+}
+
 /// Service responsible for app initialization tasks
 /// Performs heavy operations that might block the UI during startup
 class AppInitializationService {
@@ -687,10 +722,10 @@ class AppInitializationService {
           final byteData = await rootBundle.load(assetPath);
           final bytes = byteData.buffer.asUint8List();
 
-          // Skip if the same package name already exists within the same group.
-          // Use compute() so the zip decode runs off the main thread.
-          final (pkgName, groupName, language_name1, language_name2) =
-              await compute(_extractZipPkgInfo, bytes);
+          // OPTIMIZATION: Decode ZIP once in background isolate and extract
+          // both files AND metadata. This avoids decoding the same ZIP twice.
+          final (files, pkgName, groupName, language_name1, language_name2) =
+              await compute(_extractZipFilesWithMetadata, bytes);
           if (pkgName != null &&
               groupName != null &&
               await packageRepo.existsByNameAndGroup(pkgName, groupName)) {
@@ -706,9 +741,10 @@ class AppInitializationService {
             continue;
           }
 
-          // Use the seeding-optimised importer (single DB transaction per package).
+          // Use the seeding-optimised importer with pre-decoded files.
+          // This avoids a second ZIP decode that would normally happen inside importPackageFromZipBytesSeeding.
           final result =
-              await importRepo.importPackageFromZipBytesSeeding(bytes);
+              await importRepo.importPackageFromDecodedZip(files);
 
           // Persist the completion of this individual package immediately.
           doneSet.add(assetPath);
@@ -953,10 +989,10 @@ class AppInitializationService {
           final byteData = await rootBundle.load(assetPath);
           final bytes = byteData.buffer.asUint8List();
 
-          // Skip if the same package name already exists within the same group.
-          // Use compute() so the zip decode runs off the main thread.
-          final (pkgName, groupName, language_name1, language_name2) =
-              await compute(_extractZipPkgInfo, bytes);
+          // OPTIMIZATION: Decode ZIP once in background isolate and extract
+          // both files AND metadata. This avoids decoding the same ZIP twice.
+          final (files, pkgName, groupName, language_name1, language_name2) =
+              await compute(_extractZipFilesWithMetadata, bytes);
           if (pkgName != null &&
               groupName != null &&
               await packageRepo.existsByNameAndGroup(pkgName, groupName)) {
@@ -973,7 +1009,7 @@ class AppInitializationService {
           }
 
           final result =
-              await importRepo.importPackageFromZipBytesSeeding(bytes);
+              await importRepo.importPackageFromDecodedZip(files);
 
           doneSet.add(assetPath);
           await prefs.setString(

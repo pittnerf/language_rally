@@ -243,7 +243,7 @@ class _LanguageRallyAppState extends ConsumerState<LanguageRallyApp>
     }
 
     return MaterialApp(
-      title: 'Language Rally v1.0.0',
+      title: 'Language Rally',
       theme: lightTheme,
       darkTheme: darkTheme,
       themeMode: themeConfig.isDarkMode ? ThemeMode.dark : ThemeMode.light,

@@ -113,6 +113,7 @@
   "categories": "Kategóriák",
   "testInterFonts": "Inter betűtípusok tesztelése",
   "viewPackages": "Csomagok megtekintése",
+  "simplifiedPackageView": "Csomagok listája",
   "createNewPackage": "Új csomag létrehozása",
   "generateTestData": "Teszt adatok generálása",
   "designSystemShowcase": "Design rendszer bemutató",
@@ -419,7 +420,7 @@
   "checkInternetConnection": "Ellenőrizd az internet kapcsolatot",
   "retryInMoment": "Próbáld újra egy pillanat múlva",
   "checkFirewall": "Ellenőrizd a tűzfal beállításokat",
-  "textMayBeTooShort": "A szöveg túl rövid lehet",
+  "textMayBeTooShort": "A szöveg natívan nem támogatott. Adj hozzá OpenAI API kulcsot a Beállításokban az AI-alapú beszédfelismeréshez.",
   "tryDifferentKnowledgeLevel": "Próbálj ki egy másik tudásszintet",
   "ensureTextInCorrectLanguage": "Győződj meg róla, hogy a szöveg a megfelelő nyelven van",
   "requestTimedOut": "A kérés időtúllépés miatt megszakadt",
@@ -791,5 +792,4 @@
     "description": "Határozatlan betöltési felirat a splash képernyőn"
   }
 }
-
 

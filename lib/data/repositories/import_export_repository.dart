@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:archive/archive_io.dart';
 import 'package:path/path.dart' as path;
 import 'package:uuid/uuid.dart';
+import '../../core/utils/debug_print.dart';
 import '../database_helper.dart';
 import '../models/language_package.dart';
 import '../models/language_package_group.dart';
@@ -17,7 +18,7 @@ import 'category_repository.dart';
 import 'item_repository.dart';
 
 // ---------------------------------------------------------------------------
-// Top-level helper — must be top-level (not a closure) for compute().
+// Top-level helpers — must be top-level (not a closure) for compute().
 // Decodes a ZIP archive in a background isolate and returns every contained
 // file as a map of relative path → raw bytes.  Using compute() keeps the
 // main thread free for frame rendering so the app never shows a blank/dark
@@ -32,6 +33,52 @@ Map<String, List<int>> _extractZipFiles(List<int> bytes) {
     }
   }
   return result;
+}
+
+/// Extract both package metadata AND files in a single ZIP decode pass.
+/// Returns a tuple: (files map, pkgName, groupName, lang1, lang2)
+/// This avoids decoding the ZIP twice when we need both metadata and content.
+(Map<String, List<int>>, String?, String?, String?, String?) _extractZipFilesWithMetadata(
+  List<int> bytes,
+) {
+  final archive = ZipDecoder().decodeBytes(bytes, verify: false);
+  final files = <String, List<int>>{};
+  String? pkgName;
+  String? groupName;
+  String? language_name1;
+  String? language_name2;
+
+  for (final entry in archive) {
+    if (entry.isFile) {
+      files[entry.name] = entry.content as List<int>;
+
+      // Extract metadata from package_data.json if we haven't already
+      if (entry.name == 'package_data.json' &&
+          pkgName == null) {
+        try {
+          final jsonStr = utf8.decode(entry.content as List<int>);
+          final data = jsonDecode(jsonStr) as Map<String, dynamic>;
+          final pkgData = data['package'] as Map<String, dynamic>?;
+          pkgName = pkgData?['name'] as String?;
+          groupName = pkgData?['group_name'] as String?;
+          language_name1 = pkgData?['language_name1'] as String?;
+          language_name2 = pkgData?['language_name2'] as String?;
+        } catch (_) {}
+      }
+    }
+  }
+
+  return (files, pkgName, groupName, language_name1, language_name2);
+}
+
+void _logImportTiming(
+  String method,
+  String stage,
+  Stopwatch watch, {
+  String? details,
+}) {
+  final suffix = details == null ? '' : ' | $details';
+  logDebug('[ImportExport][$method] $stage after ${watch.elapsedMilliseconds} ms$suffix');
 }
 
 /// Custom exception for duplicate package
@@ -588,6 +635,9 @@ class ImportExportRepository {
   /// Always generates fresh UUIDs for the package, categories and items so
   /// multiple installations never clash on IDs.
   Future<ImportResult> importPackageFromZipBytes(List<int> bytes) async {
+    final watch = Stopwatch()..start();
+    logDebug('[ImportExport][importPackageFromZipBytes] start | inputBytes=${bytes.length}');
+
     final tempDir = await getTemporaryDirectory();
     final extractDir = Directory(
       '${tempDir.path}/seed_import_${DateTime.now().millisecondsSinceEpoch}',
@@ -596,7 +646,17 @@ class ImportExportRepository {
 
     try {
       // Decode the archive from the raw bytes
+      final decodeWatch = Stopwatch()..start();
       final archive = ZipDecoder().decodeBytes(bytes);
+      decodeWatch.stop();
+      _logImportTiming(
+        'importPackageFromZipBytes',
+        'ZIP decoded',
+        decodeWatch,
+        details: 'files=${archive.length}',
+      );
+
+      final extractWatch = Stopwatch()..start();
       for (final file in archive) {
         if (file.isFile) {
           final extractedFile = File('${extractDir.path}/${file.name}');
@@ -604,6 +664,12 @@ class ImportExportRepository {
           await extractedFile.writeAsBytes(file.content as List<int>);
         }
       }
+      extractWatch.stop();
+      _logImportTiming(
+        'importPackageFromZipBytes',
+        'ZIP extracted to temp dir',
+        extractWatch,
+      );
 
       // Read and validate the package manifest
       final jsonFile = File('${extractDir.path}/package_data.json');
@@ -611,7 +677,14 @@ class ImportExportRepository {
         throw Exception('Invalid package ZIP: missing package_data.json');
       }
 
+      final jsonWatch = Stopwatch()..start();
       final data = jsonDecode(await jsonFile.readAsString()) as Map<String, dynamic>;
+      jsonWatch.stop();
+      _logImportTiming(
+        'importPackageFromZipBytes',
+        'package_data.json parsed',
+        jsonWatch,
+      );
       if (data['version'] == null || data['package'] == null) {
         throw Exception('Invalid package file format');
       }
@@ -639,7 +712,17 @@ class ImportExportRepository {
             oldIds.map((old) => categoryIdMap[old as String] ?? old).toList();
       }
 
-      return await _importPackageData(packageData, data, extractDir);
+      _logImportTiming(
+        'importPackageFromZipBytes',
+        'IDs regenerated',
+        watch,
+        details: 'categories=${categoriesData.length}, items=${itemsData.length}',
+      );
+
+      final result = await _importPackageData(packageData, data, extractDir);
+      watch.stop();
+      logDebug('[ImportExport][importPackageFromZipBytes] done after ${watch.elapsedMilliseconds} ms | importedItems=${result.itemCount}');
+      return result;
     } finally {
       await extractDir.delete(recursive: true).catchError((_) => extractDir);
     }
@@ -653,16 +736,34 @@ class ImportExportRepository {
   /// during a long import.  The temp-directory round-trip is also eliminated:
   /// file contents are held in memory and the JSON is parsed directly.
   Future<ImportResult> importPackageFromZipBytesSeeding(List<int> bytes) async {
+    final watch = Stopwatch()..start();
+    logDebug('[ImportExport][importPackageFromZipBytesSeeding] start | inputBytes=${bytes.length}');
+
     // ── 1. Decode ZIP in background isolate ──────────────────────────────────
+    final decodeWatch = Stopwatch()..start();
     final files = await compute(_extractZipFiles, bytes);
+    decodeWatch.stop();
+    _logImportTiming(
+      'importPackageFromZipBytesSeeding',
+      'ZIP decoded in background isolate',
+      decodeWatch,
+      details: 'files=${files.length}',
+    );
 
     // ── 2. Read & validate JSON ──────────────────────────────────────────────
     final jsonBytes = files['package_data.json'];
     if (jsonBytes == null) {
       throw Exception('Invalid seed ZIP: missing package_data.json');
     }
+    final jsonWatch = Stopwatch()..start();
     final data =
         jsonDecode(utf8.decode(jsonBytes)) as Map<String, dynamic>;
+    jsonWatch.stop();
+    _logImportTiming(
+      'importPackageFromZipBytesSeeding',
+      'package_data.json parsed',
+      jsonWatch,
+    );
     if (data['version'] == null || data['package'] == null) {
       throw Exception('Invalid seed package format');
     }
@@ -686,10 +787,17 @@ class ImportExportRepository {
         itemData['categoryIds'] =
             oldIds.map((old) => categoryIdMap[old as String] ?? old).toList();
       }
+      _logImportTiming(
+        'importPackageFromZipBytesSeeding',
+        'IDs regenerated',
+        watch,
+        details: 'categories=${categoriesData.length}, items=${itemsData.length}',
+      );
 
       // ── 4. Resolve / create group (OUTSIDE the write transaction) ────────
       //      The group repository uses its own db.query() calls, which must
       //      not be nested inside our outer db.transaction().
+      final groupWatch = Stopwatch()..start();
       final String groupId;
       final String groupName;
       final exportedGroupId = packageData['group_id'] as String?;
@@ -717,6 +825,13 @@ class ImportExportRepository {
         groupId = fallbackId;
         groupName = fallbackName;
       }
+      groupWatch.stop();
+      _logImportTiming(
+        'importPackageFromZipBytesSeeding',
+        'group resolved/created',
+        groupWatch,
+        details: 'groupId=$groupId',
+      );
 
       // ── 5. Build Dart model objects ──────────────────────────────────────
       final packageId = packageData['id'] as String;
@@ -781,227 +896,573 @@ class ImportExportRepository {
 
       // ── 6. Single transaction for ALL database writes ────────────────────
       //      One BEGIN/COMMIT instead of (1 + categories + items) cycles.
+      final dbWriteWatch = Stopwatch()..start();
       final db = await DatabaseHelper.instance.database;
       await db.transaction((txn) async {
+        final txnWatch = Stopwatch()..start();
+        const itemProgressStep = 100;
+
+        final packageInsertWatch = Stopwatch()..start();
         await _packageRepo.insertPackageInTransaction(txn, package);
+        packageInsertWatch.stop();
+        _logImportTiming(
+          'importPackageFromZipBytesSeeding',
+          'txn: package inserted',
+          packageInsertWatch,
+        );
+
+        final categoryInsertWatch = Stopwatch()..start();
         for (final cat in categories) {
           await _categoryRepo.insertCategoryInTransaction(txn, cat);
         }
-        for (final item in items) {
-          await _itemRepo.insertItemInTransaction(txn, item);
-        }
+        categoryInsertWatch.stop();
+        _logImportTiming(
+          'importPackageFromZipBytesSeeding',
+          'txn: categories inserted',
+          categoryInsertWatch,
+          details: 'count=${categories.length}',
+        );
+
+        final itemInsertWatch = Stopwatch()..start();
+        await _itemRepo.insertItemsBulkInTransaction(
+          txn,
+          items,
+          chunkSize: itemProgressStep,
+          onProgress: (insertedItems) {
+            _logImportTiming(
+              'importPackageFromZipBytesSeeding',
+              'txn: item progress',
+              itemInsertWatch,
+              details: '$insertedItems/${items.length}',
+            );
+          },
+        );
+        itemInsertWatch.stop();
+        _logImportTiming(
+          'importPackageFromZipBytesSeeding',
+          'txn: all items inserted',
+          itemInsertWatch,
+          details: 'count=${items.length}',
+        );
+
+        txnWatch.stop();
+        _logImportTiming(
+          'importPackageFromZipBytesSeeding',
+          'txn: total write time',
+          txnWatch,
+        );
       });
+      dbWriteWatch.stop();
+      _logImportTiming(
+        'importPackageFromZipBytesSeeding',
+        'database transaction completed',
+        dbWriteWatch,
+        details: 'categories=${categories.length}, items=${items.length}',
+      );
 
+      watch.stop();
+      logDebug('[ImportExport][importPackageFromZipBytesSeeding] done after ${watch.elapsedMilliseconds} ms | importedItems=${items.length}');
       return ImportResult(items.length, groupName);
-  }
+   }
 
-  /// Import a package from ZIP file including custom icons
-  /// Returns ImportResult with item count and group name
-  Future<ImportResult> importPackageFromZip(String zipFilePath) async {
-    final zipFile = File(zipFilePath);
-    if (!await zipFile.exists()) {
-      throw Exception('ZIP file not found: $zipFilePath');
+   /// Import a package from pre-decoded ZIP files (optimized for seeding).
+   /// This method accepts files that have been decoded from a ZIP in a background isolate.
+   /// Used internally to avoid decoding the same ZIP twice.
+   Future<ImportResult> importPackageFromDecodedZip(
+     Map<String, List<int>> files,
+   ) async {
+     final watch = Stopwatch()..start();
+     logDebug('[ImportExport][importPackageFromDecodedZip] start | files=${files.length}');
+
+     // ── 1. Read & validate JSON ──────────────────────────────────────────────
+     final jsonBytes = files['package_data.json'];
+     if (jsonBytes == null) {
+       throw Exception('Invalid seed ZIP: missing package_data.json');
+     }
+      final jsonWatch = Stopwatch()..start();
+     final data =
+         jsonDecode(utf8.decode(jsonBytes)) as Map<String, dynamic>;
+      jsonWatch.stop();
+      _logImportTiming(
+        'importPackageFromDecodedZip',
+        'package_data.json parsed',
+        jsonWatch,
+      );
+     if (data['version'] == null || data['package'] == null) {
+       throw Exception('Invalid seed package format');
+     }
+
+     final packageData = data['package'] as Map<String, dynamic>;
+     final categoriesData = data['categories'] as List<dynamic>;
+     final itemsData = data['items'] as List<dynamic>;
+
+     // ── 2. Generate fresh UUIDs ──────────────────────────────────────────────
+     packageData['id'] = const Uuid().v4();
+     final categoryIdMap = <String, String>{};
+     for (final catData in categoriesData) {
+       final oldId = catData['id'] as String;
+       final newId = const Uuid().v4();
+       categoryIdMap[oldId] = newId;
+       catData['id'] = newId;
+     }
+     for (final itemData in itemsData) {
+       itemData['id'] = const Uuid().v4();
+       final oldIds = itemData['categoryIds'] as List<dynamic>;
+       itemData['categoryIds'] =
+           oldIds.map((old) => categoryIdMap[old as String] ?? old).toList();
+     }
+
+     // ── 3. Resolve / create group (OUTSIDE the write transaction) ────────
+     //      The group repository uses its own db.query() calls, which must
+     //      not be nested inside our outer db.transaction().
+     final String groupId;
+     final String groupName;
+     final exportedGroupId = packageData['group_id'] as String?;
+     final exportedGroupName = packageData['group_name'] as String?;
+
+     if (exportedGroupId != null && exportedGroupName != null) {
+       var group = await _groupRepo.getGroupByName(exportedGroupName);
+       if (group == null) {
+         var newGroupId = exportedGroupId;
+         final conflicting = await _groupRepo.getGroupById(exportedGroupId);
+         if (conflicting != null) newGroupId = const Uuid().v4();
+         group = LanguagePackageGroup(id: newGroupId, name: exportedGroupName);
+         await _groupRepo.insertGroup(group);
+       }
+       groupId = group.id;
+       groupName = group.name;
+     } else {
+       const fallbackId = 'default-group-id';
+       const fallbackName = 'Default';
+       var g = await _groupRepo.getGroupById(fallbackId);
+       if (g == null) {
+         g = LanguagePackageGroup(id: fallbackId, name: fallbackName);
+         await _groupRepo.insertGroup(g);
+       }
+       groupId = fallbackId;
+       groupName = fallbackName;
+     }
+
+     // ── 4. Build Dart model objects ──────────────────────────────────────
+     final packageId = packageData['id'] as String;
+
+     // Seed ZIPs never embed custom icons; asset-path icons are kept as-is.
+     final iconPath = packageData['icon'] as String?;
+
+     final exportedTypeName = packageData['package_type'] as String?;
+     final restoredType = PackageType.values.firstWhere(
+       (t) => t.name == exportedTypeName,
+       orElse: () => PackageType.userCreated,
+     );
+     final restoredIsPurchased =
+         (packageData['is_purchased'] as bool?) ??
+         (restoredType == PackageType.purchased);
+     final purchasedAtRaw = packageData['purchased_at'] as String?;
+     final restoredPurchasedAt =
+         purchasedAtRaw != null ? DateTime.tryParse(purchasedAtRaw) : null;
+
+     final package = LanguagePackage(
+       id: packageId,
+       groupId: groupId,
+       packageName: packageData['name'] as String?,
+       languageCode1: packageData['language_code1'] as String,
+       languageName1: packageData['language_name1'] as String,
+       languageCode2: packageData['language_code2'] as String,
+       languageName2: packageData['language_name2'] as String,
+       description: packageData['description'] as String?,
+       icon: iconPath,
+       authorName: packageData['author_name'] as String?,
+       authorEmail: packageData['author_email'] as String?,
+       authorWebpage: packageData['author_webpage'] as String?,
+       version: (packageData['version'] as String?) ?? '1.0.0',
+       packageType: restoredType,
+       isPurchased: restoredIsPurchased,
+       purchasedAt: restoredPurchasedAt,
+       createdAt: DateTime.now(),
+     );
+
+     final categories = categoriesData.map((c) {
+       final m = c as Map<String, dynamic>;
+       return Category(
+         id: m['id'] as String,
+         packageId: packageId,
+         name: m['name'] as String,
+         description: m['description'] as String?,
+       );
+     }).toList();
+
+     final items = <Item>[];
+     for (final itemData in itemsData) {
+       try {
+         final item =
+             Item.fromJson(itemData as Map<String, dynamic>).copyWith(
+           packageId: packageId,
+         );
+         items.add(item);
+       } catch (_) {
+         // Skip any malformed item rather than aborting the whole package.
+       }
+     }
+
+     // ── 5. Single transaction for ALL database writes ────────────────────
+     //      One BEGIN/COMMIT instead of (1 + categories + items) cycles.
+      final dbWriteWatch = Stopwatch()..start();
+     final db = await DatabaseHelper.instance.database;
+     await db.transaction((txn) async {
+       final txnWatch = Stopwatch()..start();
+       const itemProgressStep = 100;
+
+       final packageInsertWatch = Stopwatch()..start();
+       await _packageRepo.insertPackageInTransaction(txn, package);
+       packageInsertWatch.stop();
+       _logImportTiming(
+         'importPackageFromDecodedZip',
+         'txn: package inserted',
+         packageInsertWatch,
+       );
+
+       final categoryInsertWatch = Stopwatch()..start();
+       for (final cat in categories) {
+         await _categoryRepo.insertCategoryInTransaction(txn, cat);
+       }
+       categoryInsertWatch.stop();
+       _logImportTiming(
+         'importPackageFromDecodedZip',
+         'txn: categories inserted',
+         categoryInsertWatch,
+         details: 'count=${categories.length}',
+       );
+
+       final itemInsertWatch = Stopwatch()..start();
+       await _itemRepo.insertItemsBulkInTransaction(
+         txn,
+         items,
+         chunkSize: itemProgressStep,
+         onProgress: (insertedItems) {
+           _logImportTiming(
+             'importPackageFromDecodedZip',
+             'txn: item progress',
+             itemInsertWatch,
+             details: '$insertedItems/${items.length}',
+           );
+         },
+       );
+       itemInsertWatch.stop();
+       _logImportTiming(
+         'importPackageFromDecodedZip',
+         'txn: all items inserted',
+         itemInsertWatch,
+         details: 'count=${items.length}',
+       );
+
+       txnWatch.stop();
+       _logImportTiming(
+         'importPackageFromDecodedZip',
+         'txn: total write time',
+         txnWatch,
+       );
+     });
+      dbWriteWatch.stop();
+      _logImportTiming(
+        'importPackageFromDecodedZip',
+        'database transaction completed',
+        dbWriteWatch,
+        details: 'categories=${categories.length}, items=${items.length}',
+      );
+
+      watch.stop();
+      logDebug('[ImportExport][importPackageFromDecodedZip] done after ${watch.elapsedMilliseconds} ms | importedItems=${items.length}');
+      return ImportResult(items.length, groupName);
     }
 
-    // Create temporary directory for extraction
-    final tempDir = await getTemporaryDirectory();
-    final extractDir = Directory('${tempDir.path}/package_import_${DateTime.now().millisecondsSinceEpoch}');
-    await extractDir.create(recursive: true);
+    /// Import a package from ZIP file (checks for duplicates before importing)
+    /// Throws PackageAlreadyExistsException if package with same content already exists
+    /// Returns ImportResult with item count and group name
+    Future<ImportResult> importPackageFromZip(String zipFilePath) async {
+      final watch = Stopwatch()..start();
+      logDebug('[ImportExport][importPackageFromZip] start | filePath=$zipFilePath');
 
-    try {
-      // Extract ZIP file
-      final bytes = await zipFile.readAsBytes();
-      final archive = ZipDecoder().decodeBytes(bytes);
-
-      // Extract all files
-      for (final file in archive) {
-        final filename = file.name;
-        if (file.isFile) {
-          final data = file.content as List<int>;
-          final extractedFile = File('${extractDir.path}/$filename');
-          await extractedFile.create(recursive: true);
-          await extractedFile.writeAsBytes(data);
-        }
+      final zipFile = File(zipFilePath);
+      if (!await zipFile.exists()) {
+        throw Exception('ZIP file not found: $zipFilePath');
       }
 
-      // Read package data JSON
-      final jsonFile = File('${extractDir.path}/package_data.json');
-      if (!await jsonFile.exists()) {
-        throw Exception('Invalid package ZIP: missing package_data.json');
-      }
+      // Create temporary directory for extraction
+      final tempDir = await getTemporaryDirectory();
+      final extractDir = Directory('${tempDir.path}/package_import_${DateTime.now().millisecondsSinceEpoch}');
+      await extractDir.create(recursive: true);
 
-      final jsonString = await jsonFile.readAsString();
-      final data = jsonDecode(jsonString) as Map<String, dynamic>;
-
-      // Validate format
-      if (data['version'] == null || data['package'] == null) {
-        throw Exception('Invalid package file format');
-      }
-
-      final packageData = data['package'] as Map<String, dynamic>;
-
-      // Determine which group this package would be imported to
-      final exportedGroupId = packageData['group_id'] as String?;
-      final exportedGroupName = packageData['group_name'] as String?;
-      String targetGroupId;
-      String targetGroupName;
-
-      if (exportedGroupId != null && exportedGroupName != null) {
-        // Check if a group with the same name exists
-        var group = await _groupRepo.getGroupByName(exportedGroupName);
-        if (group != null) {
-          targetGroupId = group.id;
-          targetGroupName = group.name;
-        } else {
-          // New group would be created, check for duplicates based on content
-          targetGroupId = exportedGroupId; // Tentative ID
-          targetGroupName = exportedGroupName;
-        }
-      } else {
-        // Would use default group
-        const defaultGroupId = 'default-group-id';
-        const defaultGroupName = 'Default';
-        var defaultGroup = await _groupRepo.getGroupById(defaultGroupId);
-        if (defaultGroup != null) {
-          targetGroupId = defaultGroup.id;
-          targetGroupName = defaultGroup.name;
-        } else {
-          // Default group doesn't exist yet, check for duplicates in default group
-          targetGroupId = defaultGroupId;
-          targetGroupName = defaultGroupName;
-        }
-      }
-
-      // Check if package already exists in the target group
-      final existingPackage = await _checkForDuplicatePackage(packageData, targetGroupId);
-      if (existingPackage != null) {
-        throw PackageAlreadyExistsException(existingPackage.id, targetGroupName);
-      }
-
-      // ALWAYS generate new IDs for package, categories, and items
-      final newPackageId = const Uuid().v4();
-      packageData['id'] = newPackageId;
-
-      // Generate new IDs for categories and items
-      final categoriesData = data['categories'] as List<dynamic>;
-      final itemsData = data['items'] as List<dynamic>;
-
-      // Create mapping from old category IDs to new category IDs
-      final categoryIdMap = <String, String>{};
-      for (var catData in categoriesData) {
-        final oldCategoryId = catData['id'] as String;
-        final newCategoryId = const Uuid().v4();
-        categoryIdMap[oldCategoryId] = newCategoryId;
-        catData['id'] = newCategoryId;
-      }
-
-      // Generate new IDs for all items and update their category references
-      for (var itemData in itemsData) {
-        itemData['id'] = const Uuid().v4();
-
-        final oldCategoryIds = itemData['categoryIds'] as List<dynamic>;
-        final newCategoryIds = oldCategoryIds.map((oldId) {
-          return categoryIdMap[oldId as String] ?? oldId;
-        }).toList();
-        itemData['categoryIds'] = newCategoryIds;
-      }
-
-      return await _importPackageData(packageData, data, extractDir);
-    } finally {
-      // Clean up temporary directory
       try {
-        await extractDir.delete(recursive: true);
-      } catch (e) {
-        // Ignore cleanup errors
-      }
-    }
-  }
+        // Extract ZIP file
+        final readWatch = Stopwatch()..start();
+        final bytes = await zipFile.readAsBytes();
+        readWatch.stop();
+        _logImportTiming(
+          'importPackageFromZip',
+          'ZIP bytes read',
+          readWatch,
+          details: 'bytes=${bytes.length}',
+        );
 
-  /// Import a package from ZIP file with a new ID (for duplicate packages)
-  /// Returns ImportResult with item count and group name
-  Future<ImportResult> importPackageFromZipWithNewId(String zipFilePath) async {
-    final zipFile = File(zipFilePath);
-    if (!await zipFile.exists()) {
-      throw Exception('ZIP file not found: $zipFilePath');
-    }
+        final decodeWatch = Stopwatch()..start();
+        final archive = ZipDecoder().decodeBytes(bytes);
+        decodeWatch.stop();
+        _logImportTiming(
+          'importPackageFromZip',
+          'ZIP decoded',
+          decodeWatch,
+          details: 'files=${archive.length}',
+        );
 
-    // Create temporary directory for extraction
-    final tempDir = await getTemporaryDirectory();
-    final extractDir = Directory('${tempDir.path}/package_import_${DateTime.now().millisecondsSinceEpoch}');
-    await extractDir.create(recursive: true);
+        // Extract all files
+        final extractWatch = Stopwatch()..start();
+        for (final file in archive) {
+          final filename = file.name;
+          if (file.isFile) {
+            final data = file.content as List<int>;
+            final extractedFile = File('${extractDir.path}/$filename');
+            await extractedFile.create(recursive: true);
+            await extractedFile.writeAsBytes(data);
+          }
+        }
+        extractWatch.stop();
+        _logImportTiming(
+          'importPackageFromZip',
+          'ZIP extracted to temp dir',
+          extractWatch,
+        );
 
-    try {
-      // Extract ZIP file
-      final bytes = await zipFile.readAsBytes();
-      final archive = ZipDecoder().decodeBytes(bytes);
+        // Read package data JSON
+        final jsonFile = File('${extractDir.path}/package_data.json');
+        if (!await jsonFile.exists()) {
+          throw Exception('Invalid package ZIP: missing package_data.json');
+        }
 
-      // Extract all files
-      for (final file in archive) {
-        final filename = file.name;
-        if (file.isFile) {
-          final data = file.content as List<int>;
-          final extractedFile = File('${extractDir.path}/$filename');
-          await extractedFile.create(recursive: true);
-          await extractedFile.writeAsBytes(data);
+        final jsonWatch = Stopwatch()..start();
+        final jsonString = await jsonFile.readAsString();
+        final data = jsonDecode(jsonString) as Map<String, dynamic>;
+        jsonWatch.stop();
+        _logImportTiming(
+          'importPackageFromZip',
+          'package_data.json parsed',
+          jsonWatch,
+        );
+
+        // Validate format
+        if (data['version'] == null || data['package'] == null) {
+          throw Exception('Invalid package file format');
+        }
+
+        final packageData = data['package'] as Map<String, dynamic>;
+
+        // Determine which group this package would be imported to
+        final exportedGroupId = packageData['group_id'] as String?;
+        final exportedGroupName = packageData['group_name'] as String?;
+        String targetGroupId;
+        String targetGroupName;
+
+        if (exportedGroupId != null && exportedGroupName != null) {
+          // Check if a group with the same name exists
+          var group = await _groupRepo.getGroupByName(exportedGroupName);
+          if (group != null) {
+            targetGroupId = group.id;
+            targetGroupName = group.name;
+          } else {
+            // New group would be created, check for duplicates based on content
+            targetGroupId = exportedGroupId; // Tentative ID
+            targetGroupName = exportedGroupName;
+          }
+        } else {
+          // Would use default group
+          const defaultGroupId = 'default-group-id';
+          const defaultGroupName = 'Default';
+          var defaultGroup = await _groupRepo.getGroupById(defaultGroupId);
+          if (defaultGroup != null) {
+            targetGroupId = defaultGroup.id;
+            targetGroupName = defaultGroup.name;
+          } else {
+            // Default group doesn't exist yet, check for duplicates in default group
+            targetGroupId = defaultGroupId;
+            targetGroupName = defaultGroupName;
+          }
+        }
+
+        // Check if package already exists in the target group
+        final existingPackage = await _checkForDuplicatePackage(packageData, targetGroupId);
+        if (existingPackage != null) {
+          throw PackageAlreadyExistsException(existingPackage.id, targetGroupName);
+        }
+        _logImportTiming(
+          'importPackageFromZip',
+          'duplicate check complete',
+          watch,
+          details: existingPackage == null ? 'no duplicate' : 'duplicate found',
+        );
+
+        // ALWAYS generate new IDs for package, categories, and items
+        final newPackageId = const Uuid().v4();
+        packageData['id'] = newPackageId;
+
+        // Generate new IDs for categories and items
+        final categoriesData = data['categories'] as List<dynamic>;
+        final itemsData = data['items'] as List<dynamic>;
+
+        // Create mapping from old category IDs to new category IDs
+        final categoryIdMap = <String, String>{};
+        for (var catData in categoriesData) {
+          final oldCategoryId = catData['id'] as String;
+          final newCategoryId = const Uuid().v4();
+          categoryIdMap[oldCategoryId] = newCategoryId;
+          catData['id'] = newCategoryId;
+        }
+
+        // Generate new IDs for all items and update their category references
+        for (var itemData in itemsData) {
+          itemData['id'] = const Uuid().v4();
+
+          final oldCategoryIds = itemData['categoryIds'] as List<dynamic>;
+          final newCategoryIds = oldCategoryIds.map((oldId) {
+            return categoryIdMap[oldId as String] ?? oldId;
+          }).toList();
+          itemData['categoryIds'] = newCategoryIds;
+        }
+
+        final result = await _importPackageData(packageData, data, extractDir);
+        watch.stop();
+        logDebug('[ImportExport][importPackageFromZip] done after ${watch.elapsedMilliseconds} ms | importedItems=${result.itemCount}');
+        return result;
+      } finally {
+        // Clean up temporary directory
+        try {
+          await extractDir.delete(recursive: true);
+        } catch (e) {
+          // Ignore cleanup errors
         }
       }
+    }
 
-      // Read package data JSON
-      final jsonFile = File('${extractDir.path}/package_data.json');
-      if (!await jsonFile.exists()) {
-        throw Exception('Invalid package ZIP: missing package_data.json');
+    /// Import a package from ZIP file with a new ID (for duplicate packages)
+    /// Returns ImportResult with item count and group name
+    Future<ImportResult> importPackageFromZipWithNewId(String zipFilePath) async {
+      final watch = Stopwatch()..start();
+      logDebug('[ImportExport][importPackageFromZipWithNewId] start | filePath=$zipFilePath');
+
+      final zipFile = File(zipFilePath);
+      if (!await zipFile.exists()) {
+        throw Exception('ZIP file not found: $zipFilePath');
       }
 
-      final jsonString = await jsonFile.readAsString();
-      final data = jsonDecode(jsonString) as Map<String, dynamic>;
+      // Create temporary directory for extraction
+      final tempDir = await getTemporaryDirectory();
+      final extractDir = Directory('${tempDir.path}/package_import_${DateTime.now().millisecondsSinceEpoch}');
+      await extractDir.create(recursive: true);
 
-      // Validate format
-      if (data['version'] == null || data['package'] == null) {
-        throw Exception('Invalid package file format');
-      }
-
-      final packageData = data['package'] as Map<String, dynamic>;
-
-      // Generate new ID for the package
-      final newPackageId = const Uuid().v4();
-      packageData['id'] = newPackageId;
-
-      // Generate new IDs for categories and update items accordingly
-      final categoriesData = data['categories'] as List<dynamic>;
-      final itemsData = data['items'] as List<dynamic>;
-
-      // Create mapping from old category IDs to new category IDs
-      final categoryIdMap = <String, String>{};
-      for (var catData in categoriesData) {
-        final oldCategoryId = catData['id'] as String;
-        final newCategoryId = const Uuid().v4();
-        categoryIdMap[oldCategoryId] = newCategoryId;
-        catData['id'] = newCategoryId; // Update category ID in place
-      }
-
-      // Generate new IDs for all items and update their category references
-      for (var itemData in itemsData) {
-        // Generate new item ID
-        itemData['id'] = const Uuid().v4();
-
-        // Update category IDs to reference new categories
-        final oldCategoryIds = itemData['categoryIds'] as List<dynamic>;
-        final newCategoryIds = oldCategoryIds.map((oldId) {
-          return categoryIdMap[oldId as String] ?? oldId;
-        }).toList();
-        itemData['categoryIds'] = newCategoryIds; // Update category IDs in place
-      }
-
-      return await _importPackageData(packageData, data, extractDir);
-    } finally {
-      // Clean up temporary directory
       try {
-        await extractDir.delete(recursive: true);
-      } catch (e) {
-        // Ignore cleanup errors
+        // Extract ZIP file
+        final readWatch = Stopwatch()..start();
+        final bytes = await zipFile.readAsBytes();
+        readWatch.stop();
+        _logImportTiming(
+          'importPackageFromZipWithNewId',
+          'ZIP bytes read',
+          readWatch,
+          details: 'bytes=${bytes.length}',
+        );
+
+        final decodeWatch = Stopwatch()..start();
+        final archive = ZipDecoder().decodeBytes(bytes);
+        decodeWatch.stop();
+        _logImportTiming(
+          'importPackageFromZipWithNewId',
+          'ZIP decoded',
+          decodeWatch,
+          details: 'files=${archive.length}',
+        );
+
+        // Extract all files
+        final extractWatch = Stopwatch()..start();
+        for (final file in archive) {
+          final filename = file.name;
+          if (file.isFile) {
+            final data = file.content as List<int>;
+            final extractedFile = File('${extractDir.path}/$filename');
+            await extractedFile.create(recursive: true);
+            await extractedFile.writeAsBytes(data);
+          }
+        }
+        extractWatch.stop();
+        _logImportTiming(
+          'importPackageFromZipWithNewId',
+          'ZIP extracted to temp dir',
+          extractWatch,
+        );
+
+        // Read package data JSON
+        final jsonFile = File('${extractDir.path}/package_data.json');
+        if (!await jsonFile.exists()) {
+          throw Exception('Invalid package ZIP: missing package_data.json');
+        }
+
+        final jsonWatch = Stopwatch()..start();
+        final jsonString = await jsonFile.readAsString();
+        final data = jsonDecode(jsonString) as Map<String, dynamic>;
+        jsonWatch.stop();
+        _logImportTiming(
+          'importPackageFromZipWithNewId',
+          'package_data.json parsed',
+          jsonWatch,
+        );
+
+        // Validate format
+        if (data['version'] == null || data['package'] == null) {
+          throw Exception('Invalid package file format');
+        }
+
+        final packageData = data['package'] as Map<String, dynamic>;
+
+        // Generate new ID for the package
+        final newPackageId = const Uuid().v4();
+        packageData['id'] = newPackageId;
+
+        // Generate new IDs for categories and update items accordingly
+        final categoriesData = data['categories'] as List<dynamic>;
+        final itemsData = data['items'] as List<dynamic>;
+
+        // Create mapping from old category IDs to new category IDs
+        final categoryIdMap = <String, String>{};
+        for (var catData in categoriesData) {
+          final oldCategoryId = catData['id'] as String;
+          final newCategoryId = const Uuid().v4();
+          categoryIdMap[oldCategoryId] = newCategoryId;
+          catData['id'] = newCategoryId; // Update category ID in place
+        }
+
+        // Generate new IDs for all items and update their category references
+        for (var itemData in itemsData) {
+          // Generate new item ID
+          itemData['id'] = const Uuid().v4();
+
+          // Update category IDs to reference new categories
+          final oldCategoryIds = itemData['categoryIds'] as List<dynamic>;
+          final newCategoryIds = oldCategoryIds.map((oldId) {
+            return categoryIdMap[oldId as String] ?? oldId;
+          }).toList();
+          itemData['categoryIds'] = newCategoryIds; // Update category IDs in place
+        }
+
+        final result = await _importPackageData(packageData, data, extractDir);
+        watch.stop();
+        logDebug('[ImportExport][importPackageFromZipWithNewId] done after ${watch.elapsedMilliseconds} ms | importedItems=${result.itemCount}');
+        return result;
+      } finally {
+        // Clean up temporary directory
+        try {
+          await extractDir.delete(recursive: true);
+        } catch (e) {
+          // Ignore cleanup errors
+        }
       }
     }
-  }
 
   /// Check if a package with the same content already exists in the same group
   /// Compares: language names (not codes), description, author info, version within the same group
@@ -1009,7 +1470,18 @@ class ImportExportRepository {
     Map<String, dynamic> packageData,
     String groupId,
   ) async {
+    final watch = Stopwatch()..start();
+    logDebug('[ImportExport][_checkForDuplicatePackage] start | groupId=$groupId');
+
+    final loadWatch = Stopwatch()..start();
     final allPackages = await _packageRepo.getAllPackages();
+    loadWatch.stop();
+    _logImportTiming(
+      '_checkForDuplicatePackage',
+      'loaded all packages',
+      loadWatch,
+      details: 'count=${allPackages.length}',
+    );
 
     // Extract and normalize fields from import data
     final langName1 = (packageData['language_name1'] as String).trim().toLowerCase();
@@ -1038,10 +1510,14 @@ class ImportExportRepository {
           pkgAuthorName == authorName &&
           pkgAuthorEmail == authorEmail &&
           pkgVersion == version) {
+        watch.stop();
+        logDebug('[ImportExport][_checkForDuplicatePackage] duplicate found after ${watch.elapsedMilliseconds} ms | packageId=${pkg.id}');
         return pkg; // Found duplicate in same group
       }
     }
 
+    watch.stop();
+    logDebug('[ImportExport][_checkForDuplicatePackage] no duplicate after ${watch.elapsedMilliseconds} ms');
     return null; // No duplicate found
   }
 
@@ -1052,6 +1528,9 @@ class ImportExportRepository {
     Map<String, dynamic> data,
     Directory extractDir,
   ) async {
+    final watch = Stopwatch()..start();
+    logDebug('[ImportExport][_importPackageData] start | packageId=${packageData['id']}');
+
     final packageId = packageData['id'] as String;
 
     // Handle custom icon if present
@@ -1075,13 +1554,16 @@ class ImportExportRepository {
 
         await iconFile.copy(newIconPath);
         iconPath = newIconPath;
+        logDebug('[ImportExport][_importPackageData] custom icon copied | path=$newIconPath');
       } else {
         // Icon file missing, use default
         iconPath = null;
+        logDebug('[ImportExport][_importPackageData] custom icon missing, falling back to default');
       }
     }
 
     // Handle group: check if exists, create if not
+    final groupWatch = Stopwatch()..start();
     String groupId;
     String groupName;
     final exportedGroupId = packageData['group_id'] as String?;
@@ -1131,6 +1613,13 @@ class ImportExportRepository {
       groupId = defaultGroupId;
       groupName = defaultGroupName;
     }
+    groupWatch.stop();
+    _logImportTiming(
+      '_importPackageData',
+      'group resolved/created',
+      groupWatch,
+      details: 'groupId=$groupId',
+    );
 
     // Restore package_type from exported data (fall back to userCreated for old ZIPs)
     final exportedTypeName = packageData['package_type'] as String?;
@@ -1165,13 +1654,21 @@ class ImportExportRepository {
       createdAt: DateTime.now(),
     );
 
+    final packageWriteWatch = Stopwatch()..start();
     await _packageRepo.insertPackage(package);
+    packageWriteWatch.stop();
+    _logImportTiming(
+      '_importPackageData',
+      'package inserted',
+      packageWriteWatch,
+    );
     // logDebug('Import ZIP: Package created with ID: $packageId, groupId: $groupId');
 
     // Import categories
     final categoriesData = data['categories'] as List<dynamic>;
     // logDebug('Import ZIP: Found ${categoriesData.length} categories in import data');
 
+    final categoryWriteWatch = Stopwatch()..start();
     for (final catData in categoriesData) {
       final category = Category(
         id: catData['id'] as String,
@@ -1182,6 +1679,13 @@ class ImportExportRepository {
       await _categoryRepo.insertCategory(category);
       // logDebug('  Imported category: ${category.id} - ${category.name}');
     }
+    categoryWriteWatch.stop();
+    _logImportTiming(
+      '_importPackageData',
+      'categories inserted',
+      categoryWriteWatch,
+      details: 'count=${categoriesData.length}',
+    );
 
     // Import items
     final itemsData = data['items'] as List<dynamic>;
@@ -1189,6 +1693,7 @@ class ImportExportRepository {
 
     // logDebug('Import ZIP: Found ${itemsData.length} items in import data');
 
+    final itemWriteWatch = Stopwatch()..start();
     for (final itemData in itemsData) {
       try {
         final item = Item.fromJson(itemData as Map<String, dynamic>);
@@ -1223,8 +1728,17 @@ class ImportExportRepository {
         // Continue with next item instead of failing entire import
       }
     }
+    itemWriteWatch.stop();
+    _logImportTiming(
+      '_importPackageData',
+      'items processed',
+      itemWriteWatch,
+      details: 'count=$importedCount/${itemsData.length}',
+    );
 
     // logDebug('Import ZIP completed: $importedCount items imported, $skippedCount skipped');
+    watch.stop();
+    logDebug('[ImportExport][_importPackageData] done after ${watch.elapsedMilliseconds} ms | importedItems=$importedCount');
     return ImportResult(importedCount, groupName);
   }
 }

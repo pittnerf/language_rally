@@ -349,6 +349,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get viewPackages => 'View Packages';
 
   @override
+  String get simplifiedPackageView => 'Package List';
+
+  @override
   String get createNewPackage => 'Create New Package';
 
   @override

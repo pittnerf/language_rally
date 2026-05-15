@@ -184,6 +184,65 @@ class ItemRepository {
     }
   }
 
+  /// Bulk variant of [insertItemInTransaction] optimized for large imports.
+  ///
+  /// Items are written in chunks via [Batch] to minimize platform-channel
+  /// roundtrips while still running inside the caller-owned transaction.
+  Future<void> insertItemsBulkInTransaction(
+    DatabaseExecutor txn,
+    List<Item> items, {
+    int chunkSize = 100,
+    void Function(int insertedCount)? onProgress,
+  }) async {
+    if (items.isEmpty) return;
+    final safeChunkSize = chunkSize <= 0 ? 100 : chunkSize;
+    var inserted = 0;
+
+    for (var start = 0; start < items.length; start += safeChunkSize) {
+      final end = start + safeChunkSize > items.length
+          ? items.length
+          : start + safeChunkSize;
+      final chunk = items.sublist(start, end);
+
+      final batch = txn.batch();
+      for (final item in chunk) {
+        batch.insert(
+          'items',
+          _itemToMap(item),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+        batch.insert(
+          'item_language_data',
+          _languageDataToMap(item.id, item.language1Data, 1),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+        batch.insert(
+          'item_language_data',
+          _languageDataToMap(item.id, item.language2Data, 2),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+        for (final example in item.examples) {
+          batch.insert(
+            'example_sentences',
+            _exampleToMap(item.id, example),
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+        for (final categoryId in item.categoryIds) {
+          batch.insert(
+            'item_categories',
+            {'item_id': item.id, 'category_id': categoryId},
+            conflictAlgorithm: ConflictAlgorithm.replace,
+          );
+        }
+      }
+
+      await batch.commit(noResult: true, continueOnError: false);
+      inserted += chunk.length;
+      onProgress?.call(inserted);
+    }
+  }
+
   // Update
   Future<void> updateItem(Item item) async {
     await insertItem(item); // Use insert with REPLACE conflict resolution

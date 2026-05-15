@@ -752,6 +752,12 @@ abstract class AppLocalizations {
   /// **'View Packages'**
   String get viewPackages;
 
+  /// No description provided for @simplifiedPackageView.
+  ///
+  /// In en, this message translates to:
+  /// **'Package List'**
+  String get simplifiedPackageView;
+
   /// No description provided for @createNewPackage.
   ///
   /// In en, this message translates to:

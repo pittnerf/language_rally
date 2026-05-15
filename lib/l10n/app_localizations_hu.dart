@@ -352,6 +352,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get viewPackages => 'Csomagok megtekintése';
 
   @override
+  String get simplifiedPackageView => 'Csomagok listája';
+
+  @override
   String get createNewPackage => 'Új csomag létrehozása';
 
   @override
@@ -1319,7 +1322,8 @@ class AppLocalizationsHu extends AppLocalizations {
   String get checkFirewall => 'Ellenőrizd a tűzfal beállításokat';
 
   @override
-  String get textMayBeTooShort => 'A szöveg túl rövid lehet';
+  String get textMayBeTooShort =>
+      'A szöveg natívan nem támogatott. Adj hozzá OpenAI API kulcsot a Beállításokban az AI-alapú beszédfelismeréshez.';
 
   @override
   String get tryDifferentKnowledgeLevel => 'Próbálj ki egy másik tudásszintet';

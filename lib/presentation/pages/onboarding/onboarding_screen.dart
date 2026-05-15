@@ -346,24 +346,21 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     items: _uiLanguages.entries.map((entry) {
                       return DropdownMenuItem<String>(
                         value: entry.key,
-                        child: Row(
-                          children: [
-                            Text(
-                              entry.key.toUpperCase(),
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.primary,
-                                fontWeight: FontWeight.bold,
+                        child: Text.rich(
+                          TextSpan(
+                            children: [
+                              TextSpan(
+                                text: '${entry.key.toUpperCase()} ',
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: AppTheme.spacing8),
-                            Expanded(
-                              child: Text(
-                                entry.value,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ],
+                              TextSpan(text: entry.value),
+                            ],
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       );
                     }).toList(),

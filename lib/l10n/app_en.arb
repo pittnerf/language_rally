@@ -112,6 +112,7 @@
   "categories": "Categories",
   "testInterFonts": "Test Inter Fonts",
   "viewPackages": "View Packages",
+  "simplifiedPackageView": "Package List",
   "createNewPackage": "Create New Package",
   "generateTestData": "Generate Test Data",
   "designSystemShowcase": "Design System Showcase",
@@ -849,5 +850,4 @@
     "description": "Indeterminate loading label on the splash screen"
   }
 }
-
 

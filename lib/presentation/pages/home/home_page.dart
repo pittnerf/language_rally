@@ -5,6 +5,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../providers/theme_provider.dart';
 import '../../widgets/clickable_text.dart';
 import '../packages/package_list_page.dart';
+import '../packages/package_list_simplified_page.dart';
 import '../packages/package_form_page.dart';
 import '../training/training_settings_page.dart';
 import '../dev/test_data_page.dart';
@@ -335,15 +336,32 @@ class _HomePageState extends ConsumerState<HomePage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Package List Button (First - Primary Action)
+        // ElevatedButton.icon(
+        //  onPressed: () {
+        //    Navigator.push(
+        //      context,
+      //      MaterialPageRoute(builder: (_) => const PackageListPage()),
+        //     );
+        //  },
+        //  icon: Icon(Icons.library_books, size: iconSize),
+    //  label: _buttonLabel(localizations.viewPackages, fontSize),
+      //      style: ElevatedButton.styleFrom(
+      //      padding: buttonPadding,
+      //    ),
+        //  ),
+
+        const SizedBox(height: AppTheme.spacing12),
+
+        // Simplified Package List Button
         ElevatedButton.icon(
           onPressed: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (_) => const PackageListPage()),
+              MaterialPageRoute(builder: (_) => const PackageListSimplifiedPage()),
             );
           },
-          icon: Icon(Icons.library_books, size: iconSize),
-          label: _buttonLabel(localizations.viewPackages, fontSize),
+          icon: Icon(Icons.dashboard, size: iconSize),
+          label: _buttonLabel(localizations.simplifiedPackageView, fontSize),
           style: ElevatedButton.styleFrom(
             padding: buttonPadding,
           ),
@@ -575,6 +593,24 @@ class _HomePageState extends ConsumerState<HomePage> {
           ),
         ),
         const SizedBox(height: AppTheme.spacing24),
+        // Start App Tour button
+        SizedBox(
+          width: double.infinity,
+          child: FilledButton.icon(
+            onPressed: () {
+              _showAppTour(context, localizations, theme);
+            },
+            icon: const Icon(Icons.tour),
+            label: Text(localizations.startAppTour),
+            style: FilledButton.styleFrom(
+              padding: const EdgeInsets.symmetric(
+                vertical: AppTheme.spacing16,
+              ),
+              backgroundColor: theme.colorScheme.secondary,
+              foregroundColor: theme.colorScheme.onSecondary,
+            ),
+          ),
+        ),
         const Divider(),
         const SizedBox(height: AppTheme.spacing24),
 
@@ -635,40 +671,10 @@ class _HomePageState extends ConsumerState<HomePage> {
           localizations.sectionUnlockAIDesc,
         ),
         const SizedBox(height: AppTheme.spacing24),
-        const Divider(),
-        const SizedBox(height: AppTheme.spacing24),
+        // const Divider(),
 
-        // Ready to start
-        Center(
-          child: Text(
-            localizations.readyToStart,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.primary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-        ),
-        const SizedBox(height: AppTheme.spacing16),
 
-        // Start App Tour button
-        SizedBox(
-          width: double.infinity,
-          child: FilledButton.icon(
-            onPressed: () {
-              _showAppTour(context, localizations, theme);
-            },
-            icon: const Icon(Icons.tour),
-            label: Text(localizations.startAppTour),
-            style: FilledButton.styleFrom(
-              padding: const EdgeInsets.symmetric(
-                vertical: AppTheme.spacing16,
-              ),
-              backgroundColor: theme.colorScheme.secondary,
-              foregroundColor: theme.colorScheme.onSecondary,
-            ),
-          ),
-        ),
+
       ],
     );
 
