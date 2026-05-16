@@ -38,6 +38,7 @@ Map<String, List<int>> _extractZipFiles(List<int> bytes) {
 /// Extract both package metadata AND files in a single ZIP decode pass.
 /// Returns a tuple: (files map, pkgName, groupName, lang1, lang2)
 /// This avoids decoding the ZIP twice when we need both metadata and content.
+/*
 (Map<String, List<int>>, String?, String?, String?, String?) _extractZipFilesWithMetadata(
   List<int> bytes,
 ) {
@@ -70,6 +71,7 @@ Map<String, List<int>> _extractZipFiles(List<int> bytes) {
 
   return (files, pkgName, groupName, language_name1, language_name2);
 }
+*/
 
 void _logImportTiming(
   String method,

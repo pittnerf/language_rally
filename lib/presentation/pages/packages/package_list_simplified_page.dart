@@ -459,7 +459,7 @@ class _PackageListSimplifiedPageState extends ConsumerState<PackageListSimplifie
   }
 
   Widget _buildFilterField(BuildContext context, AppLocalizations l10n) {
-    final theme = Theme.of(context);
+    // final theme = Theme.of(context);
     final mediaQuery = MediaQuery.of(context);
     final isPhone = mediaQuery.size.shortestSide < 600;
     final isLandscape = mediaQuery.orientation == Orientation.landscape;

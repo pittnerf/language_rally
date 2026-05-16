@@ -9,7 +9,6 @@ import '../../data/repositories/language_package_repository.dart';
 import '../../data/repositories/category_repository.dart';
 import '../../data/repositories/item_repository.dart';
 import '../../data/repositories/import_export_repository.dart';
-import '../../data/models/language_package_group.dart';
 import '../utils/debug_print.dart';
 
 // ---------------------------------------------------------------------------
@@ -49,6 +48,7 @@ class SeedingProgress {
 // Decodes a seed ZIP in a background isolate and returns the four metadata
 // strings from package_data.json without blocking the main thread.
 // ---------------------------------------------------------------------------
+/*
 (String?, String?, String?, String?) _extractZipPkgInfo(List<int> bytes) {
   try {
     final archive = ZipDecoder().decodeBytes(bytes, verify: false);
@@ -68,6 +68,8 @@ class SeedingProgress {
   } catch (_) {}
   return (null, null, null, null);
 }
+*/
+
 
 /// OPTIMIZATION: Extract both files and package metadata in a single ZIP decode.
 /// Returns (files map, pkgName, groupName, language_name1, language_name2).
@@ -570,6 +572,7 @@ class AppInitializationService {
   /// Ensure the default group exists in the database
   /// This is a safety measure to prevent foreign key constraint errors
   /// when creating packages on a fresh installation
+  /*
   static Future<void> _ensureDefaultGroupExists() async {
     try {
       final groupRepo = LanguagePackageGroupRepository();
@@ -594,6 +597,8 @@ class AppInitializationService {
     }
   }
 
+   */
+
   /// Pre-load or warm up assets to avoid first-load delays
   static Future<void> _warmUpAssets() async {
     // Add a small delay to prevent blocking
@@ -604,12 +609,16 @@ class AppInitializationService {
   /// Reads a ZIP byte array and returns the value of `package.name` from
   /// its embedded `package_data.json`, or null if it cannot be determined.
   /// The ZIP is fully decoded to access the JSON entry.
+  /*
   static String? _extractPackageName(List<int> bytes) {
+
     return _extractPackageInfo(bytes).$1;
   }
+  */
 
   /// Reads a ZIP byte array and returns `(packageName, groupName)` from its
   /// embedded `package_data.json`.  Either field can be null if missing/unreadable.
+  /*
   static (String?, String?, String?, String?) _extractPackageInfo(List<int> bytes) {
     try {
       final archive = ZipDecoder().decodeBytes(bytes, verify: false);
@@ -628,6 +637,7 @@ class AppInitializationService {
     } catch (_) {}
     return (null, null, null, null);
   }
+  */
 
   /// Extracts a compact topic label from package metadata description.
   ///

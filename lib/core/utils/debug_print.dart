@@ -6,7 +6,7 @@
 
 /// Global flag to control debug printing
 /// Set to false in production to disable all debug prints
-const bool PRINT_DEBUG = true;
+const bool PRINT_DEBUG = false;
 
 String _debugTimestamp() {
   final now = DateTime.now();
