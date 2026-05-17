@@ -1830,9 +1830,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                 ),
                 if (showStatistics) ...[
                   const SizedBox(height: AppTheme.spacing4),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
+                  Row(
                     children: [
                       _buildStatChip(
                         theme,
@@ -1840,12 +1838,14 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                         _successfulGuesses,
                         Colors.green,
                       ),
+                      const SizedBox(width: 8),
                       _buildStatChip(
                         theme,
                         l10n.iDontKnow,
                         _totalGuesses - _successfulGuesses,
                         Colors.orange,
                       ),
+                      const SizedBox(width: 8),
                       _buildStatChip(
                         theme,
                         l10n.total,

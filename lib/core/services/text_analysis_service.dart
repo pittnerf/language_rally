@@ -6,6 +6,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../../data/models/extracted_item.dart';
+import '../constants/openai_model_catalog.dart';
 import '../utils/debug_print.dart';
 
 class TextAnalysisService {
@@ -15,9 +16,9 @@ class TextAnalysisService {
 
   TextAnalysisService({
     required String apiKey,
-    String model = 'gpt-4-turbo',
+    String model = OpenAiModelCatalog.defaultModelId,
   })  : _apiKey = apiKey,
-        _model = model;
+        _model = OpenAiModelCatalog.normalizeSelection(model);
 
   /// Detect language of the given text
   Future<String> detectLanguage(String text) async {
@@ -739,40 +740,365 @@ Do not include any explanation, only the JSON array.''';
     }
   }
 
+  /// Run an interactive practice chat for a selected topic.
+  ///
+  /// Keeps conversation context via [history] and instructs the model to
+  /// actively coach the learner instead of mirroring user text.
+  Future<String> chatPracticeSession({
+    required String userMessage,
+    required String userLanguage,
+    required String learningLanguage,
+    required List<Map<String, String>> history,
+  }) async {
+    final systemPrompt = '''You are an interactive language coach.
+
+GOAL:
+- Help the learner practice topic-focused vocabulary and expressions in $learningLanguage.
+- Use $userLanguage only when a short clarification is necessary.
+
+IMPORTANT BEHAVIOR:
+- Do NOT mirror or simply repeat the user's sentence.
+- Keep the conversation interactive: ask ONE focused follow-up question each turn.
+- Propose 3-6 useful words/expressions related to the user's topic when relevant.
+- Periodically test knowledge with mini tasks (e.g., fill-in-the-blank, translate, choose correct expression).
+- Give short corrective feedback and a better alternative when the answer is incorrect.
+
+RESPONSE STYLE:
+- Friendly and concise.
+- Prefer bullet points for word/expression suggestions.
+- End with a concrete question/task for the learner.
+''';
+
+    final messages = <Map<String, String>>[
+      {
+        'role': 'system',
+        'content': systemPrompt,
+      },
+      ...history,
+      {
+        'role': 'user',
+        'content': userMessage,
+      },
+    ];
+
+    try {
+      return await _makeChatRequest(messages, maxTokens: 700, temperature: 0.7);
+    } catch (e) {
+      throw Exception('Failed to chat in practice mode: $e');
+    }
+  }
+
+  /// Interactive practice chat that returns structured JSON-compatible data.
+  ///
+  /// Expected result map keys:
+  /// - answer: String
+  /// - items: `List<Map<String, String>>` with text, languageCode, type
+  /// - suggestions: `List<String>`
+  Future<Map<String, dynamic>> chatPracticeSessionStructured({
+    required String userMessage,
+    required String userLanguageCode,
+    required String languageCode1,
+    required String languageCode2,
+    required String languageName1,
+    required String languageName2,
+    required List<Map<String, String>> history,
+  }) async {
+    final systemPrompt = '''You are an interactive language coach.
+
+GOAL:
+- Help the learner practice topic-focused vocabulary and expressions.
+- Keep the conversation natural and interactive.
+- Do NOT mirror user text.
+
+LANGUAGE RULES:
+- Practice languages are $languageName1 ($languageCode1) and $languageName2 ($languageCode2).
+- Use the learner language ($userLanguageCode) only for brief clarification when needed.
+
+OUTPUT FORMAT (STRICT):
+Return ONLY valid JSON object with this exact schema:
+{
+  "answer": "string",
+  "items": [
+    {
+      "text": "string",
+      "languageCode": "$languageCode1 or $languageCode2",
+      "type": "word or expression"
+    }
+  ],
+  "suggestions": ["string"]
+}
+
+CONSTRAINTS:
+- answer: concise coaching response.
+- items: max 8 entries.
+- Try to include at least 4 items when possible.
+- Each item text must be either:
+  - a single word, OR
+  - an expression of 2-6 words.
+- languageCode must be exactly $languageCode1 or $languageCode2.
+- type must be "word" or "expression".
+- suggestions: max 3 short actionable suggestions for the next user prompt.
+- Try to include at least 2 suggestions when possible.
+- Do not include markdown, code fences, or extra keys.
+''';
+
+    final messages = <Map<String, String>>[
+      {
+        'role': 'system',
+        'content': systemPrompt,
+      },
+      ...history,
+      {
+        'role': 'user',
+        'content': userMessage,
+      },
+    ];
+
+    try {
+      final response = await _makeChatRequest(messages, maxTokens: 900, temperature: 0.7);
+      final parsed = _parseStructuredPracticeResponse(
+        response: response,
+        languageCode1: languageCode1,
+        languageCode2: languageCode2,
+      );
+
+      var items = (parsed['items'] as List<Map<String, String>>?) ?? <Map<String, String>>[];
+      var suggestions = (parsed['suggestions'] as List<String>?) ?? <String>[];
+
+      // Fallback generation to keep chips usable even if model omits arrays.
+      if (items.isEmpty) {
+        items = await _generateFallbackPracticeItems(
+          userMessage: userMessage,
+          answer: (parsed['answer'] as String?) ?? '',
+          languageCode1: languageCode1,
+          languageCode2: languageCode2,
+        );
+      }
+
+      if (suggestions.isEmpty) {
+        suggestions = await _generateFallbackPromptSuggestions(
+          userMessage: userMessage,
+          answer: (parsed['answer'] as String?) ?? '',
+        );
+      }
+
+      return {
+        'answer': parsed['answer'] ?? response.trim(),
+        'items': items.take(8).toList(),
+        'suggestions': suggestions.take(3).toList(),
+      };
+    } catch (e) {
+      throw Exception('Failed to chat in structured practice mode: $e');
+    }
+  }
+
+  Map<String, dynamic> _parseStructuredPracticeResponse({
+    required String response,
+    required String languageCode1,
+    required String languageCode2,
+  }) {
+    try {
+      String jsonContent = response.trim();
+      final start = jsonContent.indexOf('{');
+      final end = jsonContent.lastIndexOf('}');
+      if (start >= 0 && end > start) {
+        jsonContent = jsonContent.substring(start, end + 1);
+      }
+
+      final data = json.decode(jsonContent) as Map<String, dynamic>;
+      final answer = _removeQuotes(data['answer']?.toString()).trim();
+
+      final validCodes = {
+        languageCode1.toLowerCase(),
+        languageCode2.toLowerCase(),
+      };
+
+      final rawItems = (data['items'] as List?) ?? const [];
+      final items = <Map<String, String>>[];
+      for (final item in rawItems) {
+        if (item is! Map) continue;
+
+        final text = _removeQuotes(item['text']?.toString()).trim();
+        if (text.isEmpty) continue;
+
+        final words = text.split(RegExp(r'\s+')).where((w) => w.isNotEmpty).toList();
+        if (words.length > 6) continue;
+
+        var type = _removeQuotes(item['type']?.toString()).toLowerCase().trim();
+        if (type != 'word' && type != 'expression') {
+          type = words.length == 1 ? 'word' : 'expression';
+        }
+        if (type == 'word' && words.length != 1) continue;
+        if (type == 'expression' && (words.length < 2 || words.length > 6)) continue;
+
+        final code = _removeQuotes(item['languageCode']?.toString()).trim();
+        if (code.isEmpty || !validCodes.contains(code.toLowerCase())) continue;
+
+        items.add({
+          'text': text,
+          'languageCode': code,
+          'type': type,
+        });
+        if (items.length >= 8) break;
+      }
+
+      final rawSuggestions = (data['suggestions'] as List?) ?? const [];
+      final suggestions = <String>[];
+      for (final suggestion in rawSuggestions) {
+        final value = _removeQuotes(suggestion?.toString()).trim();
+        if (value.isEmpty) continue;
+        suggestions.add(value);
+        if (suggestions.length >= 3) break;
+      }
+
+      return {
+        'answer': answer.isEmpty ? response.trim() : answer,
+        'items': items,
+        'suggestions': suggestions,
+      };
+    } catch (_) {
+      return {
+        'answer': response.trim(),
+        'items': <Map<String, String>>[],
+        'suggestions': <String>[],
+      };
+    }
+  }
+
+  Future<List<Map<String, String>>> _generateFallbackPracticeItems({
+    required String userMessage,
+    required String answer,
+    required String languageCode1,
+    required String languageCode2,
+  }) async {
+    final prompt = '''Return ONLY JSON array. Generate up to 8 practice items for this conversation.
+
+Rules:
+- Each item must include keys: text, languageCode, type
+- languageCode must be either "$languageCode1" or "$languageCode2"
+- type must be "word" or "expression"
+- expression must be 2-6 words
+- word must be exactly 1 word
+
+Conversation context:
+User: "$userMessage"
+Assistant: "$answer"
+
+JSON array format:
+[
+  {"text":"...","languageCode":"$languageCode1","type":"word"}
+]
+''';
+
+    try {
+      final response = await _makeRequest(prompt, maxTokens: 350);
+      final jsonContent = _extractFirstJsonArray(response);
+      final raw = json.decode(jsonContent) as List;
+      final wrapped = {
+        'answer': answer,
+        'items': raw,
+        'suggestions': <String>[],
+      };
+      final parsed = _parseStructuredPracticeResponse(
+        response: json.encode(wrapped),
+        languageCode1: languageCode1,
+        languageCode2: languageCode2,
+      );
+      return (parsed['items'] as List<Map<String, String>>?) ?? <Map<String, String>>[];
+    } catch (_) {
+      return <Map<String, String>>[];
+    }
+  }
+
+  Future<List<String>> _generateFallbackPromptSuggestions({
+    required String userMessage,
+    required String answer,
+  }) async {
+    final prompt = '''Return ONLY JSON array of max 3 short next-prompt suggestions for continuing the conversation.
+
+Conversation context:
+User: "$userMessage"
+Assistant: "$answer"
+
+Example:
+["Ask me 3 questions about this topic", "Give me synonyms", "Provide a short dialogue"]
+''';
+
+    try {
+      final response = await _makeRequest(prompt, maxTokens: 180);
+      final jsonContent = _extractFirstJsonArray(response);
+      final raw = json.decode(jsonContent) as List;
+      return raw
+          .map((e) => _removeQuotes(e.toString()).trim())
+          .where((e) => e.isNotEmpty)
+          .take(3)
+          .toList();
+    } catch (_) {
+      return <String>[];
+    }
+  }
+
+  String _extractFirstJsonArray(String text) {
+    final start = text.indexOf('[');
+    final end = text.lastIndexOf(']');
+    if (start >= 0 && end > start) {
+      return text.substring(start, end + 1);
+    }
+    throw Exception('JSON array not found');
+  }
+
   /// Make HTTP request to OpenAI API
   Future<String> _makeRequest(String prompt, {int maxTokens = 500}) async {
+    final messages = [
+      {
+        'role': 'system',
+        'content': 'You are a helpful language learning assistant. Always respond concisely and follow instructions exactly.',
+      },
+      {
+        'role': 'user',
+        'content': prompt,
+      },
+    ];
+
+    return _makeChatRequest(messages, maxTokens: maxTokens, temperature: 0.3);
+  }
+
+  Future<String> _makeChatRequest(
+    List<Map<String, String>> messages, {
+    int maxTokens = 500,
+    double temperature = 0.3,
+  }) async {
     // Use the model selected by the user
     final model = _model;
 
     // Ensure maxTokens doesn't exceed model limits
-    // gpt-3.5-turbo: max 4096 tokens (input + output combined)
-    // gpt-4 models: max depends on variant (8K, 32K, 128K)
-    // Safe max for output: 4000 tokens
     final safeMaxTokens = maxTokens.clamp(1, 4000);
+    final isGpt5Family = model.toLowerCase().startsWith('gpt-5');
 
     try {
+      final payload = <String, dynamic>{
+        'model': model,
+        'messages': messages,
+      };
+
+      if (!isGpt5Family) {
+        payload['temperature'] = temperature;
+      }
+
+      if (isGpt5Family) {
+        payload['max_completion_tokens'] = safeMaxTokens;
+      } else {
+        payload['max_tokens'] = safeMaxTokens;
+      }
+
       final response = await http.post(
         Uri.parse(_baseUrl),
         headers: {
           'Authorization': 'Bearer $_apiKey',
           'Content-Type': 'application/json',
         },
-        body: json.encode({
-          'model': model,
-          'messages': [
-            {
-              'role': 'system',
-              'content': 'You are a helpful language learning assistant. Always respond concisely and follow instructions exactly.',
-            },
-          {
-            'role': 'user',
-            'content': prompt,
-          }
-        ],
-        'temperature': 0.3,
-        'max_tokens': safeMaxTokens,
-      }),
-    );
+        body: json.encode(payload),
+      );
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);

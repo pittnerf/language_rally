@@ -1949,7 +1949,7 @@ abstract class AppLocalizations {
   /// No description provided for @iDidNotKnowEither.
   ///
   /// In en, this message translates to:
-  /// **'I Didn\'t Know Either'**
+  /// **'I Didn\'t Know It After All'**
   String get iDidNotKnowEither;
 
   /// No description provided for @exportBeforeDelete.
@@ -1961,13 +1961,13 @@ abstract class AppLocalizations {
   /// No description provided for @aiTextAnalysis.
   ///
   /// In en, this message translates to:
-  /// **'Import items with AI'**
+  /// **'Extract items from a text/list with AI'**
   String get aiTextAnalysis;
 
   /// No description provided for @aiTextAnalysisImport.
   ///
   /// In en, this message translates to:
-  /// **'Import items with AI Text Analysis'**
+  /// **'Extract items from a text or list with AI Text Analysis Tool'**
   String get aiTextAnalysisImport;
 
   /// No description provided for @knowledgeLevel.
@@ -2084,10 +2084,100 @@ abstract class AppLocalizations {
   /// **'Select ChatGPT model'**
   String get openaiModelDescription;
 
+  /// No description provided for @modelGpt55.
+  ///
+  /// In en, this message translates to:
+  /// **'GPT-5.5'**
+  String get modelGpt55;
+
+  /// No description provided for @modelGpt55Pro.
+  ///
+  /// In en, this message translates to:
+  /// **'GPT-5.5 Pro'**
+  String get modelGpt55Pro;
+
+  /// No description provided for @modelGpt54.
+  ///
+  /// In en, this message translates to:
+  /// **'GPT-5.4'**
+  String get modelGpt54;
+
+  /// No description provided for @modelGpt54Pro.
+  ///
+  /// In en, this message translates to:
+  /// **'GPT-5.4 Pro'**
+  String get modelGpt54Pro;
+
+  /// No description provided for @modelGpt54Mini.
+  ///
+  /// In en, this message translates to:
+  /// **'GPT-5.4 Mini'**
+  String get modelGpt54Mini;
+
+  /// No description provided for @modelGpt5Mini.
+  ///
+  /// In en, this message translates to:
+  /// **'GPT-5 Mini'**
+  String get modelGpt5Mini;
+
+  /// No description provided for @modelGpt41.
+  ///
+  /// In en, this message translates to:
+  /// **'GPT-4.1'**
+  String get modelGpt41;
+
+  /// No description provided for @modelGpt55Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest flagship balance of quality and speed for general use'**
+  String get modelGpt55Desc;
+
+  /// No description provided for @modelGpt55ProDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Highest-end GPT-5.5 variant for the strongest reasoning and quality'**
+  String get modelGpt55ProDesc;
+
+  /// No description provided for @modelGpt54Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Strong general-purpose GPT-5 generation model'**
+  String get modelGpt54Desc;
+
+  /// No description provided for @modelGpt54ProDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Higher-capability GPT-5.4 variant for demanding tasks'**
+  String get modelGpt54ProDesc;
+
+  /// No description provided for @modelGpt54MiniDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Smaller, faster GPT-5.4 variant for lower-cost everyday tasks'**
+  String get modelGpt54MiniDesc;
+
+  /// No description provided for @modelGpt5MiniDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Compact GPT-5 family model optimized for speed and cost'**
+  String get modelGpt5MiniDesc;
+
+  /// No description provided for @modelGpt41Desc.
+  ///
+  /// In en, this message translates to:
+  /// **'Reliable GPT-4.1 option for compatibility and solid quality'**
+  String get modelGpt41Desc;
+
+  /// No description provided for @modelGpt4o.
+  ///
+  /// In en, this message translates to:
+  /// **'GPT-4o'**
+  String get modelGpt4o;
+
   /// No description provided for @modelGpt35Turbo.
   ///
   /// In en, this message translates to:
-  /// **'GPT-3.5 Turbo'**
+  /// **'GPT-3.5 Turbo (Legacy, Budget)'**
   String get modelGpt35Turbo;
 
   /// No description provided for @modelGpt35Turbo16k.
@@ -2105,13 +2195,19 @@ abstract class AppLocalizations {
   /// No description provided for @modelGpt4Turbo.
   ///
   /// In en, this message translates to:
-  /// **'GPT-4 Turbo'**
+  /// **'GPT-4 Turbo (Legacy)'**
   String get modelGpt4Turbo;
+
+  /// No description provided for @modelGpt4oDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Best general-purpose choice; fast, multimodal, and strong quality'**
+  String get modelGpt4oDesc;
 
   /// No description provided for @modelGpt35TurboDesc.
   ///
   /// In en, this message translates to:
-  /// **'Fast and cost-effective; standard for production'**
+  /// **'Legacy low-cost option; useful for simpler tasks and cost-sensitive usage'**
   String get modelGpt35TurboDesc;
 
   /// No description provided for @modelGpt35Turbo16kDesc.
@@ -2123,13 +2219,13 @@ abstract class AppLocalizations {
   /// No description provided for @modelGpt4Desc.
   ///
   /// In en, this message translates to:
-  /// **'Higher accuracy/reasoning; slower and more expensive'**
+  /// **'High reasoning quality; typically slower and more expensive'**
   String get modelGpt4Desc;
 
   /// No description provided for @modelGpt4TurboDesc.
   ///
   /// In en, this message translates to:
-  /// **'Faster, cheaper, high accuracy; improved context'**
+  /// **'Legacy GPT-4 family option; still useful when you want an older cheaper alternative'**
   String get modelGpt4TurboDesc;
 
   /// No description provided for @analyzing.
@@ -2387,13 +2483,13 @@ abstract class AppLocalizations {
   /// No description provided for @selectPackage.
   ///
   /// In en, this message translates to:
-  /// **'Select Language Package'**
+  /// **'Select Package'**
   String get selectPackage;
 
   /// No description provided for @noPackagesAvailable.
   ///
   /// In en, this message translates to:
-  /// **'No non-purchased packages available'**
+  /// **'No packages available'**
   String get noPackagesAvailable;
 
   /// No description provided for @possibleSolutions.
@@ -2879,7 +2975,7 @@ abstract class AppLocalizations {
   /// No description provided for @welcomeSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Unlock the fantastic power of language learning with approximately 4,000 words, 4,000 expressions, and just as many example sentences—carefully curated for every proficiency level!\nLevel up your language skills — the smart and playful way.'**
+  /// **'Unlock the incredible power of language learning with roughly 4,000 words, 4,000 expressions, and just as many example sentences—carefully curated for every proficiency level! Use AI to import items from your own texts, or chat with the AI on any topic to generate the exact words, expressions, and examples you want to learn.\nLevel up your language skills—the smart and playful way!'**
   String get welcomeSubtitle;
 
   /// No description provided for @welcomeIntro.
@@ -2909,7 +3005,7 @@ abstract class AppLocalizations {
   /// No description provided for @sectionAITeammateDesc.
   ///
   /// In en, this message translates to:
-  /// **'Paste any text and let AI:\n• Extract useful vocabulary\n• Pick expressions that match your level\n• Build ready-to-train packages in seconds'**
+  /// **'Paste any text and let AI:\n• Extract useful vocabulary\n• Pick expressions that match your level\n• Build ready-to-train packages in seconds\n\nChat with the AI:\n• Let it suggest words and expressions for your topic\n• Click to generate examples and save them to your OWN package'**
   String get sectionAITeammateDesc;
 
   /// No description provided for @sectionTrainSmart.
@@ -4205,8 +4301,14 @@ abstract class AppLocalizations {
   /// No description provided for @aiItemCreator.
   ///
   /// In en, this message translates to:
-  /// **'AI Item Creator'**
+  /// **'AI Chat Guru'**
   String get aiItemCreator;
+
+  /// No description provided for @aiItemCreatorAppBarHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect and save words and expressions by chatting with the AI'**
+  String get aiItemCreatorAppBarHint;
 
   /// No description provided for @chatWithAI.
   ///
@@ -4219,6 +4321,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enter your prompt...'**
   String get enterYourPrompt;
+
+  /// No description provided for @aiItemCreatorPromptHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe a topic and the AI coach will ask questions, suggest useful vocabulary, and test your knowledge. For example: help me gather and practice dangers regarding travelling at knowledge level B2'**
+  String get aiItemCreatorPromptHint;
 
   /// No description provided for @send.
   ///
@@ -4244,6 +4352,18 @@ abstract class AppLocalizations {
   /// **'Item Inputs'**
   String get itemInputs;
 
+  /// No description provided for @aiItemCreatorBothItemsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in both language fields before saving.'**
+  String get aiItemCreatorBothItemsRequired;
+
+  /// No description provided for @aiItemCreatorDuplicateItemMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'An item with the same text pair already exists in this package.'**
+  String get aiItemCreatorDuplicateItemMessage;
+
   /// No description provided for @language1.
   ///
   /// In en, this message translates to:
@@ -4259,14 +4379,20 @@ abstract class AppLocalizations {
   /// No description provided for @translateLang1ToLang2.
   ///
   /// In en, this message translates to:
-  /// **'→ Translate to Lang 2'**
+  /// **'Translate to Lang 2'**
   String get translateLang1ToLang2;
 
   /// No description provided for @translateLang2ToLang1.
   ///
   /// In en, this message translates to:
-  /// **'← Translate to Lang 1'**
+  /// **'Translate to Lang 1'**
   String get translateLang2ToLang1;
+
+  /// No description provided for @translateToLanguageCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Translate to {languageCode}'**
+  String translateToLanguageCode(String languageCode);
 
   /// No description provided for @example.
   ///
@@ -4295,7 +4421,7 @@ abstract class AppLocalizations {
   /// No description provided for @saveItems.
   ///
   /// In en, this message translates to:
-  /// **'Save Items'**
+  /// **'Save'**
   String get saveItems;
 
   /// No description provided for @saving.
@@ -4346,11 +4472,179 @@ abstract class AppLocalizations {
   /// **'DeepL API key is required for translation'**
   String get deeplKeyRequired;
 
+  /// No description provided for @noNonPurchasedPackagesAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No non-purchased packages available'**
+  String get noNonPurchasedPackagesAvailable;
+
   /// No description provided for @packageSelectionRemembered.
   ///
   /// In en, this message translates to:
   /// **'Package selection saved'**
   String get packageSelectionRemembered;
+
+  /// No description provided for @aiItemCreatorOpenAiKeyNotConfiguredDetailed.
+  ///
+  /// In en, this message translates to:
+  /// **'OpenAI API key is not configured. Please add your API key in Settings.'**
+  String get aiItemCreatorOpenAiKeyNotConfiguredDetailed;
+
+  /// No description provided for @aiItemCreatorOpenAiKeyNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'OpenAI API key is not configured.'**
+  String get aiItemCreatorOpenAiKeyNotConfigured;
+
+  /// No description provided for @aiItemCreatorProcessingComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing complete'**
+  String get aiItemCreatorProcessingComplete;
+
+  /// No description provided for @aiItemCreatorTranslationComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Translation feature coming soon'**
+  String get aiItemCreatorTranslationComingSoon;
+
+  /// No description provided for @aiItemCreatorDefaultCategoryName.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Created'**
+  String get aiItemCreatorDefaultCategoryName;
+
+  /// No description provided for @aiItemCreatorStartNewConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Start new conversation'**
+  String get aiItemCreatorStartNewConversation;
+
+  /// No description provided for @aiItemCreatorChatHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe a topic and the AI coach will ask questions, suggest useful vocabulary, and test your knowledge.'**
+  String get aiItemCreatorChatHint;
+
+  /// No description provided for @aiItemCreatorConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation'**
+  String get aiItemCreatorConversation;
+
+  /// No description provided for @aiItemCreatorYou.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get aiItemCreatorYou;
+
+  /// No description provided for @aiItemCreatorCoach.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Coach'**
+  String get aiItemCreatorCoach;
+
+  /// No description provided for @aiItemCreatorAiSuggestions.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Suggestions'**
+  String get aiItemCreatorAiSuggestions;
+
+  /// No description provided for @aiItemCreatorTapChipToFill.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap a chip to fill an item field and auto-translate.'**
+  String get aiItemCreatorTapChipToFill;
+
+  /// No description provided for @aiItemCreatorNoSuggestedItems.
+  ///
+  /// In en, this message translates to:
+  /// **'No words or expressions yet.'**
+  String get aiItemCreatorNoSuggestedItems;
+
+  /// No description provided for @aiItemCreatorNextSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'How to continue'**
+  String get aiItemCreatorNextSteps;
+
+  /// No description provided for @aiItemCreatorNoNextSteps.
+  ///
+  /// In en, this message translates to:
+  /// **'No continuation suggestions yet.'**
+  String get aiItemCreatorNoNextSteps;
+
+  /// No description provided for @aiItemCreatorModelCostTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro Tip: Newer models are more expensive, while older and turbo models are cheaper and can be significantly faster.'**
+  String get aiItemCreatorModelCostTip;
+
+  /// No description provided for @aiItemCreatorSelectPackageDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose language package'**
+  String get aiItemCreatorSelectPackageDialogTitle;
+
+  /// No description provided for @aiItemCreatorSelectPackageDialogMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Select the language package to use for this session. Your last choice is preselected.'**
+  String get aiItemCreatorSelectPackageDialogMessage;
+
+  /// No description provided for @aiItemCreatorMissingApiKeysWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing API keys: {keys}. You can continue, but AI and premium translation features may be limited.'**
+  String aiItemCreatorMissingApiKeysWarning(String keys);
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
+  /// No description provided for @aboutWebsite.
+  ///
+  /// In en, this message translates to:
+  /// **'Website'**
+  String get aboutWebsite;
+
+  /// No description provided for @aboutSupportEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Support email'**
+  String get aboutSupportEmail;
+
+  /// No description provided for @aboutWebsiteUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'https://sites.google.com/view/language-rally'**
+  String get aboutWebsiteUrl;
+
+  /// No description provided for @aboutSupportEmailAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'languagerally.support@gmail.com'**
+  String get aboutSupportEmailAddress;
+
+  /// No description provided for @aboutVersionWithValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Version: {version}'**
+  String aboutVersionWithValue(String version);
+
+  /// No description provided for @aboutCouldNotOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open: {uri}'**
+  String aboutCouldNotOpen(String uri);
+
+  /// No description provided for @aboutWelcomeSplashNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome splash image not found'**
+  String get aboutWelcomeSplashNotFound;
 }
 
 class _AppLocalizationsDelegate

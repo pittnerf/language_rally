@@ -5,7 +5,15 @@
 
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../constants/openai_model_catalog.dart';
 import 'service_error_messages.dart';
+
+enum TranslationBackend {
+  deepLPro,
+  deepLFree,
+  openAI,
+  google,
+}
 
 class TranslationService {
   static const String _googleTranslateUrl = 'https://translate.googleapis.com/translate_a/single';
@@ -15,14 +23,18 @@ class TranslationService {
 
   final String? _deeplApiKey;
   final String? _openaiApiKey;
+  final String _openaiModel;
   final ServiceErrorMessages? _errorMessages;
+  TranslationBackend? _lastBackend;
 
   TranslationService({
     String? deeplApiKey,
     String? openaiApiKey,
+    String? openaiModel,
     ServiceErrorMessages? errorMessages,
   })  : _deeplApiKey = deeplApiKey,
         _openaiApiKey = openaiApiKey,
+        _openaiModel = OpenAiModelCatalog.normalizeSelection(openaiModel),
         _errorMessages = errorMessages;
 
   /// Translate text from source language to target language
@@ -42,6 +54,7 @@ class TranslationService {
     required String sourceLang,
     required String targetLang,
   }) async {
+    _lastBackend = null;
     if (text.trim().isEmpty) {
       throw Exception(_errorMessages?.textCannotBeEmpty ?? 'Text cannot be empty');
     }
@@ -51,13 +64,27 @@ class TranslationService {
     // 1. Try DeepL Pro (if API key available)
     if (_deeplApiKey != null && _deeplApiKey.isNotEmpty) {
       try {
-        return await _translateWithDeepL(text, sourceLang, targetLang, _deeplProUrl);
+        final translated = await _translateWithDeepL(
+          text,
+          sourceLang,
+          targetLang,
+          _deeplProUrl,
+        );
+        _lastBackend = TranslationBackend.deepLPro;
+        return translated;
       } catch (e) {
         errors.add('DeepL Pro: $e');
 
         // 2. Try DeepL Free endpoint
         try {
-          return await _translateWithDeepL(text, sourceLang, targetLang, _deeplFreeUrl);
+          final translated = await _translateWithDeepL(
+            text,
+            sourceLang,
+            targetLang,
+            _deeplFreeUrl,
+          );
+          _lastBackend = TranslationBackend.deepLFree;
+          return translated;
         } catch (e2) {
           errors.add('DeepL Free: $e2');
         }
@@ -67,7 +94,9 @@ class TranslationService {
     // 3. Try OpenAI (if API key available)
     if (_openaiApiKey != null && _openaiApiKey.isNotEmpty) {
       try {
-        return await _translateWithOpenAI(text, sourceLang, targetLang);
+        final translated = await _translateWithOpenAI(text, sourceLang, targetLang);
+        _lastBackend = TranslationBackend.openAI;
+        return translated;
       } catch (e) {
         errors.add('OpenAI: $e');
       }
@@ -75,7 +104,9 @@ class TranslationService {
 
     // 4. Final fallback: Google Translate (always available)
     try {
-      return await _translateWithGoogle(text, sourceLang, targetLang);
+      final translated = await _translateWithGoogle(text, sourceLang, targetLang);
+      _lastBackend = TranslationBackend.google;
+      return translated;
     } catch (e) {
       errors.add('Google Translate: $e');
       throw Exception('All translation services failed:\n${errors.join('\n')}');
@@ -162,6 +193,31 @@ class TranslationService {
     try {
       final sourceLangName = _getLanguageName(sourceLang);
       final targetLangName = _getLanguageName(targetLang);
+      final isGpt5Family = _openaiModel.toLowerCase().startsWith('gpt-5');
+
+      final payload = <String, dynamic>{
+        'model': _openaiModel,
+        'messages': [
+          {
+            'role': 'system',
+            'content': 'You are a professional translator. Translate the text accurately and naturally. Respond with ONLY the translation, no explanations.',
+          },
+          {
+            'role': 'user',
+            'content': 'Translate from $sourceLangName to $targetLangName:\n\n$text',
+          }
+        ],
+      };
+
+      if (!_openaiModel.toLowerCase().startsWith('gpt-5')) {
+        payload['temperature'] = 0.3;
+      }
+
+      if (isGpt5Family) {
+        payload['max_completion_tokens'] = 500;
+      } else {
+        payload['max_tokens'] = 500;
+      }
 
       final response = await http.post(
         Uri.parse(_openaiUrl),
@@ -169,21 +225,7 @@ class TranslationService {
           'Authorization': 'Bearer $_openaiApiKey',
           'Content-Type': 'application/json',
         },
-        body: json.encode({
-          'model': 'gpt-3.5-turbo',
-          'messages': [
-            {
-              'role': 'system',
-              'content': 'You are a professional translator. Translate the text accurately and naturally. Respond with ONLY the translation, no explanations.',
-            },
-            {
-              'role': 'user',
-              'content': 'Translate from $sourceLangName to $targetLangName:\n\n$text',
-            }
-          ],
-          'temperature': 0.3,
-          'max_tokens': 500,
-        }),
+        body: json.encode(payload),
       );
 
       if (response.statusCode == 200) {
@@ -289,8 +331,28 @@ class TranslationService {
     return true; // Always configured (Google is free)
   }
 
+  TranslationBackend? get lastBackend => _lastBackend;
+
+  bool usedOpenAiWithoutDeepL() {
+    final hasDeepLKey = _deeplApiKey != null && _deeplApiKey.trim().isNotEmpty;
+    return _lastBackend == TranslationBackend.openAI && !hasDeepLKey;
+  }
+
   /// Get the name of the primary service being used
   String getServiceName() {
+    switch (_lastBackend) {
+      case TranslationBackend.deepLPro:
+        return 'DeepL Pro';
+      case TranslationBackend.deepLFree:
+        return 'DeepL Free';
+      case TranslationBackend.openAI:
+        return 'OpenAI';
+      case TranslationBackend.google:
+        return 'Google Translate';
+      case null:
+        break;
+    }
+
     if (isUsingDeepL()) {
       return 'DeepL (Pro/Free)';
     } else if (isUsingOpenAI()) {
@@ -300,4 +362,3 @@ class TranslationService {
     }
   }
 }
-

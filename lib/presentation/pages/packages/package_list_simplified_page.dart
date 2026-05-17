@@ -25,6 +25,8 @@ import 'package_form_page.dart';
 import 'package_group_admin_page.dart';
 import '../items/item_browser_page.dart';
 import '../training/training_settings_page.dart';
+import '../ai_import/ai_text_analysis_page.dart';
+import '../ai_import/ai_item_creator_page.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../core/utils/debug_print.dart';
 
@@ -1201,6 +1203,40 @@ class _SimplifiedPackageCardState extends State<SimplifiedPackageCard> {
                             );
                           },
                         ),
+                        if (!widget.package.isPurchased)
+                          _buildActionButton(
+                            context,
+                            icon: Icons.auto_awesome,
+                            color: colorScheme.onTertiaryContainer,
+                            size: actionIconSize,
+                            boxSize: actionBoxSize,
+                            tooltip: AppLocalizations.of(context)!.aiItemCreator,
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => AIItemCreatorPage(
+                                    initialPackage: widget.package,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                        if (!widget.package.isPurchased)
+                          _buildActionButton(
+                            context,
+                            icon: Icons.document_scanner_outlined,
+                            color: colorScheme.onTertiaryContainer,
+                            size: actionIconSize,
+                            boxSize: actionBoxSize,
+                            tooltip: AppLocalizations.of(context)!.aiTextAnalysis,
+                            onPressed: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (context) => AITextAnalysisPage(package: widget.package),
+                                ),
+                              );
+                            },
+                          ),
                         _buildActionButton(
                           context,
                           icon: Icons.edit_outlined,

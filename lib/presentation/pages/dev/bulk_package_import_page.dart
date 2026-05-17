@@ -48,7 +48,7 @@ const List<String?> _kIconPaths = [
   null,                                                    // 0 – app default
   'assets/images/package_icons/default_package_icon.svg', // 1
   'assets/images/package_icons/package_icon_v2.svg',      // 2
-  'assets/images/package_icons/package_icon_v3.png',      // 3
+  'assets/images/package_icons/package_icon_v3.webp',     // 3
   'assets/images/package_icons/package_icon_v4.svg',      // 4
   'assets/images/package_icons/package_icon_v5.svg',      // 5
   'assets/images/package_icons/package_icon_v6.svg',      // 6

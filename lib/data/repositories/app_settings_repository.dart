@@ -6,6 +6,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/app_settings.dart';
 import '../../core/utils/debug_print.dart';
+import '../../core/constants/openai_model_catalog.dart';
 
 class AppSettingsRepository {
   static const String _keyUserLanguageCode = 'user_language_code';
@@ -16,6 +17,7 @@ class AppSettingsRepository {
   static const String _keyAiKnowledgeLevel = 'ai_knowledge_level';
   static const String _keyMinItemsForBadges = 'min_items_for_badges';
   static const String _keyLastTrainedPackageId = 'last_trained_package_id';
+  static const String _keyLastAiItemCreatorPackageId = 'last_ai_item_creator_package_id';
   static const String _keySelectedGroupId = 'selected_group_id';
   static const String _keyTrainingSelectedGroupId = 'training_selected_group_id';
   static const String _keyShowTrainingExamples = 'show_training_examples';
@@ -54,10 +56,13 @@ class AppSettingsRepository {
         userLanguageName: prefs.getString(_keyUserLanguageName) ?? 'English',
         deeplApiKey: deeplKey,
         openaiApiKey: openaiKey,
-        openaiModel: prefs.getString(_keyOpenaiModel) ?? 'gpt-4-turbo',
+        openaiModel: OpenAiModelCatalog.normalizeSelection(
+          prefs.getString(_keyOpenaiModel),
+        ),
         aiKnowledgeLevel: prefs.getString(_keyAiKnowledgeLevel) ?? 'B1',
         minItemsForBadges: prefs.getInt(_keyMinItemsForBadges) ?? 10,
         lastTrainedPackageId: prefs.getString(_keyLastTrainedPackageId),
+        lastAiItemCreatorPackageId: prefs.getString(_keyLastAiItemCreatorPackageId),
         showTrainingExamples: prefs.getBool(_keyShowTrainingExamples) ?? true,
         showTrainingStatistics: prefs.getBool(_keyShowTrainingStatistics) ?? true,
         audioTestDeviceId:   prefs.getInt(_keyAudioTestDeviceId),
@@ -170,6 +175,16 @@ class AppSettingsRepository {
     }
   }
 
+  /// Save last selected package ID for AI Item Creator
+  Future<void> saveLastAiItemCreatorPackageId(String? packageId) async {
+    final prefs = await SharedPreferences.getInstance();
+    if (packageId == null || packageId.isEmpty) {
+      await prefs.remove(_keyLastAiItemCreatorPackageId);
+    } else {
+      await prefs.setString(_keyLastAiItemCreatorPackageId, packageId);
+    }
+  }
+
   /// Save all settings at once
   Future<void> saveSettings(AppSettings settings) async {
     await saveUserLanguage(
@@ -182,6 +197,7 @@ class AppSettingsRepository {
     await saveAiKnowledgeLevel(settings.aiKnowledgeLevel);
     await saveMinItemsForBadges(settings.minItemsForBadges);
     await saveLastTrainedPackageId(settings.lastTrainedPackageId);
+    await saveLastAiItemCreatorPackageId(settings.lastAiItemCreatorPackageId);
   }
 
   /// Clear all API keys (for security/logout)

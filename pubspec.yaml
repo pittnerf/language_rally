@@ -34,6 +34,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.0.10
   url_launcher: ^6.2.5
+  package_info_plus: ^9.0.0
   reorderable_grid_view: ^2.2.8
 
   # File handling
@@ -79,9 +80,34 @@ flutter:
 
   assets:
     - assets/app_icons/
-    - assets/images/
+    - assets/images/1_Language_power.webp
+    - assets/images/2_AI_integration.webp
+    - assets/images/3_Adaptive practice.webp
+    - assets/images/4_Master_accent.webp
+    - assets/images/Welcome_splash.webp
+    - assets/images/encourage_1.svg
+    - assets/images/encourage_2.svg
+    - assets/images/encourage_3.svg
+    - assets/images/success_1.svg
+    - assets/images/success_2.svg
+    - assets/images/success_3.svg
+    - assets/images/welcome_1_vocabulary.svg
+    - assets/images/welcome_2_ai.svg
+    - assets/images/welcome_3_training.svg
+    - assets/images/welcome_4_pronunciation.svg
     - assets/images/badges/
-    - assets/images/package_icons/
+    - assets/images/package_icons/default_package_icon.svg
+    - assets/images/package_icons/package_icon_v2.svg
+    - assets/images/package_icons/package_icon_v3.webp
+    - assets/images/package_icons/package_icon_v4.svg
+    - assets/images/package_icons/package_icon_v5.svg
+    - assets/images/package_icons/package_icon_v6.svg
+    - assets/images/package_icons/package_icon_v7.svg
+    - assets/images/package_icons/package_icon_v8.svg
+    - assets/images/package_icons/package_icon_v9.svg
+    - assets/images/package_icons/package_icon_v10.svg
+    - assets/images/package_icons/package_icon_v11.svg
+    - assets/images/package_icons/package_icon_v12.svg
     - assets/images/tour_images/
     - assets/seed_packages/
     - assets/seed_packages/AR/

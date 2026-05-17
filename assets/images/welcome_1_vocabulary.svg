@@ -1,0 +1,130 @@
+<svg width="320" height="280" viewBox="0 0 320 280" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F8FAF9"/>
+      <stop offset="100%" style="stop-color:#B8E6DD"/>
+    </linearGradient>
+    <linearGradient id="bookCover" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A9B8E"/>
+      <stop offset="100%" style="stop-color:#2E7A6E"/>
+    </linearGradient>
+    <linearGradient id="pageFill" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF"/>
+      <stop offset="100%" style="stop-color:#EEF7F5"/>
+    </linearGradient>
+    <linearGradient id="badge1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A9B8E"/>
+      <stop offset="100%" style="stop-color:#3D8578"/>
+    </linearGradient>
+    <linearGradient id="badge2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#E27D60"/>
+      <stop offset="100%" style="stop-color:#C9674A"/>
+    </linearGradient>
+    <linearGradient id="badge3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#C5A0B5"/>
+      <stop offset="100%" style="stop-color:#A8809A"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#4A9B8E" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="320" height="280" fill="url(#bg1)" rx="20"/>
+
+  <!-- Soft circle accents -->
+  <circle cx="288" cy="38" r="48" fill="#B8E6DD" opacity="0.35"/>
+  <circle cx="28" cy="248" r="36" fill="#FFDAD5" opacity="0.45"/>
+  <circle cx="295" cy="240" r="24" fill="#F0E0EB" opacity="0.5"/>
+
+  <!-- ── Open book ────────────────────────────────────── -->
+  <!-- Back shadow -->
+  <ellipse cx="162" cy="208" rx="74" ry="8" fill="#2E7A6E" opacity="0.12"/>
+
+  <!-- Book spine divider -->
+  <rect x="155" y="78" width="10" height="124" rx="5" fill="url(#bookCover)" filter="url(#shadow)"/>
+
+  <!-- Left page -->
+  <path d="M84,82 Q118,76 155,80 L155,200 Q120,206 84,200 Z"
+        fill="url(#pageFill)" stroke="#4A9B8E" stroke-width="1.5"/>
+  <!-- Left page lines  -->
+  <rect x="97" y="96"  width="47" height="4" rx="2" fill="#4A9B8E" opacity="0.30"/>
+  <rect x="97" y="105" width="38" height="4" rx="2" fill="#4A9B8E" opacity="0.22"/>
+  <rect x="97" y="114" width="47" height="4" rx="2" fill="#4A9B8E" opacity="0.30"/>
+  <rect x="97" y="123" width="30" height="4" rx="2" fill="#4A9B8E" opacity="0.22"/>
+  <!-- Divider line on left page -->
+  <line x1="97" y1="135" x2="147" y2="133" stroke="#B8E6DD" stroke-width="1" stroke-dasharray="3,3"/>
+  <rect x="97" y="142" width="47" height="4" rx="2" fill="#E27D60" opacity="0.40"/>
+  <rect x="97" y="151" width="40" height="4" rx="2" fill="#E27D60" opacity="0.30"/>
+  <rect x="97" y="160" width="44" height="4" rx="2" fill="#E27D60" opacity="0.40"/>
+  <rect x="97" y="169" width="34" height="4" rx="2" fill="#E27D60" opacity="0.28"/>
+  <rect x="97" y="178" width="47" height="4" rx="2" fill="#C5A0B5" opacity="0.45"/>
+  <rect x="97" y="187" width="36" height="4" rx="2" fill="#C5A0B5" opacity="0.35"/>
+
+  <!-- Right page -->
+  <path d="M165,80 Q202,76 236,82 L236,200 Q202,206 165,200 Z"
+        fill="url(#pageFill)" stroke="#4A9B8E" stroke-width="1.5"/>
+  <!-- Right page lines -->
+  <rect x="174" y="96"  width="50" height="4" rx="2" fill="#4A9B8E" opacity="0.30"/>
+  <rect x="174" y="105" width="42" height="4" rx="2" fill="#4A9B8E" opacity="0.22"/>
+  <rect x="174" y="114" width="50" height="4" rx="2" fill="#4A9B8E" opacity="0.30"/>
+  <rect x="174" y="123" width="34" height="4" rx="2" fill="#4A9B8E" opacity="0.22"/>
+  <line x1="174" y1="135" x2="224" y2="133" stroke="#B8E6DD" stroke-width="1" stroke-dasharray="3,3"/>
+  <rect x="174" y="142" width="50" height="4" rx="2" fill="#E27D60" opacity="0.40"/>
+  <rect x="174" y="151" width="43" height="4" rx="2" fill="#E27D60" opacity="0.30"/>
+  <rect x="174" y="160" width="50" height="4" rx="2" fill="#E27D60" opacity="0.40"/>
+  <rect x="174" y="169" width="38" height="4" rx="2" fill="#C5A0B5" opacity="0.45"/>
+  <rect x="174" y="178" width="50" height="4" rx="2" fill="#C5A0B5" opacity="0.45"/>
+  <rect x="174" y="187" width="40" height="4" rx="2" fill="#C5A0B5" opacity="0.35"/>
+
+  <!-- Book bottom cover strip -->
+  <rect x="82"  y="197" width="75" height="9" rx="3" fill="url(#bookCover)" opacity="0.7"/>
+  <rect x="163" y="197" width="75" height="9" rx="3" fill="url(#bookCover)" opacity="0.7"/>
+
+  <!-- ── Stacked mini-books bottom-left ───────────────── -->
+  <rect x="22" y="196" width="52" height="10" rx="3" fill="#E27D60" opacity="0.85"/>
+  <rect x="25" y="187" width="48" height="10" rx="3" fill="#4A9B8E" opacity="0.85"/>
+  <rect x="28" y="178" width="44" height="10" rx="3" fill="#C5A0B5" opacity="0.85"/>
+
+  <!-- ── Level pill badges (A1 → C2) ─────────────────── -->
+  <rect x="22" y="54"  width="28" height="18" rx="9" fill="#4A9B8E"/>
+  <text x="36" y="67" font-family="Arial,sans-serif" font-size="9" font-weight="bold" fill="white" text-anchor="middle">A1</text>
+
+  <rect x="56" y="54"  width="28" height="18" rx="9" fill="#5BA48F"/>
+  <text x="70" y="67" font-family="Arial,sans-serif" font-size="9" font-weight="bold" fill="white" text-anchor="middle">A2</text>
+
+  <rect x="90" y="54"  width="28" height="18" rx="9" fill="#E27D60"/>
+  <text x="104" y="67" font-family="Arial,sans-serif" font-size="9" font-weight="bold" fill="white" text-anchor="middle">B1</text>
+
+  <rect x="124" y="54" width="28" height="18" rx="9" fill="#D06A50"/>
+  <text x="138" y="67" font-family="Arial,sans-serif" font-size="9" font-weight="bold" fill="white" text-anchor="middle">B2</text>
+
+  <rect x="158" y="54" width="28" height="18" rx="9" fill="#C5A0B5"/>
+  <text x="172" y="67" font-family="Arial,sans-serif" font-size="9" font-weight="bold" fill="white" text-anchor="middle">C1</text>
+
+  <rect x="192" y="54" width="28" height="18" rx="9" fill="#A8809A"/>
+  <text x="206" y="67" font-family="Arial,sans-serif" font-size="9" font-weight="bold" fill="white" text-anchor="middle">C2</text>
+
+  <!-- ── 3 count badges right side ────────────────────── -->
+  <!-- Words -->
+  <rect x="248" y="88" width="58" height="46" rx="10" fill="url(#badge1)" filter="url(#shadow)"/>
+  <text x="277" y="112" font-family="Arial,sans-serif" font-size="17" font-weight="bold" fill="white" text-anchor="middle">4K</text>
+  <text x="277" y="126" font-family="Arial,sans-serif" font-size="8" fill="#B8E6DD" text-anchor="middle">words</text>
+
+  <!-- Expressions -->
+  <rect x="248" y="146" width="58" height="46" rx="10" fill="url(#badge2)" filter="url(#shadow)"/>
+  <text x="277" y="170" font-family="Arial,sans-serif" font-size="17" font-weight="bold" fill="white" text-anchor="middle">4K</text>
+  <text x="277" y="184" font-family="Arial,sans-serif" font-size="7" fill="#FFDAD5" text-anchor="middle">expressions</text>
+
+  <!-- Examples -->
+  <rect x="248" y="204" width="58" height="46" rx="10" fill="url(#badge3)" filter="url(#shadow)"/>
+  <text x="277" y="228" font-family="Arial,sans-serif" font-size="17" font-weight="bold" fill="white" text-anchor="middle">4K</text>
+  <text x="277" y="242" font-family="Arial,sans-serif" font-size="7.5" fill="#F0E0EB" text-anchor="middle">examples</text>
+
+  <!-- ── Gold star sparkles ────────────────────────────── -->
+  <path d="M246,60 L248,66 L254,66 L249,70 L251,76 L246,72 L241,76 L243,70 L238,66 L244,66 Z" fill="#FFD700"/>
+  <path d="M265,44 L266.5,49 L272,49 L267.5,52 L269,57 L265,54 L261,57 L262.5,52 L258,49 L263.5,49 Z" fill="#FFD700" opacity="0.65"/>
+  <circle cx="28" cy="152" r="3" fill="#E27D60" opacity="0.5"/>
+  <circle cx="38" cy="162" r="2" fill="#4A9B8E" opacity="0.4"/>
+</svg>
+

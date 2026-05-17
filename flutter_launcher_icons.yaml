@@ -1,6 +1,6 @@
 flutter_launcher_icons:
   # ── Source image ──────────────────────────────────────────────────────────
-  image_path: "assets/app_icons/language_rally_race.png"
+  image_path: "assets/app_icons/language_rally_race.webp"
 
   # ── Android ───────────────────────────────────────────────────────────────
   android: true                          # overwrites res/mipmap-*/ic_launcher.png
@@ -9,7 +9,7 @@ flutter_launcher_icons:
   # Adaptive icon (Android 8.0+)
   # The original image is used as the foreground layer; the teal brand colour
   # fills the background so it looks great on any launcher shape.
-  adaptive_icon_foreground: "assets/app_icons/language_rally_race.png"
+  adaptive_icon_foreground: "assets/app_icons/language_rally_race.webp"
   adaptive_icon_background: "#006064"   # Calm Teal – matches the app theme
 
   # ── iOS ───────────────────────────────────────────────────────────────────
@@ -18,23 +18,23 @@ flutter_launcher_icons:
   # ── Web ───────────────────────────────────────────────────────────────────
   web:
     generate: true
-    image_path: "assets/app_icons/language_rally_race.png"
+    image_path: "assets/app_icons/language_rally_race.webp"
     background_color: "#006064"
     theme_color: "#006064"
 
   # ── Windows ───────────────────────────────────────────────────────────────
   windows:
     generate: true
-    image_path: "assets/app_icons/language_rally_race.png"
+    image_path: "assets/app_icons/language_rally_race.webp"
     icon_size: 48                        # generates an .ico with multiple embedded sizes
 
   # ── macOS ─────────────────────────────────────────────────────────────────
   macos:
     generate: true
-    image_path: "assets/app_icons/language_rally_race.png"
+    image_path: "assets/app_icons/language_rally_race.webp"
 
   # ── Linux ─────────────────────────────────────────────────────────────────
   linux:
     generate: true
-    image_path: "assets/app_icons/language_rally_race.png"
+    image_path: "assets/app_icons/language_rally_race.webp"
 

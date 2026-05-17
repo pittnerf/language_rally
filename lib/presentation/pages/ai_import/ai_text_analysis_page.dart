@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+import '../../../core/constants/openai_model_catalog.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/services/text_analysis_service.dart';
 import '../../../data/models/language_package.dart';
@@ -14,16 +15,18 @@ import '../../../data/models/item.dart';
 import '../../../data/models/extracted_item.dart';
 import '../../../data/repositories/category_repository.dart';
 import '../../../data/repositories/item_repository.dart';
+import '../../../data/repositories/language_package_repository.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../providers/app_settings_provider.dart';
 import '../settings/app_settings_page.dart';
 import 'ai_items_selection_page.dart';
 import '../../../core/utils/debug_print.dart';
+import '../../../data/models/app_settings.dart';
 
 class AITextAnalysisPage extends ConsumerStatefulWidget {
-  final LanguagePackage package;
+  final LanguagePackage? package;
 
-  const AITextAnalysisPage({super.key, required this.package});
+  const AITextAnalysisPage({super.key, this.package});
 
   @override
   ConsumerState<AITextAnalysisPage> createState() => _AITextAnalysisPageState();
@@ -34,8 +37,14 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
   final _maxItemsController = TextEditingController();
   final _categoryController = TextEditingController();
 
+  final _packageRepo = LanguagePackageRepository();
+
+  LanguagePackage? _selectedPackage;
+  List<LanguagePackage> _availablePackages = [];
+  bool _isInitializing = true;
+
   String _selectedLevel = 'A1';
-  String _selectedModel = 'gpt-4-turbo';
+  String _selectedModel = OpenAiModelCatalog.defaultModelId;
   bool _extractWords = true;
   bool _extractExpressions = true;
   bool _extractFullItems = false;
@@ -52,10 +61,194 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final settings = ref.read(appSettingsProvider);
       setState(() {
-        _selectedModel = settings.openaiModel;
+        _selectedModel = OpenAiModelCatalog.normalizeSelection(
+          settings.openaiModel,
+        );
         _selectedLevel = settings.aiKnowledgeLevel;
       });
+
+      // Handle package initialization
+      _initializePackageData(settings);
     });
+  }
+
+  Future<void> _initializePackageData(AppSettings settings) async {
+    if (widget.package != null) {
+      // Package provided directly (from package_form or package_list)
+      setState(() {
+        _selectedPackage = widget.package!;
+        _isInitializing = false;
+      });
+    } else {
+      // No package provided - need to show selection dialog
+      await _loadAvailablePackages();
+      if (!mounted) return;
+      await _promptForPackageSelection(settings.lastAiItemCreatorPackageId);
+    }
+  }
+
+  Future<void> _loadAvailablePackages() async {
+    try {
+      final packages = await _packageRepo.getAllPackages();
+      final nonPurchasedPackages = packages.where((p) => !p.isPurchased).toList();
+
+      if (mounted) {
+        setState(() {
+          _availablePackages = nonPurchasedPackages;
+        });
+      }
+    } catch (e) {
+      logDebug('Error loading packages: $e');
+    }
+  }
+
+  LanguagePackage? _resolveInitialPackage(
+    List<LanguagePackage> packages,
+    String? savedPackageId,
+  ) {
+    if (packages.isEmpty) {
+      return null;
+    }
+
+    if (savedPackageId != null && savedPackageId.trim().isNotEmpty) {
+      for (final package in packages) {
+        if (package.id == savedPackageId) {
+          return package;
+        }
+      }
+    }
+
+    return packages.first;
+  }
+
+  Future<void> _promptForPackageSelection(String? savedPackageId) async {
+    if (_availablePackages.isEmpty || !mounted) {
+      setState(() {
+        _isInitializing = false;
+      });
+      if (_availablePackages.isEmpty) {
+        await _showNoEligiblePackagesDialog();
+      }
+      return;
+    }
+
+    final l10n = AppLocalizations.of(context)!;
+    var dialogSelection =
+        _resolveInitialPackage(_availablePackages, savedPackageId) ??
+            _availablePackages.first;
+
+    final selectedPackage = await showDialog<LanguagePackage>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              title: Text(l10n.aiItemCreatorSelectPackageDialogTitle),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(l10n.aiItemCreatorSelectPackageDialogMessage),
+                  const SizedBox(height: AppTheme.spacing8),
+                  DropdownButtonFormField<LanguagePackage>(
+                    key: ValueKey(dialogSelection.id),
+                    initialValue: dialogSelection,
+                    decoration: const InputDecoration(
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: AppTheme.spacing8,
+                      ),
+                      border: OutlineInputBorder(),
+                    ),
+                    items: _availablePackages.map((package) {
+                      return DropdownMenuItem<LanguagePackage>(
+                        value: package,
+                        child: Text(
+                          package.packageName ??
+                              '${package.languageName1} → ${package.languageName2}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      );
+                    }).toList(),
+                    onChanged: (value) {
+                      if (value == null) {
+                        return;
+                      }
+
+                      setDialogState(() {
+                        dialogSelection = value;
+                      });
+                    },
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: Text(l10n.cancel),
+                ),
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(dialogSelection),
+                  child: Text(l10n.ok),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+
+    if (!mounted || selectedPackage == null) {
+      setState(() {
+        _isInitializing = false;
+      });
+      return;
+    }
+
+    setState(() {
+      _selectedPackage = selectedPackage;
+      _isInitializing = false;
+    });
+
+    // Save the selection for next time
+    await ref
+        .read(appSettingsProvider.notifier)
+        .setLastAiItemCreatorPackageId(selectedPackage.id);
+  }
+
+  Future<void> _showNoEligiblePackagesDialog() async {
+    if (!mounted) {
+      return;
+    }
+
+    final l10n = AppLocalizations.of(context)!;
+    final selectedAction = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.selectPackage),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.noPackagesAvailable),
+            const SizedBox(height: AppTheme.spacing8),
+            Text(l10n.createFirstPackage),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(l10n.close),
+          ),
+        ],
+      ),
+    );
+
+    if (mounted && selectedAction != true) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -70,6 +263,32 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+
+    if (_isInitializing) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            l10n.aiTextAnalysisImport,
+            style: theme.textTheme.titleMedium,
+          ),
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    if (_selectedPackage == null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            l10n.aiTextAnalysisImport,
+            style: theme.textTheme.titleMedium,
+          ),
+        ),
+        body: Center(
+          child: Text(l10n.noNonPurchasedPackagesAvailable),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -304,21 +523,6 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
   }
 
   Widget _buildModelSelectionSection(ThemeData theme, AppLocalizations l10n) {
-    String getModelDescription(String model) {
-      switch (model) {
-        case 'gpt-3.5-turbo':
-          return l10n.modelGpt35TurboDesc;
-        case 'gpt-3.5-turbo-16k':
-          return l10n.modelGpt35Turbo16kDesc;
-        case 'gpt-4':
-          return l10n.modelGpt4Desc;
-        case 'gpt-4-turbo':
-          return l10n.modelGpt4TurboDesc;
-        default:
-          return '';
-      }
-    }
-
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(AppTheme.spacing8),
@@ -341,21 +545,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
                 ),
               ),
               style: theme.textTheme.bodyMedium,
-              items: [
-                DropdownMenuItem(
-                  value: 'gpt-3.5-turbo',
-                  child: Text(l10n.modelGpt35Turbo),
-                ),
-                DropdownMenuItem(
-                  value: 'gpt-3.5-turbo-16k',
-                  child: Text(l10n.modelGpt35Turbo16k),
-                ),
-                DropdownMenuItem(value: 'gpt-4', child: Text(l10n.modelGpt4)),
-                DropdownMenuItem(
-                  value: 'gpt-4-turbo',
-                  child: Text(l10n.modelGpt4Turbo),
-                ),
-              ],
+              items: OpenAiModelCatalog.buildDropdownItems(l10n),
               onChanged: (value) async {
                 if (value != null) {
                   setState(() {
@@ -370,7 +560,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
             ),
             const SizedBox(height: AppTheme.spacing4),
             Text(
-              getModelDescription(_selectedModel),
+              OpenAiModelCatalog.descriptionFor(_selectedModel, l10n),
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                 fontStyle: FontStyle.italic,
@@ -866,23 +1056,23 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
         return;
       }
 
-      // Check if detected language matches package languages
-      final lang1Code = widget.package.languageCode1
-          .split('-')[0]
-          .toLowerCase();
-      final lang2Code = widget.package.languageCode2
-          .split('-')[0]
-          .toLowerCase();
+       // Check if detected language matches package languages
+       final lang1Code = _selectedPackage!.languageCode1
+           .split('-')[0]
+           .toLowerCase();
+       final lang2Code = _selectedPackage!.languageCode2
+           .split('-')[0]
+           .toLowerCase();
 
-      String sourceLanguage;
-      String targetLanguage;
+       String sourceLanguage;
+       String targetLanguage;
 
-      if (detectedLang == lang1Code) {
-        sourceLanguage = widget.package.languageName1;
-        targetLanguage = widget.package.languageName2;
-      } else if (detectedLang == lang2Code) {
-        sourceLanguage = widget.package.languageName2;
-        targetLanguage = widget.package.languageName1;
+       if (detectedLang == lang1Code) {
+         sourceLanguage = _selectedPackage!.languageName1;
+         targetLanguage = _selectedPackage!.languageName2;
+       } else if (detectedLang == lang2Code) {
+         sourceLanguage = _selectedPackage!.languageName2;
+         targetLanguage = _selectedPackage!.languageName1;
       } else {
         logDebug(
           '  ❌ Language mismatch: $detectedLang not in [$lang1Code, $lang2Code]',
@@ -972,24 +1162,24 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
       logDebug('\n✅ ANALYSIS COMPLETED SUCCESSFULLY');
       logDebug('═══════════════════════════════════════════════════════════');
 
-      // Navigate to selection page
-      if (mounted) {
-        await Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) => AIItemsSelectionPage(
-              package: widget.package,
-              extractedItems: extractedItems,
-              sourceLanguage: sourceLanguage,
-              targetLanguage: targetLanguage,
-              detectedLangCode: detectedLang,
-              categoryName: _categoryController.text.trim(),
-              generateExamples: _generateExamples,
-            ),
-          ),
-        );
+       // Navigate to selection page
+       if (mounted) {
+         await Navigator.of(context).push(
+           MaterialPageRoute(
+             builder: (context) => AIItemsSelectionPage(
+               package: _selectedPackage!,
+               extractedItems: extractedItems,
+               sourceLanguage: sourceLanguage,
+               targetLanguage: targetLanguage,
+               detectedLangCode: detectedLang,
+               categoryName: _categoryController.text.trim(),
+               generateExamples: _generateExamples,
+             ),
+           ),
+         );
 
-        // Don't pop - allow user to stay on AI text analysis page to import more items
-      }
+         // Don't pop - allow user to stay on AI text analysis page to import more items
+       }
     } catch (e) {
       logDebug('\n❌ ERROR DURING ANALYSIS:');
       logDebug(e.toString());
@@ -1219,33 +1409,33 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
     );
   }
 
-  /// Extract items with duplicate checking against existing items in the package
-  /// If maxItems is specified, ensures we get that many unique items (not counting duplicates)
-  Future<List<ExtractedItem>> _extractItemsWithDuplicateCheck({
-    required TextAnalysisService analysisService,
-    required String text,
-    required String knowledgeLevel,
-    required bool extractWords,
-    required bool extractExpressions,
-    required bool extractFullItems,
-    required String sourceLanguage,
-    required String targetLanguage,
-    required String detectedLang,
-    int? maxItems,
-  }) async {
-    // Get existing items in the package to check for duplicates
-    final categories = await CategoryRepository().getCategoriesForPackage(widget.package.id);
-    final categoryIds = categories.map((c) => c.id).toList();
-    final existingItems = categoryIds.isNotEmpty
-        ? await ItemRepository().getItemsForCategories(categoryIds)
-        : <Item>[];
+   /// Extract items with duplicate checking against existing items in the package
+   /// If maxItems is specified, ensures we get that many unique items (not counting duplicates)
+   Future<List<ExtractedItem>> _extractItemsWithDuplicateCheck({
+     required TextAnalysisService analysisService,
+     required String text,
+     required String knowledgeLevel,
+     required bool extractWords,
+     required bool extractExpressions,
+     required bool extractFullItems,
+     required String sourceLanguage,
+     required String targetLanguage,
+     required String detectedLang,
+     int? maxItems,
+   }) async {
+     // Get existing items in the package to check for duplicates
+     final categories = await CategoryRepository().getCategoriesForPackage(_selectedPackage!.id);
+     final categoryIds = categories.map((c) => c.id).toList();
+     final existingItems = categoryIds.isNotEmpty
+         ? await ItemRepository().getItemsForCategories(categoryIds)
+         : <Item>[];
 
-    logDebug('  Existing items in package: ${existingItems.length}');
+     logDebug('  Existing items in package: ${existingItems.length}');
 
-    // Determine which language code to check for duplicates
-    final lang1Code = widget.package.languageCode1.split('-')[0].toLowerCase();
-    final detectedCode = detectedLang.toLowerCase();
-    final isLang1Source = detectedCode == lang1Code;
+     // Determine which language code to check for duplicates
+     final lang1Code = _selectedPackage!.languageCode1.split('-')[0].toLowerCase();
+     final detectedCode = detectedLang.toLowerCase();
+     final isLang1Source = detectedCode == lang1Code;
 
     // Create a set of existing item texts for quick lookup
     final existingTexts = existingItems.map((item) {

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/constants/openai_model_catalog.dart';
 import '../../data/models/app_settings.dart';
 import '../../data/repositories/app_settings_repository.dart';
 import '../../core/utils/debug_print.dart';
@@ -73,13 +74,19 @@ class AppSettingsNotifier extends Notifier<AppSettings> {
   }
 
   Future<void> setOpenaiModel(String model) async {
-    await _repository.saveOpenaiModel(model);
-    state = state.copyWith(openaiModel: model);
+    final normalizedModel = OpenAiModelCatalog.normalizeSelection(model);
+    await _repository.saveOpenaiModel(normalizedModel);
+    state = state.copyWith(openaiModel: normalizedModel);
   }
 
   Future<void> setAiKnowledgeLevel(String level) async {
     await _repository.saveAiKnowledgeLevel(level);
     state = state.copyWith(aiKnowledgeLevel: level);
+  }
+
+  Future<void> setLastAiItemCreatorPackageId(String? packageId) async {
+    await _repository.saveLastAiItemCreatorPackageId(packageId);
+    state = state.copyWith(lastAiItemCreatorPackageId: packageId);
   }
 
   Future<void> setShowTrainingExamples(bool show) async {

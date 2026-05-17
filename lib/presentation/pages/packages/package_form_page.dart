@@ -87,7 +87,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     null, // Default icon
     'assets/images/package_icons/default_package_icon.svg',
     'assets/images/package_icons/package_icon_v2.svg',
-    'assets/images/package_icons/package_icon_v3.png',
+    'assets/images/package_icons/package_icon_v3.webp',
     'assets/images/package_icons/package_icon_v4.svg',
     'assets/images/package_icons/package_icon_v5.svg',
     'assets/images/package_icons/package_icon_v6.svg',
@@ -234,7 +234,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         null, // Default icon
         'assets/images/package_icons/default_package_icon.svg',
         'assets/images/package_icons/package_icon_v2.svg',
-        'assets/images/package_icons/package_icon_v3.png',
+        'assets/images/package_icons/package_icon_v3.webp',
         'assets/images/package_icons/package_icon_v4.svg',
         'assets/images/package_icons/package_icon_v5.svg',
         'assets/images/package_icons/package_icon_v6.svg',

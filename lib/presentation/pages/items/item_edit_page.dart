@@ -345,10 +345,13 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
     final errorMessages = ServiceErrorMessages(l10n);
     _translationService = TranslationService(
       deeplApiKey: appSettings.deeplApiKey,
+      openaiApiKey: appSettings.openaiApiKey,
+      openaiModel: appSettings.openaiModel,
       errorMessages: errorMessages,
     );
     _aiService = AIService(
       apiKey: appSettings.openaiApiKey,
+      model: appSettings.openaiModel,
       errorMessages: errorMessages,
     );
 

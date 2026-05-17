@@ -1024,16 +1024,16 @@ class AppLocalizationsHu extends AppLocalizations {
   String get previousItem => 'Előző elem';
 
   @override
-  String get iDidNotKnowEither => 'Ezt Sem Tudtam';
+  String get iDidNotKnowEither => 'Mégsem Tudtam';
 
   @override
   String get exportBeforeDelete => 'Exportálja törlés előtt?';
 
   @override
-  String get aiTextAnalysis => 'Elemek AI-val';
+  String get aiTextAnalysis => 'Elemek kinyerése szövegből AI-val';
 
   @override
-  String get aiTextAnalysisImport => 'Import AI Szövegelemzéssel';
+  String get aiTextAnalysisImport => 'AI szövegelemzéssel történő elemkinyerés';
 
   @override
   String get knowledgeLevel => 'Tudásszint';
@@ -1093,7 +1093,58 @@ class AppLocalizationsHu extends AppLocalizations {
   String get openaiModelDescription => 'ChatGPT modell kiválasztása';
 
   @override
-  String get modelGpt35Turbo => 'GPT-3.5 Turbo';
+  String get modelGpt55 => 'GPT-5.5';
+
+  @override
+  String get modelGpt55Pro => 'GPT-5.5 Pro';
+
+  @override
+  String get modelGpt54 => 'GPT-5.4';
+
+  @override
+  String get modelGpt54Pro => 'GPT-5.4 Pro';
+
+  @override
+  String get modelGpt54Mini => 'GPT-5.4 Mini';
+
+  @override
+  String get modelGpt5Mini => 'GPT-5 Mini';
+
+  @override
+  String get modelGpt41 => 'GPT-4.1';
+
+  @override
+  String get modelGpt55Desc =>
+      'Legújabb csúcsmodell jó egyensúllyal minőség és sebesség között általános használatra';
+
+  @override
+  String get modelGpt55ProDesc =>
+      'A legerősebb GPT-5.5 változat a lehető legjobb érveléshez és minőséghez';
+
+  @override
+  String get modelGpt54Desc => 'Erős, általános célú GPT-5 generációs modell';
+
+  @override
+  String get modelGpt54ProDesc =>
+      'Nagyobb képességű GPT-5.4 változat összetettebb feladatokhoz';
+
+  @override
+  String get modelGpt54MiniDesc =>
+      'Kisebb és gyorsabb GPT-5.4 változat alacsonyabb költségű hétköznapi feladatokhoz';
+
+  @override
+  String get modelGpt5MiniDesc =>
+      'Kompakt GPT-5 családba tartozó modell sebességre és költséghatékonyságra optimalizálva';
+
+  @override
+  String get modelGpt41Desc =>
+      'Megbízható GPT-4.1 opció jó kompatibilitással és stabil minőséggel';
+
+  @override
+  String get modelGpt4o => 'GPT-4o';
+
+  @override
+  String get modelGpt35Turbo => 'GPT-3.5 Turbo (régi, olcsó)';
 
   @override
   String get modelGpt35Turbo16k => 'GPT-3.5 Turbo 16K';
@@ -1102,22 +1153,27 @@ class AppLocalizationsHu extends AppLocalizations {
   String get modelGpt4 => 'GPT-4';
 
   @override
-  String get modelGpt4Turbo => 'GPT-4 Turbo';
+  String get modelGpt4Turbo => 'GPT-4 Turbo (régi)';
+
+  @override
+  String get modelGpt4oDesc =>
+      'Legjobb általános választás; gyors, multimodális és jó minőségű';
 
   @override
   String get modelGpt35TurboDesc =>
-      'Gyors és költséghatékony; általános használatra';
+      'Régi, alacsony költségű opció; egyszerűbb feladatokhoz és költségérzékeny használatra jó választás';
 
   @override
   String get modelGpt35Turbo16kDesc =>
       'Mint a GPT-3.5, de 16K token kontextusablakkal';
 
   @override
-  String get modelGpt4Desc => 'Magasabb pontosság/érvelés; lassabb és drágább';
+  String get modelGpt4Desc =>
+      'Erős érvelési minőség; általában lassabb és drágább';
 
   @override
   String get modelGpt4TurboDesc =>
-      'Gyorsabb, olcsóbb, magas pontosság; jobb kontextus';
+      'Régi GPT-4 családba tartozó opció; hasznos lehet, ha egy korábbi, olcsóbb alternatívát szeretnél';
 
   @override
   String get analyzing => 'Elemzés folyamatban...';
@@ -1269,10 +1325,10 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get selectPackage => 'Nyelvcsomag kiválasztása';
+  String get selectPackage => 'Csomag Kiválasztása';
 
   @override
-  String get noPackagesAvailable => 'Nem elérhető nem megvásárolt csomag';
+  String get noPackagesAvailable => 'Nincsenek elérhető csomagok';
 
   @override
   String get possibleSolutions => 'Lehetséges Megoldások';
@@ -1543,7 +1599,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get welcomeSubtitle =>
-      'Élvezze a szintenként a több mint 4000 szó, 4000 kifejezés és ugyanennyi példamondat által nyújtotta fantasztikus tudást!\n\nFejlessze nyelvi készségeit — okosan és játékosan.';
+      'Élvezze a szintenként a több mint 4000 szó, 4000 kifejezés és ugyanennyi példamondat által nyújtotta fantasztikus tudást! Importáljon elemeket a saját szövegeidből az AI segítségével, vagy beszélgessen a mesterséges intelligenciával bármilyen témáról, hogy pontosan azokat a szavakat, kifejezéseket és példákat gyújtse össze, amiket érdeme megtanulni.\n\nLépjen szintet a nyelvtudás – okosan és játékosan!';
 
   @override
   String get welcomeIntro =>
@@ -1561,7 +1617,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get sectionAITeammateDesc =>
-      'Illesszen be bármilyen szöveget és hagyja, hogy a mesterséges intelligencia:\n• Kivonatolja a hasznos szókincset\n• Válasszon olyan kifejezéseket, amelyek megfelelnek az ön szintjének\n• Másodpercek alatt építsen gyakorlásra kész nyelvi csomagokat';
+      'Illesszen be bármilyen szöveget és hagyja, hogy a mesterséges intelligencia:\n• Kivonatolja a hasznos szókincset\n• Válasszon olyan kifejezéseket, amelyek megfelelnek az ön szintjének\n• Másodpercek alatt építsen gyakorlásra kész nyelvi csomagokat\n\nTársalogjon az AI-val:\n• Kérjen szavakat és kifejezéseket egy Ön által megadott témában\n• Generáljon hozzá példamondatokat és mentse el mindezt egy kattintással!';
 
   @override
   String get sectionTrainSmart => '🔁 Okos gyakorlás';
@@ -2280,13 +2336,21 @@ class AppLocalizationsHu extends AppLocalizations {
   String get splashLoading => 'Betöltés…';
 
   @override
-  String get aiItemCreator => 'AI Szógyűjtő';
+  String get aiItemCreator => 'AI Chat Mágus';
+
+  @override
+  String get aiItemCreatorAppBarHint =>
+      'Gyűjts és ments szavakat és kifejezéseket AI chat közben!';
 
   @override
   String get chatWithAI => 'Csevegés az AI-val';
 
   @override
   String get enterYourPrompt => 'Adja meg a kérdést...';
+
+  @override
+  String get aiItemCreatorPromptHint =>
+      'Írj le egy témát, és az AI-coach kérdéseket tesz fel, hasznos szókincset javasol, és teszteli a tudásodat. Például: segíts összegyűjteni és gyakorolni az utazás veszélyeit B2-es nyelvi szinten';
 
   @override
   String get send => 'Küldés';
@@ -2298,7 +2362,15 @@ class AppLocalizationsHu extends AppLocalizations {
   String get aiResponse => 'AI Válasz';
 
   @override
-  String get itemInputs => 'Szómegadások';
+  String get itemInputs => 'Szavak és kifejezések';
+
+  @override
+  String get aiItemCreatorBothItemsRequired =>
+      'Kérjük, mentés előtt töltsd ki mindkét nyelvi mezőt.';
+
+  @override
+  String get aiItemCreatorDuplicateItemMessage =>
+      'Ebben a csomagban már létezik ugyanilyen szövegpárral rendelkező elem.';
 
   @override
   String get language1 => '1. Nyelv';
@@ -2307,10 +2379,15 @@ class AppLocalizationsHu extends AppLocalizations {
   String get language2 => '2. Nyelv';
 
   @override
-  String get translateLang1ToLang2 => '→ Fordítás 2. nyelvre';
+  String get translateLang1ToLang2 => 'Fordítás 2. nyelvre';
 
   @override
-  String get translateLang2ToLang1 => '← Fordítás 1. nyelvre';
+  String get translateLang2ToLang1 => 'Fordítás 1. nyelvre';
+
+  @override
+  String translateToLanguageCode(String languageCode) {
+    return 'Fordítás erre: $languageCode';
+  }
 
   @override
   String get example => 'Példa';
@@ -2325,7 +2402,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get favorite => 'Kedvenc';
 
   @override
-  String get saveItems => 'Szavak mentése';
+  String get saveItems => 'Mentés';
 
   @override
   String get saving => 'Mentés folyamatban...';
@@ -2334,10 +2411,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get clearItems => 'Csak szavak törlése';
 
   @override
-  String get clearAll => 'Minden mez törlése';
+  String get clearAll => 'Minden mező törlése';
 
   @override
-  String get itemSavedSuccessfully => 'Szó sikeresen mentve';
+  String get itemSavedSuccessfully => 'Sikeresen mentve';
 
   @override
   String get promptCannotBeEmpty => 'A kérdés nem lehet üres';
@@ -2352,5 +2429,105 @@ class AppLocalizationsHu extends AppLocalizations {
   String get deeplKeyRequired => 'A fordításhoz szükséges a DeepL API kulcs';
 
   @override
+  String get noNonPurchasedPackagesAvailable =>
+      'Nem elérhető nem megvásárolt csomag';
+
+  @override
   String get packageSelectionRemembered => 'Csomag kiválasztása mentve';
+
+  @override
+  String get aiItemCreatorOpenAiKeyNotConfiguredDetailed =>
+      'Az OpenAI API kulcs nincs beállítva. Kérlek add meg a Beállításokban.';
+
+  @override
+  String get aiItemCreatorOpenAiKeyNotConfigured =>
+      'Az OpenAI API kulcs nincs beállítva.';
+
+  @override
+  String get aiItemCreatorProcessingComplete => 'Feldolgozás kész';
+
+  @override
+  String get aiItemCreatorTranslationComingSoon =>
+      'A fordítás funkció hamarosan érkezik';
+
+  @override
+  String get aiItemCreatorDefaultCategoryName => 'AI létrehozott';
+
+  @override
+  String get aiItemCreatorStartNewConversation => 'Új beszélgetés indítása';
+
+  @override
+  String get aiItemCreatorChatHint =>
+      'Írj be egy témát, és az AI oktató kérdéseket tesz fel, hasznos szókincset javasol, majd mini feladatokkal gyakoroltat.';
+
+  @override
+  String get aiItemCreatorConversation => 'Beszélgetés';
+
+  @override
+  String get aiItemCreatorYou => 'Te';
+
+  @override
+  String get aiItemCreatorCoach => 'AI oktató';
+
+  @override
+  String get aiItemCreatorAiSuggestions => 'AI javaslatok';
+
+  @override
+  String get aiItemCreatorTapChipToFill =>
+      'Koppints egy chipre a mező automatikus kitöltéséhez és fordításához.';
+
+  @override
+  String get aiItemCreatorNoSuggestedItems =>
+      'Még nincs javasolt szó vagy kifejezés.';
+
+  @override
+  String get aiItemCreatorNextSteps => 'Hogyan folytasd';
+
+  @override
+  String get aiItemCreatorNoNextSteps => 'Még nincs folytatási javaslat.';
+
+  @override
+  String get aiItemCreatorModelCostTip =>
+      'Pro tipp: Az újabb modellek drágábbak, míg a régebbi és turbo modellek olcsóbbak, és jelentősen gyorsabbak is lehetnek.';
+
+  @override
+  String get aiItemCreatorSelectPackageDialogTitle =>
+      'Nyelvcsomag kiválasztása';
+
+  @override
+  String get aiItemCreatorSelectPackageDialogMessage =>
+      'Válaszd ki az ehhez a munkamenethez használt nyelvcsomagot. Az előző választásod van előre kijelölve.';
+
+  @override
+  String aiItemCreatorMissingApiKeysWarning(String keys) {
+    return 'Hiányzó API kulcsok: $keys. Folytathatod, de az AI és a prémium fordítási funkciók korlátozottak lehetnek.';
+  }
+
+  @override
+  String get about => 'Névjegy';
+
+  @override
+  String get aboutWebsite => 'Weboldal';
+
+  @override
+  String get aboutSupportEmail => 'Támogatási e-mail';
+
+  @override
+  String get aboutWebsiteUrl => 'https://sites.google.com/view/language-rally';
+
+  @override
+  String get aboutSupportEmailAddress => 'languagerally.support@gmail.com';
+
+  @override
+  String aboutVersionWithValue(String version) {
+    return 'Verzió: $version';
+  }
+
+  @override
+  String aboutCouldNotOpen(String uri) {
+    return 'Nem nyitható meg: $uri';
+  }
+
+  @override
+  String get aboutWelcomeSplashNotFound => 'A Welcome_splash kép nem található';
 }

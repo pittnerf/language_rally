@@ -6,16 +6,23 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
+import '../constants/openai_model_catalog.dart';
 import '../../data/models/example_sentence.dart';
 import 'service_error_messages.dart';
 
 class AIService {
   final String? _apiKey;
+  final String _model;
   final ServiceErrorMessages? _errorMessages;
   static const String _baseUrl = 'https://api.openai.com/v1/chat/completions';
 
-  AIService({String? apiKey, ServiceErrorMessages? errorMessages})
+  AIService({
+    String? apiKey,
+    String? model,
+    ServiceErrorMessages? errorMessages,
+  })
       : _apiKey = apiKey,
+        _model = OpenAiModelCatalog.normalizeSelection(model),
         _errorMessages = errorMessages;
 
   /// Generate example sentences using AI
@@ -57,27 +64,38 @@ Return ONLY a JSON array with this exact format:
 Do not include any explanation, only the JSON array.''';
 
     try {
+      final isGpt5Family = _model.toLowerCase().startsWith('gpt-5');
+      final payload = <String, dynamic>{
+        'model': _model,
+        'messages': [
+          {
+            'role': 'system',
+            'content': 'You are a helpful language learning assistant that looks for practical example sentences based on the input provided. Always respond with valid JSON only.',
+          },
+          {
+            'role': 'user',
+            'content': prompt,
+          }
+        ],
+      };
+
+      if (!_model.toLowerCase().startsWith('gpt-5')) {
+        payload['temperature'] = 0.7;
+      }
+
+      if (isGpt5Family) {
+        payload['max_completion_tokens'] = 500;
+      } else {
+        payload['max_tokens'] = 500;
+      }
+
       final response = await http.post(
         Uri.parse(_baseUrl),
         headers: {
           'Authorization': 'Bearer $_apiKey',
           'Content-Type': 'application/json',
         },
-        body: json.encode({
-          'model': 'gpt-3.5-turbo',
-          'messages': [
-            {
-              'role': 'system',
-              'content': 'You are a helpful language learning assistant that looks for practical example sentences based on the input provided. Always respond with valid JSON only.',
-            },
-            {
-              'role': 'user',
-              'content': prompt,
-            }
-          ],
-          'temperature': 0.7,
-          'max_tokens': 500,
-        }),
+        body: json.encode(payload),
       );
 
       if (response.statusCode == 200) {
@@ -130,4 +148,3 @@ Do not include any explanation, only the JSON array.''';
     return _apiKey != null && _apiKey.isNotEmpty;
   }
 }
-

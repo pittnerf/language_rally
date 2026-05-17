@@ -15,6 +15,8 @@ import '../dev/bulk_package_import_page.dart';
 import '../items/global_search_page.dart';
 import '../store/store_page.dart';
 import '../ai_import/ai_item_creator_page.dart';
+import '../ai_import/ai_text_analysis_page.dart';
+import '../about/about_page.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -399,6 +401,22 @@ class _HomePageState extends ConsumerState<HomePage> {
           ),
         ),
         const SizedBox(height: AppTheme.spacing12),
+
+        // AI Text Analysis Button
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AITextAnalysisPage()),
+            );
+          },
+          icon: Icon(Icons.document_scanner_outlined, size: iconSize),
+          label: _buttonLabel(localizations.aiTextAnalysis, fontSize),
+          style: ElevatedButton.styleFrom(
+            padding: buttonPadding,
+          ),
+        ),
+        const SizedBox(height: AppTheme.spacing12),
         FilledButton.icon(
           onPressed: () {
             Navigator.push(
@@ -475,6 +493,22 @@ class _HomePageState extends ConsumerState<HomePage> {
           },
           icon: Icon(Icons.settings, size: iconSize),
           label: _buttonLabel(localizations.settings, fontSize),
+          style: ElevatedButton.styleFrom(
+            padding: buttonPadding,
+          ),
+        ),
+        const SizedBox(height: AppTheme.spacing12),
+
+        // About Button
+        ElevatedButton.icon(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AboutPage()),
+            );
+          },
+          icon: Icon(Icons.info_outline, size: iconSize),
+          label: _buttonLabel(localizations.about, fontSize),
           style: ElevatedButton.styleFrom(
             padding: buttonPadding,
           ),
@@ -574,7 +608,7 @@ class _HomePageState extends ConsumerState<HomePage> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(20),
             child: Image.asset(
-              'assets/app_icons/language_rally_race.png',
+              'assets/app_icons/language_rally_race.webp',
               width: 96,
               height: 96,
               fit: BoxFit.contain,

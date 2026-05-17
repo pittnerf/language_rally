@@ -1022,16 +1022,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get previousItem => 'Previous Item';
 
   @override
-  String get iDidNotKnowEither => 'I Didn\'t Know Either';
+  String get iDidNotKnowEither => 'I Didn\'t Know It After All';
 
   @override
   String get exportBeforeDelete => 'Export Before Deleting?';
 
   @override
-  String get aiTextAnalysis => 'Import items with AI';
+  String get aiTextAnalysis => 'Extract items from a text/list with AI';
 
   @override
-  String get aiTextAnalysisImport => 'Import items with AI Text Analysis';
+  String get aiTextAnalysisImport =>
+      'Extract items from a text or list with AI Text Analysis Tool';
 
   @override
   String get knowledgeLevel => 'Knowledge Level';
@@ -1091,7 +1092,58 @@ class AppLocalizationsEn extends AppLocalizations {
   String get openaiModelDescription => 'Select ChatGPT model';
 
   @override
-  String get modelGpt35Turbo => 'GPT-3.5 Turbo';
+  String get modelGpt55 => 'GPT-5.5';
+
+  @override
+  String get modelGpt55Pro => 'GPT-5.5 Pro';
+
+  @override
+  String get modelGpt54 => 'GPT-5.4';
+
+  @override
+  String get modelGpt54Pro => 'GPT-5.4 Pro';
+
+  @override
+  String get modelGpt54Mini => 'GPT-5.4 Mini';
+
+  @override
+  String get modelGpt5Mini => 'GPT-5 Mini';
+
+  @override
+  String get modelGpt41 => 'GPT-4.1';
+
+  @override
+  String get modelGpt55Desc =>
+      'Newest flagship balance of quality and speed for general use';
+
+  @override
+  String get modelGpt55ProDesc =>
+      'Highest-end GPT-5.5 variant for the strongest reasoning and quality';
+
+  @override
+  String get modelGpt54Desc => 'Strong general-purpose GPT-5 generation model';
+
+  @override
+  String get modelGpt54ProDesc =>
+      'Higher-capability GPT-5.4 variant for demanding tasks';
+
+  @override
+  String get modelGpt54MiniDesc =>
+      'Smaller, faster GPT-5.4 variant for lower-cost everyday tasks';
+
+  @override
+  String get modelGpt5MiniDesc =>
+      'Compact GPT-5 family model optimized for speed and cost';
+
+  @override
+  String get modelGpt41Desc =>
+      'Reliable GPT-4.1 option for compatibility and solid quality';
+
+  @override
+  String get modelGpt4o => 'GPT-4o';
+
+  @override
+  String get modelGpt35Turbo => 'GPT-3.5 Turbo (Legacy, Budget)';
 
   @override
   String get modelGpt35Turbo16k => 'GPT-3.5 Turbo 16K';
@@ -1100,11 +1152,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get modelGpt4 => 'GPT-4';
 
   @override
-  String get modelGpt4Turbo => 'GPT-4 Turbo';
+  String get modelGpt4Turbo => 'GPT-4 Turbo (Legacy)';
+
+  @override
+  String get modelGpt4oDesc =>
+      'Best general-purpose choice; fast, multimodal, and strong quality';
 
   @override
   String get modelGpt35TurboDesc =>
-      'Fast and cost-effective; standard for production';
+      'Legacy low-cost option; useful for simpler tasks and cost-sensitive usage';
 
   @override
   String get modelGpt35Turbo16kDesc =>
@@ -1112,11 +1168,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get modelGpt4Desc =>
-      'Higher accuracy/reasoning; slower and more expensive';
+      'High reasoning quality; typically slower and more expensive';
 
   @override
   String get modelGpt4TurboDesc =>
-      'Faster, cheaper, high accuracy; improved context';
+      'Legacy GPT-4 family option; still useful when you want an older cheaper alternative';
 
   @override
   String get analyzing => 'Analyzing...';
@@ -1267,10 +1323,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get selectPackage => 'Select Language Package';
+  String get selectPackage => 'Select Package';
 
   @override
-  String get noPackagesAvailable => 'No non-purchased packages available';
+  String get noPackagesAvailable => 'No packages available';
 
   @override
   String get possibleSolutions => 'Possible Solutions';
@@ -1532,7 +1588,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get welcomeSubtitle =>
-      'Unlock the fantastic power of language learning with approximately 4,000 words, 4,000 expressions, and just as many example sentences—carefully curated for every proficiency level!\nLevel up your language skills — the smart and playful way.';
+      'Unlock the incredible power of language learning with roughly 4,000 words, 4,000 expressions, and just as many example sentences—carefully curated for every proficiency level! Use AI to import items from your own texts, or chat with the AI on any topic to generate the exact words, expressions, and examples you want to learn.\nLevel up your language skills—the smart and playful way!';
 
   @override
   String get welcomeIntro =>
@@ -1550,7 +1606,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sectionAITeammateDesc =>
-      'Paste any text and let AI:\n• Extract useful vocabulary\n• Pick expressions that match your level\n• Build ready-to-train packages in seconds';
+      'Paste any text and let AI:\n• Extract useful vocabulary\n• Pick expressions that match your level\n• Build ready-to-train packages in seconds\n\nChat with the AI:\n• Let it suggest words and expressions for your topic\n• Click to generate examples and save them to your OWN package';
 
   @override
   String get sectionTrainSmart => '🔁 Train Smart';
@@ -2273,13 +2329,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get splashLoading => 'Loading…';
 
   @override
-  String get aiItemCreator => 'AI Item Creator';
+  String get aiItemCreator => 'AI Chat Guru';
+
+  @override
+  String get aiItemCreatorAppBarHint =>
+      'Collect and save words and expressions by chatting with the AI';
 
   @override
   String get chatWithAI => 'Chat with AI';
 
   @override
   String get enterYourPrompt => 'Enter your prompt...';
+
+  @override
+  String get aiItemCreatorPromptHint =>
+      'Describe a topic and the AI coach will ask questions, suggest useful vocabulary, and test your knowledge. For example: help me gather and practice dangers regarding travelling at knowledge level B2';
 
   @override
   String get send => 'Send';
@@ -2294,16 +2358,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get itemInputs => 'Item Inputs';
 
   @override
+  String get aiItemCreatorBothItemsRequired =>
+      'Please fill in both language fields before saving.';
+
+  @override
+  String get aiItemCreatorDuplicateItemMessage =>
+      'An item with the same text pair already exists in this package.';
+
+  @override
   String get language1 => 'Language 1';
 
   @override
   String get language2 => 'Language 2';
 
   @override
-  String get translateLang1ToLang2 => '→ Translate to Lang 2';
+  String get translateLang1ToLang2 => 'Translate to Lang 2';
 
   @override
-  String get translateLang2ToLang1 => '← Translate to Lang 1';
+  String get translateLang2ToLang1 => 'Translate to Lang 1';
+
+  @override
+  String translateToLanguageCode(String languageCode) {
+    return 'Translate to $languageCode';
+  }
 
   @override
   String get example => 'Example';
@@ -2318,7 +2395,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get favorite => 'Favorite';
 
   @override
-  String get saveItems => 'Save Items';
+  String get saveItems => 'Save';
 
   @override
   String get saving => 'Saving...';
@@ -2345,5 +2422,103 @@ class AppLocalizationsEn extends AppLocalizations {
   String get deeplKeyRequired => 'DeepL API key is required for translation';
 
   @override
+  String get noNonPurchasedPackagesAvailable =>
+      'No non-purchased packages available';
+
+  @override
   String get packageSelectionRemembered => 'Package selection saved';
+
+  @override
+  String get aiItemCreatorOpenAiKeyNotConfiguredDetailed =>
+      'OpenAI API key is not configured. Please add your API key in Settings.';
+
+  @override
+  String get aiItemCreatorOpenAiKeyNotConfigured =>
+      'OpenAI API key is not configured.';
+
+  @override
+  String get aiItemCreatorProcessingComplete => 'Processing complete';
+
+  @override
+  String get aiItemCreatorTranslationComingSoon =>
+      'Translation feature coming soon';
+
+  @override
+  String get aiItemCreatorDefaultCategoryName => 'AI Created';
+
+  @override
+  String get aiItemCreatorStartNewConversation => 'Start new conversation';
+
+  @override
+  String get aiItemCreatorChatHint =>
+      'Describe a topic and the AI coach will ask questions, suggest useful vocabulary, and test your knowledge.';
+
+  @override
+  String get aiItemCreatorConversation => 'Conversation';
+
+  @override
+  String get aiItemCreatorYou => 'You';
+
+  @override
+  String get aiItemCreatorCoach => 'AI Coach';
+
+  @override
+  String get aiItemCreatorAiSuggestions => 'AI Suggestions';
+
+  @override
+  String get aiItemCreatorTapChipToFill =>
+      'Tap a chip to fill an item field and auto-translate.';
+
+  @override
+  String get aiItemCreatorNoSuggestedItems => 'No words or expressions yet.';
+
+  @override
+  String get aiItemCreatorNextSteps => 'How to continue';
+
+  @override
+  String get aiItemCreatorNoNextSteps => 'No continuation suggestions yet.';
+
+  @override
+  String get aiItemCreatorModelCostTip =>
+      'Pro Tip: Newer models are more expensive, while older and turbo models are cheaper and can be significantly faster.';
+
+  @override
+  String get aiItemCreatorSelectPackageDialogTitle => 'Choose language package';
+
+  @override
+  String get aiItemCreatorSelectPackageDialogMessage =>
+      'Select the language package to use for this session. Your last choice is preselected.';
+
+  @override
+  String aiItemCreatorMissingApiKeysWarning(String keys) {
+    return 'Missing API keys: $keys. You can continue, but AI and premium translation features may be limited.';
+  }
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get aboutWebsite => 'Website';
+
+  @override
+  String get aboutSupportEmail => 'Support email';
+
+  @override
+  String get aboutWebsiteUrl => 'https://sites.google.com/view/language-rally';
+
+  @override
+  String get aboutSupportEmailAddress => 'languagerally.support@gmail.com';
+
+  @override
+  String aboutVersionWithValue(String version) {
+    return 'Version: $version';
+  }
+
+  @override
+  String aboutCouldNotOpen(String uri) {
+    return 'Could not open: $uri';
+  }
+
+  @override
+  String get aboutWelcomeSplashNotFound => 'Welcome splash image not found';
 }

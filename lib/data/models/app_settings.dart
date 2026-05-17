@@ -4,6 +4,7 @@
 //
 
 import 'package:equatable/equatable.dart';
+import '../../core/constants/openai_model_catalog.dart';
 
 /// Application-level settings stored in SharedPreferences
 class AppSettings extends Equatable {
@@ -31,6 +32,9 @@ class AppSettings extends Equatable {
   /// Last trained package ID (hidden setting to remember last training session)
   final String? lastTrainedPackageId;
 
+  /// Last selected package ID in AI Item Creator (hidden setting)
+  final String? lastAiItemCreatorPackageId;
+
   /// Show examples card in training rally page (hidden setting)
   final bool showTrainingExamples;
 
@@ -54,10 +58,11 @@ class AppSettings extends Equatable {
     this.userLanguageName = 'English (United States)',
     this.deeplApiKey,
     this.openaiApiKey,
-    this.openaiModel = 'gpt-4-turbo',
+    this.openaiModel = OpenAiModelCatalog.defaultModelId,
     this.aiKnowledgeLevel = 'B1',
     this.minItemsForBadges = 10,
     this.lastTrainedPackageId,
+    this.lastAiItemCreatorPackageId,
     this.showTrainingExamples = true,
     this.showTrainingStatistics = true,
     this.audioTestDeviceId,
@@ -76,6 +81,7 @@ class AppSettings extends Equatable {
     String? aiKnowledgeLevel,
     int? minItemsForBadges,
     Object? lastTrainedPackageId = _sentinel,
+    Object? lastAiItemCreatorPackageId = _sentinel,
     bool? showTrainingExamples,
     bool? showTrainingStatistics,
     Object? audioTestDeviceId = _sentinel,
@@ -93,6 +99,9 @@ class AppSettings extends Equatable {
       aiKnowledgeLevel: aiKnowledgeLevel ?? this.aiKnowledgeLevel,
       minItemsForBadges: minItemsForBadges ?? this.minItemsForBadges,
       lastTrainedPackageId: lastTrainedPackageId == _sentinel ? this.lastTrainedPackageId : lastTrainedPackageId as String?,
+      lastAiItemCreatorPackageId: lastAiItemCreatorPackageId == _sentinel
+          ? this.lastAiItemCreatorPackageId
+          : lastAiItemCreatorPackageId as String?,
       showTrainingExamples: showTrainingExamples ?? this.showTrainingExamples,
       showTrainingStatistics: showTrainingStatistics ?? this.showTrainingStatistics,
       audioTestDeviceId: audioTestDeviceId == _sentinel ? this.audioTestDeviceId : audioTestDeviceId as int?,
@@ -113,6 +122,7 @@ class AppSettings extends Equatable {
         aiKnowledgeLevel,
         minItemsForBadges,
         lastTrainedPackageId,
+        lastAiItemCreatorPackageId,
         showTrainingExamples,
         showTrainingStatistics,
         audioTestDeviceId,

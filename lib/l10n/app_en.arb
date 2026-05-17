@@ -333,10 +333,10 @@
   "iDontKnow": "I Don't Know",
 
   "previousItem": "Previous Item",
-  "iDidNotKnowEither": "I Didn't Know Either",
+  "iDidNotKnowEither": "I Didn't Know It After All",
   "exportBeforeDelete": "Export Before Deleting?",
-  "aiTextAnalysis": "Import items with AI",
-  "aiTextAnalysisImport": "Import items with AI Text Analysis",
+  "aiTextAnalysis": "Extract items from a text/list with AI",
+  "aiTextAnalysisImport": "Extract items from a text or list with AI Text Analysis Tool",
   "knowledgeLevel": "Knowledge Level",
   "a1Beginner": "A1 - Beginner",
   "a2Elementary": "A2 - Elementary",
@@ -356,14 +356,30 @@
   "configureAnalysis": "Configure Items To Extract",
   "openaiModel": "AI Model",
   "openaiModelDescription": "Select ChatGPT model",
-  "modelGpt35Turbo": "GPT-3.5 Turbo",
+  "modelGpt55": "GPT-5.5",
+  "modelGpt55Pro": "GPT-5.5 Pro",
+  "modelGpt54": "GPT-5.4",
+  "modelGpt54Pro": "GPT-5.4 Pro",
+  "modelGpt54Mini": "GPT-5.4 Mini",
+  "modelGpt5Mini": "GPT-5 Mini",
+  "modelGpt41": "GPT-4.1",
+  "modelGpt55Desc": "Newest flagship balance of quality and speed for general use",
+  "modelGpt55ProDesc": "Highest-end GPT-5.5 variant for the strongest reasoning and quality",
+  "modelGpt54Desc": "Strong general-purpose GPT-5 generation model",
+  "modelGpt54ProDesc": "Higher-capability GPT-5.4 variant for demanding tasks",
+  "modelGpt54MiniDesc": "Smaller, faster GPT-5.4 variant for lower-cost everyday tasks",
+  "modelGpt5MiniDesc": "Compact GPT-5 family model optimized for speed and cost",
+  "modelGpt41Desc": "Reliable GPT-4.1 option for compatibility and solid quality",
+  "modelGpt4o": "GPT-4o",
+  "modelGpt35Turbo": "GPT-3.5 Turbo (Legacy, Budget)",
   "modelGpt35Turbo16k": "GPT-3.5 Turbo 16K",
   "modelGpt4": "GPT-4",
-  "modelGpt4Turbo": "GPT-4 Turbo",
-  "modelGpt35TurboDesc": "Fast and cost-effective; standard for production",
+  "modelGpt4Turbo": "GPT-4 Turbo (Legacy)",
+  "modelGpt4oDesc": "Best general-purpose choice; fast, multimodal, and strong quality",
+  "modelGpt35TurboDesc": "Legacy low-cost option; useful for simpler tasks and cost-sensitive usage",
   "modelGpt35Turbo16kDesc": "Same as GPT-3.5, but 16K token context window",
-  "modelGpt4Desc": "Higher accuracy/reasoning; slower and more expensive",
-  "modelGpt4TurboDesc": "Faster, cheaper, high accuracy; improved context",
+  "modelGpt4Desc": "High reasoning quality; typically slower and more expensive",
+  "modelGpt4TurboDesc": "Legacy GPT-4 family option; still useful when you want an older cheaper alternative",
   "analyzing": "Analyzing...",
   "languageDetected": "Language Detected",
   "itemsFound": "Items Found",
@@ -544,12 +560,12 @@
   "noItemsFoundOrAllDuplicates": "No items found in the text, or all items already exist in the package",
   "aboutLanguageRally": "About Language Rally",
   "welcomeTitle": "🚀 Welcome to Language Rally",
-  "welcomeSubtitle": "Unlock the fantastic power of language learning with approximately 4,000 words, 4,000 expressions, and just as many example sentences—carefully curated for every proficiency level!\nLevel up your language skills — the smart and playful way.",
+  "welcomeSubtitle": "Unlock the incredible power of language learning with roughly 4,000 words, 4,000 expressions, and just as many example sentences—carefully curated for every proficiency level! Use AI to import items from your own texts, or chat with the AI on any topic to generate the exact words, expressions, and examples you want to learn.\nLevel up your language skills—the smart and playful way!",
   "welcomeIntro": "Learn vocabulary and expressions efficiently by practicing what you actually care about. No boring lists. No wasted time.",
   "sectionPlayYourGame": "🎮 Play Your Own Game",
   "sectionPlayYourGameDesc": "Create your own vocabulary packages. Train only the words and expressions you want to master. Already know it? It will be marked and skipped!",
   "sectionAITeammate": "🤖 AI as Your Teammate",
-  "sectionAITeammateDesc": "Paste any text and let AI:\n• Extract useful vocabulary\n• Pick expressions that match your level\n• Build ready-to-train packages in seconds",
+  "sectionAITeammateDesc": "Paste any text and let AI:\n• Extract useful vocabulary\n• Pick expressions that match your level\n• Build ready-to-train packages in seconds\n\nChat with the AI:\n• Let it suggest words and expressions for your topic\n• Click to generate examples and save them to your OWN package",
   "sectionTrainSmart": "🔁 Train Smart",
   "sectionTrainSmartDesc": "Our fine-tuned repetition system shows items exactly when your brain needs them in order to effectively memorize them. Maximum progress. Minimum effort.",
   "sectionRealExamples": "🌍 Real Examples. Great Translations.",
@@ -850,26 +866,38 @@
     "description": "Indeterminate loading label on the splash screen"
   },
 
-  "aiItemCreator": "AI Item Creator",
-  "selectPackage": "Select Language Package",
+  "aiItemCreator": "AI Chat Guru",
+  "aiItemCreatorAppBarHint": "Collect and save words and expressions by chatting with the AI",
+
   "chatWithAI": "Chat with AI",
   "enterYourPrompt": "Enter your prompt...",
+  "aiItemCreatorPromptHint": "Describe a topic and the AI coach will ask questions, suggest useful vocabulary, and test your knowledge. For example: help me gather and practice dangers regarding travelling at knowledge level B2",
   "send": "Send",
   "sending": "Sending...",
   "aiResponse": "AI Response",
   "itemInputs": "Item Inputs",
+  "aiItemCreatorBothItemsRequired": "Please fill in both language fields before saving.",
+  "aiItemCreatorDuplicateItemMessage": "An item with the same text pair already exists in this package.",
   "language1": "Language 1",
   "language2": "Language 2",
-  "translateLang1ToLang2": "→ Translate to Lang 2",
-  "translateLang2ToLang1": "← Translate to Lang 1",
-  "examples": "Examples",
+  "translateLang1ToLang2": "Translate to Lang 2",
+  "translateLang2ToLang1": "Translate to Lang 1",
+  "translateToLanguageCode": "Translate to {languageCode}",
+  "@translateToLanguageCode": {
+    "placeholders": {
+      "languageCode": {
+        "type": "String"
+      }
+    }
+  },
+
   "example": "Example",
-  "generateExamples": "Generate Examples",
+
   "generating": "Generating...",
   "flags": "Flags",
-  "important": "Important",
+
   "favorite": "Favorite",
-  "saveItems": "Save Items",
+  "saveItems": "Save",
   "saving": "Saving...",
   "clearItems": "Clear Items Only",
   "clearAll": "Clear All Fields",
@@ -878,7 +906,54 @@
   "enterAtLeastOneItem": "Please enter at least one item",
   "selectPackageFirst": "Please select a package first",
   "deeplKeyRequired": "DeepL API key is required for translation",
-  "noPackagesAvailable": "No non-purchased packages available",
-  "packageSelectionRemembered": "Package selection saved"
+  "noNonPurchasedPackagesAvailable": "No non-purchased packages available",
+  "packageSelectionRemembered": "Package selection saved",
+  "aiItemCreatorOpenAiKeyNotConfiguredDetailed": "OpenAI API key is not configured. Please add your API key in Settings.",
+  "aiItemCreatorOpenAiKeyNotConfigured": "OpenAI API key is not configured.",
+  "aiItemCreatorProcessingComplete": "Processing complete",
+  "aiItemCreatorTranslationComingSoon": "Translation feature coming soon",
+  "aiItemCreatorDefaultCategoryName": "AI Created",
+  "aiItemCreatorStartNewConversation": "Start new conversation",
+  "aiItemCreatorChatHint": "Describe a topic and the AI coach will ask questions, suggest useful vocabulary, and test your knowledge.",
+  "aiItemCreatorConversation": "Conversation",
+  "aiItemCreatorYou": "You",
+  "aiItemCreatorCoach": "AI Coach",
+  "aiItemCreatorAiSuggestions": "AI Suggestions",
+  "aiItemCreatorTapChipToFill": "Tap a chip to fill an item field and auto-translate.",
+  "aiItemCreatorNoSuggestedItems": "No words or expressions yet.",
+  "aiItemCreatorNextSteps": "How to continue",
+  "aiItemCreatorNoNextSteps": "No continuation suggestions yet.",
+  "aiItemCreatorModelCostTip": "Pro Tip: Newer models are more expensive, while older and turbo models are cheaper and can be significantly faster.",
+  "aiItemCreatorSelectPackageDialogTitle": "Choose language package",
+  "aiItemCreatorSelectPackageDialogMessage": "Select the language package to use for this session. Your last choice is preselected.",
+  "aiItemCreatorMissingApiKeysWarning": "Missing API keys: {keys}. You can continue, but AI and premium translation features may be limited.",
+  "@aiItemCreatorMissingApiKeysWarning": {
+    "placeholders": {
+      "keys": {
+        "type": "String"
+      }
+    }
+  },
+  "about": "About",
+  "aboutWebsite": "Website",
+  "aboutSupportEmail": "Support email",
+  "aboutWebsiteUrl": "https://sites.google.com/view/language-rally",
+  "aboutSupportEmailAddress": "languagerally.support@gmail.com",
+  "aboutVersionWithValue": "Version: {version}",
+  "@aboutVersionWithValue": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutCouldNotOpen": "Could not open: {uri}",
+  "@aboutCouldNotOpen": {
+    "placeholders": {
+      "uri": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutWelcomeSplashNotFound": "Welcome splash image not found"
 }
-

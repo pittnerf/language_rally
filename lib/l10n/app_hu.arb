@@ -166,7 +166,7 @@
   "badge": "Medál",
   "position": "Pozíció",
   "stepsUntilLearned": "Lépés a megtanulásig",
-  "examples": "Példamondatok",
+  "examples": "Példák",
 
   "noExamples": "Nincsenek elérhető példamondatok",
   "pronounce": "Kiejtés",
@@ -329,10 +329,10 @@
   "iDontKnow": "Nem Tudom",
 
   "previousItem": "Előző elem",
-  "iDidNotKnowEither": "Ezt Sem Tudtam",
+  "iDidNotKnowEither": "Mégsem Tudtam",
   "exportBeforeDelete": "Exportálja törlés előtt?",
-  "aiTextAnalysis": "Elemek AI-val",
-  "aiTextAnalysisImport": "Import AI Szövegelemzéssel",
+  "aiTextAnalysis": "Elemek kinyerése szövegből AI-val",
+  "aiTextAnalysisImport": "AI szövegelemzéssel történő elemkinyerés",
   "knowledgeLevel": "Tudásszint",
   "a1Beginner": "A1 - Kezdő",
   "a2Elementary": "A2 - Alapszint",
@@ -352,14 +352,30 @@
   "configureAnalysis": "Kinyerendő Elemek Típusai",
   "openaiModel": "AI Modell",
   "openaiModelDescription": "ChatGPT modell kiválasztása",
-  "modelGpt35Turbo": "GPT-3.5 Turbo",
+  "modelGpt55": "GPT-5.5",
+  "modelGpt55Pro": "GPT-5.5 Pro",
+  "modelGpt54": "GPT-5.4",
+  "modelGpt54Pro": "GPT-5.4 Pro",
+  "modelGpt54Mini": "GPT-5.4 Mini",
+  "modelGpt5Mini": "GPT-5 Mini",
+  "modelGpt41": "GPT-4.1",
+  "modelGpt55Desc": "Legújabb csúcsmodell jó egyensúllyal minőség és sebesség között általános használatra",
+  "modelGpt55ProDesc": "A legerősebb GPT-5.5 változat a lehető legjobb érveléshez és minőséghez",
+  "modelGpt54Desc": "Erős, általános célú GPT-5 generációs modell",
+  "modelGpt54ProDesc": "Nagyobb képességű GPT-5.4 változat összetettebb feladatokhoz",
+  "modelGpt54MiniDesc": "Kisebb és gyorsabb GPT-5.4 változat alacsonyabb költségű hétköznapi feladatokhoz",
+  "modelGpt5MiniDesc": "Kompakt GPT-5 családba tartozó modell sebességre és költséghatékonyságra optimalizálva",
+  "modelGpt41Desc": "Megbízható GPT-4.1 opció jó kompatibilitással és stabil minőséggel",
+  "modelGpt4o": "GPT-4o",
+  "modelGpt35Turbo": "GPT-3.5 Turbo (régi, olcsó)",
   "modelGpt35Turbo16k": "GPT-3.5 Turbo 16K",
   "modelGpt4": "GPT-4",
-  "modelGpt4Turbo": "GPT-4 Turbo",
-  "modelGpt35TurboDesc": "Gyors és költséghatékony; általános használatra",
+  "modelGpt4Turbo": "GPT-4 Turbo (régi)",
+  "modelGpt4oDesc": "Legjobb általános választás; gyors, multimodális és jó minőségű",
+  "modelGpt35TurboDesc": "Régi, alacsony költségű opció; egyszerűbb feladatokhoz és költségérzékeny használatra jó választás",
   "modelGpt35Turbo16kDesc": "Mint a GPT-3.5, de 16K token kontextusablakkal",
-  "modelGpt4Desc": "Magasabb pontosság/érvelés; lassabb és drágább",
-  "modelGpt4TurboDesc": "Gyorsabb, olcsóbb, magas pontosság; jobb kontextus",
+  "modelGpt4Desc": "Erős érvelési minőség; általában lassabb és drágább",
+  "modelGpt4TurboDesc": "Régi GPT-4 családba tartozó opció; hasznos lehet, ha egy korábbi, olcsóbb alternatívát szeretnél",
   "analyzing": "Elemzés folyamatban...",
   "languageDetected": "Észlelt nyelv",
   "itemsFound": "Talált elemek",
@@ -486,12 +502,12 @@
   "noItemsFoundOrAllDuplicates": "Nem található elem a szövegben, vagy minden elem már létezik a csomagban",
   "aboutLanguageRally": "A Language Rally-ról",
   "welcomeTitle": "🚀 Üdvözöljük a Language Rally-ban",
-  "welcomeSubtitle": "Élvezze a szintenként a több mint 4000 szó, 4000 kifejezés és ugyanennyi példamondat által nyújtotta fantasztikus tudást!\n\nFejlessze nyelvi készségeit — okosan és játékosan.",
+  "welcomeSubtitle": "Élvezze a szintenként a több mint 4000 szó, 4000 kifejezés és ugyanennyi példamondat által nyújtotta fantasztikus tudást! Importáljon elemeket a saját szövegeidből az AI segítségével, vagy beszélgessen a mesterséges intelligenciával bármilyen témáról, hogy pontosan azokat a szavakat, kifejezéseket és példákat gyújtse össze, amiket érdeme megtanulni.\n\nLépjen szintet a nyelvtudás – okosan és játékosan!",
   "welcomeIntro": "Tanulja meg hatékonyan a szókincset és kifejezéseket azáltal, hogy azt gyakorolja, ami valóban fontos önnek. Nincsenek unalmas listák. Nincs pazarolt idő.",
   "sectionPlayYourGame": "🎮 Tanuljon játszva",
   "sectionPlayYourGameDesc": "Hozzon létre saját szókészlet-csomagokat. Csak azokat a szavakat és kifejezéseket gyakorolja, amelyeket valóban el akar sajátítani. Már ismeri? Megjelölésre kerül és átugorja!",
   "sectionAITeammate": "🤖 AI mint csapattárs",
-  "sectionAITeammateDesc": "Illesszen be bármilyen szöveget és hagyja, hogy a mesterséges intelligencia:\n• Kivonatolja a hasznos szókincset\n• Válasszon olyan kifejezéseket, amelyek megfelelnek az ön szintjének\n• Másodpercek alatt építsen gyakorlásra kész nyelvi csomagokat",
+  "sectionAITeammateDesc": "Illesszen be bármilyen szöveget és hagyja, hogy a mesterséges intelligencia:\n• Kivonatolja a hasznos szókincset\n• Válasszon olyan kifejezéseket, amelyek megfelelnek az ön szintjének\n• Másodpercek alatt építsen gyakorlásra kész nyelvi csomagokat\n\nTársalogjon az AI-val:\n• Kérjen szavakat és kifejezéseket egy Ön által megadott témában\n• Generáljon hozzá példamondatokat és mentse el mindezt egy kattintással!",
   "sectionTrainSmart": "🔁 Okos gyakorlás",
   "sectionTrainSmartDesc": "A szeméylre szabott ismétlési rendszerünk pontosan akkor mutatja meg az elemeket Önnek, amikor a memória hatékony építéséhez azokra Önnek a leginkább szüksége van. Maximális haladás. Minimális erőfeszítés.",
   "sectionRealExamples": "🌍 Valós példák. Kiváló fordítások.",
@@ -792,35 +808,95 @@
     "description": "Határozatlan betöltési felirat a splash képernyőn"
   },
 
-  "aiItemCreator": "AI Szógyűjtő",
-  "selectPackage": "Nyelvcsomag kiválasztása",
+  "aiItemCreator": "AI Chat Mágus",
+  "aiItemCreatorAppBarHint": "Gyűjts és ments szavakat és kifejezéseket AI chat közben!",
+
   "chatWithAI": "Csevegés az AI-val",
   "enterYourPrompt": "Adja meg a kérdést...",
+  "aiItemCreatorPromptHint": "Írj le egy témát, és az AI-coach kérdéseket tesz fel, hasznos szókincset javasol, és teszteli a tudásodat. Például: segíts összegyűjteni és gyakorolni az utazás veszélyeit B2-es nyelvi szinten",
   "send": "Küldés",
   "sending": "Küldés folyamatban...",
   "aiResponse": "AI Válasz",
-  "itemInputs": "Szómegadások",
+  "itemInputs": "Szavak és kifejezések",
+  "aiItemCreatorBothItemsRequired": "Kérjük, mentés előtt töltsd ki mindkét nyelvi mezőt.",
+  "aiItemCreatorDuplicateItemMessage": "Ebben a csomagban már létezik ugyanilyen szövegpárral rendelkező elem.",
   "language1": "1. Nyelv",
   "language2": "2. Nyelv",
-  "translateLang1ToLang2": "→ Fordítás 2. nyelvre",
-  "translateLang2ToLang1": "← Fordítás 1. nyelvre",
-  "examples": "Példák",
+  "translateLang1ToLang2": "Fordítás 2. nyelvre",
+  "translateLang2ToLang1": "Fordítás 1. nyelvre",
+  "translateToLanguageCode": "Fordítás erre: {languageCode}",
+  "@translateToLanguageCode": {
+    "placeholders": {
+      "languageCode": {
+        "type": "String"
+      }
+    }
+  },
+
   "example": "Példa",
-  "generateExamples": "Példák generálása",
+
   "generating": "Generálás...",
   "flags": "Jelölések",
-  "important": "Fontos",
+
   "favorite": "Kedvenc",
-  "saveItems": "Szavak mentése",
+  "saveItems": "Mentés",
   "saving": "Mentés folyamatban...",
   "clearItems": "Csak szavak törlése",
-  "clearAll": "Minden mez törlése",
-  "itemSavedSuccessfully": "Szó sikeresen mentve",
+  "clearAll": "Minden mező törlése",
+  "itemSavedSuccessfully": "Sikeresen mentve",
   "promptCannotBeEmpty": "A kérdés nem lehet üres",
   "enterAtLeastOneItem": "Adjon meg legalább egy szót",
   "selectPackageFirst": "Előbb válasszon egy csomagot",
   "deeplKeyRequired": "A fordításhoz szükséges a DeepL API kulcs",
-  "noPackagesAvailable": "Nem elérhető nem megvásárolt csomag",
-  "packageSelectionRemembered": "Csomag kiválasztása mentve"
+  "noNonPurchasedPackagesAvailable": "Nem elérhető nem megvásárolt csomag",
+  "packageSelectionRemembered": "Csomag kiválasztása mentve",
+  "aiItemCreatorOpenAiKeyNotConfiguredDetailed": "Az OpenAI API kulcs nincs beállítva. Kérlek add meg a Beállításokban.",
+  "aiItemCreatorOpenAiKeyNotConfigured": "Az OpenAI API kulcs nincs beállítva.",
+  "aiItemCreatorProcessingComplete": "Feldolgozás kész",
+  "aiItemCreatorTranslationComingSoon": "A fordítás funkció hamarosan érkezik",
+  "aiItemCreatorDefaultCategoryName": "AI létrehozott",
+  "aiItemCreatorStartNewConversation": "Új beszélgetés indítása",
+  "aiItemCreatorChatHint": "Írj be egy témát, és az AI oktató kérdéseket tesz fel, hasznos szókincset javasol, majd mini feladatokkal gyakoroltat.",
+  "aiItemCreatorConversation": "Beszélgetés",
+  "aiItemCreatorYou": "Te",
+  "aiItemCreatorCoach": "AI oktató",
+  "aiItemCreatorAiSuggestions": "AI javaslatok",
+  "aiItemCreatorTapChipToFill": "Koppints egy chipre a mező automatikus kitöltéséhez és fordításához.",
+  "aiItemCreatorNoSuggestedItems": "Még nincs javasolt szó vagy kifejezés.",
+  "aiItemCreatorNextSteps": "Hogyan folytasd",
+  "aiItemCreatorNoNextSteps": "Még nincs folytatási javaslat.",
+  "aiItemCreatorModelCostTip": "Pro tipp: Az újabb modellek drágábbak, míg a régebbi és turbo modellek olcsóbbak, és jelentősen gyorsabbak is lehetnek.",
+  "aiItemCreatorSelectPackageDialogTitle": "Nyelvcsomag kiválasztása",
+  "aiItemCreatorSelectPackageDialogMessage": "Válaszd ki az ehhez a munkamenethez használt nyelvcsomagot. Az előző választásod van előre kijelölve.",
+  "aiItemCreatorMissingApiKeysWarning": "Hiányzó API kulcsok: {keys}. Folytathatod, de az AI és a prémium fordítási funkciók korlátozottak lehetnek.",
+  "@aiItemCreatorMissingApiKeysWarning": {
+    "placeholders": {
+      "keys": {
+        "type": "String"
+      }
+    }
+  },
+  "about": "Névjegy",
+  "aboutWebsite": "Weboldal",
+  "aboutSupportEmail": "Támogatási e-mail",
+  "aboutWebsiteUrl": "https://sites.google.com/view/language-rally",
+  "aboutSupportEmailAddress": "languagerally.support@gmail.com",
+  "aboutVersionWithValue": "Verzió: {version}",
+  "@aboutVersionWithValue": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutCouldNotOpen": "Nem nyitható meg: {uri}",
+  "@aboutCouldNotOpen": {
+    "placeholders": {
+      "uri": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutWelcomeSplashNotFound": "A Welcome_splash kép nem található"
 }
 

@@ -279,7 +279,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(24),
                       child: Image.asset(
-                        'assets/app_icons/language_rally_race.png',
+                        'assets/app_icons/language_rally_race.webp',
                         width: 120,
                         height: 120,
                         fit: BoxFit.contain,
