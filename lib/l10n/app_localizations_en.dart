@@ -1745,7 +1745,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tourPage3Desc =>
-      'Build your own learning packages in the blink of an eye:\n\n• Paste any text and let AI extract relevant vocabulary automatically\n• Identify words and expressions perfectly suited to your level\n• Let the AI do the translation for you\n• Let the AI search real-time examples\n• Create packages ready for training quickly';
+      'Build your own learning packages in the blink of an eye:\n\n• Paste any text and let AI extract relevant vocabulary automatically\n• Identify words and expressions perfectly suited to your level\n• Let the AI do the translation for you\n• Let the AI search real-time examples\n\nChat with the AI:\n• Let it suggest words and expressions for your topic\n• Click to generate examples and save them to your OWN package\n• Create packages ready for training quickly';
 
   @override
   String get tourPage4Title =>
@@ -2501,7 +2501,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutWebsite => 'Website';
 
   @override
-  String get aboutSupportEmail => 'Support email';
+  String get aboutSupportEmail => 'Support email address';
 
   @override
   String get aboutWebsiteUrl => 'https://sites.google.com/view/language-rally';
@@ -2521,4 +2521,212 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get aboutWelcomeSplashNotFound => 'Welcome splash image not found';
+
+  @override
+  String get chooseTheme => 'Choose Theme';
+
+  @override
+  String get darkMode => 'Dark Mode';
+
+  @override
+  String get toggleBetweenLightAndDark => 'Toggle between light and dark';
+
+  @override
+  String get colorTheme => 'Color Theme:';
+
+  @override
+  String get toggleBrightness => 'Toggle brightness';
+
+  @override
+  String get changeTheme => 'Change theme';
+
+  @override
+  String get managePackageGroups => 'Manage Package Groups';
+
+  @override
+  String get noPackageGroups => 'No package groups';
+
+  @override
+  String get createFirstPackageGroup => 'Create your first package group';
+
+  @override
+  String get addGroup => 'Add Group';
+
+  @override
+  String get addPackageGroup => 'Add Package Group';
+
+  @override
+  String get editPackageGroup => 'Edit Package Group';
+
+  @override
+  String get groupName => 'Group Name';
+
+  @override
+  String get enterGroupName => 'Enter group name';
+
+  @override
+  String get groupNameRequired => 'Group name is required';
+
+  @override
+  String get duplicateGroupName => 'Duplicate Name';
+
+  @override
+  String groupNameAlreadyExists(String name) {
+    return 'A group with the name \"$name\" already exists.';
+  }
+
+  @override
+  String groupCreatedSuccessfully(String name) {
+    return 'Group \"$name\" created successfully';
+  }
+
+  @override
+  String failedToCreateGroup(String error) {
+    return 'Failed to create group: $error';
+  }
+
+  @override
+  String groupRenamedTo(String name) {
+    return 'Group renamed to \"$name\"';
+  }
+
+  @override
+  String failedToUpdateGroup(String error) {
+    return 'Failed to update group: $error';
+  }
+
+  @override
+  String get deleteGroup => 'Delete Group';
+
+  @override
+  String deleteGroupConfirm(String name) {
+    return 'Are you sure you want to delete the group \"$name\"?\n\nThis action cannot be undone.';
+  }
+
+  @override
+  String get cannotDeleteGroup => 'Cannot Delete';
+
+  @override
+  String groupHasPackages(int count) {
+    return 'This group still has $count package(s). Please move or delete them first.';
+  }
+
+  @override
+  String groupDeleted(String name) {
+    return 'Group \"$name\" deleted';
+  }
+
+  @override
+  String failedToDeleteGroup(String error) {
+    return 'Failed to delete group: $error';
+  }
+
+  @override
+  String get cannotDeleteHasPackagesTooltip => 'Cannot delete (has packages)';
+
+  @override
+  String nPackages(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count packages',
+      one: '1 package',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get manageGroups => 'Manage groups';
+
+  @override
+  String get featureLangPower => 'Language power';
+
+  @override
+  String get featureAiIntegration => 'AI integration';
+
+  @override
+  String get featureAdaptivePractice => 'Adaptive practice';
+
+  @override
+  String get featureMasterAccent => 'Master accent';
+
+  @override
+  String get allBadgesEarned => '🎉 All badges earned! You are a Master!';
+
+  @override
+  String nextBadgeLabel(String name) {
+    return 'Next: $name';
+  }
+
+  @override
+  String pointsToGo(String percent) {
+    return '$percent% to go';
+  }
+
+  @override
+  String progressPercent(String percent) {
+    return '$percent% progress';
+  }
+
+  @override
+  String errorTogglingFavourite(String error) {
+    return 'Error toggling favourite: $error';
+  }
+
+  @override
+  String errorTogglingImportant(String error) {
+    return 'Error toggling important: $error';
+  }
+
+  @override
+  String categoryAdded(String name) {
+    return 'Category \"$name\" added';
+  }
+
+  @override
+  String errorAddingCategory(String error) {
+    return 'Error adding category: $error';
+  }
+
+  @override
+  String categoryRemoved(String name) {
+    return 'Category \"$name\" removed';
+  }
+
+  @override
+  String errorRemovingCategory(String error) {
+    return 'Error removing category: $error';
+  }
+
+  @override
+  String couldNotOpenUrl(String url) {
+    return 'Could not open URL: $url';
+  }
+
+  @override
+  String errorOpeningUrl(String error) {
+    return 'Error opening URL: $error';
+  }
+
+  @override
+  String get pleaseSelectLanguage => 'Please select a language';
+
+  @override
+  String get add => 'Add';
+
+  @override
+  String get speak => 'Speak';
+
+  @override
+  String get recordingFailedToStart =>
+      'Recording failed to start!\n\nCheck:\n1. Microphone is connected\n2. Microphone is set as default device\n3. No other app is using microphone';
+
+  @override
+  String get recordingFailedNoAudioFile =>
+      'Recording failed - no audio file created!\n\nPossible causes:\n1. Microphone not connected\n2. No audio input detected\n3. Windows audio settings issue';
+
+  @override
+  String errorStartingRecordingDetails(String error) {
+    return 'Error starting recording: $error';
+  }
 }

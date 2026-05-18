@@ -6,6 +6,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../l10n/app_localizations.dart';
 
 /// A widget that displays text with clickable URLs.
 /// Automatically detects URLs in the text and makes them clickable.
@@ -130,7 +131,7 @@ class ClickableText extends StatelessWidget {
       if (!launched && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Could not open URL: $urlString'),
+            content: Text(AppLocalizations.of(context)!.couldNotOpenUrl(urlString)),
             duration: const Duration(seconds: 2),
           ),
         );
@@ -139,7 +140,7 @@ class ClickableText extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error opening URL: $e'),
+            content: Text(AppLocalizations.of(context)!.errorOpeningUrl(e.toString())),
             duration: const Duration(seconds: 2),
           ),
         );

@@ -1596,7 +1596,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
                   navigator.pop();
                 }
               },
-              child: const Text('Add'),
+              child: Text(AppLocalizations.of(context)!.add),
             ),
           ],
         ),
@@ -1918,7 +1918,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Recording failed to start!\n\nCheck:\n1. Microphone is connected\n2. Microphone is set as default device\n3. No other app is using microphone'),
+              content: Text(AppLocalizations.of(context)!.recordingFailedToStart),
               backgroundColor: Theme.of(context).colorScheme.error,
               duration: const Duration(seconds: 8),
             ),
@@ -2036,7 +2036,7 @@ class _ItemEditPageState extends ConsumerState<ItemEditPage> {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text('Recording failed - no audio file created!\n\nPossible causes:\n1. Microphone not connected\n2. No audio input detected\n3. Windows audio settings issue'),
+              content: Text(AppLocalizations.of(context)!.recordingFailedNoAudioFile),
               backgroundColor: Theme.of(context).colorScheme.error,
               duration: const Duration(seconds: 8),
             ),

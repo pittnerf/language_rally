@@ -605,7 +605,7 @@
   "tourPage2Title": "Create Your Own Language Package",
   "tourPage2Desc": "Build personalized vocabulary collections that match your interests and learning goals.\n\nOrganize words and expressions by topic, difficulty, or context.\n\nComplete control over what you learn and when.",
   "tourPage3Title": "AI-Powered Items Creation",
-  "tourPage3Desc": "Build your own learning packages in the blink of an eye:\n\n• Paste any text and let AI extract relevant vocabulary automatically\n• Identify words and expressions perfectly suited to your level\n• Let the AI do the translation for you\n• Let the AI search real-time examples\n• Create packages ready for training quickly",
+  "tourPage3Desc": "Build your own learning packages in the blink of an eye:\n\n• Paste any text and let AI extract relevant vocabulary automatically\n• Identify words and expressions perfectly suited to your level\n• Let the AI do the translation for you\n• Let the AI search real-time examples\n\nChat with the AI:\n• Let it suggest words and expressions for your topic\n• Click to generate examples and save them to your OWN package\n• Create packages ready for training quickly",
   "tourPage4Title": "AI-Powered Real-World Examples & Premium Translation",
   "tourPage4Desc": "• Instantly search for authentic usage examples\n• Translate words, expressions, and full sentences with high-quality DeepL integration\n• Get accurate, context-aware results",
   "tourPage5Title": "Smart Package Organization",
@@ -936,7 +936,7 @@
   },
   "about": "About",
   "aboutWebsite": "Website",
-  "aboutSupportEmail": "Support email",
+  "aboutSupportEmail": "Support email address",
   "aboutWebsiteUrl": "https://sites.google.com/view/language-rally",
   "aboutSupportEmailAddress": "languagerally.support@gmail.com",
   "aboutVersionWithValue": "Version: {version}",
@@ -955,5 +955,131 @@
       }
     }
   },
-  "aboutWelcomeSplashNotFound": "Welcome splash image not found"
+  "aboutWelcomeSplashNotFound": "Welcome splash image not found",
+
+  "chooseTheme": "Choose Theme",
+  "darkMode": "Dark Mode",
+  "toggleBetweenLightAndDark": "Toggle between light and dark",
+  "colorTheme": "Color Theme:",
+  "toggleBrightness": "Toggle brightness",
+  "changeTheme": "Change theme",
+
+  "managePackageGroups": "Manage Package Groups",
+  "noPackageGroups": "No package groups",
+  "createFirstPackageGroup": "Create your first package group",
+  "addGroup": "Add Group",
+  "addPackageGroup": "Add Package Group",
+  "editPackageGroup": "Edit Package Group",
+  "groupName": "Group Name",
+  "enterGroupName": "Enter group name",
+  "groupNameRequired": "Group name is required",
+  "duplicateGroupName": "Duplicate Name",
+  "groupNameAlreadyExists": "A group with the name \"{name}\" already exists.",
+  "@groupNameAlreadyExists": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "groupCreatedSuccessfully": "Group \"{name}\" created successfully",
+  "@groupCreatedSuccessfully": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "failedToCreateGroup": "Failed to create group: {error}",
+  "@failedToCreateGroup": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "groupRenamedTo": "Group renamed to \"{name}\"",
+  "@groupRenamedTo": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "failedToUpdateGroup": "Failed to update group: {error}",
+  "@failedToUpdateGroup": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "deleteGroup": "Delete Group",
+  "deleteGroupConfirm": "Are you sure you want to delete the group \"{name}\"?\n\nThis action cannot be undone.",
+  "@deleteGroupConfirm": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "cannotDeleteGroup": "Cannot Delete",
+  "groupHasPackages": "This group still has {count} package(s). Please move or delete them first.",
+  "@groupHasPackages": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "groupDeleted": "Group \"{name}\" deleted",
+  "@groupDeleted": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "failedToDeleteGroup": "Failed to delete group: {error}",
+  "@failedToDeleteGroup": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "cannotDeleteHasPackagesTooltip": "Cannot delete (has packages)",
+  "nPackages": "{count, plural, =1{1 package} other{{count} packages}}",
+  "@nPackages": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "manageGroups": "Manage groups",
+
+  "featureLangPower": "Language power",
+  "featureAiIntegration": "AI integration",
+  "featureAdaptivePractice": "Adaptive practice",
+  "featureMasterAccent": "Master accent",
+
+  "allBadgesEarned": "🎉 All badges earned! You are a Master!",
+  "nextBadgeLabel": "Next: {name}",
+  "@nextBadgeLabel": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "pointsToGo": "{percent}% to go",
+  "@pointsToGo": {
+    "placeholders": { "percent": { "type": "String" } }
+  },
+  "progressPercent": "{percent}% progress",
+  "@progressPercent": {
+    "placeholders": { "percent": { "type": "String" } }
+  },
+
+  "errorTogglingFavourite": "Error toggling favourite: {error}",
+  "@errorTogglingFavourite": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "errorTogglingImportant": "Error toggling important: {error}",
+  "@errorTogglingImportant": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "categoryAdded": "Category \"{name}\" added",
+  "@categoryAdded": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "errorAddingCategory": "Error adding category: {error}",
+  "@errorAddingCategory": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+  "categoryRemoved": "Category \"{name}\" removed",
+  "@categoryRemoved": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "errorRemovingCategory": "Error removing category: {error}",
+  "@errorRemovingCategory": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+
+  "couldNotOpenUrl": "Could not open URL: {url}",
+  "@couldNotOpenUrl": {
+    "placeholders": { "url": { "type": "String" } }
+  },
+  "errorOpeningUrl": "Error opening URL: {error}",
+  "@errorOpeningUrl": {
+    "placeholders": { "error": { "type": "String" } }
+  },
+
+  "pleaseSelectLanguage": "Please select a language",
+  "add": "Add",
+  "speak": "Speak",
+
+  "recordingFailedToStart": "Recording failed to start!\n\nCheck:\n1. Microphone is connected\n2. Microphone is set as default device\n3. No other app is using microphone",
+  "recordingFailedNoAudioFile": "Recording failed - no audio file created!\n\nPossible causes:\n1. Microphone not connected\n2. No audio input detected\n3. Windows audio settings issue",
+  "errorStartingRecordingDetails": "Error starting recording: {error}",
+  "@errorStartingRecordingDetails": {
+    "placeholders": { "error": { "type": "String" } }
+  }
 }

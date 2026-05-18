@@ -243,6 +243,7 @@ class _LanguageRallyAppState extends ConsumerState<LanguageRallyApp>
     }
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Language Rally',
       theme: lightTheme,
       darkTheme: darkTheme,

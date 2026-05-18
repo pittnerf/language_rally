@@ -16,22 +16,10 @@ class _AboutPageState extends State<AboutPage> {
   String _versionLabel = '-';
 
   static const List<_AboutFeature> _features = [
-    _AboutFeature(
-      imagePath: 'assets/images/1_Language_power.webp',
-      title: 'Language power',
-    ),
-    _AboutFeature(
-      imagePath: 'assets/images/2_AI_integration.webp',
-      title: 'AI integration',
-    ),
-    _AboutFeature(
-      imagePath: 'assets/images/3_Adaptive practice.webp',
-      title: 'Adaptive practice',
-    ),
-    _AboutFeature(
-      imagePath: 'assets/images/4_Master_accent.webp',
-      title: 'Master accent',
-    ),
+    _AboutFeature(imagePath: 'assets/images/1_Language_power.webp', titleKey: 'featureLangPower'),
+    _AboutFeature(imagePath: 'assets/images/2_AI_integration.webp', titleKey: 'featureAiIntegration'),
+    _AboutFeature(imagePath: 'assets/images/3_Adaptive practice.webp', titleKey: 'featureAdaptivePractice'),
+    _AboutFeature(imagePath: 'assets/images/4_Master_accent.webp', titleKey: 'featureMasterAccent'),
   ];
 
   @override
@@ -166,8 +154,11 @@ class _AboutPageState extends State<AboutPage> {
                               ),
                               itemBuilder: (context, index) {
                                 final feature = _features[index];
+                                final l10n = AppLocalizations.of(context)!;
+                                final title = _featureTitle(l10n, feature.titleKey);
                                 return _FeatureCard(
-                                  feature: feature,
+                                  imagePath: feature.imagePath,
+                                  title: title,
                                   theme: theme,
                                 );
                               },
@@ -234,20 +225,32 @@ class _SectionCard extends StatelessWidget {
 class _AboutFeature {
   const _AboutFeature({
     required this.imagePath,
-    required this.title,
+    required this.titleKey,
   });
 
   final String imagePath;
-  final String title;
+  final String titleKey;
+}
+
+String _featureTitle(AppLocalizations l10n, String key) {
+  switch (key) {
+    case 'featureLangPower': return l10n.featureLangPower;
+    case 'featureAiIntegration': return l10n.featureAiIntegration;
+    case 'featureAdaptivePractice': return l10n.featureAdaptivePractice;
+    case 'featureMasterAccent': return l10n.featureMasterAccent;
+    default: return key;
+  }
 }
 
 class _FeatureCard extends StatelessWidget {
   const _FeatureCard({
-    required this.feature,
+    required this.imagePath,
+    required this.title,
     required this.theme,
   });
 
-  final _AboutFeature feature;
+  final String imagePath;
+  final String title;
   final ThemeData theme;
 
   @override
@@ -264,7 +267,7 @@ class _FeatureCard extends StatelessWidget {
         fit: StackFit.expand,
         children: [
           Image.asset(
-            feature.imagePath,
+            imagePath,
             fit: BoxFit.cover,
             errorBuilder: (context, error, stackTrace) {
               return Container(
@@ -272,12 +275,13 @@ class _FeatureCard extends StatelessWidget {
                 alignment: Alignment.center,
                 padding: const EdgeInsets.all(AppTheme.spacing12),
                 child: Text(
-                  feature.title,
+                  title,
                   textAlign: TextAlign.center,
                 ),
               );
             },
           ),
+          // ...existing gradient code...
           DecoratedBox(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -297,7 +301,7 @@ class _FeatureCard extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(AppTheme.spacing12),
               child: Text(
-                feature.title,
+                title,
                 style: theme.textTheme.titleSmall?.copyWith(
                   color: Colors.white,
                   fontWeight: FontWeight.w700,

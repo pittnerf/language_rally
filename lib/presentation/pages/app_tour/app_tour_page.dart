@@ -81,6 +81,8 @@ class _AppTourPageState extends State<AppTourPage> {
         imagePaths: [
           'assets/images/tour_images/tour_3_1.jpg',
           'assets/images/tour_images/tour_3_2.jpg',
+          'assets/images/tour_images/tour_3_3.jpg',
+          'assets/images/tour_images/tour_3_4.jpg',
         ],
       ),
       TourPageData(

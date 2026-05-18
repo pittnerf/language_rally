@@ -67,8 +67,9 @@ class _HomePageState extends ConsumerState<HomePage> {
             letterSpacing: 0.15,
           );
 
+          final l10n = AppLocalizations.of(context)!;
           return AlertDialog(
-            title: const Text('Choose Theme'),
+            title: Text(l10n.chooseTheme),
             content: SizedBox(
               width: double.maxFinite,
               child: SingleChildScrollView(
@@ -77,8 +78,8 @@ class _HomePageState extends ConsumerState<HomePage> {
                   children: [
                     // Dark/Light mode toggle
                     SwitchListTile(
-                      title: const Text('Dark Mode', style: titleTextStyle),
-                      subtitle: const Text('Toggle between light and dark', style: subtitleTextStyle),
+                      title: Text(l10n.darkMode, style: titleTextStyle),
+                      subtitle: Text(l10n.toggleBetweenLightAndDark, style: subtitleTextStyle),
                       value: currentConfig.isDarkMode,
                       onChanged: (value) {
                         ref.read(themeProvider.notifier).setDarkMode(value);
@@ -86,7 +87,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                     ),
                     const Divider(),
                     const SizedBox(height: 8),
-                    const Text('Color Theme:', style: headerTextStyle),
+                    Text(l10n.colorTheme, style: headerTextStyle),
                     const SizedBox(height: 8),
                     // Theme options
                     ...AppThemeOption.values.map((option) {
@@ -109,10 +110,10 @@ class _HomePageState extends ConsumerState<HomePage> {
               ),
             ),
             actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('Close'),
-              ),
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text(l10n.close),
+                  ),
             ],
           );
         },
@@ -180,7 +181,7 @@ class _HomePageState extends ConsumerState<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _buildHeader(context, ref, localizations, theme, themeConfig),
-                    const SizedBox(height: AppTheme.spacing32),
+                    const SizedBox(height: AppTheme.spacing16),
                     ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 400),
                       child: _buildMainButtons(context, localizations, theme, isTablet: true),
@@ -297,7 +298,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             // Theme brightness toggle button
             IconButton(
               icon: Icon(themeConfig.isDarkMode ? Icons.light_mode : Icons.dark_mode),
-              tooltip: 'Toggle brightness',
+              tooltip: localizations.toggleBrightness,
               onPressed: () {
                 ref.read(themeProvider.notifier).toggleBrightness();
               },
@@ -305,7 +306,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             // Theme selector button
             IconButton(
               icon: const Icon(Icons.palette),
-              tooltip: 'Change theme',
+              tooltip: localizations.changeTheme,
               onPressed: () => _showThemeSelector(context, ref),
             ),
           ],
@@ -333,26 +334,13 @@ class _HomePageState extends ConsumerState<HomePage> {
 
     final iconSize = isTablet ? 24.0 : 20.0;
     final fontSize = isTablet ? 16.0 : 14.0;
-
+    double vertDistance = isTablet ? AppTheme.spacing12 : AppTheme.spacing8;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Package List Button (First - Primary Action)
-        // ElevatedButton.icon(
-        //  onPressed: () {
-        //    Navigator.push(
-        //      context,
-      //      MaterialPageRoute(builder: (_) => const PackageListPage()),
-        //     );
-        //  },
-        //  icon: Icon(Icons.library_books, size: iconSize),
-    //  label: _buttonLabel(localizations.viewPackages, fontSize),
-      //      style: ElevatedButton.styleFrom(
-      //      padding: buttonPadding,
-      //    ),
-        //  ),
 
-        const SizedBox(height: AppTheme.spacing12),
+
+        // const SizedBox(height: AppTheme.spacing12),
 
         // Simplified Package List Button
         ElevatedButton.icon(
@@ -368,7 +356,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             padding: buttonPadding,
           ),
         ),
-        const SizedBox(height: AppTheme.spacing12),
+        SizedBox(height: vertDistance),
 
         // Global Search Button
         ElevatedButton.icon(
@@ -384,7 +372,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             padding: buttonPadding,
           ),
         ),
-        const SizedBox(height: AppTheme.spacing12),
+        SizedBox(height: vertDistance),
 
         // AI Item Creator Button
         ElevatedButton.icon(
@@ -400,7 +388,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             padding: buttonPadding,
           ),
         ),
-        const SizedBox(height: AppTheme.spacing12),
+        SizedBox(height: vertDistance),
 
         // AI Text Analysis Button
         ElevatedButton.icon(
@@ -416,7 +404,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             padding: buttonPadding,
           ),
         ),
-        const SizedBox(height: AppTheme.spacing12),
+        SizedBox(height: vertDistance),
         FilledButton.icon(
           onPressed: () {
             Navigator.push(
@@ -431,7 +419,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             elevation: 4,
           ),
         ),
-        const SizedBox(height: AppTheme.spacing12),
+        SizedBox(height: vertDistance),
 
         // Practice Pronunciation Button (Third)
         ElevatedButton.icon(
@@ -449,7 +437,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             padding: buttonPadding,
           ),
         ),
-        const SizedBox(height: AppTheme.spacing12),
+        SizedBox(height: vertDistance),
 
         // Create Package Button
         ElevatedButton.icon(
@@ -465,7 +453,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             padding: buttonPadding,
           ),
         ),
-        const SizedBox(height: AppTheme.spacing12),
+        SizedBox(height: vertDistance),
 
         // Browse Store Button
         ElevatedButton.icon(
@@ -481,7 +469,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             padding: buttonPadding,
           ),
         ),
-        const SizedBox(height: AppTheme.spacing12),
+        SizedBox(height: vertDistance),
 
         // Settings Button
         ElevatedButton.icon(
@@ -497,7 +485,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             padding: buttonPadding,
           ),
         ),
-        const SizedBox(height: AppTheme.spacing12),
+        SizedBox(height: vertDistance),
 
         // About Button
         ElevatedButton.icon(
@@ -515,7 +503,7 @@ class _HomePageState extends ConsumerState<HomePage> {
         ),
 
     if (PRINT_DEBUG) ...[
-        const SizedBox(height: AppTheme.spacing12),
+      SizedBox(height: vertDistance),
 
         // Test Data Generator Button (Dev Tool)
         OutlinedButton.icon(
@@ -541,7 +529,7 @@ class _HomePageState extends ConsumerState<HomePage> {
 
         // Bulk Package Import – admin tool, only shown in debug builds
         if (PRINT_DEBUG) ...[
-          const SizedBox(height: AppTheme.spacing12),
+          SizedBox(height: vertDistance),
           OutlinedButton.icon(
             onPressed: () {
               Navigator.push(
@@ -552,8 +540,7 @@ class _HomePageState extends ConsumerState<HomePage> {
               );
             },
             icon: Icon(Icons.download_for_offline_outlined, size: iconSize),
-            label: _buttonLabel('Bulk Package Import', fontSize),
-            style: OutlinedButton.styleFrom(
+            label: _buttonLabel('Bulk Package Import', fontSize),            style: OutlinedButton.styleFrom(
               padding: buttonPadding,
               side: BorderSide(color: theme.colorScheme.error, width: 2),
               foregroundColor: theme.colorScheme.error,

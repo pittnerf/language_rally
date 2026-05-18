@@ -174,7 +174,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     return IconButton(
       onPressed: () => _openGroupAdmin(context),
       icon: const Icon(Icons.settings_outlined),
-      tooltip: 'Manage groups',
+      tooltip: AppLocalizations.of(context)!.manageGroups,
       color: colorScheme.primary,
     );
   }
@@ -2544,7 +2544,7 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
 
       // Let user select destination folder and filename
       String? outputPath = await FilePicker.platform.saveFile(
-        dialogTitle: 'Export Items as JSON',
+        dialogTitle: l10n.exportItemsJson,
         fileName: '${package.packageName ?? "items"}_export.json',
         type: FileType.custom,
         allowedExtensions: ['json'],

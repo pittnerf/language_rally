@@ -5,7 +5,7 @@ import '../../../data/models/language_package_group.dart';
 import '../../../data/repositories/language_package_group_repository.dart';
 import '../../../data/repositories/language_package_repository.dart';
 import '../../../core/utils/debug_print.dart';
-
+import '../../../l10n/app_localizations.dart';
 
 /// Page for managing language package groups (add, edit, delete)
 class PackageGroupAdminPage extends StatefulWidget {
@@ -58,7 +58,7 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
 
   @override
   Widget build(BuildContext context) {
-
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final screenWidth = MediaQuery.of(context).size.width;
@@ -67,7 +67,7 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
     return Scaffold(
       appBar: isTablet ? AppBar(
         title: Text(
-          'Manage Package Groups',
+          l10n.managePackageGroups,
           style: theme.textTheme.titleMedium,
         ),
       ) : null,
@@ -101,7 +101,7 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
                             ),
                           ),
                           subtitle: Text(
-                            '$packageCount package${packageCount != 1 ? 's' : ''}',
+                            l10n.nPackages(packageCount),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                             ),
@@ -112,7 +112,7 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
                               IconButton(
                                 icon: const Icon(Icons.edit),
                                 onPressed: () => _editGroup(group),
-                                tooltip: 'Edit',
+                                tooltip: l10n.edit,
                               ),
                               IconButton(
                                 icon: Icon(
@@ -123,8 +123,8 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
                                 ),
                                 onPressed: canDelete ? () => _deleteGroup(group) : null,
                                 tooltip: canDelete
-                                    ? 'Delete'
-                                    : 'Cannot delete (has packages)',
+                                    ? l10n.delete
+                                    : l10n.cannotDeleteHasPackagesTooltip,
                               ),
                             ],
                           ),
@@ -136,12 +136,13 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _addGroup,
         icon: const Icon(Icons.add),
-        label: const Text('Add Group'),
+        label: Text(l10n.addGroup),
       ),
     );
   }
 
   Widget _buildEmptyState(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
@@ -156,14 +157,14 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
           ),
           SizedBox(height: AppTheme.spacing16),
           Text(
-            'No package groups',
+            l10n.noPackageGroups,
             style: theme.textTheme.titleMedium?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
           ),
           SizedBox(height: AppTheme.spacing8),
           Text(
-            'Create your first package group',
+            l10n.createFirstPackageGroup,
             style: theme.textTheme.bodySmall?.copyWith(
               color: colorScheme.onSurfaceVariant,
             ),
@@ -174,9 +175,10 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
   }
 
   Future<void> _addGroup() async {
+    final l10n = AppLocalizations.of(context)!;
     final newGroupName = await _showGroupNameDialog(
       context,
-      title: 'Add Package Group',
+      title: l10n.addPackageGroup,
       initialName: '',
     );
 
@@ -184,7 +186,6 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
       return;
     }
 
-    // Check for duplicate name (case-insensitive)
     final normalizedName = newGroupName.trim().toLowerCase();
     final duplicate = _groups.any(
       (g) => g.name.toLowerCase() == normalizedName,
@@ -194,8 +195,8 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
       if (!mounted) return;
       _showErrorDialog(
         context,
-        'Duplicate Name',
-        'A group with the name "$newGroupName" already exists.',
+        l10n.duplicateGroupName,
+        l10n.groupNameAlreadyExists(newGroupName),
       );
       return;
     }
@@ -211,7 +212,7 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Group "${newGroup.name}" created successfully'),
+          content: Text(l10n.groupCreatedSuccessfully(newGroup.name)),
           backgroundColor: Theme.of(context).colorScheme.primary,
         ),
       );
@@ -221,16 +222,17 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
       if (!mounted) return;
       _showErrorDialog(
         context,
-        'Error',
-        'Failed to create group: $e',
+        l10n.error,
+        l10n.failedToCreateGroup(e.toString()),
       );
     }
   }
 
   Future<void> _editGroup(LanguagePackageGroup group) async {
+    final l10n = AppLocalizations.of(context)!;
     final newGroupName = await _showGroupNameDialog(
       context,
-      title: 'Edit Package Group',
+      title: l10n.editPackageGroup,
       initialName: group.name,
     );
 
@@ -238,12 +240,10 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
       return;
     }
 
-    // Check if name changed
     if (newGroupName.trim() == group.name) {
       return;
     }
 
-    // Check for duplicate name (case-insensitive)
     final normalizedName = newGroupName.trim().toLowerCase();
     final duplicate = _groups.any(
       (g) => g.id != group.id && g.name.toLowerCase() == normalizedName,
@@ -253,8 +253,8 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
       if (!mounted) return;
       _showErrorDialog(
         context,
-        'Duplicate Name',
-        'A group with the name "$newGroupName" already exists.',
+        l10n.duplicateGroupName,
+        l10n.groupNameAlreadyExists(newGroupName),
       );
       return;
     }
@@ -270,7 +270,7 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Group renamed to "${updatedGroup.name}"'),
+          content: Text(l10n.groupRenamedTo(updatedGroup.name)),
           backgroundColor: Theme.of(context).colorScheme.primary,
         ),
       );
@@ -280,31 +280,31 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
       if (!mounted) return;
       _showErrorDialog(
         context,
-        'Error',
-        'Failed to update group: $e',
+        l10n.error,
+        l10n.failedToUpdateGroup(e.toString()),
       );
     }
   }
 
   Future<void> _deleteGroup(LanguagePackageGroup group) async {
+    final l10n = AppLocalizations.of(context)!;
     final confirmed = await _showConfirmDialog(
       context,
-      title: 'Delete Group',
-      message: 'Are you sure you want to delete the group "${group.name}"?\n\nThis action cannot be undone.',
+      title: l10n.deleteGroup,
+      message: l10n.deleteGroupConfirm(group.name),
     );
 
     if (confirmed != true) {
       return;
     }
 
-    // Double-check that group has no packages
     final packages = await _packageRepo.getPackagesByGroupId(group.id);
     if (packages.isNotEmpty) {
       if (!mounted) return;
       _showErrorDialog(
         context,
-        'Cannot Delete',
-        'This group still has ${packages.length} package(s). Please move or delete them first.',
+        l10n.cannotDeleteGroup,
+        l10n.groupHasPackages(packages.length),
       );
       return;
     }
@@ -315,7 +315,7 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Group "${group.name}" deleted'),
+          content: Text(l10n.groupDeleted(group.name)),
           backgroundColor: Theme.of(context).colorScheme.primary,
         ),
       );
@@ -325,8 +325,8 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
       if (!mounted) return;
       _showErrorDialog(
         context,
-        'Error',
-        'Failed to delete group: $e',
+        l10n.error,
+        l10n.failedToDeleteGroup(e.toString()),
       );
     }
   }
@@ -336,6 +336,7 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
     required String title,
     required String initialName,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     final controller = TextEditingController(text: initialName);
     final formKey = GlobalKey<FormState>();
 
@@ -348,13 +349,13 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
           child: TextFormField(
             controller: controller,
             autofocus: true,
-            decoration: const InputDecoration(
-              labelText: 'Group Name',
-              hintText: 'Enter group name',
+            decoration: InputDecoration(
+              labelText: l10n.groupName,
+              hintText: l10n.enterGroupName,
             ),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Group name is required';
+                return l10n.groupNameRequired;
               }
               return null;
             },
@@ -368,7 +369,7 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () {
@@ -376,7 +377,7 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
                 Navigator.of(context).pop(controller.text.trim());
               }
             },
-            child: const Text('Save'),
+            child: Text(l10n.save),
           ),
         ],
       ),
@@ -388,6 +389,7 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
     required String title,
     required String message,
   }) {
+    final l10n = AppLocalizations.of(context)!;
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -396,7 +398,7 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
@@ -404,7 +406,7 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
               backgroundColor: Theme.of(context).colorScheme.error,
               foregroundColor: Theme.of(context).colorScheme.onError,
             ),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -412,6 +414,7 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
   }
 
   void _showErrorDialog(BuildContext context, String title, String message) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -420,11 +423,10 @@ class _PackageGroupAdminPageState extends State<PackageGroupAdminPage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
+            child: Text(l10n.ok),
           ),
         ],
       ),
     );
   }
 }
-

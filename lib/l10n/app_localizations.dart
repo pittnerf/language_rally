@@ -3245,7 +3245,7 @@ abstract class AppLocalizations {
   /// No description provided for @tourPage3Desc.
   ///
   /// In en, this message translates to:
-  /// **'Build your own learning packages in the blink of an eye:\n\n• Paste any text and let AI extract relevant vocabulary automatically\n• Identify words and expressions perfectly suited to your level\n• Let the AI do the translation for you\n• Let the AI search real-time examples\n• Create packages ready for training quickly'**
+  /// **'Build your own learning packages in the blink of an eye:\n\n• Paste any text and let AI extract relevant vocabulary automatically\n• Identify words and expressions perfectly suited to your level\n• Let the AI do the translation for you\n• Let the AI search real-time examples\n\nChat with the AI:\n• Let it suggest words and expressions for your topic\n• Click to generate examples and save them to your OWN package\n• Create packages ready for training quickly'**
   String get tourPage3Desc;
 
   /// No description provided for @tourPage4Title.
@@ -4613,7 +4613,7 @@ abstract class AppLocalizations {
   /// No description provided for @aboutSupportEmail.
   ///
   /// In en, this message translates to:
-  /// **'Support email'**
+  /// **'Support email address'**
   String get aboutSupportEmail;
 
   /// No description provided for @aboutWebsiteUrl.
@@ -4645,6 +4645,318 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Welcome splash image not found'**
   String get aboutWelcomeSplashNotFound;
+
+  /// No description provided for @chooseTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Theme'**
+  String get chooseTheme;
+
+  /// No description provided for @darkMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Dark Mode'**
+  String get darkMode;
+
+  /// No description provided for @toggleBetweenLightAndDark.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle between light and dark'**
+  String get toggleBetweenLightAndDark;
+
+  /// No description provided for @colorTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Color Theme:'**
+  String get colorTheme;
+
+  /// No description provided for @toggleBrightness.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle brightness'**
+  String get toggleBrightness;
+
+  /// No description provided for @changeTheme.
+  ///
+  /// In en, this message translates to:
+  /// **'Change theme'**
+  String get changeTheme;
+
+  /// No description provided for @managePackageGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Package Groups'**
+  String get managePackageGroups;
+
+  /// No description provided for @noPackageGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'No package groups'**
+  String get noPackageGroups;
+
+  /// No description provided for @createFirstPackageGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Create your first package group'**
+  String get createFirstPackageGroup;
+
+  /// No description provided for @addGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Group'**
+  String get addGroup;
+
+  /// No description provided for @addPackageGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Package Group'**
+  String get addPackageGroup;
+
+  /// No description provided for @editPackageGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Package Group'**
+  String get editPackageGroup;
+
+  /// No description provided for @groupName.
+  ///
+  /// In en, this message translates to:
+  /// **'Group Name'**
+  String get groupName;
+
+  /// No description provided for @enterGroupName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter group name'**
+  String get enterGroupName;
+
+  /// No description provided for @groupNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Group name is required'**
+  String get groupNameRequired;
+
+  /// No description provided for @duplicateGroupName.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate Name'**
+  String get duplicateGroupName;
+
+  /// No description provided for @groupNameAlreadyExists.
+  ///
+  /// In en, this message translates to:
+  /// **'A group with the name \"{name}\" already exists.'**
+  String groupNameAlreadyExists(String name);
+
+  /// No description provided for @groupCreatedSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'Group \"{name}\" created successfully'**
+  String groupCreatedSuccessfully(String name);
+
+  /// No description provided for @failedToCreateGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create group: {error}'**
+  String failedToCreateGroup(String error);
+
+  /// No description provided for @groupRenamedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Group renamed to \"{name}\"'**
+  String groupRenamedTo(String name);
+
+  /// No description provided for @failedToUpdateGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update group: {error}'**
+  String failedToUpdateGroup(String error);
+
+  /// No description provided for @deleteGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Group'**
+  String get deleteGroup;
+
+  /// No description provided for @deleteGroupConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete the group \"{name}\"?\n\nThis action cannot be undone.'**
+  String deleteGroupConfirm(String name);
+
+  /// No description provided for @cannotDeleteGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot Delete'**
+  String get cannotDeleteGroup;
+
+  /// No description provided for @groupHasPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'This group still has {count} package(s). Please move or delete them first.'**
+  String groupHasPackages(int count);
+
+  /// No description provided for @groupDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Group \"{name}\" deleted'**
+  String groupDeleted(String name);
+
+  /// No description provided for @failedToDeleteGroup.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to delete group: {error}'**
+  String failedToDeleteGroup(String error);
+
+  /// No description provided for @cannotDeleteHasPackagesTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot delete (has packages)'**
+  String get cannotDeleteHasPackagesTooltip;
+
+  /// No description provided for @nPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 package} other{{count} packages}}'**
+  String nPackages(int count);
+
+  /// No description provided for @manageGroups.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage groups'**
+  String get manageGroups;
+
+  /// No description provided for @featureLangPower.
+  ///
+  /// In en, this message translates to:
+  /// **'Language power'**
+  String get featureLangPower;
+
+  /// No description provided for @featureAiIntegration.
+  ///
+  /// In en, this message translates to:
+  /// **'AI integration'**
+  String get featureAiIntegration;
+
+  /// No description provided for @featureAdaptivePractice.
+  ///
+  /// In en, this message translates to:
+  /// **'Adaptive practice'**
+  String get featureAdaptivePractice;
+
+  /// No description provided for @featureMasterAccent.
+  ///
+  /// In en, this message translates to:
+  /// **'Master accent'**
+  String get featureMasterAccent;
+
+  /// No description provided for @allBadgesEarned.
+  ///
+  /// In en, this message translates to:
+  /// **'🎉 All badges earned! You are a Master!'**
+  String get allBadgesEarned;
+
+  /// No description provided for @nextBadgeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Next: {name}'**
+  String nextBadgeLabel(String name);
+
+  /// No description provided for @pointsToGo.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% to go'**
+  String pointsToGo(String percent);
+
+  /// No description provided for @progressPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% progress'**
+  String progressPercent(String percent);
+
+  /// No description provided for @errorTogglingFavourite.
+  ///
+  /// In en, this message translates to:
+  /// **'Error toggling favourite: {error}'**
+  String errorTogglingFavourite(String error);
+
+  /// No description provided for @errorTogglingImportant.
+  ///
+  /// In en, this message translates to:
+  /// **'Error toggling important: {error}'**
+  String errorTogglingImportant(String error);
+
+  /// No description provided for @categoryAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Category \"{name}\" added'**
+  String categoryAdded(String name);
+
+  /// No description provided for @errorAddingCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Error adding category: {error}'**
+  String errorAddingCategory(String error);
+
+  /// No description provided for @categoryRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Category \"{name}\" removed'**
+  String categoryRemoved(String name);
+
+  /// No description provided for @errorRemovingCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Error removing category: {error}'**
+  String errorRemovingCategory(String error);
+
+  /// No description provided for @couldNotOpenUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open URL: {url}'**
+  String couldNotOpenUrl(String url);
+
+  /// No description provided for @errorOpeningUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Error opening URL: {error}'**
+  String errorOpeningUrl(String error);
+
+  /// No description provided for @pleaseSelectLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a language'**
+  String get pleaseSelectLanguage;
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// No description provided for @speak.
+  ///
+  /// In en, this message translates to:
+  /// **'Speak'**
+  String get speak;
+
+  /// No description provided for @recordingFailedToStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording failed to start!\n\nCheck:\n1. Microphone is connected\n2. Microphone is set as default device\n3. No other app is using microphone'**
+  String get recordingFailedToStart;
+
+  /// No description provided for @recordingFailedNoAudioFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording failed - no audio file created!\n\nPossible causes:\n1. Microphone not connected\n2. No audio input detected\n3. Windows audio settings issue'**
+  String get recordingFailedNoAudioFile;
+
+  /// No description provided for @errorStartingRecordingDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Error starting recording: {error}'**
+  String errorStartingRecordingDetails(String error);
 }
 
 class _AppLocalizationsDelegate

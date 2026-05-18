@@ -695,7 +695,7 @@ class _PronunciationPracticePageState
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error starting recording: $e'),
+              content: Text(AppLocalizations.of(context)!.errorStartingRecordingDetails(e.toString())),
               duration: const Duration(seconds: 5),
             ),
           );

@@ -1039,7 +1039,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                       Icons.volume_up,
                       color: theme.colorScheme.onPrimaryContainer,
                     ),
-                    tooltip: 'Speak text',
+                    tooltip: AppLocalizations.of(context)!.speakText,
                     onPressed: () {
                       final languageCodeFull = _displayLanguage1
                           ? item.language1Data.languageCode
@@ -1109,7 +1109,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                     Icons.volume_up,
                     color: theme.colorScheme.onPrimaryContainer,
                   ),
-                  tooltip: 'Speak text',
+                  tooltip: AppLocalizations.of(context)!.speakText,
                   onPressed: () {
                     final fullText =
                         '${preText.isNotEmpty ? "$preText " : ""}$mainText';
@@ -1223,7 +1223,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                           Icons.volume_up,
                           color: theme.colorScheme.onSecondaryContainer,
                         ),
-                        tooltip: 'Speak text',
+                        tooltip: AppLocalizations.of(context)!.speakText,
                         onPressed: () {
                           final languageCodeFull = !_displayLanguage1
                               ? item.language1Data.languageCode
@@ -1298,7 +1298,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                     Icons.volume_up,
                     color: theme.colorScheme.onSecondaryContainer,
                   ),
-                  tooltip: 'Speak text',
+                  tooltip: AppLocalizations.of(context)!.speakText,
                   onPressed: () {
                     final fullText =
                         '${preText.isNotEmpty ? "$preText " : ""}$mainText';
@@ -1431,7 +1431,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.volume_up, size: 20),
-                  tooltip: 'Speak',
+                  tooltip: AppLocalizations.of(context)!.speak,
                   onPressed: () {
                     final fullText =
                         '${item.language1Data.preItem?.isNotEmpty ?? false ? "${item.language1Data.preItem} " : ""}${item.language1Data.text}';
@@ -1504,7 +1504,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
                 ),
                 IconButton(
                   icon: const Icon(Icons.volume_up, size: 20),
-                  tooltip: 'Speak',
+                  tooltip: AppLocalizations.of(context)!.speak,
                   onPressed: () {
                     final fullText =
                         '${item.language2Data.preItem?.isNotEmpty ?? false ? "${item.language2Data.preItem} " : ""}${item.language2Data.text}';

@@ -205,6 +205,7 @@ class NextBadgeProgress extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final nextBadge = BadgeHelper.getNextBadge(currentAccuracy);
+    final l10n = AppLocalizations.of(context)!;
 
     if (nextBadge == null) {
       return Card(
@@ -220,7 +221,7 @@ class NextBadgeProgress extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  '🎉 All badges earned! You are a Master!',
+                  l10n.allBadgesEarned,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
@@ -252,11 +253,11 @@ class NextBadgeProgress extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Next: ${nextBadge.name}',
+                        l10n.nextBadgeLabel(nextBadge.name),
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       Text(
-                        '${pointsNeeded.toStringAsFixed(1)}% to go',
+                        l10n.pointsToGo(pointsNeeded.toStringAsFixed(1)),
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                     ],
@@ -274,7 +275,7 @@ class NextBadgeProgress extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '${(progress * 100).toStringAsFixed(0)}% progress',
+              l10n.progressPercent((progress * 100).toStringAsFixed(0)),
               style: Theme.of(context).textTheme.bodySmall,
             ),
           ],

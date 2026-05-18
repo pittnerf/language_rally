@@ -1757,7 +1757,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get tourPage3Desc =>
-      'Építse fel saját tanulási csomagjait egy szempillantás alatt:\n\n• Illesszen be bármilyen szöveget, és hagyja, hogy az AI automatikusan kivonja a releváns szókincset\n• Azonosítson olyan szavakat és kifejezéseket, amelyek tökéletesen megfelelnek az ön szintjének\n• Hagyja, hogy az AI elvégezze a fordítást\n• Hagyja, hogy az AI valós idejű példákat keressen\n• Hozzon létre gyorsan gyakorlásra kész csomagokat';
+      'Építse fel saját tanulási csomagjait AI-val egy szempillantás alatt:\n\n• Illesszen be bármilyen szöveget, és hagyja, hogy az AI automatikusan kivonatolja a releváns szókincset\n• Azonosítson olyan szavakat és kifejezéseket, amelyek tökéletesen megfelelnek az ön szintjének\n• Hagyja, hogy az AI elvégezze a fordítást\n• Hagyja, hogy az AI valós idejű példákat keressen\n\nTársalogjon az AI-val:\n• Kérjen szavakat és kifejezéseket egy Ön által megadott témában\n• Generáljon hozzá példamondatokat és mentse el mindezt egy kattintással!\n• Hozzon létre gyorsan gyakorlásra kész csomagokat';
 
   @override
   String get tourPage4Title => 'AI-vezérelt valós példák és prémium fordítás';
@@ -2510,7 +2510,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get aboutWebsite => 'Weboldal';
 
   @override
-  String get aboutSupportEmail => 'Támogatási e-mail';
+  String get aboutSupportEmail => 'Támogatási e-mail cím';
 
   @override
   String get aboutWebsiteUrl => 'https://sites.google.com/view/language-rally';
@@ -2530,4 +2530,214 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get aboutWelcomeSplashNotFound => 'A Welcome_splash kép nem található';
+
+  @override
+  String get chooseTheme => 'Téma kiválasztása';
+
+  @override
+  String get darkMode => 'Sötét mód';
+
+  @override
+  String get toggleBetweenLightAndDark => 'Váltás világos és sötét mód között';
+
+  @override
+  String get colorTheme => 'Színtéma:';
+
+  @override
+  String get toggleBrightness => 'Fényerő váltása';
+
+  @override
+  String get changeTheme => 'Téma megváltoztatása';
+
+  @override
+  String get managePackageGroups => 'Csomagcsoportok kezelése';
+
+  @override
+  String get noPackageGroups => 'Nincsenek csomagcsoportok';
+
+  @override
+  String get createFirstPackageGroup => 'Hozza létre az első csomagcsoportját';
+
+  @override
+  String get addGroup => 'Csoport hozzáadása';
+
+  @override
+  String get addPackageGroup => 'Csomagcsoport hozzáadása';
+
+  @override
+  String get editPackageGroup => 'Csomagcsoport szerkesztése';
+
+  @override
+  String get groupName => 'Csoport neve';
+
+  @override
+  String get enterGroupName => 'Adja meg a csoport nevét';
+
+  @override
+  String get groupNameRequired => 'A csoport neve kötelező';
+
+  @override
+  String get duplicateGroupName => 'Ismétlődő név';
+
+  @override
+  String groupNameAlreadyExists(String name) {
+    return 'A(z) \"$name\" nevű csoport már létezik.';
+  }
+
+  @override
+  String groupCreatedSuccessfully(String name) {
+    return 'A(z) \"$name\" csoport sikeresen létrehozva';
+  }
+
+  @override
+  String failedToCreateGroup(String error) {
+    return 'Nem sikerült létrehozni a csoportot: $error';
+  }
+
+  @override
+  String groupRenamedTo(String name) {
+    return 'A csoport neve megváltozott: \"$name\"';
+  }
+
+  @override
+  String failedToUpdateGroup(String error) {
+    return 'Nem sikerült frissíteni a csoportot: $error';
+  }
+
+  @override
+  String get deleteGroup => 'Csoport törlése';
+
+  @override
+  String deleteGroupConfirm(String name) {
+    return 'Biztosan törli a(z) \"$name\" csoportot?\n\nEz a művelet nem visszavonható.';
+  }
+
+  @override
+  String get cannotDeleteGroup => 'Nem törölhető';
+
+  @override
+  String groupHasPackages(int count) {
+    return 'Ez a csoport még $count csomagot tartalmaz. Kérjük, először mozgassa vagy törölje azokat.';
+  }
+
+  @override
+  String groupDeleted(String name) {
+    return 'A(z) \"$name\" csoport törölve';
+  }
+
+  @override
+  String failedToDeleteGroup(String error) {
+    return 'Nem sikerült törölni a csoportot: $error';
+  }
+
+  @override
+  String get cannotDeleteHasPackagesTooltip =>
+      'Nem törölhető (csomagokat tartalmaz)';
+
+  @override
+  String nPackages(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count csomag',
+      one: '1 csomag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get manageGroups => 'Csoportok kezelése';
+
+  @override
+  String get featureLangPower => 'Nyelvi erő';
+
+  @override
+  String get featureAiIntegration => 'AI integráció';
+
+  @override
+  String get featureAdaptivePractice => 'Adaptív gyakorlás';
+
+  @override
+  String get featureMasterAccent => 'Kiejtés mestere';
+
+  @override
+  String get allBadgesEarned =>
+      '🎉 Az összes jelvény megszerzett! Ön mesterré vált!';
+
+  @override
+  String nextBadgeLabel(String name) {
+    return 'Következő: $name';
+  }
+
+  @override
+  String pointsToGo(String percent) {
+    return '$percent% hiányzik';
+  }
+
+  @override
+  String progressPercent(String percent) {
+    return '$percent% előrehaladás';
+  }
+
+  @override
+  String errorTogglingFavourite(String error) {
+    return 'Hiba a kedvenc váltásakor: $error';
+  }
+
+  @override
+  String errorTogglingImportant(String error) {
+    return 'Hiba a fontos jelzés váltásakor: $error';
+  }
+
+  @override
+  String categoryAdded(String name) {
+    return 'A(z) \"$name\" kategória hozzáadva';
+  }
+
+  @override
+  String errorAddingCategory(String error) {
+    return 'Hiba a kategória hozzáadásakor: $error';
+  }
+
+  @override
+  String categoryRemoved(String name) {
+    return 'A(z) \"$name\" kategória eltávolítva';
+  }
+
+  @override
+  String errorRemovingCategory(String error) {
+    return 'Hiba a kategória eltávolításakor: $error';
+  }
+
+  @override
+  String couldNotOpenUrl(String url) {
+    return 'Nem sikerült megnyitni: $url';
+  }
+
+  @override
+  String errorOpeningUrl(String error) {
+    return 'Hiba az URL megnyitásakor: $error';
+  }
+
+  @override
+  String get pleaseSelectLanguage => 'Kérjük, válasszon nyelvet';
+
+  @override
+  String get add => 'Hozzáadás';
+
+  @override
+  String get speak => 'Felolvasás';
+
+  @override
+  String get recordingFailedToStart =>
+      'A felvétel indítása sikertelen!\n\nEllenőrizze:\n1. A mikrofon csatlakoztatva van\n2. A mikrofon alapértelmezett eszközként van beállítva\n3. Nincs más alkalmazás, amely a mikrofont használja';
+
+  @override
+  String get recordingFailedNoAudioFile =>
+      'A felvétel sikertelen – nem jött létre hangfájl!\n\nLehetséges okok:\n1. A mikrofon nincs csatlakoztatva\n2. Nem érzékelt hangbemenetet\n3. Windows hangbeállítási probléma';
+
+  @override
+  String errorStartingRecordingDetails(String error) {
+    return 'Hiba a felvétel indításakor: $error';
+  }
 }

@@ -690,7 +690,7 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
     if (_selectedLanguageCode == null || _languageNameController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Please select a language'),
+          content: Text(l10n.pleaseSelectLanguage),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );

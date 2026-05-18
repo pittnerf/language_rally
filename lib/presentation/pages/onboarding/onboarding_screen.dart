@@ -667,7 +667,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           ),
           const SizedBox(height: AppTheme.spacing8),
           Text(
-            'This only happens once.',
+            l10n.splashThisHappensOnce,
             style: theme.textTheme.bodySmall?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
               fontStyle: FontStyle.italic,

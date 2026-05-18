@@ -282,7 +282,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error toggling favourite: $e'),
+            content: Text(AppLocalizations.of(context)!.errorTogglingFavourite(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -314,7 +314,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error toggling important: $e'),
+            content: Text(AppLocalizations.of(context)!.errorTogglingImportant(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -2244,8 +2244,8 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Remove Category'),
-        content: Text('Remove category "${category.name}" from this item?'),
+        title: Text(l10n.removeCategory),
+        content: Text(l10n.removeCategoryConfirm(category.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -2256,7 +2256,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Remove'),
+            child: Text(l10n.remove),
           ),
         ],
       ),
@@ -2520,7 +2520,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Category "${category.name}" added'),
+            content: Text(AppLocalizations.of(context)!.categoryAdded(category.name)),
             backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
@@ -2529,7 +2529,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error adding category: $e'),
+            content: Text(AppLocalizations.of(context)!.errorAddingCategory(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -2544,8 +2544,8 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Remove Category'),
-        content: Text('Remove category "${category.name}" from this item?'),
+        title: Text(l10n.removeCategory),
+        content: Text(l10n.removeCategoryConfirm(category.name)),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
@@ -2556,7 +2556,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Remove'),
+            child: Text(l10n.remove),
           ),
         ],
       ),
@@ -2596,7 +2596,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Category "${category.name}" removed'),
+            content: Text(AppLocalizations.of(context)!.categoryRemoved(category.name)),
             backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
@@ -2605,7 +2605,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error removing category: $e'),
+            content: Text(AppLocalizations.of(context)!.errorRemovingCategory(e.toString())),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
@@ -2815,9 +2815,9 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete Item'),
+        title: Text(l10n.deleteItem),
         content: Text(
-          'Are you sure you want to delete this item?\n\n"${item.language1Data.text}" / "${item.language2Data.text}"\n\nThis action cannot be undone.',
+          '${l10n.confirmDeleteItem}\n\n"${item.language1Data.text}" / "${item.language2Data.text}"\n\n${l10n.thisActionCannotBeUndone}',
         ),
         actions: [
           TextButton(
@@ -2829,7 +2829,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
             style: ElevatedButton.styleFrom(
               backgroundColor: Theme.of(context).colorScheme.error,
             ),
-            child: const Text('Delete'),
+            child: Text(l10n.delete),
           ),
         ],
       ),
@@ -2860,7 +2860,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
 
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Item deleted'),
+            content: Text(AppLocalizations.of(context)!.itemDeleted),
             backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
@@ -2869,7 +2869,7 @@ class _ItemBrowserPageState extends ConsumerState<ItemBrowserPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error deleting item: $e'),
+            content: Text(AppLocalizations.of(context)!.errorDeletingItem),
             backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
