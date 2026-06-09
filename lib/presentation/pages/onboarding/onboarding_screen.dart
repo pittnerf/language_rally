@@ -42,6 +42,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   // ── Step 2: scan state ────────────────────────────────────────────────────
   bool _isScanning = false;
   bool _scanDone = false;
+  late ScanProgress _scanProgress;
   Map<String, SeedPackageGroupInfo> _groupToInfo = {};
   Set<String> _selectedGroups = {};
   Set<String> _selectedLanguages = {};
@@ -64,6 +65,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     _step = widget.startAtStep;
     _importProgress = AppInitializationService.seedingProgress.value;
     AppInitializationService.seedingProgress.addListener(_onProgress);
+    _scanProgress = AppInitializationService.scanProgress.value;
+    AppInitializationService.scanProgress.addListener(_onScanProgress);
 
     // If we're opening directly at the package-selection step, begin scanning
     // immediately so the user doesn't have to tap anything first.
@@ -75,6 +78,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   @override
   void dispose() {
     AppInitializationService.seedingProgress.removeListener(_onProgress);
+    AppInitializationService.scanProgress.removeListener(_onScanProgress);
     super.dispose();
   }
 
@@ -114,6 +118,17 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
+  void _onScanProgress() {
+    if (!mounted) return;
+    setState(() {
+      _scanProgress = AppInitializationService.scanProgress.value;
+      if (_isScanning && !_scanProgress.isActive) {
+        _isScanning = false;
+        _scanDone = true;
+      }
+    });
+  }
+
   // ── Finish / completion ────────────────────────────────────────────────────
 
   /// Closes the wizard: calls [onComplete] if provided, otherwise pops.
@@ -129,33 +144,57 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   Future<void> _startScan() async {
     setState(() => _isScanning = true);
-    final groups = await AppInitializationService.scanSeedPackageGroups();
-    if (!mounted) return;
-    setState(() {
-      _groupToInfo = groups;
-      _selectedGroups = <String>{}; // Start with no preselection.
-      _selectedLanguages = <String>{};
-      _searchQuery = '';
-      _isScanning = false;
-      _scanDone = true;
-    });
+    try {
+      final groups = await AppInitializationService.scanSeedPackageGroups();
+      if (!mounted) return;
+      setState(() {
+        _groupToInfo = groups;
+        _selectedGroups = <String>{}; // Start with no preselection.
+        _selectedLanguages = <String>{};
+        _searchQuery = '';
+        _isScanning = false;
+        _scanDone = true;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _isScanning = false;
+        _scanDone = false;
+      });
+      _showOperationError(
+        title: AppLocalizations.of(context)!.error,
+        message: '${AppLocalizations.of(context)!.unexpectedError}\n\n$e',
+      );
+    }
   }
 
   // ── Import ─────────────────────────────────────────────────────────────────
 
   Future<void> _startImport() async {
     setState(() => _isImporting = true);
-    await AppInitializationService.importSelectedGroups(
-      _selectedGroups,
-      _groupToInfo,
-    );
-    // _onProgress() will flip _isImporting → false and _importDone → true
-    // but guard here in case the notifier fires before we return
-    if (mounted && !_importDone) {
+    try {
+      await AppInitializationService.importSelectedGroups(
+        _selectedGroups,
+        _groupToInfo,
+      );
+      // _onProgress() will flip _isImporting → false and _importDone → true
+      // but guard here in case the notifier fires before we return
+      if (mounted && !_importDone) {
+        setState(() {
+          _isImporting = false;
+          _importDone = true;
+        });
+      }
+    } catch (e) {
+      if (!mounted) return;
       setState(() {
         _isImporting = false;
-        _importDone = true;
+        _importDone = false;
       });
+      _showOperationError(
+        title: AppLocalizations.of(context)!.importError,
+        message: '${AppLocalizations.of(context)!.unexpectedError}\n\n$e',
+      );
     }
   }
 
@@ -168,6 +207,24 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 
   void _getStarted() => _finish();
+
+  void _showOperationError({required String title, required String message}) {
+    if (!mounted) return;
+
+    showDialog<void>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(title),
+        content: SingleChildScrollView(child: Text(message)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(),
+            child: Text(AppLocalizations.of(context)!.ok),
+          ),
+        ],
+      ),
+    );
+  }
 
   // ── Toggle helpers ─────────────────────────────────────────────────────────
 
@@ -459,11 +516,33 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         padding: const EdgeInsets.symmetric(vertical: 48),
         child: Column(
           children: [
-            const CircularProgressIndicator(),
+            SizedBox(
+              width: 180,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppTheme.radiusSmall),
+                child: LinearProgressIndicator(
+                  value: _scanProgress.fraction > 0 ? _scanProgress.fraction : null,
+                  minHeight: 8,
+                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                ),
+              ),
+            ),
             const SizedBox(height: AppTheme.spacing16),
             Text(
               l10n.onboardingAnalyzingPackages,
               style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppTheme.spacing8),
+            Text(
+              l10n.onboardingScanningPackagesProgress(
+                _scanProgress.scanned,
+                _scanProgress.total,
+                _scanProgress.alreadyInDb,
+              ),
+              style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
               textAlign: TextAlign.center,

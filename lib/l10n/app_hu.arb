@@ -7,7 +7,7 @@
   "editPackage": "Csomag szerkesztése",
   "packageDetails": "Csomag részletei",
   "packageName": "Csomag neve",
-  "packageNameHint": "pl. Spanyol alapok, Német kezdőknek",
+  "packageNameHint": "pl. Spanyol alapok, vagy Német kezdőknek",
   "languageCode1": "Forrás nyelv kódja",
   "languageName1": "Forrás nyelv neve",
   "languageCode2": "Cél nyelv kódja",
@@ -667,6 +667,14 @@
   "onboardingSelectPackagesTitle": "Válassz nyelvi csomagokat",
   "onboardingSelectPackagesSubtitle": "Válaszd ki, melyik nyelvi csomagot importálod. Később a főmenüből bármikor importálhatsz többet is (Csomagok megtekintése).",
   "onboardingAnalyzingPackages": "Elérhető csomagok elemzése…",
+  "onboardingScanningPackagesProgress": "Beolvasva {scanned}/{total} • már az adatbázisban {alreadyInDb}",
+  "@onboardingScanningPackagesProgress": {
+    "placeholders": {
+      "scanned": { "type": "int" },
+      "total": { "type": "int" },
+      "alreadyInDb": { "type": "int" }
+    }
+  },
   "onboardingImportSelected": "Kijelöltek importálása",
   "onboardingSkipImport": "Kihagyás",
   "onboardingSelectAll": "Összes kijelölése",
@@ -1023,6 +1031,13 @@
   "errorStartingRecordingDetails": "Hiba a felvétel indításakor: {error}",
   "@errorStartingRecordingDetails": {
     "placeholders": { "error": { "type": "String" } }
-  }
+  },
+
+  "openaiEmptyResponse": "A kiválasztott AI modell üres választ adott vissza",
+  "tryDifferentModel": "Próbálj ki egy másik modellt a modellválasztóból",
+  "modelMayNotBeSupported": "Ez a modell esetleg nem támogatott, vagy nem elérhető a fiókodon",
+  "reduceTextOrRetry": "Csökkentsd a szöveg hosszát, vagy próbáld újra",
+  "openaiNullContent": "A kiválasztott AI modell nem adott vissza tartalmat",
+  "modelUnsupportedParameter": "A kiválasztott modell nem támogatja a szükséges API paramétert"
 }
 

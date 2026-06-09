@@ -30,7 +30,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get packageName => 'Csomag neve';
 
   @override
-  String get packageNameHint => 'pl. Spanyol alapok, Német kezdőknek';
+  String get packageNameHint => 'pl. Spanyol alapok, vagy Német kezdőknek';
 
   @override
   String get languageCode1 => 'Forrás nyelv kódja';
@@ -2102,6 +2102,15 @@ class AppLocalizationsHu extends AppLocalizations {
   String get onboardingAnalyzingPackages => 'Elérhető csomagok elemzése…';
 
   @override
+  String onboardingScanningPackagesProgress(
+    int scanned,
+    int total,
+    int alreadyInDb,
+  ) {
+    return 'Beolvasva $scanned/$total • már az adatbázisban $alreadyInDb';
+  }
+
+  @override
   String get onboardingImportSelected => 'Kijelöltek importálása';
 
   @override
@@ -2740,4 +2749,28 @@ class AppLocalizationsHu extends AppLocalizations {
   String errorStartingRecordingDetails(String error) {
     return 'Hiba a felvétel indításakor: $error';
   }
+
+  @override
+  String get openaiEmptyResponse =>
+      'A kiválasztott AI modell üres választ adott vissza';
+
+  @override
+  String get tryDifferentModel =>
+      'Próbálj ki egy másik modellt a modellválasztóból';
+
+  @override
+  String get modelMayNotBeSupported =>
+      'Ez a modell esetleg nem támogatott, vagy nem elérhető a fiókodon';
+
+  @override
+  String get reduceTextOrRetry =>
+      'Csökkentsd a szöveg hosszát, vagy próbáld újra';
+
+  @override
+  String get openaiNullContent =>
+      'A kiválasztott AI modell nem adott vissza tartalmat';
+
+  @override
+  String get modelUnsupportedParameter =>
+      'A kiválasztott modell nem támogatja a szükséges API paramétert';
 }

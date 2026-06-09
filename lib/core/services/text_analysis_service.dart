@@ -1068,12 +1068,60 @@ Example:
     int maxTokens = 500,
     double temperature = 0.3,
   }) async {
-    // Use the model selected by the user
-    final model = _model;
+    final preferredModel = _model;
+    final candidateModels = <String>[preferredModel];
 
-    // Ensure maxTokens doesn't exceed model limits
+    // Some GPT-5 variants frequently consume completion budget for reasoning and return empty output.
+    // Retry those failures automatically with a stable non-reasoning fallback model.
+    if (preferredModel.toLowerCase().startsWith('gpt-5') &&
+        preferredModel != 'gpt-4.1') {
+      candidateModels.add('gpt-4.1');
+    }
+
+    Exception? lastException;
+
+    for (var i = 0; i < candidateModels.length; i++) {
+      final model = candidateModels[i];
+      final isLastAttempt = i == candidateModels.length - 1;
+
+      try {
+        if (i > 0) {
+          logDebug('↩️ Retrying OpenAI request with fallback model: $model');
+        }
+
+        return await _makeChatRequestForModel(
+          model: model,
+          messages: messages,
+          maxTokens: maxTokens,
+          temperature: temperature,
+        );
+      } catch (e) {
+        final wrapped = e is Exception ? e : Exception('Network error: $e');
+        lastException = wrapped;
+
+        if (isLastAttempt || !_shouldRetryWithFallback(wrapped.toString())) {
+          rethrow;
+        }
+      }
+    }
+
+    throw lastException ?? Exception('Unknown OpenAI request failure');
+  }
+
+  Future<String> _makeChatRequestForModel({
+    required String model,
+    required List<Map<String, String>> messages,
+    required int maxTokens,
+    required double temperature,
+  }) async {
     final safeMaxTokens = maxTokens.clamp(1, 4000);
-    final isGpt5Family = model.toLowerCase().startsWith('gpt-5');
+
+    final modelLower = model.toLowerCase();
+    final isOSeriesReasoning = modelLower.startsWith('o1') ||
+        modelLower.startsWith('o3') ||
+        modelLower.startsWith('o4');
+    final isGpt5Family = modelLower.startsWith('gpt-5');
+    final usesCompletionTokens = isGpt5Family || isOSeriesReasoning;
 
     try {
       final payload = <String, dynamic>{
@@ -1081,11 +1129,12 @@ Example:
         'messages': messages,
       };
 
-      if (!isGpt5Family) {
+      // Newer GPT-5 and o-series models reject non-default temperature values.
+      if (!isGpt5Family && !isOSeriesReasoning) {
         payload['temperature'] = temperature;
       }
 
-      if (isGpt5Family) {
+      if (usesCompletionTokens) {
         payload['max_completion_tokens'] = safeMaxTokens;
       } else {
         payload['max_tokens'] = safeMaxTokens;
@@ -1101,16 +1150,51 @@ Example:
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        return data['choices'][0]['message']['content'];
+        final data = json.decode(response.body) as Map<String, dynamic>;
+        final choices = data['choices'] as List?;
+        if (choices == null || choices.isEmpty) {
+          logDebug('⚠️ No choices in response. Raw body: ${response.body}');
+          throw Exception('OpenAI API returned no choices in response');
+        }
+        final choice = choices[0] as Map<String, dynamic>;
+        final finishReason = choice['finish_reason'] as String?;
+        final message = choice['message'] as Map<String, dynamic>?;
+        final content = message?['content'];
+
+        if (content == null) {
+          logDebug('⚠️ Null content received. finish_reason: $finishReason');
+          logDebug('⚠️ Raw response body: ${response.body}');
+          throw Exception(
+            'OpenAI returned null content (finish_reason: $finishReason). '
+            'This can happen with reasoning models or content filtering. '
+            'Try a different model or shorter text.',
+          );
+        }
+
+        final contentStr = content.toString();
+        if (contentStr.isEmpty) {
+          logDebug('⚠️ Empty content received. finish_reason: $finishReason');
+          logDebug('⚠️ Raw response body: ${response.body}');
+          throw Exception(
+            'OpenAI returned empty content (finish_reason: $finishReason). '
+            'The model produced no output. Try a different model or reduce text length.',
+          );
+        }
+
+        if (finishReason != null && finishReason != 'stop') {
+          logDebug('⚠️ Unexpected finish_reason: $finishReason');
+        }
+
+        return contentStr;
       } else if (response.statusCode == 400) {
-        // Bad Request - parse error details
         try {
           final errorData = json.decode(response.body);
           final errorMessage = errorData['error']?['message'] ?? 'Unknown error';
           final errorType = errorData['error']?['type'] ?? 'bad_request';
-          throw Exception('OpenAI API error (400): $errorType - $errorMessage');
+          final errorCode = errorData['error']?['code'] ?? '';
+          throw Exception('OpenAI API error (400): $errorType - $errorCode - $errorMessage');
         } catch (e) {
+          if (e is Exception) rethrow;
           throw Exception('OpenAI API error (400): ${response.body}');
         }
       } else if (response.statusCode == 401) {
@@ -1126,6 +1210,19 @@ Example:
       }
       throw Exception('Network error: $e');
     }
+  }
+
+  bool _shouldRetryWithFallback(String errorMessage) {
+    final lower = errorMessage.toLowerCase();
+    return lower.contains('unsupported_parameter') ||
+        lower.contains('unsupported_value') ||
+        lower.contains('temperature') ||
+        lower.contains('max_tokens') ||
+        lower.contains('max_completion_tokens') ||
+        lower.contains('empty content') ||
+        lower.contains('null content') ||
+        lower.contains('finish_reason: length') ||
+        lower.contains('no choices');
   }
 
   /// Extract full items line by line - each non-empty line becomes an item

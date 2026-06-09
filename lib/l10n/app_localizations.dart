@@ -3884,6 +3884,16 @@ abstract class AppLocalizations {
   /// **'Analyzing available packages…'**
   String get onboardingAnalyzingPackages;
 
+  /// No description provided for @onboardingScanningPackagesProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Scanned {scanned}/{total} • already in DB {alreadyInDb}'**
+  String onboardingScanningPackagesProgress(
+    int scanned,
+    int total,
+    int alreadyInDb,
+  );
+
   /// No description provided for @onboardingImportSelected.
   ///
   /// In en, this message translates to:
@@ -4957,6 +4967,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error starting recording: {error}'**
   String errorStartingRecordingDetails(String error);
+
+  /// No description provided for @openaiEmptyResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected AI model returned an empty response'**
+  String get openaiEmptyResponse;
+
+  /// No description provided for @tryDifferentModel.
+  ///
+  /// In en, this message translates to:
+  /// **'Try selecting a different model from the model selector'**
+  String get tryDifferentModel;
+
+  /// No description provided for @modelMayNotBeSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'This model may not be supported or available for your account'**
+  String get modelMayNotBeSupported;
+
+  /// No description provided for @reduceTextOrRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Reduce the text length or try again'**
+  String get reduceTextOrRetry;
+
+  /// No description provided for @openaiNullContent.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected AI model returned no content'**
+  String get openaiNullContent;
+
+  /// No description provided for @modelUnsupportedParameter.
+  ///
+  /// In en, this message translates to:
+  /// **'The selected model does not support a required API parameter'**
+  String get modelUnsupportedParameter;
 }
 
 class _AppLocalizationsDelegate

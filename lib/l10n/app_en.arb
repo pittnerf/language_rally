@@ -725,6 +725,14 @@
   "onboardingSelectPackagesTitle": "Choose Language Packages",
   "onboardingSelectPackagesSubtitle": "Select which vocabulary packages to import. You can always add more later from the main menu (View Packages).",
   "onboardingAnalyzingPackages": "Analyzing available packages…",
+  "onboardingScanningPackagesProgress": "Scanned {scanned}/{total} • already in DB {alreadyInDb}",
+  "@onboardingScanningPackagesProgress": {
+    "placeholders": {
+      "scanned": { "type": "int" },
+      "total": { "type": "int" },
+      "alreadyInDb": { "type": "int" }
+    }
+  },
   "onboardingImportSelected": "Import Selected",
   "onboardingSkipImport": "Skip",
   "onboardingSelectAll": "Select All",
@@ -1081,5 +1089,12 @@
   "errorStartingRecordingDetails": "Error starting recording: {error}",
   "@errorStartingRecordingDetails": {
     "placeholders": { "error": { "type": "String" } }
-  }
+  },
+
+  "openaiEmptyResponse": "The selected AI model returned an empty response",
+  "tryDifferentModel": "Try selecting a different model from the model selector",
+  "modelMayNotBeSupported": "This model may not be supported or available for your account",
+  "reduceTextOrRetry": "Reduce the text length or try again",
+  "openaiNullContent": "The selected AI model returned no content",
+  "modelUnsupportedParameter": "The selected model does not support a required API parameter"
 }

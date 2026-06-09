@@ -684,12 +684,22 @@ class _AIItemsSelectionPageState extends ConsumerState<AIItemsSelectionPage> {
       guidance = '• ${l10n.checkApiKey}\n• ${l10n.ensureValidOpenAIKey}\n• ${l10n.verifyKeyInSettings}';
     } else if (errorMessage.contains('rate limit') || errorMessage.contains('429')) {
       guidance = '• ${l10n.rateLimitExceeded}\n• ${l10n.waitAndRetry}\n• ${l10n.checkAccountQuota}';
+    } else if (errorMessage.contains('unsupported_parameter') ||
+        errorMessage.contains('unsupported_value') ||
+        errorMessage.contains('temperature') ||
+        errorMessage.contains('max_tokens') ||
+        errorMessage.contains('max_completion_tokens')) {
+      guidance = '• ${l10n.modelUnsupportedParameter}\n• ${l10n.tryDifferentModel}\n• ${l10n.modelMayNotBeSupported}';
     } else if (errorMessage.contains('Network error') || errorMessage.contains('Connection')) {
       guidance = '• ${l10n.checkInternetConnection}\n• ${l10n.retryInMoment}\n• ${l10n.checkFirewall}';
     } else if (errorMessage.contains('example') || errorMessage.contains('Failed to generate')) {
       guidance = '• ${l10n.exampleGenerationFailed}\n• ${l10n.itemsStillImported}\n• ${l10n.canAddExamplesManually}';
     } else if (errorMessage.contains('database') || errorMessage.contains('insert')) {
       guidance = '• ${l10n.databaseError}\n• ${l10n.checkStorageSpace}\n• ${l10n.restartApp}';
+    } else if (errorMessage.contains('empty content') ||
+        errorMessage.contains('null content') ||
+        errorMessage.contains('no choices')) {
+      guidance = '• ${l10n.tryDifferentModel}\n• ${l10n.modelMayNotBeSupported}\n• ${l10n.reduceTextOrRetry}';
     } else {
       guidance = '• ${l10n.unexpectedError}\n• ${l10n.checkErrorDetails}\n• ${l10n.tryAgainLater}';
     }

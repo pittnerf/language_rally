@@ -43,6 +43,24 @@ class SeedingProgress {
   double get fraction => total > 0 ? current / total : 0.0;
 }
 
+/// Progress reported while onboarding scans bundled packages to discover the
+/// groups that are still eligible for import.
+class ScanProgress {
+  final int scanned;
+  final int total;
+  final int alreadyInDb;
+  final bool isActive;
+
+  const ScanProgress({
+    this.scanned = 0,
+    this.total = 0,
+    this.alreadyInDb = 0,
+    this.isActive = false,
+  });
+
+  double get fraction => total > 0 ? scanned / total : 0.0;
+}
+
 // ---------------------------------------------------------------------------
 // Top-level helper for compute() — must NOT be inside the class.
 // Decodes a seed ZIP in a background isolate and returns the four metadata
@@ -72,7 +90,7 @@ class SeedingProgress {
 
 
 /// OPTIMIZATION: Extract both files and package metadata in a single ZIP decode.
-/// Returns (files map, pkgName, groupName, language_name1, language_name2).
+/// Returns (files map, pkgName, groupName, languageName1, languageName2).
 /// This avoids decoding the ZIP twice when we need both metadata and content.
 (Map<String, List<int>>, String?, String?, String?, String?) _extractZipFilesWithMetadata(
   List<int> bytes,
@@ -81,8 +99,8 @@ class SeedingProgress {
   final files = <String, List<int>>{};
   String? pkgName;
   String? groupName;
-  String? language_name1;
-  String? language_name2;
+  String? languageName1;
+  String? languageName2;
 
   for (final entry in archive) {
     if (entry.isFile) {
@@ -96,14 +114,40 @@ class SeedingProgress {
           final pkgData = data['package'] as Map<String, dynamic>?;
           pkgName = pkgData?['name'] as String?;
           groupName = pkgData?['group_name'] as String?;
-          language_name1 = pkgData?['language_name1'] as String?;
-          language_name2 = pkgData?['language_name2'] as String?;
+          languageName1 = pkgData?['language_name1'] as String?;
+          languageName2 = pkgData?['language_name2'] as String?;
         } catch (_) {}
       }
     }
   }
 
-  return (files, pkgName, groupName, language_name1, language_name2);
+  return (files, pkgName, groupName, languageName1, languageName2);
+}
+
+/// Lightweight scan helper used by onboarding to discover seed-package groups.
+/// It reads only `package_data.json` and avoids decoding the full archive.
+(String?, String?, String?, String?, String?) _extractSeedPackageInfo(
+  List<int> bytes,
+) {
+  try {
+    final archive = ZipDecoder().decodeBytes(bytes, verify: false);
+    for (final entry in archive) {
+      if (entry.isFile && entry.name == 'package_data.json') {
+        final jsonStr = utf8.decode(entry.content as List<int>);
+        final data = jsonDecode(jsonStr) as Map<String, dynamic>;
+        final pkgData = data['package'] as Map<String, dynamic>?;
+        return (
+          pkgData?['name'] as String?,
+          pkgData?['group_name'] as String?,
+          pkgData?['language_name1'] as String?,
+          pkgData?['language_name2'] as String?,
+          pkgData?['description'] as String?,
+        );
+      }
+    }
+  } catch (_) {}
+
+  return (null, null, null, null, null);
 }
 
 /// Service responsible for app initialization tasks
@@ -120,6 +164,10 @@ class AppInitializationService {
   static final ValueNotifier<SeedingProgress> seedingProgress =
       ValueNotifier(const SeedingProgress());
 
+  /// Progress notifier for the built-in package scan shown in onboarding.
+  static final ValueNotifier<ScanProgress> scanProgress =
+      ValueNotifier(const ScanProgress());
+
   /// SharedPreferences key that marks seed-package import as done.
   /// Bump the version suffix (v1 → v2 …) when you add new seed packages so
   /// existing installations pick them up on the next update.
@@ -131,6 +179,34 @@ class AppInitializationService {
 
   /// Key that marks the first-launch onboarding wizard as completed.
   static const String _onboardingFlagKey = 'onboarding_v1_complete';
+
+  static String _packageGroupKey(String packageName, String groupName) {
+    return '${packageName.trim().toLowerCase()}||${groupName.trim().toLowerCase()}';
+  }
+
+  static Future<Set<String>> _loadExistingPackageGroupKeys() async {
+    final packageRepo = LanguagePackageRepository();
+    final groupRepo = LanguagePackageGroupRepository();
+
+    final groups = await groupRepo.getAllGroups();
+    final groupNameById = <String, String>{};
+    for (final group in groups) {
+      groupNameById[group.id] = group.name;
+    }
+
+    final packages = await packageRepo.getAllPackages();
+    final keys = <String>{};
+    for (final package in packages) {
+      final packageName = package.packageName;
+      final groupName = groupNameById[package.groupId];
+      if (packageName == null || packageName.trim().isEmpty || groupName == null) {
+        continue;
+      }
+      keys.add(_packageGroupKey(packageName, groupName));
+    }
+
+    return keys;
+  }
 
   /// True when the onboarding wizard has not yet been completed.
   /// Set during [initialize]; safe to read after [initialize] returns.
@@ -167,14 +243,24 @@ class AppInitializationService {
     'assets/seed_packages/AR/pkg_en_ar_A1_Work_basic_jobs.zip',
     'assets/seed_packages/AR/pkg_en_ar_A2_Basic_grammar_topics_presentpastfuture_simple_conditionals.zip',
     'assets/seed_packages/AR/pkg_en_ar_A2_City_places_bank_post_office.zip',
-    'assets/seed_packages/AR/pkg_en_ar_B1_Basic_politics_society.zip',
-    'assets/seed_packages/AR/pkg_en_ar_B1_City_vs_countryside.zip',
-    'assets/seed_packages/AR/pkg_en_ar_B2_Business_basics.zip',
-    'assets/seed_packages/AR/pkg_en_ar_B2_Career_development.zip',
-    'assets/seed_packages/AR/pkg_en_ar_C1_Academic_writing_rhetoric.zip',
-    'assets/seed_packages/AR/pkg_en_ar_C1_Advanced_technology_AI_digitalization.zip',
-    'assets/seed_packages/AR/pkg_en_ar_C2_Advanced_business_corporate_strategy.zip',
-    'assets/seed_packages/AR/pkg_en_ar_C2_Advanced_economics_finance.zip',
+    'assets/seed_packages/AR/pkg_en_ar_A2_Communication_phone_messages.zip',
+    'assets/seed_packages/AR/pkg_en_ar_A2_Daily_routines_detailed.zip',
+    'assets/seed_packages/AR/pkg_en_ar_A2_Directions_navigation.zip',
+    'assets/seed_packages/AR/pkg_en_ar_A2_Education_learning.zip',
+    'assets/seed_packages/AR/pkg_en_ar_A2_Entertainment_TV_movies_music.zip',
+    'assets/seed_packages/AR/pkg_en_ar_A2_Fitness_exercise.zip',
+    'assets/seed_packages/AR/pkg_en_ar_A2_Free_time_hobbies.zip',
+    'assets/seed_packages/AR/pkg_en_ar_A2_Friends_social_life.zip',
+    'assets/seed_packages/AR/pkg_en_ar_A2_Future_plans_intentions.zip',
+    'assets/seed_packages/AR/pkg_en_ar_A2_Health_common_problems.zip',
+    'assets/seed_packages/AR/pkg_en_ar_A2_Hotels_accommodation.zip',
+    'assets/seed_packages/AR/pkg_en_ar_A2_Past_experiences_basic_storytelling.zip',
+    'assets/seed_packages/AR/pkg_en_ar_A2_Restaurants_ordering_food.zip',
+    'assets/seed_packages/AR/pkg_en_ar_A2_Shopping_clothes_sizes_preferences.zip',
+    'assets/seed_packages/AR/pkg_en_ar_A2_Technology_basics_phone_internet.zip',
+    'assets/seed_packages/AR/pkg_en_ar_A2_Travel_holidays.zip',
+    'assets/seed_packages/AR/pkg_en_ar_A2_Weather_detailed.zip',
+    'assets/seed_packages/AR/pkg_en_ar_A2_Work_jobs_tasks.zip',
     'assets/seed_packages/DE/pkg_en_de_A1_Animals.zip',
     'assets/seed_packages/DE/pkg_en_de_A1_Basic_daily_routines.zip',
     'assets/seed_packages/DE/pkg_en_de_A1_Basic_health_feeling_sick_doctor.zip',
@@ -197,14 +283,25 @@ class AppInitializationService {
     'assets/seed_packages/DE/pkg_en_de_A1_Work_basic_jobs.zip',
     'assets/seed_packages/DE/pkg_en_de_A2_Basic_grammar_topics_presentpastfuture_simple_conditionals.zip',
     'assets/seed_packages/DE/pkg_en_de_A2_City_places_bank_post_office.zip',
-    'assets/seed_packages/DE/pkg_en_de_B1_Basic_politics_society.zip',
-    'assets/seed_packages/DE/pkg_en_de_B1_City_vs_countryside.zip',
-    'assets/seed_packages/DE/pkg_en_de_B2_Business_basics.zip',
-    'assets/seed_packages/DE/pkg_en_de_B2_Career_development.zip',
-    'assets/seed_packages/DE/pkg_en_de_C1_Academic_writing_rhetoric.zip',
-    'assets/seed_packages/DE/pkg_en_de_C1_Advanced_technology_AI_digitalization.zip',
-    'assets/seed_packages/DE/pkg_en_de_C2_Advanced_business_corporate_strategy.zip',
-    'assets/seed_packages/DE/pkg_en_de_C2_Advanced_economics_finance.zip',
+    'assets/seed_packages/DE/pkg_en_de_A2_Communication_phone_messages.zip',
+    'assets/seed_packages/DE/pkg_en_de_A2_Daily_routines_detailed.zip',
+    'assets/seed_packages/DE/pkg_en_de_A2_Directions_navigation.zip',
+    'assets/seed_packages/DE/pkg_en_de_A2_Education_learning.zip',
+    'assets/seed_packages/DE/pkg_en_de_A2_Entertainment_TV_movies_music.zip',
+    'assets/seed_packages/DE/pkg_en_de_A2_Fitness_exercise.zip',
+    'assets/seed_packages/DE/pkg_en_de_A2_Free_time_hobbies.zip',
+    'assets/seed_packages/DE/pkg_en_de_A2_Friends_social_life.zip',
+    'assets/seed_packages/DE/pkg_en_de_A2_Future_plans_intentions.zip',
+    'assets/seed_packages/DE/pkg_en_de_A2_Health_common_problems.zip',
+    'assets/seed_packages/DE/pkg_en_de_A2_Hotels_accommodation.zip',
+    'assets/seed_packages/DE/pkg_en_de_A2_Past_experiences_basic_storytelling.zip',
+    'assets/seed_packages/DE/pkg_en_de_A2_Restaurants_ordering_food.zip',
+    'assets/seed_packages/DE/pkg_en_de_A2_Shopping_clothes_sizes_preferences.zip',
+    'assets/seed_packages/DE/pkg_en_de_A2_Technology_basics_phone_internet.zip',
+    'assets/seed_packages/DE/pkg_en_de_A2_Travel_holidays.zip',
+    'assets/seed_packages/DE/pkg_en_de_A2_Weather_detailed.zip',
+    'assets/seed_packages/DE/pkg_en_de_A2_Work_jobs_tasks.zip',
+
     'assets/seed_packages/ES/pkg_en_es_A1_Animals.zip',
     'assets/seed_packages/ES/pkg_en_es_A1_Basic_daily_routines.zip',
     'assets/seed_packages/ES/pkg_en_es_A1_Basic_health_feeling_sick_doctor.zip',
@@ -227,14 +324,24 @@ class AppInitializationService {
     'assets/seed_packages/ES/pkg_en_es_A1_Work_basic_jobs.zip',
     'assets/seed_packages/ES/pkg_en_es_A2_Basic_grammar_topics_presentpastfuture_simple_conditionals.zip',
     'assets/seed_packages/ES/pkg_en_es_A2_City_places_bank_post_office.zip',
-    'assets/seed_packages/ES/pkg_en_es_B1_Basic_politics_society.zip',
-    'assets/seed_packages/ES/pkg_en_es_B1_City_vs_countryside.zip',
-    'assets/seed_packages/ES/pkg_en_es_B2_Business_basics.zip',
-    'assets/seed_packages/ES/pkg_en_es_B2_Career_development.zip',
-    'assets/seed_packages/ES/pkg_en_es_C1_Academic_writing_rhetoric.zip',
-    'assets/seed_packages/ES/pkg_en_es_C1_Advanced_technology_AI_digitalization.zip',
-    'assets/seed_packages/ES/pkg_en_es_C2_Advanced_business_corporate_strategy.zip',
-    'assets/seed_packages/ES/pkg_en_es_C2_Advanced_economics_finance.zip',
+    'assets/seed_packages/ES/pkg_en_es_A2_Communication_phone_messages.zip',
+    'assets/seed_packages/ES/pkg_en_es_A2_Daily_routines_detailed.zip',
+    'assets/seed_packages/ES/pkg_en_es_A2_Directions_navigation.zip',
+    'assets/seed_packages/ES/pkg_en_es_A2_Education_learning.zip',
+    'assets/seed_packages/ES/pkg_en_es_A2_Entertainment_TV_movies_music.zip',
+    'assets/seed_packages/ES/pkg_en_es_A2_Fitness_exercise.zip',
+    'assets/seed_packages/ES/pkg_en_es_A2_Free_time_hobbies.zip',
+    'assets/seed_packages/ES/pkg_en_es_A2_Friends_social_life.zip',
+    'assets/seed_packages/ES/pkg_en_es_A2_Future_plans_intentions.zip',
+    'assets/seed_packages/ES/pkg_en_es_A2_Health_common_problems.zip',
+    'assets/seed_packages/ES/pkg_en_es_A2_Hotels_accommodation.zip',
+    'assets/seed_packages/ES/pkg_en_es_A2_Past_experiences_basic_storytelling.zip',
+    'assets/seed_packages/ES/pkg_en_es_A2_Restaurants_ordering_food.zip',
+    'assets/seed_packages/ES/pkg_en_es_A2_Shopping_clothes_sizes_preferences.zip',
+    'assets/seed_packages/ES/pkg_en_es_A2_Technology_basics_phone_internet.zip',
+    'assets/seed_packages/ES/pkg_en_es_A2_Travel_holidays.zip',
+    'assets/seed_packages/ES/pkg_en_es_A2_Weather_detailed.zip',
+    'assets/seed_packages/ES/pkg_en_es_A2_Work_jobs_tasks.zip',
     'assets/seed_packages/FR/pkg_en_fr_A1_Animals.zip',
     'assets/seed_packages/FR/pkg_en_fr_A1_Basic_daily_routines.zip',
     'assets/seed_packages/FR/pkg_en_fr_A1_Basic_health_feeling_sick_doctor.zip',
@@ -257,14 +364,25 @@ class AppInitializationService {
     'assets/seed_packages/FR/pkg_en_fr_A1_Work_basic_jobs.zip',
     'assets/seed_packages/FR/pkg_en_fr_A2_Basic_grammar_topics_presentpastfuture_simple_conditionals.zip',
     'assets/seed_packages/FR/pkg_en_fr_A2_City_places_bank_post_office.zip',
-    'assets/seed_packages/FR/pkg_en_fr_B1_Basic_politics_society.zip',
-    'assets/seed_packages/FR/pkg_en_fr_B1_City_vs_countryside.zip',
-    'assets/seed_packages/FR/pkg_en_fr_B2_Business_basics.zip',
-    'assets/seed_packages/FR/pkg_en_fr_B2_Career_development.zip',
-    'assets/seed_packages/FR/pkg_en_fr_C1_Academic_writing_rhetoric.zip',
-    'assets/seed_packages/FR/pkg_en_fr_C1_Advanced_technology_AI_digitalization.zip',
-    'assets/seed_packages/FR/pkg_en_fr_C2_Advanced_business_corporate_strategy.zip',
-    'assets/seed_packages/FR/pkg_en_fr_C2_Advanced_economics_finance.zip',
+    'assets/seed_packages/FR/pkg_en_fr_A2_Communication_phone_messages.zip',
+    'assets/seed_packages/FR/pkg_en_fr_A2_Daily_routines_detailed.zip',
+    'assets/seed_packages/FR/pkg_en_fr_A2_Directions_navigation.zip',
+    'assets/seed_packages/FR/pkg_en_fr_A2_Education_learning.zip',
+    'assets/seed_packages/FR/pkg_en_fr_A2_Entertainment_TV_movies_music.zip',
+    'assets/seed_packages/FR/pkg_en_fr_A2_Fitness_exercise.zip',
+    'assets/seed_packages/FR/pkg_en_fr_A2_Free_time_hobbies.zip',
+    'assets/seed_packages/FR/pkg_en_fr_A2_Friends_social_life.zip',
+    'assets/seed_packages/FR/pkg_en_fr_A2_Future_plans_intentions.zip',
+    'assets/seed_packages/FR/pkg_en_fr_A2_Health_common_problems.zip',
+    'assets/seed_packages/FR/pkg_en_fr_A2_Hotels_accommodation.zip',
+    'assets/seed_packages/FR/pkg_en_fr_A2_Past_experiences_basic_storytelling.zip',
+    'assets/seed_packages/FR/pkg_en_fr_A2_Restaurants_ordering_food.zip',
+    'assets/seed_packages/FR/pkg_en_fr_A2_Shopping_clothes_sizes_preferences.zip',
+    'assets/seed_packages/FR/pkg_en_fr_A2_Technology_basics_phone_internet.zip',
+    'assets/seed_packages/FR/pkg_en_fr_A2_Travel_holidays.zip',
+    'assets/seed_packages/FR/pkg_en_fr_A2_Weather_detailed.zip',
+    'assets/seed_packages/FR/pkg_en_fr_A2_Work_jobs_tasks.zip',
+
     'assets/seed_packages/HU/pkg_en_hu_A1_Animals.zip',
     'assets/seed_packages/HU/pkg_en_hu_A1_Basic_daily_routines.zip',
     'assets/seed_packages/HU/pkg_en_hu_A1_Basic_health_feeling_sick_doctor.zip',
@@ -287,14 +405,25 @@ class AppInitializationService {
     'assets/seed_packages/HU/pkg_en_hu_A1_Work_basic_jobs.zip',
     'assets/seed_packages/HU/pkg_en_hu_A2_Basic_grammar_topics_presentpastfuture_simple_conditionals.zip',
     'assets/seed_packages/HU/pkg_en_hu_A2_City_places_bank_post_office.zip',
-    'assets/seed_packages/HU/pkg_en_hu_B1_Basic_politics_society.zip',
-    'assets/seed_packages/HU/pkg_en_hu_B1_City_vs_countryside.zip',
-    'assets/seed_packages/HU/pkg_en_hu_B2_Business_basics.zip',
-    'assets/seed_packages/HU/pkg_en_hu_B2_Career_development.zip',
-    'assets/seed_packages/HU/pkg_en_hu_C1_Academic_writing_rhetoric.zip',
-    'assets/seed_packages/HU/pkg_en_hu_C1_Advanced_technology_AI_digitalization.zip',
-    'assets/seed_packages/HU/pkg_en_hu_C2_Advanced_business_corporate_strategy.zip',
-    'assets/seed_packages/HU/pkg_en_hu_C2_Advanced_economics_finance.zip',
+    'assets/seed_packages/HU/pkg_en_hu_A2_Communication_phone_messages.zip',
+    'assets/seed_packages/HU/pkg_en_hu_A2_Daily_routines_detailed.zip',
+    'assets/seed_packages/HU/pkg_en_hu_A2_Directions_navigation.zip',
+    'assets/seed_packages/HU/pkg_en_hu_A2_Education_learning.zip',
+    'assets/seed_packages/HU/pkg_en_hu_A2_Entertainment_TV_movies_music.zip',
+    'assets/seed_packages/HU/pkg_en_hu_A2_Fitness_exercise.zip',
+    'assets/seed_packages/HU/pkg_en_hu_A2_Free_time_hobbies.zip',
+    'assets/seed_packages/HU/pkg_en_hu_A2_Friends_social_life.zip',
+    'assets/seed_packages/HU/pkg_en_hu_A2_Future_plans_intentions.zip',
+    'assets/seed_packages/HU/pkg_en_hu_A2_Health_common_problems.zip',
+    'assets/seed_packages/HU/pkg_en_hu_A2_Hotels_accommodation.zip',
+    'assets/seed_packages/HU/pkg_en_hu_A2_Past_experiences_basic_storytelling.zip',
+    'assets/seed_packages/HU/pkg_en_hu_A2_Restaurants_ordering_food.zip',
+    'assets/seed_packages/HU/pkg_en_hu_A2_Shopping_clothes_sizes_preferences.zip',
+    'assets/seed_packages/HU/pkg_en_hu_A2_Technology_basics_phone_internet.zip',
+    'assets/seed_packages/HU/pkg_en_hu_A2_Travel_holidays.zip',
+    'assets/seed_packages/HU/pkg_en_hu_A2_Weather_detailed.zip',
+    'assets/seed_packages/HU/pkg_en_hu_A2_Work_jobs_tasks.zip',
+
     'assets/seed_packages/IT/pkg_en_it_A1_Animals.zip',
     'assets/seed_packages/IT/pkg_en_it_A1_Basic_daily_routines.zip',
     'assets/seed_packages/IT/pkg_en_it_A1_Basic_health_feeling_sick_doctor.zip',
@@ -317,14 +446,25 @@ class AppInitializationService {
     'assets/seed_packages/IT/pkg_en_it_A1_Work_basic_jobs.zip',
     'assets/seed_packages/IT/pkg_en_it_A2_Basic_grammar_topics_presentpastfuture_simple_conditionals.zip',
     'assets/seed_packages/IT/pkg_en_it_A2_City_places_bank_post_office.zip',
-    'assets/seed_packages/IT/pkg_en_it_B1_Basic_politics_society.zip',
-    'assets/seed_packages/IT/pkg_en_it_B1_City_vs_countryside.zip',
-    'assets/seed_packages/IT/pkg_en_it_B2_Business_basics.zip',
-    'assets/seed_packages/IT/pkg_en_it_B2_Career_development.zip',
-    'assets/seed_packages/IT/pkg_en_it_C1_Academic_writing_rhetoric.zip',
-    'assets/seed_packages/IT/pkg_en_it_C1_Advanced_technology_AI_digitalization.zip',
-    'assets/seed_packages/IT/pkg_en_it_C2_Advanced_business_corporate_strategy.zip',
-    'assets/seed_packages/IT/pkg_en_it_C2_Advanced_economics_finance.zip',
+    'assets/seed_packages/IT/pkg_en_it_A2_Communication_phone_messages.zip',
+    'assets/seed_packages/IT/pkg_en_it_A2_Daily_routines_detailed.zip',
+    'assets/seed_packages/IT/pkg_en_it_A2_Directions_navigation.zip',
+    'assets/seed_packages/IT/pkg_en_it_A2_Education_learning.zip',
+    'assets/seed_packages/IT/pkg_en_it_A2_Entertainment_TV_movies_music.zip',
+    'assets/seed_packages/IT/pkg_en_it_A2_Fitness_exercise.zip',
+    'assets/seed_packages/IT/pkg_en_it_A2_Free_time_hobbies.zip',
+    'assets/seed_packages/IT/pkg_en_it_A2_Friends_social_life.zip',
+    'assets/seed_packages/IT/pkg_en_it_A2_Future_plans_intentions.zip',
+    'assets/seed_packages/IT/pkg_en_it_A2_Health_common_problems.zip',
+    'assets/seed_packages/IT/pkg_en_it_A2_Hotels_accommodation.zip',
+    'assets/seed_packages/IT/pkg_en_it_A2_Past_experiences_basic_storytelling.zip',
+    'assets/seed_packages/IT/pkg_en_it_A2_Restaurants_ordering_food.zip',
+    'assets/seed_packages/IT/pkg_en_it_A2_Shopping_clothes_sizes_preferences.zip',
+    'assets/seed_packages/IT/pkg_en_it_A2_Technology_basics_phone_internet.zip',
+    'assets/seed_packages/IT/pkg_en_it_A2_Travel_holidays.zip',
+    'assets/seed_packages/IT/pkg_en_it_A2_Weather_detailed.zip',
+    'assets/seed_packages/IT/pkg_en_it_A2_Work_jobs_tasks.zip',
+
     'assets/seed_packages/JA/pkg_en_ja_A1_Animals.zip',
     'assets/seed_packages/JA/pkg_en_ja_A1_Basic_daily_routines.zip',
     'assets/seed_packages/JA/pkg_en_ja_A1_Basic_health_feeling_sick_doctor.zip',
@@ -347,14 +487,25 @@ class AppInitializationService {
     'assets/seed_packages/JA/pkg_en_ja_A1_Work_basic_jobs.zip',
     'assets/seed_packages/JA/pkg_en_ja_A2_Basic_grammar_topics_presentpastfuture_simple_conditionals.zip',
     'assets/seed_packages/JA/pkg_en_ja_A2_City_places_bank_post_office.zip',
-    'assets/seed_packages/JA/pkg_en_ja_B1_Basic_politics_society.zip',
-    'assets/seed_packages/JA/pkg_en_ja_B1_City_vs_countryside.zip',
-    'assets/seed_packages/JA/pkg_en_ja_B2_Business_basics.zip',
-    'assets/seed_packages/JA/pkg_en_ja_B2_Career_development.zip',
-    'assets/seed_packages/JA/pkg_en_ja_C1_Academic_writing_rhetoric.zip',
-    'assets/seed_packages/JA/pkg_en_ja_C1_Advanced_technology_AI_digitalization.zip',
-    'assets/seed_packages/JA/pkg_en_ja_C2_Advanced_business_corporate_strategy.zip',
-    'assets/seed_packages/JA/pkg_en_ja_C2_Advanced_economics_finance.zip',
+    'assets/seed_packages/JA/pkg_en_ja_A2_Communication_phone_messages.zip',
+    'assets/seed_packages/JA/pkg_en_ja_A2_Daily_routines_detailed.zip',
+    'assets/seed_packages/JA/pkg_en_ja_A2_Directions_navigation.zip',
+    'assets/seed_packages/JA/pkg_en_ja_A2_Education_learning.zip',
+    'assets/seed_packages/JA/pkg_en_ja_A2_Entertainment_TV_movies_music.zip',
+    'assets/seed_packages/JA/pkg_en_ja_A2_Fitness_exercise.zip',
+    'assets/seed_packages/JA/pkg_en_ja_A2_Free_time_hobbies.zip',
+    'assets/seed_packages/JA/pkg_en_ja_A2_Friends_social_life.zip',
+    'assets/seed_packages/JA/pkg_en_ja_A2_Future_plans_intentions.zip',
+    'assets/seed_packages/JA/pkg_en_ja_A2_Health_common_problems.zip',
+    'assets/seed_packages/JA/pkg_en_ja_A2_Hotels_accommodation.zip',
+    'assets/seed_packages/JA/pkg_en_ja_A2_Past_experiences_basic_storytelling.zip',
+    'assets/seed_packages/JA/pkg_en_ja_A2_Restaurants_ordering_food.zip',
+    'assets/seed_packages/JA/pkg_en_ja_A2_Shopping_clothes_sizes_preferences.zip',
+    'assets/seed_packages/JA/pkg_en_ja_A2_Technology_basics_phone_internet.zip',
+    'assets/seed_packages/JA/pkg_en_ja_A2_Travel_holidays.zip',
+    'assets/seed_packages/JA/pkg_en_ja_A2_Weather_detailed.zip',
+    'assets/seed_packages/JA/pkg_en_ja_A2_Work_jobs_tasks.zip',
+
     'assets/seed_packages/KO/pkg_en_ko_A1_Animals.zip',
     'assets/seed_packages/KO/pkg_en_ko_A1_Basic_daily_routines.zip',
     'assets/seed_packages/KO/pkg_en_ko_A1_Basic_health_feeling_sick_doctor.zip',
@@ -377,14 +528,25 @@ class AppInitializationService {
     'assets/seed_packages/KO/pkg_en_ko_A1_Work_basic_jobs.zip',
     'assets/seed_packages/KO/pkg_en_ko_A2_Basic_grammar_topics_presentpastfuture_simple_conditionals.zip',
     'assets/seed_packages/KO/pkg_en_ko_A2_City_places_bank_post_office.zip',
-    'assets/seed_packages/KO/pkg_en_ko_B1_Basic_politics_society.zip',
-    'assets/seed_packages/KO/pkg_en_ko_B1_City_vs_countryside.zip',
-    'assets/seed_packages/KO/pkg_en_ko_B2_Business_basics.zip',
-    'assets/seed_packages/KO/pkg_en_ko_B2_Career_development.zip',
-    'assets/seed_packages/KO/pkg_en_ko_C1_Academic_writing_rhetoric.zip',
-    'assets/seed_packages/KO/pkg_en_ko_C1_Advanced_technology_AI_digitalization.zip',
-    'assets/seed_packages/KO/pkg_en_ko_C2_Advanced_business_corporate_strategy.zip',
-    'assets/seed_packages/KO/pkg_en_ko_C2_Advanced_economics_finance.zip',
+    'assets/seed_packages/KO/pkg_en_ko_A2_Communication_phone_messages.zip',
+    'assets/seed_packages/KO/pkg_en_ko_A2_Daily_routines_detailed.zip',
+    'assets/seed_packages/KO/pkg_en_ko_A2_Directions_navigation.zip',
+    'assets/seed_packages/KO/pkg_en_ko_A2_Education_learning.zip',
+    'assets/seed_packages/KO/pkg_en_ko_A2_Entertainment_TV_movies_music.zip',
+    'assets/seed_packages/KO/pkg_en_ko_A2_Fitness_exercise.zip',
+    'assets/seed_packages/KO/pkg_en_ko_A2_Free_time_hobbies.zip',
+    'assets/seed_packages/KO/pkg_en_ko_A2_Friends_social_life.zip',
+    'assets/seed_packages/KO/pkg_en_ko_A2_Future_plans_intentions.zip',
+    'assets/seed_packages/KO/pkg_en_ko_A2_Health_common_problems.zip',
+    'assets/seed_packages/KO/pkg_en_ko_A2_Hotels_accommodation.zip',
+    'assets/seed_packages/KO/pkg_en_ko_A2_Past_experiences_basic_storytelling.zip',
+    'assets/seed_packages/KO/pkg_en_ko_A2_Restaurants_ordering_food.zip',
+    'assets/seed_packages/KO/pkg_en_ko_A2_Shopping_clothes_sizes_preferences.zip',
+    'assets/seed_packages/KO/pkg_en_ko_A2_Technology_basics_phone_internet.zip',
+    'assets/seed_packages/KO/pkg_en_ko_A2_Travel_holidays.zip',
+    'assets/seed_packages/KO/pkg_en_ko_A2_Weather_detailed.zip',
+    'assets/seed_packages/KO/pkg_en_ko_A2_Work_jobs_tasks.zip',
+
     'assets/seed_packages/PT/pkg_en_pt_A1_Animals.zip',
     'assets/seed_packages/PT/pkg_en_pt_A1_Basic_daily_routines.zip',
     'assets/seed_packages/PT/pkg_en_pt_A1_Basic_health_feeling_sick_doctor.zip',
@@ -407,14 +569,25 @@ class AppInitializationService {
     'assets/seed_packages/PT/pkg_en_pt_A1_Work_basic_jobs.zip',
     'assets/seed_packages/PT/pkg_en_pt_A2_Basic_grammar_topics_presentpastfuture_simple_conditionals.zip',
     'assets/seed_packages/PT/pkg_en_pt_A2_City_places_bank_post_office.zip',
-    'assets/seed_packages/PT/pkg_en_pt_B1_Basic_politics_society.zip',
-    'assets/seed_packages/PT/pkg_en_pt_B1_City_vs_countryside.zip',
-    'assets/seed_packages/PT/pkg_en_pt_B2_Business_basics.zip',
-    'assets/seed_packages/PT/pkg_en_pt_B2_Career_development.zip',
-    'assets/seed_packages/PT/pkg_en_pt_C1_Academic_writing_rhetoric.zip',
-    'assets/seed_packages/PT/pkg_en_pt_C1_Advanced_technology_AI_digitalization.zip',
-    'assets/seed_packages/PT/pkg_en_pt_C2_Advanced_business_corporate_strategy.zip',
-    'assets/seed_packages/PT/pkg_en_pt_C2_Advanced_economics_finance.zip',
+    'assets/seed_packages/PT/pkg_en_pt_A2_Communication_phone_messages.zip',
+    'assets/seed_packages/PT/pkg_en_pt_A2_Daily_routines_detailed.zip',
+    'assets/seed_packages/PT/pkg_en_pt_A2_Directions_navigation.zip',
+    'assets/seed_packages/PT/pkg_en_pt_A2_Education_learning.zip',
+    'assets/seed_packages/PT/pkg_en_pt_A2_Entertainment_TV_movies_music.zip',
+    'assets/seed_packages/PT/pkg_en_pt_A2_Fitness_exercise.zip',
+    'assets/seed_packages/PT/pkg_en_pt_A2_Free_time_hobbies.zip',
+    'assets/seed_packages/PT/pkg_en_pt_A2_Friends_social_life.zip',
+    'assets/seed_packages/PT/pkg_en_pt_A2_Future_plans_intentions.zip',
+    'assets/seed_packages/PT/pkg_en_pt_A2_Health_common_problems.zip',
+    'assets/seed_packages/PT/pkg_en_pt_A2_Hotels_accommodation.zip',
+    'assets/seed_packages/PT/pkg_en_pt_A2_Past_experiences_basic_storytelling.zip',
+    'assets/seed_packages/PT/pkg_en_pt_A2_Restaurants_ordering_food.zip',
+    'assets/seed_packages/PT/pkg_en_pt_A2_Shopping_clothes_sizes_preferences.zip',
+    'assets/seed_packages/PT/pkg_en_pt_A2_Technology_basics_phone_internet.zip',
+    'assets/seed_packages/PT/pkg_en_pt_A2_Travel_holidays.zip',
+    'assets/seed_packages/PT/pkg_en_pt_A2_Weather_detailed.zip',
+    'assets/seed_packages/PT/pkg_en_pt_A2_Work_jobs_tasks.zip',
+
     'assets/seed_packages/RO/pkg_en_ro_A1_Animals.zip',
     'assets/seed_packages/RO/pkg_en_ro_A1_Basic_daily_routines.zip',
     'assets/seed_packages/RO/pkg_en_ro_A1_Basic_health_feeling_sick_doctor.zip',
@@ -437,14 +610,25 @@ class AppInitializationService {
     'assets/seed_packages/RO/pkg_en_ro_A1_Work_basic_jobs.zip',
     'assets/seed_packages/RO/pkg_en_ro_A2_Basic_grammar_topics_presentpastfuture_simple_conditionals.zip',
     'assets/seed_packages/RO/pkg_en_ro_A2_City_places_bank_post_office.zip',
-    'assets/seed_packages/RO/pkg_en_ro_B1_Basic_politics_society.zip',
-    'assets/seed_packages/RO/pkg_en_ro_B1_City_vs_countryside.zip',
-    'assets/seed_packages/RO/pkg_en_ro_B2_Business_basics.zip',
-    'assets/seed_packages/RO/pkg_en_ro_B2_Career_development.zip',
-    'assets/seed_packages/RO/pkg_en_ro_C1_Academic_writing_rhetoric.zip',
-    'assets/seed_packages/RO/pkg_en_ro_C1_Advanced_technology_AI_digitalization.zip',
-    'assets/seed_packages/RO/pkg_en_ro_C2_Advanced_business_corporate_strategy.zip',
-    'assets/seed_packages/RO/pkg_en_ro_C2_Advanced_economics_finance.zip',
+    'assets/seed_packages/RO/pkg_en_ro_A2_Communication_phone_messages.zip',
+    'assets/seed_packages/RO/pkg_en_ro_A2_Daily_routines_detailed.zip',
+    'assets/seed_packages/RO/pkg_en_ro_A2_Directions_navigation.zip',
+    'assets/seed_packages/RO/pkg_en_ro_A2_Education_learning.zip',
+    'assets/seed_packages/RO/pkg_en_ro_A2_Entertainment_TV_movies_music.zip',
+    'assets/seed_packages/RO/pkg_en_ro_A2_Fitness_exercise.zip',
+    'assets/seed_packages/RO/pkg_en_ro_A2_Free_time_hobbies.zip',
+    'assets/seed_packages/RO/pkg_en_ro_A2_Friends_social_life.zip',
+    'assets/seed_packages/RO/pkg_en_ro_A2_Future_plans_intentions.zip',
+    'assets/seed_packages/RO/pkg_en_ro_A2_Health_common_problems.zip',
+    'assets/seed_packages/RO/pkg_en_ro_A2_Hotels_accommodation.zip',
+    'assets/seed_packages/RO/pkg_en_ro_A2_Past_experiences_basic_storytelling.zip',
+    'assets/seed_packages/RO/pkg_en_ro_A2_Restaurants_ordering_food.zip',
+    'assets/seed_packages/RO/pkg_en_ro_A2_Shopping_clothes_sizes_preferences.zip',
+    'assets/seed_packages/RO/pkg_en_ro_A2_Technology_basics_phone_internet.zip',
+    'assets/seed_packages/RO/pkg_en_ro_A2_Travel_holidays.zip',
+    'assets/seed_packages/RO/pkg_en_ro_A2_Weather_detailed.zip',
+    'assets/seed_packages/RO/pkg_en_ro_A2_Work_jobs_tasks.zip',
+
     'assets/seed_packages/RU/pkg_en_ru_A1_Animals.zip',
     'assets/seed_packages/RU/pkg_en_ru_A1_Basic_daily_routines.zip',
     'assets/seed_packages/RU/pkg_en_ru_A1_Basic_health_feeling_sick_doctor.zip',
@@ -467,14 +651,25 @@ class AppInitializationService {
     'assets/seed_packages/RU/pkg_en_ru_A1_Work_basic_jobs.zip',
     'assets/seed_packages/RU/pkg_en_ru_A2_Basic_grammar_topics_presentpastfuture_simple_conditionals.zip',
     'assets/seed_packages/RU/pkg_en_ru_A2_City_places_bank_post_office.zip',
-    'assets/seed_packages/RU/pkg_en_ru_B1_Basic_politics_society.zip',
-    'assets/seed_packages/RU/pkg_en_ru_B1_City_vs_countryside.zip',
-    'assets/seed_packages/RU/pkg_en_ru_B2_Business_basics.zip',
-    'assets/seed_packages/RU/pkg_en_ru_B2_Career_development.zip',
-    'assets/seed_packages/RU/pkg_en_ru_C1_Academic_writing_rhetoric.zip',
-    'assets/seed_packages/RU/pkg_en_ru_C1_Advanced_technology_AI_digitalization.zip',
-    'assets/seed_packages/RU/pkg_en_ru_C2_Advanced_business_corporate_strategy.zip',
-    'assets/seed_packages/RU/pkg_en_ru_C2_Advanced_economics_finance.zip',
+    'assets/seed_packages/RU/pkg_en_ru_A2_Communication_phone_messages.zip',
+    'assets/seed_packages/RU/pkg_en_ru_A2_Daily_routines_detailed.zip',
+    'assets/seed_packages/RU/pkg_en_ru_A2_Directions_navigation.zip',
+    'assets/seed_packages/RU/pkg_en_ru_A2_Education_learning.zip',
+    'assets/seed_packages/RU/pkg_en_ru_A2_Entertainment_TV_movies_music.zip',
+    'assets/seed_packages/RU/pkg_en_ru_A2_Fitness_exercise.zip',
+    'assets/seed_packages/RU/pkg_en_ru_A2_Free_time_hobbies.zip',
+    'assets/seed_packages/RU/pkg_en_ru_A2_Friends_social_life.zip',
+    'assets/seed_packages/RU/pkg_en_ru_A2_Future_plans_intentions.zip',
+    'assets/seed_packages/RU/pkg_en_ru_A2_Health_common_problems.zip',
+    'assets/seed_packages/RU/pkg_en_ru_A2_Hotels_accommodation.zip',
+    'assets/seed_packages/RU/pkg_en_ru_A2_Past_experiences_basic_storytelling.zip',
+    'assets/seed_packages/RU/pkg_en_ru_A2_Restaurants_ordering_food.zip',
+    'assets/seed_packages/RU/pkg_en_ru_A2_Shopping_clothes_sizes_preferences.zip',
+    'assets/seed_packages/RU/pkg_en_ru_A2_Technology_basics_phone_internet.zip',
+    'assets/seed_packages/RU/pkg_en_ru_A2_Travel_holidays.zip',
+    'assets/seed_packages/RU/pkg_en_ru_A2_Weather_detailed.zip',
+    'assets/seed_packages/RU/pkg_en_ru_A2_Work_jobs_tasks.zip',
+
     'assets/seed_packages/ZH/pkg_en_zh_A1_Animals.zip',
     'assets/seed_packages/ZH/pkg_en_zh_A1_Basic_daily_routines.zip',
     'assets/seed_packages/ZH/pkg_en_zh_A1_Basic_health_feeling_sick_doctor.zip',
@@ -497,14 +692,26 @@ class AppInitializationService {
     'assets/seed_packages/ZH/pkg_en_zh_A1_Work_basic_jobs.zip',
     'assets/seed_packages/ZH/pkg_en_zh_A2_Basic_grammar_topics_presentpastfuture_simple_conditionals.zip',
     'assets/seed_packages/ZH/pkg_en_zh_A2_City_places_bank_post_office.zip',
-    'assets/seed_packages/ZH/pkg_en_zh_B1_Basic_politics_society.zip',
-    'assets/seed_packages/ZH/pkg_en_zh_B1_City_vs_countryside.zip',
-    'assets/seed_packages/ZH/pkg_en_zh_B2_Business_basics.zip',
-    'assets/seed_packages/ZH/pkg_en_zh_B2_Career_development.zip',
-    'assets/seed_packages/ZH/pkg_en_zh_C1_Academic_writing_rhetoric.zip',
-    'assets/seed_packages/ZH/pkg_en_zh_C1_Advanced_technology_AI_digitalization.zip',
-    'assets/seed_packages/ZH/pkg_en_zh_C2_Advanced_business_corporate_strategy.zip',
-    'assets/seed_packages/ZH/pkg_en_zh_C2_Advanced_economics_finance.zip',
+    'assets/seed_packages/ZH/pkg_en_zh_A2_Communication_phone_messages.zip',
+    'assets/seed_packages/ZH/pkg_en_zh_A2_Daily_routines_detailed.zip',
+    'assets/seed_packages/ZH/pkg_en_zh_A2_Directions_navigation.zip',
+    'assets/seed_packages/ZH/pkg_en_zh_A2_Education_learning.zip',
+    'assets/seed_packages/ZH/pkg_en_zh_A2_Entertainment_TV_movies_music.zip',
+    'assets/seed_packages/ZH/pkg_en_zh_A2_Fitness_exercise.zip',
+    'assets/seed_packages/ZH/pkg_en_zh_A2_Free_time_hobbies.zip',
+    'assets/seed_packages/ZH/pkg_en_zh_A2_Friends_social_life.zip',
+    'assets/seed_packages/ZH/pkg_en_zh_A2_Future_plans_intentions.zip',
+    'assets/seed_packages/ZH/pkg_en_zh_A2_Health_common_problems.zip',
+    'assets/seed_packages/ZH/pkg_en_zh_A2_Hotels_accommodation.zip',
+    'assets/seed_packages/ZH/pkg_en_zh_A2_Past_experiences_basic_storytelling.zip',
+    'assets/seed_packages/ZH/pkg_en_zh_A2_Restaurants_ordering_food.zip',
+    'assets/seed_packages/ZH/pkg_en_zh_A2_Shopping_clothes_sizes_preferences.zip',
+    'assets/seed_packages/ZH/pkg_en_zh_A2_Technology_basics_phone_internet.zip',
+    'assets/seed_packages/ZH/pkg_en_zh_A2_Travel_holidays.zip',
+    'assets/seed_packages/ZH/pkg_en_zh_A2_Weather_detailed.zip',
+    'assets/seed_packages/ZH/pkg_en_zh_A2_Work_jobs_tasks.zip',
+
+
 
 
   ];
@@ -734,7 +941,7 @@ class AppInitializationService {
 
           // OPTIMIZATION: Decode ZIP once in background isolate and extract
           // both files AND metadata. This avoids decoding the same ZIP twice.
-          final (files, pkgName, groupName, language_name1, language_name2) =
+          final (files, pkgName, groupName, languageName1, languageName2) =
               await compute(_extractZipFilesWithMetadata, bytes);
           if (pkgName != null &&
               groupName != null &&
@@ -857,6 +1064,13 @@ class AppInitializationService {
   /// parsed from package descriptions.
   /// Suitable for driving the onboarding package-selection UI.
   static Future<Map<String, SeedPackageGroupInfo>> scanSeedPackageGroups() async {
+    logDebug('🌱 Scanning seed package groups…');
+    scanProgress.value = ScanProgress(
+      scanned: 0,
+      total: _seedPackageAssets.length,
+      alreadyInDb: 0,
+      isActive: true,
+    );
     // Mutable intermediate: groupName → (mutable asset list, lang1, lang2)
     final raw = <String, ({
       List<String> assets,
@@ -864,60 +1078,78 @@ class AppInitializationService {
       String? languageName2,
       Set<String> topics,
     })>{};
-    final packageRepo = LanguagePackageRepository();
+    final existingPackageGroupKeys = await _loadExistingPackageGroupKeys();
+    var alreadyInDbCount = 0;
+    var scannedCount = 0;
 
     for (final assetPath in _seedPackageAssets) {
       try {
+        await Future<void>.delayed(Duration.zero);
+
         final byteData = await rootBundle.load(assetPath);
         final bytes = byteData.buffer.asUint8List();
 
-        // Decode ZIP and search for package_data.json
-        final archive = ZipDecoder().decodeBytes(bytes);
-        ArchiveFile? jsonEntry;
-        for (final entry in archive) {
-          if (entry.isFile && entry.name == 'package_data.json') {
-            jsonEntry = entry;
-            break;
-          }
+        // Extract only the metadata needed to populate the selection screen.
+          final (pkgName, groupName, languageName1, languageName2, description) =
+            await compute(_extractSeedPackageInfo, bytes);
+
+        if (pkgName == null || groupName == null) {
+          scannedCount++;
+          scanProgress.value = ScanProgress(
+            scanned: scannedCount,
+            total: _seedPackageAssets.length,
+            alreadyInDb: alreadyInDbCount,
+            isActive: true,
+          );
+          continue;
         }
 
-        if (jsonEntry != null) {
-          final jsonStr = utf8.decode(jsonEntry.content as List<int>);
-          final data = jsonDecode(jsonStr) as Map<String, dynamic>;
-          final packageData = data['package'] as Map<String, dynamic>?;
-          if (packageData != null) {
-            final groupName =
-                (packageData['group_name'] as String?) ?? 'Default';
-            final pkgName = packageData['name'] as String?;
-            final languageName1 = packageData['language_name1'] as String?;
-            final languageName2 = packageData['language_name2'] as String?;
-            final description = packageData['description'] as String?;
-            final topic =
-                _extractTopicFromDescription(description) ?? pkgName?.trim();
+        final topic = _extractTopicFromDescription(description) ?? pkgName.trim();
 
-            // Skip packages where the same name already exists in the same group.
-            if (pkgName != null &&
-                await packageRepo.existsByNameAndGroup(pkgName, groupName)) {
-              logDebug('  ✓ Scan: skipping "$pkgName" (group "$groupName") — already in DB');
-              continue;
-            }
-
-            if (!raw.containsKey(groupName)) {
-              raw[groupName] = (
-                assets: [],
-                languageName1: languageName1,
-                languageName2: languageName2,
-                topics: <String>{},
-              );
-            }
-            raw[groupName]!.assets.add(assetPath);
-            if (topic != null && topic.isNotEmpty) {
-              raw[groupName]!.topics.add(topic);
-            }
-          }
+        // Skip packages where the same name already exists in the same group.
+        final packageKey = _packageGroupKey(pkgName, groupName);
+        if (existingPackageGroupKeys.contains(packageKey)) {
+          logDebug('  ✓ Scan: skipping "$pkgName" (group "$groupName") — already in DB');
+          alreadyInDbCount++;
+          scannedCount++;
+          scanProgress.value = ScanProgress(
+            scanned: scannedCount,
+            total: _seedPackageAssets.length,
+            alreadyInDb: alreadyInDbCount,
+            isActive: true,
+          );
+          continue;
         }
+
+        if (!raw.containsKey(groupName)) {
+          raw[groupName] = (
+            assets: [],
+            languageName1: languageName1,
+            languageName2: languageName2,
+            topics: <String>{},
+          );
+        }
+        raw[groupName]!.assets.add(assetPath);
+        if (topic.isNotEmpty) {
+          raw[groupName]!.topics.add(topic);
+        }
+
+        scannedCount++;
+        scanProgress.value = ScanProgress(
+          scanned: scannedCount,
+          total: _seedPackageAssets.length,
+          alreadyInDb: alreadyInDbCount,
+          isActive: true,
+        );
       } catch (e) {
         logDebug('  ⚠️  Failed to scan $assetPath for group name: $e');
+        scannedCount++;
+        scanProgress.value = ScanProgress(
+          scanned: scannedCount,
+          total: _seedPackageAssets.length,
+          alreadyInDb: alreadyInDbCount,
+          isActive: true,
+        );
       }
     }
 
@@ -931,9 +1163,16 @@ class AppInitializationService {
         topics: entry.value.topics.toList()..sort(),
       );
     }
-    return Map.fromEntries(
+    final resultMap = Map.fromEntries(
       result.entries.toList()..sort((a, b) => a.key.compareTo(b.key)),
     );
+    scanProgress.value = ScanProgress(
+      scanned: scannedCount,
+      total: _seedPackageAssets.length,
+      alreadyInDb: alreadyInDbCount,
+      isActive: false,
+    );
+    return resultMap;
   }
 
   /// Import only the seed packages whose group name is in [selectedGroupNames].
@@ -1001,7 +1240,7 @@ class AppInitializationService {
 
           // OPTIMIZATION: Decode ZIP once in background isolate and extract
           // both files AND metadata. This avoids decoding the same ZIP twice.
-          final (files, pkgName, groupName, language_name1, language_name2) =
+          final (files, pkgName, groupName, languageName1, languageName2) =
               await compute(_extractZipFilesWithMetadata, bytes);
           if (pkgName != null &&
               groupName != null &&

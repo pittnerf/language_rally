@@ -1274,6 +1274,14 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
         errorMessage.contains('429')) {
       guidance =
           '• ${l10n.rateLimitExceeded}\n• ${l10n.waitAndRetry}\n• ${l10n.checkAccountQuota}';
+    } else if (errorMessage.contains('unsupported_parameter') ||
+        errorMessage.contains('unsupported_value') ||
+        errorMessage.contains('temperature') ||
+        errorMessage.contains('max_tokens') ||
+        errorMessage.contains('max_completion_tokens')) {
+      // The model doesn't accept the token parameter we sent — steer the user to pick another model
+      guidance =
+          '• ${l10n.modelUnsupportedParameter}\n• ${l10n.tryDifferentModel}\n• ${l10n.modelMayNotBeSupported}';
     } else if (errorMessage.contains('400') ||
         errorMessage.contains('Bad Request')) {
       guidance =
@@ -1289,6 +1297,11 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
         errorMessage.contains('Timeout')) {
       guidance =
           '• ${l10n.requestTimedOut}\n• ${l10n.textMayBeTooLong}\n• ${l10n.tryAgainOrReduceSize}';
+    } else if (errorMessage.contains('empty content') ||
+        errorMessage.contains('null content') ||
+        errorMessage.contains('no choices')) {
+      guidance =
+          '• ${l10n.tryDifferentModel}\n• ${l10n.modelMayNotBeSupported}\n• ${l10n.reduceTextOrRetry}';
     } else {
       guidance =
           '• ${l10n.unexpectedError}\n• ${l10n.checkErrorDetails}\n• ${l10n.tryAgainLater}';

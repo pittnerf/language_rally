@@ -2090,6 +2090,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingAnalyzingPackages => 'Analyzing available packages…';
 
   @override
+  String onboardingScanningPackagesProgress(
+    int scanned,
+    int total,
+    int alreadyInDb,
+  ) {
+    return 'Scanned $scanned/$total • already in DB $alreadyInDb';
+  }
+
+  @override
   String get onboardingImportSelected => 'Import Selected';
 
   @override
@@ -2729,4 +2738,26 @@ class AppLocalizationsEn extends AppLocalizations {
   String errorStartingRecordingDetails(String error) {
     return 'Error starting recording: $error';
   }
+
+  @override
+  String get openaiEmptyResponse =>
+      'The selected AI model returned an empty response';
+
+  @override
+  String get tryDifferentModel =>
+      'Try selecting a different model from the model selector';
+
+  @override
+  String get modelMayNotBeSupported =>
+      'This model may not be supported or available for your account';
+
+  @override
+  String get reduceTextOrRetry => 'Reduce the text length or try again';
+
+  @override
+  String get openaiNullContent => 'The selected AI model returned no content';
+
+  @override
+  String get modelUnsupportedParameter =>
+      'The selected model does not support a required API parameter';
 }
