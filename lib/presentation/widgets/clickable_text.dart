@@ -112,7 +112,7 @@ class ClickableText extends StatelessWidget {
   }
 
   String _trimTrailingPunctuation(String url) {
-    const trailingChars = '.,;:!?)]}\"\'';
+    const trailingChars = '.,;:!?)]}"\'';
     var end = url.length;
     while (end > 0 && trailingChars.contains(url[end - 1])) {
       end--;
