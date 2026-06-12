@@ -57,6 +57,12 @@ class StoreRepository {
 
     logDebug('🛒 StoreRepository: ${rawProducts.length} active product(s) after filtering');
 
+    // Log all Firestore product IDs for debugging
+    final firebaseIds = rawProducts.map((p) => p.productId).toList();
+    if (firebaseIds.isNotEmpty) {
+      logDebug('📋 StoreRepository: Product IDs from Firestore: $firebaseIds');
+    }
+
     // ── 2. RevenueCat packages (prices + purchase status) ─────────────────
     List rcPackages = [];
     Set<String> purchasedIds = {};
@@ -90,9 +96,17 @@ class StoreRepository {
       final matchedPrice = priceMap[product.productId];
       final alreadyPurchased = purchasedIds.contains(product.productId);
       final alreadyImported = importedNames.contains(product.title);
+
+      if (matchedPrice == null) {
+        logDebug(
+          '⚠️ StoreRepository: "${product.productId}" NOT FOUND in RevenueCat!'
+          ' This product will show NO PRICE in the UI and CANNOT be purchased.',
+        );
+      }
+
       logDebug(
         '🛒 StoreRepository: merging "${product.productId}"'
-        ' — price=${matchedPrice ?? "NOT FOUND in RC"}'
+        ' — price=${matchedPrice ?? "❌ NOT FOUND in RC"}'
         ' purchased=$alreadyPurchased'
         ' imported=$alreadyImported',
       );
@@ -141,4 +155,3 @@ class StoreRepository {
     }
   }
 }
-

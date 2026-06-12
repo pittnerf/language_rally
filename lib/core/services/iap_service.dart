@@ -76,15 +76,25 @@ class IAPService {
 
       // ── Debug: dump all offerings ──────────────────────────────────────────
       logDebug('🛍️ IAPService: all offerings count = ${offerings.all.length}');
+      final allPackageIds = <String>[];
       offerings.all.forEach((offeringId, offering) {
         logDebug('  offering "$offeringId": ${offering.availablePackages.length} package(s)');
         for (final pkg in offering.availablePackages) {
+          final id = pkg.storeProduct.identifier;
+          allPackageIds.add(id);
           logDebug(
-            '    pkg "${pkg.identifier}" → productId="${pkg.storeProduct.identifier}"'
+            '    pkg "${pkg.identifier}" → productId="$id"'
             ' price="${pkg.storeProduct.priceString}"',
           );
         }
       });
+
+      // Log all product IDs in a comma-separated list for easy comparison
+      if (allPackageIds.isNotEmpty) {
+        logDebug('📋 IAPService: All available product IDs from RevenueCat: $allPackageIds');
+      } else {
+        logDebug('⚠️ IAPService: NO product IDs found in RevenueCat offerings!');
+      }
 
       final current = offerings.current;
       if (current == null) {
@@ -334,4 +344,3 @@ class IAPService {
     return IAPResult.success;
   }
 }
-
