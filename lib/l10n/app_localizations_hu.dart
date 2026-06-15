@@ -2519,10 +2519,17 @@ class AppLocalizationsHu extends AppLocalizations {
   String get aboutWebsite => 'Weboldal';
 
   @override
+  String get aboutSummaryVideo => 'Összefoglaló video';
+
+  @override
   String get aboutSupportEmail => 'Támogatási e-mail cím';
 
   @override
   String get aboutWebsiteUrl => 'https://sites.google.com/view/language-rally';
+
+  @override
+  String get aboutSummaryVideoUrl =>
+      'https://www.youtube.com/watch?v=64Pl9iNF88c';
 
   @override
   String get aboutSupportEmailAddress => 'languagerally.support@gmail.com';

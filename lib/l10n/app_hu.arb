@@ -2,7 +2,6 @@
   "helloWorld": "Helló Világ!",
   "welcome": "Isten hozott a Language Rally-ban",
   "appTitle": "Language Rally",
-
   "createPackage": "Csomag létrehozása",
   "editPackage": "Csomag szerkesztése",
   "packageDetails": "Csomag részletei",
@@ -38,7 +37,6 @@
   "errorDeletingPackage": "Hiba a csomag törlése során",
   "fieldRequired": "Ez a mező kötelező",
   "invalidEmail": "Érvénytelen e-mail cím",
-
   "readOnlyPackage": "Ez a csomag csak olvasható és nem szerkeszthető",
   "purchasedPackage": "A megvásárolt csomagok nem szerkeszthetők",
   "badges": "Medálok",
@@ -69,17 +67,14 @@
   "importResults": "Importálási eredmények",
   "successfullyImported": "Sikeresen importálva",
   "failedToImport": "Importálás sikertelen",
-
   "error": "Hiba",
   "ok": "OK",
-
   "importPackage": "Csomag importálása",
   "importPackageTooltip": "Csomag importálása ZIP fájlból vagy URL-ről",
   "importPackageDialogTitle": "Nyelvi csomag importálása",
   "importFromLocalFile": "Importálás helyi fájlból",
   "importFromUrl": "Importálás URL-ről",
   "enterPackageUrl": "Csomag URL-je (https://…)",
-
   "downloadingPackage": "Csomag letöltése…",
   "downloadFailed": "Letöltés sikertelen. Ellenőrizze az URL-t és az internetkapcsolatot.",
   "invalidUrl": "Adjon meg érvényes http:// vagy https:// URL-t.",
@@ -117,7 +112,6 @@
   "createNewPackage": "Új csomag létrehozása",
   "generateTestData": "Teszt adatok generálása",
   "designSystemShowcase": "Design rendszer bemutató",
-
   "badgeEarned": "Medál megszerzése!",
   "achievement": "Teljesítmény",
   "awesome": "Remek!",
@@ -128,7 +122,6 @@
   "importFormatLine4": "• Az utolsó | opcionális",
   "importFormatLine5": "• Az üres sorok figyelmen kívül maradnak",
   "importFormatLine6": "• A duplikátumok kihagyásra kerülnek",
-
   "importFormatNewDescription": "Elemek importálása szöveges fájlból. Minden sor egy elemet tartalmaz, a mezőket --- választja el",
   "importFormatNewLine1": "• Fő elválasztó: ---",
   "importFormatNewLine2": "• L1=<szöveg> - 1. nyelv fő szövege (kötelező, ha L2 hiányzik)",
@@ -167,7 +160,6 @@
   "position": "Pozíció",
   "stepsUntilLearned": "Lépés a megtanulásig",
   "examples": "Példák",
-
   "noExamples": "Nincsenek elérhető példamondatok",
   "pronounce": "Kiejtés",
   "ttsError": "Szövegfelolvasás nem elérhető",
@@ -190,8 +182,6 @@
   "failedToGenerateExamples": "Példák generálása sikertelen",
   "selectExamplesToAdd": "Példák kiválasztása",
   "selectWhichExamples": "Válaszd ki, melyik példákat szeretnéd hozzáadni:",
-
-
   "addSelected": "Kijelöltek hozzáadása",
   "pleaseSelectAtLeastOne": "Kérlek, válassz ki legalább egy példát",
   "addNewItem": "Új elem hozzáadása",
@@ -215,7 +205,6 @@
   "aiExampleSearch": "AI példa keresés",
   "searchExamplesOnInternet": "Példamondatok keresése az interneten AI segítségével ehhez: '{text}'",
   "generateExampleSentences": "Példamondatok generálása a fő szöveg alapján ({language})",
-
   "voiceInput": "Hangbemenet",
   "settings": "Beállítások",
   "uiLanguage": "Megjelenítés nyelve",
@@ -235,7 +224,6 @@
   "errorSavingSettings": "Hiba a beállítások mentésekor",
   "usingGoogleTranslate": "Ingyenes Google Fordító használata",
   "usingDeepL": "DeepL használata (prémium)",
-
   "noTranslationReceivedFromGoogle": "Nem érkezett fordítás a Google-től",
   "googleTranslationFailed": "Google fordítás sikertelen",
   "googleTranslationError": "Google fordítási hiba",
@@ -263,11 +251,9 @@
   "languageNotSupportedAddApiKey": "A {languageCode} nyelv natívan nem támogatott. Adj hozzá OpenAI API kulcsot a Beállításokban az AI-alapú beszédfelismeréshez.",
   "recordingTapToStop": "Felvétel folyamatban... Koppints újra a leállításhoz",
   "speakClearlyKeepRecording": "Beszélj érthetően. Legalább 1 másodpercig rögzíts.",
-
   "pleaseRecordLonger": "Kérlek, beszélj legalább 1 másodpercig és koppints a leállításra.",
   "errorStartingRecording": "Hiba a felvétel indításakor",
   "noAudioRecorded": "Nem készült hangfelvétel",
-
   "errorTranscribing": "Hiba a hangátiratban",
   "trainingSettings": "Gyakorlási Beállítások",
   "trainingPresetTitle": "Gyors beállítás",
@@ -327,7 +313,6 @@
   "answer": "Válasz",
   "iKnow": "Tudom",
   "iDontKnow": "Nem Tudom",
-
   "previousItem": "Előző elem",
   "iDidNotKnowEither": "Mégsem Tudtam",
   "exportBeforeDelete": "Exportálja törlés előtt?",
@@ -414,7 +399,6 @@
   "errorLoadingItems": "Hiba az elemek betöltésekor: {error}",
   "badgeEarnedWithName": "Medál megszerzve: {badgeName}!",
   "badgeLostWithName": "Medál elveszítve: {badgeName}",
-
   "trainingSessionProgress": "Gyakorlási Statisztika",
   "total": "Összesen",
   "lastNValue": "N = {value}",
@@ -471,7 +455,6 @@
   "pleaseSelectPackageGroup": "Kérjük válasszon csomag csoportot",
   "customIconLabel": "Egyéni",
   "defaultIconLabel": "Alapértelmezett",
-
   "icon2Label": "Nyitott könyv",
   "icon3Label": "Színes könyv",
   "icon4Label": "Párbeszéd",
@@ -598,7 +581,6 @@
   "nextItem": "Következő elem",
   "endPractice": "Gyakorlás befejezése",
   "practiced": "Gyakorolt",
-
   "windowsAudioTestPageTitle": "Windows Hang Teszt (RTAudio)",
   "configureWindowsAudio": "Hangbemenet tesztelése\nés beállítása Windows-on",
   "configureWindowsAudioDescription": "Hangfelvétel, lejátszás és átírás tesztelése a natív Windows RTAudio meghajtóval",
@@ -652,12 +634,10 @@
   "envelopeScoreLabel": "Burkoló",
   "rhythmScoreLabel": "Ritmus",
   "textScoreLabel": "Szöveg",
-
   "help": "Súgó",
   "trainingHelpTitle": "Tippek a hatékony tanuláshoz",
   "trainingHelpText": "Ahhoz, hogy a gyakorlás a lehető leghatékonyabb legyen, kövesd az alábbi lépéseket:\n1. Kattints a 'Számlálók törlése' gombra, hogy a csomag minden eleme ismertként legyen megjelölve.\n2. Állítsd az 'Elemek köre' opciót „Összes elem' értékre.\n3. Állítsd az 'Elemek sorrendje' opciót „Véletlenszerű' értékre.\n4. Válaszd ki az anyanyelvedet a 'Megjelenítési nyelv' beállításnál.\n5. Indítsd el a tanulást, és folytasd addig, amíg körülbelül 20–30 számodra ismeretlen elemet nem érsz el.\n6. Térj vissza a tanulási beállításokhoz, és állítsd az 'Elemek köre' opciót 'Csak ismeretlen elemek' értékre.\n7. Indítsd újra a tanulást, és folytasd addig, amíg az összes korábban ismeretlen elemet meg nem tanulod.",
   "trainingProTip": "Pro tipp: Kezdd az összes elemmel; később fókuszálj csak az ismeretlenekre.",
-
   "onboardingWelcomeTitle": "Üdvözöllek a Language Rally-ban!",
   "onboardingSetupSubtitle": "Állítsuk be az alkalmazást számodra.",
   "onboardingSelectUiLanguage": "Felhasználói felület nyelve",
@@ -670,9 +650,15 @@
   "onboardingScanningPackagesProgress": "Beolvasva {scanned}/{total} • már az adatbázisban {alreadyInDb}",
   "@onboardingScanningPackagesProgress": {
     "placeholders": {
-      "scanned": { "type": "int" },
-      "total": { "type": "int" },
-      "alreadyInDb": { "type": "int" }
+      "scanned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "alreadyInDb": {
+        "type": "int"
+      }
     }
   },
   "onboardingImportSelected": "Kijelöltek importálása",
@@ -682,15 +668,15 @@
   "onboardingNPackages": "{count} csomag",
   "@onboardingNPackages": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "onboardingGetStarted": "Kezdjük!",
   "onboardingImportCompleteTitle": "Importálás kész!",
-
   "importBuiltInPkg": "Ingyenes csomagok",
   "importBuiltInPkgTooltip": "Beépített nyelvi csomagok importálása",
-
   "globalSearch": "Globális keresés",
   "globalSearchTitle": "Keresés az összes csomagban",
   "globalSearchSelectLanguage": "Válassz nyelvkódot",
@@ -701,13 +687,17 @@
   "globalSearchNoResults": "Nincs találat a(z) \"{query}\" keresésre",
   "@globalSearchNoResults": {
     "placeholders": {
-      "query": { "type": "String" }
+      "query": {
+        "type": "String"
+      }
     }
   },
   "globalSearchResultsCount": "{count} találat",
   "@globalSearchResultsCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "globalSearchSearching": "Keresés…",
@@ -722,17 +712,22 @@
   "globalSearchProgressOf": "{current}. csomag a(z) {total}-ból…",
   "@globalSearchProgressOf": {
     "placeholders": {
-      "current": { "type": "int" },
-      "total":   { "type": "int" }
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "globalSearchCancelledMessage": "Keresés megszakítva — {count} találat eddig",
   "@globalSearchCancelledMessage": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "storeTitle": "Nyelvi csomag áruház",
   "storeRestorePurchases": "Vásárlások visszaállítása",
   "storeRefresh": "Frissítés",
@@ -742,8 +737,12 @@
   "storeInstalledCount": "{installed} / {total} telepítve",
   "@storeInstalledCount": {
     "placeholders": {
-      "installed": { "type": "int" },
-      "total": { "type": "int" }
+      "installed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "storeLoadErrorTitle": "Az áruház nem tölthető be.",
@@ -752,14 +751,18 @@
   "storePurchaseSuccess": "{title} sikeresen telepítve!",
   "@storePurchaseSuccess": {
     "placeholders": {
-      "title": { "type": "String" }
+      "title": {
+        "type": "String"
+      }
     }
   },
   "storePurchaseCancelled": "Vásárlás megszakítva.",
   "storePurchaseAlreadyOwned": "{title} már telepítve van.",
   "@storePurchaseAlreadyOwned": {
     "placeholders": {
-      "title": { "type": "String" }
+      "title": {
+        "type": "String"
+      }
     }
   },
   "storePurchaseError": "Hiba történt. Kérjük, próbálja újra.",
@@ -784,27 +787,35 @@
   "storeCartItemCount": "{count} tétel",
   "@storeCartItemCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "storePackageDuplicateTitle": "A csomag már létezik",
   "storePackageDuplicateMessage": "A(z) \"{packageName}\" nevű csomag már létezik a(z) \"{groupName}\" csoportban. Szeretné felülírni? A meglévő csomag és az összes hozzá tartozó tanulási eredmény véglegesen törlésre kerül.",
   "@storePackageDuplicateMessage": {
     "placeholders": {
-      "packageName": { "type": "String" },
-      "groupName": { "type": "String" }
+      "packageName": {
+        "type": "String"
+      },
+      "groupName": {
+        "type": "String"
+      }
     }
   },
   "storePackageDuplicateOverwrite": "Felülírás",
   "storePackageDuplicateKeep": "Meglévő megtartása",
-
   "splashSettingUpPackages": "Csomagok előkészítése: {current} / {total}",
   "@splashSettingUpPackages": {
     "description": "Splash képernyő folyamatjelző felirata a seed csomagok importálása közben",
     "placeholders": {
-      "current": { "type": "int" },
-      "total": { "type": "int" }
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "splashThisHappensOnce": "Ez csak egyszer történik meg.",
@@ -815,10 +826,8 @@
   "@splashLoading": {
     "description": "Határozatlan betöltési felirat a splash képernyőn"
   },
-
   "aiItemCreator": "AI Chat Mágus",
   "aiItemCreatorAppBarHint": "Gyűjts és ments szavakat és kifejezéseket AI chat közben!",
-
   "chatWithAI": "Csevegés az AI-val",
   "enterYourPrompt": "Adja meg a kérdést...",
   "aiItemCreatorPromptHint": "Írj le egy témát, és az AI-coach kérdéseket tesz fel, hasznos szókincset javasol, és teszteli a tudásodat. Például: segíts összegyűjteni és gyakorolni az utazás veszélyeit B2-es nyelvi szinten",
@@ -840,12 +849,9 @@
       }
     }
   },
-
   "example": "Példa",
-
   "generating": "Generálás...",
   "flags": "Jelölések",
-
   "favorite": "Kedvenc",
   "saveItems": "Mentés",
   "saving": "Mentés folyamatban...",
@@ -886,8 +892,10 @@
   },
   "about": "Névjegy",
   "aboutWebsite": "Weboldal",
+  "aboutSummaryVideo": "Összefoglaló video",
   "aboutSupportEmail": "Támogatási e-mail cím",
   "aboutWebsiteUrl": "https://sites.google.com/view/language-rally",
+  "aboutSummaryVideoUrl": "https://www.youtube.com/watch?v=64Pl9iNF88c",
   "aboutSupportEmailAddress": "languagerally.support@gmail.com",
   "aboutVersionWithValue": "Verzió: {version}",
   "@aboutVersionWithValue": {
@@ -906,14 +914,12 @@
     }
   },
   "aboutWelcomeSplashNotFound": "A Welcome_splash kép nem található",
-
   "chooseTheme": "Téma kiválasztása",
   "darkMode": "Sötét mód",
   "toggleBetweenLightAndDark": "Váltás világos és sötét mód között",
   "colorTheme": "Színtéma:",
   "toggleBrightness": "Fényerő váltása",
   "changeTheme": "Téma megváltoztatása",
-
   "managePackageGroups": "Csomagcsoportok kezelése",
   "noPackageGroups": "Nincsenek csomagcsoportok",
   "createFirstPackageGroup": "Hozza létre az első csomagcsoportját",
@@ -926,113 +932,194 @@
   "duplicateGroupName": "Ismétlődő név",
   "groupNameAlreadyExists": "A(z) \"{name}\" nevű csoport már létezik.",
   "@groupNameAlreadyExists": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "groupCreatedSuccessfully": "A(z) \"{name}\" csoport sikeresen létrehozva",
   "@groupCreatedSuccessfully": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "failedToCreateGroup": "Nem sikerült létrehozni a csoportot: {error}",
   "@failedToCreateGroup": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "groupRenamedTo": "A csoport neve megváltozott: \"{name}\"",
   "@groupRenamedTo": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "failedToUpdateGroup": "Nem sikerült frissíteni a csoportot: {error}",
   "@failedToUpdateGroup": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "deleteGroup": "Csoport törlése",
   "deleteGroupConfirm": "Biztosan törli a(z) \"{name}\" csoportot?\n\nEz a művelet nem visszavonható.",
   "@deleteGroupConfirm": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "cannotDeleteGroup": "Nem törölhető",
   "groupHasPackages": "Ez a csoport még {count} csomagot tartalmaz. Kérjük, először mozgassa vagy törölje azokat.",
   "@groupHasPackages": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "groupDeleted": "A(z) \"{name}\" csoport törölve",
   "@groupDeleted": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "failedToDeleteGroup": "Nem sikerült törölni a csoportot: {error}",
   "@failedToDeleteGroup": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "cannotDeleteHasPackagesTooltip": "Nem törölhető (csomagokat tartalmaz)",
   "nPackages": "{count, plural, =1{1 csomag} other{{count} csomag}}",
   "@nPackages": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "manageGroups": "Csoportok kezelése",
-
   "featureLangPower": "Nyelvi erő",
   "featureAiIntegration": "AI integráció",
   "featureAdaptivePractice": "Adaptív gyakorlás",
   "featureMasterAccent": "Kiejtés mestere",
-
   "allBadgesEarned": "🎉 Az összes jelvény megszerzett! Ön mesterré vált!",
   "nextBadgeLabel": "Következő: {name}",
   "@nextBadgeLabel": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "pointsToGo": "{percent}% hiányzik",
   "@pointsToGo": {
-    "placeholders": { "percent": { "type": "String" } }
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
   },
   "progressPercent": "{percent}% előrehaladás",
   "@progressPercent": {
-    "placeholders": { "percent": { "type": "String" } }
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
   },
-
   "errorTogglingFavourite": "Hiba a kedvenc váltásakor: {error}",
   "@errorTogglingFavourite": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "errorTogglingImportant": "Hiba a fontos jelzés váltásakor: {error}",
   "@errorTogglingImportant": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "categoryAdded": "A(z) \"{name}\" kategória hozzáadva",
   "@categoryAdded": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "errorAddingCategory": "Hiba a kategória hozzáadásakor: {error}",
   "@errorAddingCategory": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "categoryRemoved": "A(z) \"{name}\" kategória eltávolítva",
   "@categoryRemoved": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "errorRemovingCategory": "Hiba a kategória eltávolításakor: {error}",
   "@errorRemovingCategory": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
-
   "couldNotOpenUrl": "Nem sikerült megnyitni: {url}",
   "@couldNotOpenUrl": {
-    "placeholders": { "url": { "type": "String" } }
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
   },
   "errorOpeningUrl": "Hiba az URL megnyitásakor: {error}",
   "@errorOpeningUrl": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
-
   "pleaseSelectLanguage": "Kérjük, válasszon nyelvet",
   "add": "Hozzáadás",
   "speak": "Felolvasás",
-
   "recordingFailedToStart": "A felvétel indítása sikertelen!\n\nEllenőrizze:\n1. A mikrofon csatlakoztatva van\n2. A mikrofon alapértelmezett eszközként van beállítva\n3. Nincs más alkalmazás, amely a mikrofont használja",
   "recordingFailedNoAudioFile": "A felvétel sikertelen – nem jött létre hangfájl!\n\nLehetséges okok:\n1. A mikrofon nincs csatlakoztatva\n2. Nem érzékelt hangbemenetet\n3. Windows hangbeállítási probléma",
   "errorStartingRecordingDetails": "Hiba a felvétel indításakor: {error}",
   "@errorStartingRecordingDetails": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
-
   "openaiEmptyResponse": "A kiválasztott AI modell üres választ adott vissza",
   "tryDifferentModel": "Próbálj ki egy másik modellt a modellválasztóból",
   "modelMayNotBeSupported": "Ez a modell esetleg nem támogatott, vagy nem elérhető a fiókodon",
@@ -1040,4 +1127,3 @@
   "openaiNullContent": "A kiválasztott AI modell nem adott vissza tartalmat",
   "modelUnsupportedParameter": "A kiválasztott modell nem támogatja a szükséges API paramétert"
 }
-

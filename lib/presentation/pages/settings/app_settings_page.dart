@@ -348,8 +348,19 @@ class _AppSettingsPageState extends ConsumerState<AppSettingsPage> {
 
     // Map of supported UI languages
     final Map<String, String> uiLanguages = {
+      'ar': 'العربية (Arabic)',
+      'de': 'Deutsch (German)',
       'en': 'English',
+      'es': 'Español (Spanish)',
+      'fr': 'Français (French)',
       'hu': 'Magyar (Hungarian)',
+      'it': 'Italiano (Italian)',
+      'ja': '日本語 (Japanese)',
+      'ko': '한국어 (Korean)',
+      'pl': 'Polski (Polish)',
+      'ro': 'Română (Romanian)',
+      'ru': 'Русский (Russian)',
+      'zh': '中文 (Chinese)',
     };
 
     return DropdownButtonFormField<String>(

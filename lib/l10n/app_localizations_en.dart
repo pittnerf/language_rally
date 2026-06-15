@@ -2510,10 +2510,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get aboutWebsite => 'Website';
 
   @override
+  String get aboutSummaryVideo => 'Summary video';
+
+  @override
   String get aboutSupportEmail => 'Support email address';
 
   @override
   String get aboutWebsiteUrl => 'https://sites.google.com/view/language-rally';
+
+  @override
+  String get aboutSummaryVideoUrl =>
+      'https://www.youtube.com/watch?v=64Pl9iNF88c';
 
   @override
   String get aboutSupportEmailAddress => 'languagerally.support@gmail.com';

@@ -1,0 +1,1190 @@
+{
+  "helloWorld": "Привет, мир!",
+  "welcome": "Добро пожаловать на языковой митинг",
+  "appTitle": "Языковой митинг",
+  "createPackage": "Создать пакет",
+  "editPackage": "Редактировать пакет",
+  "packageDetails": "Детали пакета",
+  "packageName": "Имя пакета",
+  "packageNameHint": "например, Основы испанского языка, Основы немецкого языка",
+  "languageCode1": "Код исходного языка",
+  "languageName1": "Название исходного языка",
+  "languageCode2": "Код целевого языка",
+  "languageName2": "Название целевого языка",
+  "description": "Описание",
+  "descriptionHint": "Краткое описание этого языкового пакета",
+  "authorName": "Имя автора",
+  "authorEmail": "Электронная почта автора",
+  "authorWebpage": "Веб-страница автора",
+  "version": "Версия",
+  "items": "предметы",
+  "packageIcon": "Значок пакета",
+  "packageGroup": "Группа пакетов",
+  "selectIcon": "Выберите значок",
+  "defaultIcon": "Значок по умолчанию",
+  "customIcon": "Пользовательский значок",
+  "upload": "Значок загрузки",
+  "uploadCustomIcon": "Загрузить собственный значок (макс. 512 x 512, 1 МБ)",
+  "customIconUploaded": "Пользовательский значок успешно загружен.",
+  "save": "Сохранять",
+  "edit": "Редактировать",
+  "cancel": "Отмена",
+  "delete": "Удалить",
+  "confirmDelete": "Вы уверены, что хотите удалить этот пакет?",
+  "packageSaved": "Пакет успешно сохранен",
+  "packageDeleted": "Пакет успешно удален",
+  "errorSavingPackage": "Ошибка сохранения пакета.",
+  "errorDeletingPackage": "Ошибка удаления пакета",
+  "fieldRequired": "Это поле обязательно к заполнению",
+  "invalidEmail": "Неверный адрес электронной почты",
+  "readOnlyPackage": "Этот пакет доступен только для чтения и не может быть изменен.",
+  "purchasedPackage": "Купленные пакеты нельзя редактировать.",
+  "badges": "Значки",
+  "noBadges": "Ни одного значка еще не получено",
+  "selectLanguageCode": "Выберите код языка",
+  "typeToSearchLanguages": "Введите для поиска языков...",
+  "search": "Поиск...",
+  "clearCounters": "Очистить счетчики",
+  "confirmClearCounters": "Вы уверены, что хотите очистить все счетчики обучения для этого пакета? Это приведет к сбросу счетчиков «не знаю» и статистики тренировок.",
+  "clear": "Прозрачный",
+  "countersCleared": "Счетчики успешно очищены",
+  "errorClearingCounters": "Ошибка сброса счетчиков",
+  "deleteAll": "Удалить пакет",
+  "confirmDeleteAllData": "Вы уверены, что хотите удалить этот пакет со ВСЕМИ его данными? Это приведет к безвозвратному удалению всех категорий, элементов и статистики тренировок. Это действие невозможно отменить!",
+  "allDataDeleted": "Пакет и все данные успешно удалены.",
+  "exportPackage": "Экспортный пакет",
+  "selectExportLocation": "Выберите место экспорта",
+  "packageExported": "Пакет успешно экспортирован",
+  "errorExportingPackage": "Ошибка экспорта пакета.",
+  "importItems": "Импортировать элементы (JSON)",
+  "importItemsDialogTitle": "Импортировать элементы (JSON)",
+  "importItemsFromLocalJson": "Импорт из локального файла JSON",
+  "enterItemsUrl": "URL-адрес объекта в формате JSON (https://…)",
+  "downloadingItems": "Загрузка объектов…",
+  "selectImportFile": "Выберите файл импорта",
+  "importFormat": "Формат импорта",
+  "importFormatDescription": "Импортируйте элементы из текстового файла. Каждая строка должна содержать элемент следующего формата:",
+  "importResults": "Импортировать результаты",
+  "successfullyImported": "Успешно импортировано",
+  "failedToImport": "Не удалось импортировать",
+  "error": "Ошибка",
+  "ok": "ХОРОШО",
+  "importPackage": "Импортировать пакет",
+  "importPackageTooltip": "Импортировать пакет из ZIP-файла или URL-адреса.",
+  "importPackageDialogTitle": "Импортировать языковой пакет",
+  "importFromLocalFile": "Импорт из локального файла",
+  "importFromUrl": "Импортировать с URL-адреса",
+  "enterPackageUrl": "URL-адрес пакета (https://…)",
+  "downloadingPackage": "Загрузка пакета…",
+  "downloadFailed": "Загрузка не удалась. Пожалуйста, проверьте URL-адрес и подключение к Интернету.",
+  "invalidUrl": "Введите действительный URL-адрес http:// или https://.",
+  "orLabel": "или",
+  "selectPackageZipFile": "Выберите ZIP-файл пакета",
+  "couldNotAccessFile": "Не удалось получить доступ к выбранному файлу.",
+  "importingPackage": "Импорт пакета...",
+  "packageImportedSuccessfully": "Пакет успешно импортирован!",
+  "packageImportedWithItems": "Пакет успешно импортирован! ({count} элементов)",
+  "packageImportedWithGroup": "Пакет импортирован в группу «{groupName}»! ({count} элементов)",
+  "importError": "Ошибка импорта",
+  "failedToImportPackage": "Не удалось импортировать пакет.",
+  "packageAlreadyExists": "Пакет уже существует",
+  "packageExistsMessage": "Пакет с такой же языковой парой, описанием, информацией об авторе и версией уже существует в группе «{groupName}». Хотите ли вы импортировать его как новый пакет?",
+  "importAsNew": "Импортировать в любом случае",
+  "zipFileNotFound": "ZIP-файл не найден",
+  "invalidPackageZip": "Неверный ZIP-архив пакета: отсутствует package_data.json.",
+  "invalidPackageFormat": "Неверный формат файла пакета",
+  "languagePackages": "Языковые пакеты",
+  "loadingPackages": "Загрузка пакетов...",
+  "tapAndHoldToReorder": "Нажмите и удерживайте, чтобы изменить порядок карточек.",
+  "tapAndHoldToReorderList": "Нажмите и удерживайте ≡, чтобы изменить порядок. • Нажмите ⋮, чтобы переключить компактный вид.",
+  "noPackagesYet": "Пакетов пока нет",
+  "createFirstPackage": "Создайте свой первый языковой пакет",
+  "versionLabel": "Версия",
+  "purchased": "Куплено",
+  "compactView": "компактный",
+  "expand": "Расширять",
+  "allCategories": "Все категории",
+  "categoriesInPackage": "Категории в этом пакете",
+  "categories": "Категории",
+  "testInterFonts": "Тестовые интершрифты",
+  "viewPackages": "Посмотреть пакеты",
+  "simplifiedPackageView": "Список пакетов",
+  "createNewPackage": "Создать новый пакет",
+  "generateTestData": "Сгенерируйте тестовые данные",
+  "designSystemShowcase": "Демонстрация системы проектирования",
+  "badgeEarned": "Значок заработан!",
+  "achievement": "Достижение",
+  "awesome": "Потрясающий!",
+  "importFormatNotes": "Примечания:",
+  "importFormatLine1": "• Каждая строка представляет один элемент.",
+  "importFormatLine2": "• Поля разделены |",
+  "importFormatLine3": "• Категории разделяются ;",
+  "importFormatLine4": "• Последний | является необязательным",
+  "importFormatLine5": "• Пустые строки игнорируются.",
+  "importFormatLine6": "• Дубликаты пропускаются.",
+  "importFormatNewDescription": "Импортируйте элементы из текстового файла. Каждая строка должна содержать элемент с полями, разделенными ---.",
+  "importFormatNewLine1": "• Основной разделитель: ---.",
+  "importFormatNewLine2": "• L1=<текст> — основной текст языка 1 (требуется, если L2 отсутствует)",
+  "importFormatNewLine3": "• L2=<текст> — основной текст языка 2 (требуется, если L1 отсутствует)",
+  "importFormatNewLine4": "• L1pre=<текст> — префикс языка 1 (необязательно).",
+  "importFormatNewLine5": "• L1post=<текст> — суффикс языка 1 (необязательно).",
+  "importFormatNewLine6": "• L2pre=<текст> — префикс языка 2 (необязательно).",
+  "importFormatNewLine7": "• L2post=<текст> — суффикс языка 2 (необязательно).",
+  "importFormatNewLine8": "• EX=<текст L1>:::<текст L2> — пример (необязательно, их может быть несколько)",
+  "importFormatNewLine9": "• CAT=<cat1>:::<cat2>:::<cat3> — Категории (необязательно).",
+  "importFormatNewLine10": "• Должен присутствовать хотя бы один из L1= или L2=.",
+  "importFormatNewLine11": "• Пустые строки игнорируются.",
+  "importFormatNewLine12": "• Дубликаты пропускаются.",
+  "invalidImportLine": "Неверная строка",
+  "missingRequiredFields": "Отсутствует 'L1=', вагия 'L2='",
+  "unknownField": "Неизвестный префикс поля",
+  "andMore": "... и еще {count}",
+  "browseItems": "Просмотр элементов",
+  "itemDetails": "Подробности",
+  "filterItems": "Фильтровать элементы",
+  "searchLanguage1": "Искать в {language}",
+  "searchLanguage2": "Искать в {language}",
+  "caseSensitive": "С учетом регистра",
+  "knownStatus": "Известный статус",
+  "filterStatusAll": "все",
+  "filterStatusKnown": "известный",
+  "filterStatusUnknown": "неизвестный",
+  "allItems": "Все предметы",
+  "itemsIKnew": "Предметы, которые я знал",
+  "itemsIDidNotKnow": "Предметы, которые я не знал",
+  "known": "Известный",
+  "unknown": "Неизвестный",
+  "important": "Важный",
+  "favourite": "Любимый",
+  "badge": "Значок",
+  "position": "Позиция",
+  "stepsUntilLearned": "Шаги, пока не научишься",
+  "examples": "Примеры",
+  "noExamples": "Нет доступных примеров",
+  "pronounce": "Произнести",
+  "ttsError": "Преобразование текста в речь недоступно.",
+  "noItemsFound": "Элементы не найдены",
+  "noItemsInPackage": "В этом пакете пока нет товаров",
+  "addItem": "Добавить элемент",
+  "emptyPackageHint": "Добавляйте элементы вручную или используйте ИИ для быстрого импорта элементов.",
+  "noItemsToTrain": "Нет доступных элементов для практики с текущими настройками.",
+  "clearFilters": "Прозрачный",
+  "itemCount": "{count} элементов",
+  "filteredItemCount": "{filtered} из {total} элементов",
+  "trainingRally": "Тренировочное ралли",
+  "startTraining": "Начать обучение",
+  "trainingComingSoon": "Тренировочный ралли – скоро!",
+  "aiServiceNotConfigured": "Служба AI не настроена. Пожалуйста, добавьте свой ключ API OpenAI.",
+  "pleaseEnterTextInLanguageFirst": "Пожалуйста, сначала введите текст в {language}",
+  "translationCompletedSuccessfully": "Перевод успешно завершен с использованием {service}!",
+  "translationFailed": "Перевод не выполнен",
+  "addedExamplesSuccessfully": "{count} примеров успешно добавлено!",
+  "failedToGenerateExamples": "Не удалось создать примеры.",
+  "selectExamplesToAdd": "Выберите примеры для добавления",
+  "selectWhichExamples": "Выберите, какие примеры вы хотите добавить к этому элементу:",
+  "addSelected": "Добавить выбранное",
+  "pleaseSelectAtLeastOne": "Пожалуйста, выберите хотя бы один пример",
+  "addNewItem": "Добавить новый элемент",
+  "editItem": "Редактировать элемент",
+  "deleteItem": "Удалить элемент",
+  "confirmDeleteItem": "Вы уверены, что хотите удалить этот элемент?",
+  "thisActionCannotBeUndone": "Это действие невозможно отменить.",
+  "itemDeleted": "Объект удален.",
+  "errorDeletingItem": "Ошибка удаления элемента",
+  "errorSavingItem": "Ошибка при сохранении объекта.",
+  "itemSaved": "Элемент успешно обновлен",
+  "itemCreated": "Объект успешно создан",
+  "preTextOptional": "Предварительный текст (необязательно)",
+  "mainText": "Основной текст",
+  "postTextOptional": "Текст сообщения (необязательно)",
+  "forExampleToForVerbs": "например, «to» для глаголов",
+  "additionalContext": "Дополнительный контекст",
+  "translate": "Переводить",
+  "translateFromTo": "Перевести {from} → {to}",
+  "aiExampleGeneration": "Генерация примера ИИ",
+  "aiExampleSearch": "Пример поиска с помощью ИИ",
+  "searchExamplesOnInternet": "Найдите в Интернете примеры предложений с использованием искусственного интеллекта для «{text}».",
+  "generateExampleSentences": "Создавайте примеры предложений на основе основного текста в {language}.",
+  "voiceInput": "Голосовой ввод",
+  "settings": "Настройки",
+  "uiLanguage": "Язык пользовательского интерфейса",
+  "uiLanguageDescription": "Язык интерфейса приложения",
+  "uiLanguageHelper": "Выбор языка меню, кнопок и надписей",
+  "userLanguage": "Язык пользователя",
+  "userLanguageDescription": "Предпочитаемый вами родной язык для создания новых языковых пакетов.",
+  "apiKeys": "API-ключи",
+  "deeplApiKey": "API-ключ DeepL",
+  "deeplApiKeyDescription": "Для превосходного качества перевода при редактировании языковых элементов. См. https://www.deepl.com/pro-api.",
+  "openaiApiKey": "API-ключ OpenAI",
+  "openaiApiKeyDescription": "Например, генерация с помощью ИИ при редактировании языковых элементов. См. https://platform.openai.com/api-keys.",
+  "enterApiKey": "Введите ключ API",
+  "optional": "необязательный",
+  "required": "необходимый",
+  "settingsSaved": "Настройки успешно сохранены",
+  "errorSavingSettings": "Ошибка сохранения настроек.",
+  "usingGoogleTranslate": "Использование бесплатного Google Translate",
+  "usingDeepL": "Использование DeepL (премиум)",
+  "noTranslationReceivedFromGoogle": "Перевод от Google не получен.",
+  "googleTranslationFailed": "Гугл перевод не удался",
+  "googleTranslationError": "Ошибка перевода Google",
+  "noTranslationReceivedFromDeepL": "Перевод от DeepL не получен.",
+  "invalidDeepLApiKey": "Неверный ключ API DeepL.",
+  "deeplTranslationQuotaExceeded": "Превышена квота перевода DeepL",
+  "deeplTranslationFailed": "Не удалось перевести DeepL",
+  "deeplTranslationError": "Ошибка перевода DeepL",
+  "invalidApiKeyConfigureOpenAI": "Неверный ключ API. Пожалуйста, настройте свой ключ API OpenAI.",
+  "apiRateLimitExceeded": "Превышен лимит скорости API. Пожалуйста, повторите попытку позже.",
+  "aiRequestFailed": "Запрос ИИ не выполнен",
+  "failedToParseAiResponse": "Не удалось проанализировать ответ AI. Пожалуйста, попробуйте еще раз.",
+  "aiGenerationError": "Ошибка генерации ИИ",
+  "voiceInputPlaceholder": "Голосовой ввод будет реализован с использованием пакета voice_to_text.",
+  "improveQualityWithApiKeys": "💡Совет: качество переводов и поиска примеров можно значительно улучшить, добавив в настройки приложения свои API-ключи DeepL и OpenAI.",
+  "noApiKeyFallbackMessage": "Без ключей API предоставляется базовый перевод и ограниченное количество примеров. Для достижения наилучших результатов настройте ключи API в настройках.",
+  "listeningForSpeech": "Слушаю... Говори сейчас",
+  "speechRecognitionNotAvailable": "Распознавание речи недоступно на этом устройстве.",
+  "speechRecognitionPermissionDenied": "В разрешении на распознавание речи было отказано",
+  "speechRecognitionError": "Ошибка распознавания речи",
+  "tapToSpeak": "Нажмите на микрофон, чтобы говорить",
+  "tapToStop": "Нажмите, чтобы остановить запись",
+  "speechNotRecognized": "Ни одна речь не была распознана. Пожалуйста, попробуйте еще раз.",
+  "usingWhisperApiSlower": "Использование облачного ИИ для распознавания речи (может быть медленнее)",
+  "languageNotSupportedAddApiKey": "Язык {languageCode} изначально не поддерживается. Добавьте ключ OpenAI API в настройки для распознавания речи с помощью искусственного интеллекта.",
+  "@languageNotSupportedAddApiKey": {
+    "placeholders": {
+      "languageCode": {
+        "type": "String"
+      }
+    }
+  },
+  "recordingTapToStop": "Запись... Нажмите еще раз, чтобы остановить",
+  "speakClearlyKeepRecording": "Говорите ясно. Запишите не менее 1 секунды.",
+  "pleaseRecordLonger": "Пожалуйста, говорите не менее 1 секунды и нажмите «Стоп».",
+  "errorStartingRecording": "Ошибка начала записи",
+  "noAudioRecorded": "Звук не был записан",
+  "errorTranscribing": "Ошибка расшифровки аудио",
+  "trainingSettings": "Настройки обучения",
+  "trainingPresetTitle": "Быстрая настройка",
+  "trainingPresetHint": "Выберите предустановку, и приведенные ниже настройки будут настроены автоматически.",
+  "trainingPresetComboLabel": "Предустановка",
+  "trainingPresetAllExamplesForeignLanguage": "Все примеры, иностранный язык",
+  "trainingPresetAllExamplesRandomLanguage": "Все примеры, произвольный язык",
+  "trainingPresetFavouriteItemsForeignLanguage": "Любимые предметы, иностранный язык",
+  "trainingPresetFavouriteItemsRandomLanguage": "Любимые предметы, случайный язык",
+  "trainingPresetImportantItemsForeignLanguage": "Важные предметы, иностранный язык",
+  "trainingPresetImportantItemsRandomLanguage": "Важные предметы, случайный язык",
+  "trainingPresetRandomItemsRandomLanguage": "Случайные предметы, случайный язык",
+  "trainingPresetUnknownItemsForeignLanguage": "Неизвестные предметы, иностранный язык",
+  "trainingPresetUnknownItemsRandomLanguage": "Неизвестные предметы, случайный язык",
+  "trainingPresetAppliedTapStart": "Предустановка применена. Нажмите «{actionLabel}», чтобы начать.",
+  "trainingPresetSelectPackageFirst": "Пожалуйста, сначала выберите пакет.",
+  "@trainingPresetAppliedTapStart": {
+    "placeholders": {
+      "actionLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "itemScope": "Область применения элемента",
+  "lastNItems": "Последние N элементов",
+  "onlyUnknown": "Только неизвестные предметы",
+  "onlyImportant": "Только важные предметы",
+  "onlyFavourite": "Только любимые предметы",
+  "numberOfItems": "Количество предметов",
+  "itemOrder": "Заказ товара",
+  "randomOrder": "Случайный порядок",
+  "sequentialOrder": "Последовательный порядок",
+  "itemType": "Тип элемента",
+  "dictionaryItems": "Словарные статьи",
+  "examplesType": "Примеры",
+  "displayLanguage": "Язык дисплея",
+  "motherTongue": "Родной язык",
+  "targetLanguage": "Целевой язык",
+  "randomLanguage": "Случайный",
+  "categoryFilter": "Фильтр категории",
+  "categoryFilterHint": "Выберите категории для включения (пусто = все категории)",
+  "noCategories": "Нет доступных категорий",
+  "dontKnowThreshold": "Не знаю порога",
+  "dontKnowThresholdHint": "Сколько раз предмет должен быть помечен как «не знаю» перед специальной обработкой",
+  "startTrainingRally": "Начать тренировочный ралли",
+  "clearTrainingSettings": "Очистить настройки",
+  "confirmClearTrainingSettings": "Вы уверены, что хотите сбросить все настройки обучения к значениям по умолчанию?",
+  "trainingSettingsCleared": "Настройки обучения удалены.",
+  "startingTraining": "Начинаю обучение...",
+  "noMoreItemsToDisplay": "Нет элементов для отображения в соответствии с настройками фильтра.",
+  "noItems": "Нет товаров",
+  "trainingComplete": "Обучение завершено",
+  "allItemsCompleted": "Поздравляем! Вы выполнили все пункты этого сеанса обучения.",
+  "closeTraining": "Закрытое обучение",
+  "confirmCloseTraining": "Вы уверены, что хотите закрыть обучение? Ваш прогресс сохранен.",
+  "question": "Вопрос",
+  "answer": "Отвечать",
+  "iKnow": "Я знаю",
+  "iDontKnow": "Я не знаю",
+  "previousItem": "Предыдущий элемент",
+  "iDidNotKnowEither": "Я не знал этого в конце концов",
+  "exportBeforeDelete": "Экспортировать перед удалением?",
+  "aiTextAnalysis": "Извлечение элементов из текста/списка с помощью ИИ",
+  "aiTextAnalysisImport": "Извлекайте элементы из текста или списка с помощью инструмента анализа текста AI",
+  "knowledgeLevel": "Уровень знаний",
+  "a1Beginner": "А1 — Новичок",
+  "a2Elementary": "А2 – элементарный",
+  "b1Intermediate": "B1 – Средний уровень",
+  "b2UpperIntermediate": "B2 – уровень выше среднего",
+  "c1Advanced": "C1 — Продвинутый",
+  "c2Proficient": "C2 – Опытный",
+  "pasteTextHere": "Вставьте сюда свой текст...",
+  "extractWords": "Извлекать слова",
+  "extractExpressions": "Извлечение выражений",
+  "maxItems": "Максимум новых предметов",
+  "maxItemsHint": "Оставьте пустым, чтобы не было ограничений",
+  "generateExamples": "Создание примеров",
+  "categoryName": "Название категории",
+  "categoryNameHint": "Название категории импортированных товаров",
+  "analyzeText": "Анализировать текст",
+  "configureAnalysis": "Настройте элементы для извлечения",
+  "openaiModel": "Модель ИИ",
+  "openaiModelDescription": "Выберите модель ChatGPT",
+  "modelGpt55": "ГПТ-5,5",
+  "modelGpt55Pro": "ГПТ-5.5 Про",
+  "modelGpt54": "ГПТ-5.4",
+  "modelGpt54Pro": "ГПТ-5.4 Про",
+  "modelGpt54Mini": "ГПТ-5.4 Мини",
+  "modelGpt5Mini": "ГПТ-5 Мини",
+  "modelGpt41": "ГПТ-4.1",
+  "modelGpt55Desc": "Новейший флагманский баланс качества и скорости для общего использования.",
+  "modelGpt55ProDesc": "Самый лучший вариант GPT-5.5 для максимальной аргументации и качества.",
+  "modelGpt54Desc": "Сильная универсальная модель поколения GPT-5.",
+  "modelGpt54ProDesc": "Вариант GPT-5.4 с более высокими возможностями для требовательных задач",
+  "modelGpt54MiniDesc": "Меньший и более быстрый вариант GPT-5.4 для недорогих повседневных задач.",
+  "modelGpt5MiniDesc": "Компактная модель семейства GPT-5, оптимизированная по скорости и стоимости.",
+  "modelGpt41Desc": "Надежный вариант GPT-4.1 для совместимости и высокого качества.",
+  "modelGpt4o": "ГПТ-4о",
+  "modelGpt35Turbo": "GPT-3.5 Turbo (устаревший, бюджетный)",
+  "modelGpt35Turbo16k": "ГПТ-3.5 Турбо 16К",
+  "modelGpt4": "ГПТ-4",
+  "modelGpt4Turbo": "GPT-4 Турбо (Устаревший)",
+  "modelGpt4oDesc": "Лучший универсальный выбор; быстро, мультимодально и качественно",
+  "modelGpt35TurboDesc": "Устаревший недорогой вариант; полезен для более простых задач и экономичного использования",
+  "modelGpt35Turbo16kDesc": "То же, что GPT-3.5, но контекстное окно токена 16 КБ.",
+  "modelGpt4Desc": "Высокое качество рассуждения; обычно медленнее и дороже",
+  "modelGpt4TurboDesc": "Устаревший вариант семейства GPT-4; все еще полезно, если вам нужна более старая и дешевая альтернатива",
+  "analyzing": "Анализ...",
+  "languageDetected": "Язык обнаружен",
+  "itemsFound": "Найдены предметы",
+  "selectItemsToImport": "Выберите элементы для импорта",
+  "selectAll": "Выбрать все",
+  "deselectAll": "Отменить выбор всех",
+  "importSelected": "Импортировать выбранное",
+  "importing": "Импорт...",
+  "itemsImported": "Товары успешно импортированы",
+  "noItemsSelected": "Элементы не выбраны",
+  "textCannotBeEmpty": "Текст не может быть пустым",
+  "selectAtLeastOneType": "Выберите хотя бы один тип (слова или выражения)",
+  "languageNotMatching": "Обнаруженный язык не соответствует ни одному языку в пакете.",
+  "openaiKeyRequired": "Для этой функции требуется ключ API OpenAI.",
+  "analyzingProgress": "Анализ: {current} / {total}",
+  "translatingProgress": "Перевод: {current} / {total}",
+  "duplicate": "Дублировать",
+  "importProgress": "Импорт {current} из {total}",
+  "detectingLanguage": "Обнаружение языка...",
+  "extractingItems": "Извлечение предметов...",
+  "checkingDuplicates": "Проверка дубликатов...",
+  "translating": "Перевод...",
+  "generatingExamples": "Создание примеров...",
+  "errorAnalyzingText": "Ошибка анализа текста",
+  "errorImportingItems": "Ошибка импорта элементов",
+  "warning": "Предупреждение",
+  "textIsVeryLarge": "Текст очень большой",
+  "words": "слова",
+  "continueAnalysis": "Обработка может занять больше времени и будет анализироваться частями. Вы хотите продолжить?",
+  "continueLabel": "Продолжать",
+  "exportBeforeDeleteMessage": "Хотите экспортировать этот пакет перед его удалением? Это сохранит все ваши данные в ZIP-файл.",
+  "deleteWithoutExport": "Удалить без экспорта",
+  "exportAndDelete": "Экспорт и удаление",
+  "exportingPackage": "Экспорт пакета...",
+  "packageExportedToPath": "Пакет экспортирован в: {path}",
+  "errorLoadingItems": "Ошибка загрузки элементов: {error}.",
+  "badgeEarnedWithName": "Получен значок: {badgeName}!",
+  "badgeLostWithName": "Значок утерян: {badgeName}",
+  "trainingSessionProgress": "Статистика сеанса обучения",
+  "total": "Общий",
+  "lastNValue": "Н = {value}",
+  "errorLoadingSettings": "Ошибка загрузки настроек: {error}.",
+  "selectPackage": "Выберите пакет",
+  "noPackagesAvailable": "Нет доступных пакетов",
+  "possibleSolutions": "Возможные решения",
+  "technicalDetails": "Технические детали",
+  "close": "Закрывать",
+  "checkApiKey": "Проверьте свой ключ API OpenAI",
+  "ensureValidOpenAIKey": "Убедитесь, что ключ API действителен и активен.",
+  "verifyKeyInSettings": "Проверьте ключ в настройках",
+  "rateLimitExceeded": "Превышен лимит скорости API",
+  "waitAndRetry": "Подождите несколько минут и повторите попытку",
+  "checkAccountQuota": "Проверьте квоту своей учетной записи OpenAI",
+  "invalidRequest": "Неверный формат запроса",
+  "tryReducingTextLength": "Попробуйте уменьшить длину текста",
+  "checkTextFormat": "Проверьте правильность формата текста",
+  "checkInternetConnection": "Проверьте подключение к Интернету",
+  "retryInMoment": "Повторите попытку через минуту",
+  "checkFirewall": "Проверьте настройки брандмауэра",
+  "textMayBeTooShort": "Текст может быть слишком коротким",
+  "tryDifferentKnowledgeLevel": "Попробуйте другой уровень знаний",
+  "ensureTextInCorrectLanguage": "Убедитесь, что текст написан на правильном языке",
+  "requestTimedOut": "Время запроса истекло",
+  "textMayBeTooLong": "Текст может быть слишком длинным",
+  "tryAgainOrReduceSize": "Попробуйте еще раз или уменьшите размер текста.",
+  "unexpectedError": "Произошла непредвиденная ошибка",
+  "checkErrorDetails": "Подробности об ошибке см. ниже.",
+  "tryAgainLater": "Повторите попытку позже",
+  "translationServiceFailed": "Служба перевода не удалась",
+  "checkApiKeys": "Проверьте свои ключи API (DeepL, OpenAI)",
+  "retryImport": "Повторите импорт",
+  "exampleGenerationFailed": "Генерация примера не удалась",
+  "itemsStillImported": "Товары все еще были импортированы",
+  "canAddExamplesManually": "Вы можете добавить примеры вручную позже.",
+  "databaseError": "Произошла ошибка базы данных",
+  "checkStorageSpace": "Проверьте доступное место для хранения",
+  "restartApp": "Попробуйте перезапустить приложение",
+  "groupLabel": "Группа:",
+  "amendGroups": "Исправлять",
+  "exportItemsJson": "Экспортировать элементы (JSON)",
+  "exportItemsJsonTooltip": "Экспортируйте все элементы в файл JSON.",
+  "noCategoriesInPackage": "В этом пакете категорий не найдено",
+  "noItemsToExport": "Не найдено товаров для экспорта",
+  "itemsExportedSuccessfully": "Элементы {count} успешно экспортированы в:\n{path}",
+  "@itemsExportedSuccessfully": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "errorExportingItems": "Ошибка при экспорте элементов",
+  "languageMismatch": "Языковое несоответствие",
+  "languageMismatchDescription": "Языки в файле JSON не соответствуют языкам пакета:",
+  "packageLanguages": "Пакет: {lang1} → {lang2}",
+  "@packageLanguages": {
+    "placeholders": {
+      "lang1": {
+        "type": "String"
+      },
+      "lang2": {
+        "type": "String"
+      }
+    }
+  },
+  "jsonFileLanguages": "Файл JSON: {lang1} → {lang2}.",
+  "@jsonFileLanguages": {
+    "placeholders": {
+      "lang1": {
+        "type": "String"
+      },
+      "lang2": {
+        "type": "String"
+      }
+    }
+  },
+  "continueImportQuestion": "Вы все равно хотите продолжить импорт?",
+  "continueImport": "Продолжить импорт",
+  "pleaseSelectPackageGroup": "Пожалуйста, выберите группу пакетов",
+  "customIconLabel": "Обычай",
+  "defaultIconLabel": "По умолчанию",
+  "icon2Label": "Открытая книга",
+  "icon3Label": "Цветная книга",
+  "icon4Label": "Беседа",
+  "icon5Label": "выпускной",
+  "icon6Label": "Мозг",
+  "icon7Label": "Книга Стопка",
+  "icon8Label": "Карточка",
+  "icon9Label": "Глобус",
+  "icon10Label": "Карандаш",
+  "icon11Label": "Трофей",
+  "icon12Label": "Поиск",
+  "customIconFile": "Пользовательский значок",
+  "importedIconFile": "Импортированный значок",
+  "unableToReadImageFile": "Невозможно прочитать файл изображения. Пожалуйста, выберите допустимое изображение.",
+  "iconDimensionsTooLarge": "Размеры значков слишком велики ({width}x{height}). Максимально допустимый размер — 512x512 пикселей.",
+  "@iconDimensionsTooLarge": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "iconFileTooLarge": "Файл значка слишком велик. Максимальный размер — 1 МБ.",
+  "failedToUploadIcon": "Не удалось загрузить значок: {error}.",
+  "@failedToUploadIcon": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectValidLanguage": "Пожалуйста, выберите действительный язык из списка",
+  "status": "Статус",
+  "addExample": "Добавить пример",
+  "noExamplesYet": "Примеров пока нет. Нажмите +, чтобы добавить.",
+  "speakText": "Произнести текст",
+  "removeCategory": "Удалить категорию",
+  "removeCategoryConfirm": "Удалить категорию «{categoryName}» из этого товара?",
+  "@removeCategoryConfirm": {
+    "placeholders": {
+      "categoryName": {
+        "type": "String"
+      }
+    }
+  },
+  "remove": "Удалять",
+  "extractFullItems": "Извлечь полные элементы",
+  "pasteFromClipboard": "Вставить из буфера обмена",
+  "noItemsFoundOrAllDuplicates": "В тексте не найдено ни одного элемента или все элементы уже существуют в пакете.",
+  "aboutLanguageRally": "О языковом ралли",
+  "welcomeTitle": "🚀 Добро пожаловать на Language Rally",
+  "welcomeSubtitle": "Раскройте невероятную мощь изучения языка с помощью примерно 4000 слов, 4000 выражений и такого же количества примеров предложений, тщательно подобранных для каждого уровня владения языком! Используйте ИИ для импорта элементов из ваших собственных текстов или общайтесь с ИИ на любую тему, чтобы генерировать именно те слова, выражения и примеры, которые вы хотите выучить.\nПовышайте свои языковые навыки — умным и игровым способом!",
+  "welcomeIntro": "Эффективно изучайте словарный запас и выражения, практикуя то, что вам действительно важно. Никаких скучных списков. Никакого потерянного времени.",
+  "sectionPlayYourGame": "🎮 Играйте в свою игру",
+  "sectionPlayYourGameDesc": "Создайте свои собственные словарные пакеты. Тренируйте только те слова и выражения, которые хотите освоить. Уже знаете это? Оно будет отмечено и пропущено!",
+  "sectionAITeammate": "🤖 ИИ в качестве вашего товарища по команде",
+  "sectionAITeammateDesc": "Вставьте любой текст и позвольте AI:\n• Извлекайте полезную лексику\n• Выбирайте выражения, соответствующие вашему уровню.\n• Создавайте готовые к обучению пакеты за считанные секунды.\n\nЧат с ИИ:\n• Пусть он подскажет слова и выражения по вашей теме.\n• Нажмите, чтобы создать примеры и сохранить их в своем СОБСТВЕННОМ пакете.",
+  "sectionTrainSmart": "🔁 Тренируйтесь с умом",
+  "sectionTrainSmartDesc": "Наша точно настроенная система повторения показывает элементы именно тогда, когда они нужны вашему мозгу, чтобы эффективно их запомнить. Максимальный прогресс. Минимум усилий.",
+  "sectionRealExamples": "🌍Реальные примеры. Отличные переводы.",
+  "sectionRealExamplesDesc": "Получите реальные примеры использования. Переводите с премиальным качеством через DeepL. Тренируйте произношение и говорите уверенно.",
+  "sectionTeachersWelcome": "👩‍🏫 Приглашаем учителей",
+  "sectionTeachersWelcomeDesc": "Создайте пакет → Копируйте и вставьте элементы или извлекайте, переводите и добавляйте примеры с помощью AI → Экспорт → Загрузить/Отправить → Готово. Ваши ученики импортируют его и сразу же начинают практиковаться.",
+  "sectionUnlockAI": "🔑 Разблокируйте всю мощь ИИ",
+  "sectionUnlockAIDesc": "Чтобы получить высококачественный перевод и функции искусственного интеллекта, просто:\n\n1. Создайте свой ключ API DeepL.\n   https://www.deepl.com/pro-api\n2. Создайте свой ключ API OpenAI.\n   https://platform.openai.com/api-keys\n3. Вставьте оба ключа в настройки.\n\nНебольшие инвестиции открывают доступ к мощным языковым инструментам профессионального уровня. Почему бы вам их пропустить?\n(Для достижения наилучших результатов мы рекомендуем использовать платный доступ к API.)",
+  "readyToStart": "Готовы начать митинг? 🏁",
+  "welcomeDescription": "Language Rally — ваш комплексный помощник в изучении языка. Создавайте собственные словарные пакеты, систематизируйте элементы по категориям и тренируйтесь с помощью интеллектуальной системы интервальных повторений.",
+  "browseStore": "Обзор магазина",
+  "featureInteractiveTraining": "Интерактивное обучение",
+  "featureInteractiveTrainingDesc": "Практика с алгоритмами адаптивного обучения",
+  "featureSmartOrganization": "Умная организация",
+  "featureSmartOrganizationDesc": "Классифицируйте и фильтруйте свой словарный запас",
+  "featureTrackProgress": "Отслеживать прогресс",
+  "featureTrackProgressDesc": "Контролируйте свое обучение с помощью подробной статистики",
+  "featureImportExport": "Импорт и экспорт",
+  "featureImportExportDesc": "Делитесь пакетами и синхронизируйте их между устройствами",
+  "startAppTour": "Начать тур по приложению",
+  "quickStartGuide": "Краткое руководство",
+  "tourStep1Title": "Создание или импорт пакетов",
+  "tourStep1Desc": "Начните с создания нового языкового пакета или импортируйте существующий из файла.",
+  "tourStep2Title": "Добавьте словарные элементы",
+  "tourStep2Desc": "Просмотрите свои пакеты и добавьте слова, фразы или выражения с примерами и категориями.",
+  "tourStep3Title": "Настроить обучение",
+  "tourStep3Desc": "Выбирайте предметы для тренировки, устанавливайте уровни сложности и настраивайте свой процесс обучения.",
+  "tourStep4Title": "Начать обучение",
+  "tourStep4Desc": "Начните тренировку и отмечайте элементы как известные или неизвестные, чтобы отслеживать свой прогресс.",
+  "tourStep5Title": "Посмотреть статистику",
+  "tourStep5Desc": "Проверяйте свой прогресс в обучении с помощью подробной статистики и значков достижений.",
+  "gotIt": "Понятно!",
+  "appTourTitle": "Добро пожаловать на языковой митинг",
+  "appTourSubtitle": "Ваш умный, игривый и полностью персонализированный помощник в изучении языка.",
+  "tourPage1Title": "Изучайте и практикуйте то, что вы хотите и что вам нужно",
+  "tourPage1Desc": "Наша адаптивная система обучения гарантирует, что вы просматриваете элементы в нужный момент — максимально сохраняя информацию и минимизируя усилия.\n\nУчитесь с помощью встроенной автоматизации.\nХватит тратить время на слова, которые вы уже знаете.\n\nПрактикуйте только тот словарный запас и выражения, которые вас интересуют. Создавайте и тренируйте свои собственные предметы — полностью соответствующие вашим целям и уровню.",
+  "tourPage2Title": "Создайте свой собственный языковой пакет",
+  "tourPage2Desc": "Создавайте персонализированные коллекции словаря, соответствующие вашим интересам и целям обучения.\n\nОрганизуйте слова и выражения по теме, сложности или контексту.\n\nПолный контроль над тем, что и когда вы изучаете.",
+  "tourPage3Title": "Создание предметов с помощью искусственного интеллекта",
+  "tourPage3Desc": "Создайте свои собственные пакеты обучения в мгновение ока:\n\n• Вставьте любой текст и позвольте ИИ автоматически извлекать соответствующий словарный запас.\n• Определите слова и выражения, идеально подходящие для вашего уровня.\n• Позвольте искусственному интеллекту сделать перевод за вас.\n• Позвольте ИИ искать примеры в реальном времени.\n\nЧат с ИИ:\n• Пусть он подскажет слова и выражения по вашей теме.\n• Нажмите, чтобы создать примеры и сохранить их в своем СОБСТВЕННОМ пакете.\n• Быстро создавайте пакеты, готовые к обучению.",
+  "tourPage4Title": "Примеры из реальной жизни на основе искусственного интеллекта и перевод премиум-класса",
+  "tourPage4Desc": "• Мгновенный поиск подлинных примеров использования.\n• Переводите слова, выражения и полные предложения с помощью высококачественной интеграции DeepL.\n• Получайте точные результаты с учетом контекста.",
+  "tourPage5Title": "Умная организация пакетов",
+  "tourPage5Desc": "• Организуйте словарный запас по пользовательским категориям.\n• Фильтруйте и фокусируйтесь на конкретных темах.\n• Импорт и экспорт пакетов на разные устройства.\n• Легко делитесь пакетами с другими",
+  "tourPage6Title": "Тренируйте свое произношение",
+  "tourPage6Desc": "Проверьте и улучшите свое произношение с помощью интерактивных инструментов для практики.\n\nРазвивайте уверенность в разговоре, а не только при чтении.",
+  "tourPage7Title": "Для учителей",
+  "tourPage7Desc": "Создавайте готовые к использованию словарные пакеты для своих учеников всего за несколько кликов.\n\nЭкспортируйте их, отправьте в свой класс — и после импорта они мгновенно будут готовы к практике на устройстве каждого учащегося.\n\nПростой. Быстрый. Эффективно.",
+  "tourPage8Title": "Разблокируйте высококачественную поддержку искусственного интеллекта",
+  "tourPage8Desc": "Чтобы получить переводы премиум-класса и расширенные функции искусственного интеллекта, просто:\n 1. Создайте свой собственный ключ API DeepL.\n 2. Создайте свой собственный ключ API OpenAI.\n 3. Вставьте оба ключа в раздел «Настройки».\n\nЭто требует лишь небольшого бюджета (несколько долларов), но дает вам доступ к мощным языковым инструментам профессионального уровня.\nПримечание. Для достижения наилучших результатов мы рекомендуем использовать платный доступ к API. Это стоит всего несколько долларов.\n\n🔑 Ключ API DeepL: https://www.deepl.com/pro-api\n\n🔑 Ключ API OpenAI: https://platform.openai.com/api-keys",
+  "previousPage": "Предыдущий",
+  "nextPage": "Следующий",
+  "endTour": "Конец тура",
+  "pageIndicator": "Страница {current} из {total}",
+  "@pageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "practicePronunciation": "Практикуйте произношение",
+  "pronunciationPractice": "Практика произношения",
+  "startPractice": "Начать практику",
+  "listenToPronunciation": "Слушайте произношение",
+  "tapToRecord": "Нажмите, чтобы записать",
+  "recording": "Запись...",
+  "recorded": "Записано",
+  "speakNow": "Говори сейчас — говори четко и близко к микрофону.",
+  "noSpeechDetected": "Речь не обнаружена. Пожалуйста, попробуйте еще раз.",
+  "noTextRecognized": "Ни одна речь в записи не была распознана. Убедитесь, что ваш микрофон работает, и повторите попытку.",
+  "processingAudio": "Обработка звука с помощью ИИ...",
+  "playbackRecording": "Воспроизвести мою запись",
+  "playbackRecordingSubtitle": "Слушайте свою запись, пока ИИ ее обрабатывает",
+  "recordingTooShort": "Запись слишком короткая. Пожалуйста, говорите хотя бы 1 секунду.",
+  "microphonePermissionRequired": "Для практики произношения требуется разрешение микрофона.",
+  "speechRecognitionNotSupported": "Распознавание речи не поддерживается на этой платформе. Используйте мобильное приложение (Android/iOS) для практики произношения.",
+  "speechRecognitionUnavailable": "Распознавание речи недоступно на этом устройстве.",
+  "pronunciationAccuracy": "Произношение\nТочность",
+  "excellent": "Отличный!",
+  "good": "Хороший",
+  "fair": "Справедливый",
+  "needsImprovement": "Требует улучшения",
+  "tryAgain": "Попробуйте еще раз",
+  "nextItem": "Следующий элемент",
+  "endPractice": "Завершить практику",
+  "practiced": "Практикующийся",
+  "windowsAudioTestPageTitle": "Аудиотест Windows (RTAudio)",
+  "configureWindowsAudio": "Тестирование и настройка звука\nввод в Windows",
+  "configureWindowsAudioDescription": "Записывайте, воспроизводите и расшифровывайте звук с помощью встроенного драйвера Windows RTAudio.",
+  "audioTestTitle": "Тест записи звука Windows",
+  "audioTestSubtitle": "RTAudio — запись звука в Windows.",
+  "audioInputDevice": "Устройство аудиовхода",
+  "selectMicrophone": "Выберите микрофон",
+  "refreshDevices": "Обновить устройства",
+  "noAudioDevicesFound": "Устройства аудиовхода не найдены",
+  "loadingAudioDevices": "Загрузка аудиоустройств...",
+  "recordingSettings": "Настройки записи",
+  "stereoRecording": "Стерео запись",
+  "stereoChannels": "2 канала (стерео)",
+  "monoChannel": "1 канал (моно)",
+  "sampleRateLabel": "Частота дискретизации",
+  "nativeRateBadge": "родной",
+  "microphoneGainLabel": "Усиление микрофона",
+  "gainHint": "1x = без усиления • 3x ≈ +9,5 дБ • 10x ≈ +20 дБ",
+  "tapToStartRec": "Нажмите, чтобы начать запись",
+  "tapToStopRec": "Нажмите, чтобы остановить запись",
+  "recordingCompleteLabel": "Запись завершена",
+  "tapMicToStop": "Нажмите на микрофон, чтобы остановить",
+  "playRecordingLabel": "Воспроизвести запись",
+  "stopPlaybackLabel": "Останавливаться",
+  "whisperSectionTitle": "Транскрипция шепота OpenAI",
+  "whisperWavNote": "WAV (16-битный PCM) изначально поддерживается Whisper — преобразование не требуется.",
+  "sendToWhisperLabel": "Отправить в Whisper",
+  "transcribingLabel": "Расшифровка...",
+  "transcriptionResultLabel": "Результат транскрипции",
+  "transcriptionFailedLabel": "Транскрипция не удалась",
+  "debugInformationLabel": "Информация",
+  "debugConsoleHint": "Проверьте консоль для получения подробных журналов",
+  "debugDevicesFound": "Устройства найдены",
+  "debugSelectedDevice": "Выбранное устройство",
+  "debugDeviceRateNative": "Скорость устройства (исходная)",
+  "debugRequestedRate": "Запрошенная ставка",
+  "debugActualRate": "Фактическая использованная ставка",
+  "debugActualRateForced": "⚠ вынужденный",
+  "debugActualRateOk": "✓",
+  "debugRecordingMode": "Режим записи",
+  "debugLastRecording": "Последняя запись",
+  "debugFileSize": "Размер файла",
+  "debugStereo": "Стерео",
+  "debugMono": "Мононуклеоз",
+  "recordingSavedSnack": "Запись сохранена.",
+  "recordingTooShortSnack": "Запись слишком короткая. Пожалуйста, записывайте хотя бы 1 секунду.",
+  "recordingSmallSnack": "Файл записи очень мал. Возможно, запись не удалась.",
+  "noAudioDataSnack": "Аудиоданные не записаны",
+  "noDeviceSelectedSnack": "Пожалуйста, выберите аудиоустройство",
+  "failedToInitRtAudio": "Не удалось инициализировать RTAudio.",
+  "envelopeScoreLabel": "Конверт",
+  "rhythmScoreLabel": "Ритм",
+  "textScoreLabel": "Текст",
+  "help": "Помощь",
+  "trainingHelpTitle": "Советы по обучению",
+  "trainingHelpText": "Чтобы обучение было максимально эффективным, выполните следующие действия:\n1. Нажмите кнопку «Очистить счетчики», чтобы все товары в этом пакете были помечены как известные.\n2. Установите для параметра «Область элемента» значение «Все элементы».\n3. Установите для параметра «Порядок предметов» значение «Случайный».\n4. Выберите свой родной язык в разделе «Язык дисплея».\n5. Начните обучение и продолжайте, пока не определите примерно 20–30 вопросов, которые вам неизвестны.\n6. Вернитесь к настройкам обучения и измените «Объем элемента» на «Только неизвестные элементы».\n7. Возобновите обучение и продолжайте, пока не выучите все ранее неизвестные предметы.",
+  "trainingProTip": "Совет для профессионалов: начните со всех предметов; позже сосредоточьтесь только на неизвестном.",
+  "onboardingWelcomeTitle": "Добро пожаловать на Языковой Ралли!",
+  "onboardingSetupSubtitle": "Давайте настроим вам приложение.",
+  "onboardingSelectUiLanguage": "Язык интерфейса",
+  "onboardingUiLanguageNote": "Вы можете изменить это позже в «Настройки» → «Язык пользовательского интерфейса».",
+  "onboardingNext": "Следующий",
+  "onboardingBack": "Назад",
+  "onboardingSelectPackagesTitle": "Выберите языковые пакеты",
+  "onboardingSelectPackagesSubtitle": "Выберите, какие пакеты словаря нужно импортировать. Вы всегда можете добавить больше позже из главного меню (Просмотр пакетов).",
+  "onboardingAnalyzingPackages": "Анализ доступных пакетов…",
+  "onboardingScanningPackagesProgress": "Отсканировано {scanned}/{total} • уже в БД {alreadyInDb}.",
+  "@onboardingScanningPackagesProgress": {
+    "placeholders": {
+      "scanned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "alreadyInDb": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingImportSelected": "Импортировать выбранное",
+  "onboardingSkipImport": "Пропускать",
+  "onboardingSelectAll": "Выбрать все",
+  "onboardingDeselectAll": "Отменить выбор всех",
+  "onboardingNPackages": "{count} пакеты",
+  "@onboardingNPackages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingGetStarted": "Начать",
+  "onboardingImportCompleteTitle": "Импорт завершен!",
+  "importBuiltInPkg": "Бесплатные пакеты",
+  "importBuiltInPkgTooltip": "Импортируйте бесплатные встроенные языковые пакеты.",
+  "globalSearch": "Глобальный поиск",
+  "globalSearchTitle": "Поиск по всем пакетам",
+  "globalSearchSelectLanguage": "Выберите код языка",
+  "globalSearchEnterWord": "Слово(а) для поиска",
+  "globalSearchEnterWordHint": "например «der», «order» — находит частичные совпадения",
+  "globalSearchButton": "Поиск",
+  "globalSearchResults": "Результаты",
+  "globalSearchNoResults": "По запросу \"{query}\" результатов не найдено.",
+  "@globalSearchNoResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "globalSearchResultsCount": "{count} найдено результатов",
+  "@globalSearchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "globalSearchSearching": "Идет поиск…",
+  "globalSearchSelectLanguageFirst": "Пожалуйста, сначала выберите код языка",
+  "globalSearchEnterTermFirst": "Пожалуйста, введите поисковый запрос",
+  "globalSearchMatchInExamples": "Встречается в примерах",
+  "globalSearchViewItem": "Вид",
+  "globalSearchGoToPackage": "Перейти к пакету",
+  "globalSearchLoadingPackages": "Загрузка пакетов…",
+  "globalSearchNoPackages": "Языковые пакеты еще не установлены",
+  "globalSearchCancelSearch": "Отменить поиск",
+  "globalSearchProgressOf": "Поиск пакета {current} из {total}…",
+  "@globalSearchProgressOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "globalSearchCancelledMessage": "Поиск отменен — на данный момент найдено {count} результатов",
+  "@globalSearchCancelledMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "storeTitle": "Магазин языковых пакетов",
+  "storeRestorePurchases": "Восстановление покупок",
+  "storeRefresh": "Обновить",
+  "storeSearchHint": "Поиск пакетов…",
+  "storeNoPackagesMatchSearch": "Нет пакетов, соответствующих вашему запросу.",
+  "storeNoPackagesAvailable": "Нет доступных пакетов.",
+  "storeInstalledCount": "{installed} / {total} установлен",
+  "@storeInstalledCount": {
+    "placeholders": {
+      "installed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "storeLoadErrorTitle": "Не удалось загрузить магазин.",
+  "storeIapNotAvailableMessage": "Покупки в приложении недоступны на этой платформе. Посетите наш сайт, чтобы приобрести пакеты.",
+  "storeOpenWebsite": "Открыть сайт",
+  "storePurchaseSuccess": "{title} успешно установлен!",
+  "@storePurchaseSuccess": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "storePurchaseCancelled": "Покупка отменена.",
+  "storePurchaseAlreadyOwned": "{title} уже установлен.",
+  "@storePurchaseAlreadyOwned": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "storePurchaseError": "Что-то пошло не так. Пожалуйста, попробуйте еще раз.",
+  "storePurchasesRestored": "Покупки восстановлены",
+  "storeAllLevels": "Все уровни",
+  "storeAllGroups": "Все языки",
+  "storeFilterLevel": "Уровень",
+  "storeFilterLanguage": "Язык",
+  "storeDownload": "Скачать",
+  "storeBuy": "Купить",
+  "storeInstalledLabel": "Установлено",
+  "storeDownloading": "Загрузка…",
+  "storeRetry": "Повторить попытку",
+  "storeIapAndroidOnly": "Покупки доступны только на Android и iOS.",
+  "storeDismiss": "Увольнять",
+  "storeAddToCart": "добавить в корзину",
+  "storeRemoveFromCart": "Удалять",
+  "storeCartTitle": "Корзина",
+  "storeCartEmpty": "Ваша корзина пуста",
+  "storeCartClearAll": "Очистить все",
+  "storeCartCheckout": "Проверить",
+  "storeCartItemCount": "{count, plural, =1{1 item} other{{count} items}}",
+  "@storeCartItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "storePackageDuplicateTitle": "Пакет уже существует",
+  "storePackageDuplicateMessage": "Пакет «{packageName}» уже существует в группе «{groupName}». Вы хотите перезаписать его? Существующий пакет и весь прогресс его обучения будут удалены без возможности восстановления.",
+  "@storePackageDuplicateMessage": {
+    "placeholders": {
+      "packageName": {
+        "type": "String"
+      },
+      "groupName": {
+        "type": "String"
+      }
+    }
+  },
+  "storePackageDuplicateOverwrite": "Перезаписать",
+  "storePackageDuplicateKeep": "Сохранить существующий",
+  "splashSettingUpPackages": "Настройка пакетов: {current}/{total}",
+  "@splashSettingUpPackages": {
+    "description": "Splash screen progress label shown while seed packages are being imported",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "splashThisHappensOnce": "Это происходит только один раз.",
+  "@splashThisHappensOnce": {
+    "description": "Subtitle shown below the progress bar on the splash screen"
+  },
+  "splashLoading": "Загрузка…",
+  "@splashLoading": {
+    "description": "Indeterminate loading label on the splash screen"
+  },
+  "aiItemCreator": "Гуру AI-чата",
+  "aiItemCreatorAppBarHint": "Собирайте и сохраняйте слова и выражения, общаясь с ИИ.",
+  "chatWithAI": "Чат с ИИ",
+  "enterYourPrompt": "Введите подсказку...",
+  "aiItemCreatorPromptHint": "Опишите тему, и тренер по искусственному интеллекту задаст вопросы, предложит полезную лексику и проверит ваши знания. Например: помогите мне собрать и отработать опасности, связанные с путешествием, на уровне знаний B2.",
+  "send": "Отправлять",
+  "sending": "Отправка...",
+  "aiResponse": "Ответ ИИ",
+  "itemInputs": "Вводы предметов",
+  "aiItemCreatorBothItemsRequired": "Перед сохранением заполните оба языковых поля.",
+  "aiItemCreatorDuplicateItemMessage": "Элемент с такой текстовой парой уже существует в этом пакете.",
+  "language1": "Язык 1",
+  "language2": "Язык 2",
+  "translateLang1ToLang2": "Перевести на язык 2",
+  "translateLang2ToLang1": "Перевести на язык 1",
+  "translateToLanguageCode": "Перевести на {languageCode}",
+  "@translateToLanguageCode": {
+    "placeholders": {
+      "languageCode": {
+        "type": "String"
+      }
+    }
+  },
+  "example": "Пример",
+  "generating": "Создание...",
+  "flags": "Флаги",
+  "favorite": "Любимый",
+  "saveItems": "Сохранять",
+  "saving": "Сохранение...",
+  "clearItems": "Очистить только элементы",
+  "clearAll": "Очистить все поля",
+  "itemSavedSuccessfully": "Объект успешно сохранен",
+  "promptCannotBeEmpty": "Запрос не может быть пустым",
+  "enterAtLeastOneItem": "Пожалуйста, введите хотя бы один элемент",
+  "selectPackageFirst": "Пожалуйста, сначала выберите пакет",
+  "deeplKeyRequired": "Для перевода необходим ключ API DeepL.",
+  "noNonPurchasedPackagesAvailable": "Нет доступных некупленных пакетов",
+  "packageSelectionRemembered": "Выбор пакета сохранен.",
+  "aiItemCreatorOpenAiKeyNotConfiguredDetailed": "Ключ API OpenAI не настроен. Пожалуйста, добавьте свой ключ API в настройках.",
+  "aiItemCreatorOpenAiKeyNotConfigured": "Ключ API OpenAI не настроен.",
+  "aiItemCreatorProcessingComplete": "Обработка завершена",
+  "aiItemCreatorTranslationComingSoon": "Функция перевода скоро появится",
+  "aiItemCreatorDefaultCategoryName": "ИИ создан",
+  "aiItemCreatorStartNewConversation": "Начать новый разговор",
+  "aiItemCreatorChatHint": "Опишите тему, и тренер по искусственному интеллекту задаст вопросы, предложит полезную лексику и проверит ваши знания.",
+  "aiItemCreatorConversation": "Беседа",
+  "aiItemCreatorYou": "Ты",
+  "aiItemCreatorCoach": "ИИ-тренер",
+  "aiItemCreatorAiSuggestions": "Предложения ИИ",
+  "aiItemCreatorTapChipToFill": "Коснитесь фишки, чтобы заполнить поле элемента и выполнить автоматический перевод.",
+  "aiItemCreatorNoSuggestedItems": "Пока нет слов и выражений.",
+  "aiItemCreatorNextSteps": "Как продолжить",
+  "aiItemCreatorNoNextSteps": "Предложений по продолжению пока нет.",
+  "aiItemCreatorModelCostTip": "Совет для профессионалов: новые модели стоят дороже, а старые модели с турбонаддувом дешевле и могут работать значительно быстрее.",
+  "aiItemCreatorSelectPackageDialogTitle": "Выбрать языковой пакет",
+  "aiItemCreatorSelectPackageDialogMessage": "Выберите языковой пакет, который будет использоваться для этого сеанса. Ваш последний выбор выбран заранее.",
+  "aiItemCreatorMissingApiKeysWarning": "Отсутствуют ключи API: {keys}. Вы можете продолжить, но функции искусственного интеллекта и премиум-перевода могут быть ограничены.",
+  "@aiItemCreatorMissingApiKeysWarning": {
+    "placeholders": {
+      "keys": {
+        "type": "String"
+      }
+    }
+  },
+  "about": "О",
+  "aboutWebsite": "Веб-сайт",
+  "aboutSummaryVideo": "Видео-обзор",
+  "aboutSupportEmail": "Адрес электронной почты поддержки",
+  "aboutWebsiteUrl": "https://sites.google.com/view/language-rally",
+  "aboutSummaryVideoUrl": "https://www.youtube.com/watch?v=64Pl9iNF88c",
+  "aboutSupportEmailAddress": "Languagerally.support@gmail.com",
+  "aboutVersionWithValue": "Версия: {version}",
+  "@aboutVersionWithValue": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutCouldNotOpen": "Не удалось открыть: {uri}",
+  "@aboutCouldNotOpen": {
+    "placeholders": {
+      "uri": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutWelcomeSplashNotFound": "Изображение приветствия не найдено",
+  "chooseTheme": "Выбрать тему",
+  "darkMode": "Темный режим",
+  "toggleBetweenLightAndDark": "Переключение между светлым и темным",
+  "colorTheme": "Цветовая тема:",
+  "toggleBrightness": "Переключить яркость",
+  "changeTheme": "Изменить тему",
+  "managePackageGroups": "Управление группами пакетов",
+  "noPackageGroups": "Нет групп пакетов",
+  "createFirstPackageGroup": "Создайте свою первую группу пакетов",
+  "addGroup": "Добавить группу",
+  "addPackageGroup": "Добавить группу пакетов",
+  "editPackageGroup": "Редактировать группу пакетов",
+  "groupName": "Имя группы",
+  "enterGroupName": "Введите название группы",
+  "groupNameRequired": "Укажите название группы.",
+  "duplicateGroupName": "Повторяющееся имя",
+  "groupNameAlreadyExists": "Группа с названием «{name}» уже существует.",
+  "@groupNameAlreadyExists": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupCreatedSuccessfully": "Группа «{name}» успешно создана.",
+  "@groupCreatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateGroup": "Не удалось создать группу: {error}.",
+  "@failedToCreateGroup": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "groupRenamedTo": "Группа переименована в «{name}».",
+  "@groupRenamedTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdateGroup": "Не удалось обновить группу: {error}.",
+  "@failedToUpdateGroup": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteGroup": "Удалить группу",
+  "deleteGroupConfirm": "Вы уверены, что хотите удалить группу «{name}»?\n\nЭто действие невозможно отменить.",
+  "@deleteGroupConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cannotDeleteGroup": "Невозможно удалить",
+  "groupHasPackages": "В этой группе все еще есть пакеты {count}. Пожалуйста, сначала переместите или удалите их.",
+  "@groupHasPackages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupDeleted": "Группа \"{name}\" удалена.",
+  "@groupDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteGroup": "Не удалось удалить группу: {error}.",
+  "@failedToDeleteGroup": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "cannotDeleteHasPackagesTooltip": "Невозможно удалить (есть пакеты)",
+  "nPackages": "{count, plural, =1{1 package} other{{count} packages}}",
+  "@nPackages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "manageGroups": "Управление группами",
+  "featureLangPower": "Языковая сила",
+  "featureAiIntegration": "Интеграция ИИ",
+  "featureAdaptivePractice": "Адаптивная практика",
+  "featureMasterAccent": "Мастер акцент",
+  "allBadgesEarned": "🎉 Все значки заработаны! Вы Мастер!",
+  "nextBadgeLabel": "Далее: {name}",
+  "@nextBadgeLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pointsToGo": "Осталось {percent}%",
+  "@pointsToGo": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "progressPercent": "{percent}% прогресса",
+  "@progressPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "errorTogglingFavourite": "Ошибка переключения избранного: {error}.",
+  "@errorTogglingFavourite": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorTogglingImportant": "Ошибка переключения важно: {error}",
+  "@errorTogglingImportant": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryAdded": "Добавлена ​​категория \"{name}\"",
+  "@categoryAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errorAddingCategory": "Ошибка при добавлении категории: {error}.",
+  "@errorAddingCategory": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryRemoved": "Категория \"{name}\" удалена.",
+  "@categoryRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errorRemovingCategory": "Ошибка удаления категории: {error}.",
+  "@errorRemovingCategory": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenUrl": "Не удалось открыть URL: {url}.",
+  "@couldNotOpenUrl": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningUrl": "Ошибка открытия URL: {error}.",
+  "@errorOpeningUrl": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectLanguage": "Пожалуйста, выберите язык",
+  "add": "Добавлять",
+  "speak": "Говорить",
+  "recordingFailedToStart": "Не удалось начать запись!\n\nПроверьте:\n1. Микрофон подключен.\n2. Микрофон установлен как устройство по умолчанию.\n3. Ни одно другое приложение не использует микрофон.",
+  "recordingFailedNoAudioFile": "Запись не удалась – аудиофайл не создан!\n\nВозможные причины:\n1. Микрофон не подключен\n2. Аудиовход не обнаружен.\n3. Проблема с настройками звука Windows.",
+  "errorStartingRecordingDetails": "Ошибка начала записи: {error}.",
+  "@errorStartingRecordingDetails": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "openaiEmptyResponse": "Выбранная модель ИИ вернула пустой ответ.",
+  "tryDifferentModel": "Попробуйте выбрать другую модель в селекторе моделей.",
+  "modelMayNotBeSupported": "Эта модель может не поддерживаться или недоступна для вашей учетной записи.",
+  "reduceTextOrRetry": "Уменьшите длину текста или повторите попытку.",
+  "openaiNullContent": "Выбранная модель ИИ не вернула контента.",
+  "modelUnsupportedParameter": "Выбранная модель не поддерживает необходимый параметр API."
+}

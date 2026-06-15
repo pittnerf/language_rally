@@ -1,0 +1,1190 @@
+{
+  "helloWorld": "مرحبا بالعالم!",
+  "welcome": "مرحبا بكم في رالي اللغة",
+  "appTitle": "تجمع اللغة",
+  "createPackage": "إنشاء الحزمة",
+  "editPackage": "تحرير الحزمة",
+  "packageDetails": "تفاصيل الحزمة",
+  "packageName": "اسم الحزمة",
+  "packageNameHint": "على سبيل المثال، الأساسيات الإسبانية، والأساسيات الألمانية",
+  "languageCode1": "رمز لغة المصدر",
+  "languageName1": "اسم اللغة المصدر",
+  "languageCode2": "رمز اللغة المستهدفة",
+  "languageName2": "اسم اللغة المستهدفة",
+  "description": "وصف",
+  "descriptionHint": "وصف موجز لحزمة اللغة هذه",
+  "authorName": "اسم المؤلف",
+  "authorEmail": "البريد الإلكتروني للمؤلف",
+  "authorWebpage": "صفحة ويب المؤلف",
+  "version": "إصدار",
+  "items": "أغراض",
+  "packageIcon": "أيقونة الحزمة",
+  "packageGroup": "مجموعة الحزمة",
+  "selectIcon": "حدد الرمز",
+  "defaultIcon": "الرمز الافتراضي",
+  "customIcon": "أيقونة مخصصة",
+  "upload": "رمز التحميل",
+  "uploadCustomIcon": "تحميل أيقونة مخصصة (بحد أقصى 512 × 512، 1 ميجابايت)",
+  "customIconUploaded": "تم تحميل الرمز المخصص بنجاح",
+  "save": "يحفظ",
+  "edit": "يحرر",
+  "cancel": "يلغي",
+  "delete": "يمسح",
+  "confirmDelete": "هل أنت متأكد أنك تريد حذف هذه الحزمة؟",
+  "packageSaved": "تم حفظ الحزمة بنجاح",
+  "packageDeleted": "تم حذف الحزمة بنجاح",
+  "errorSavingPackage": "حدث خطأ أثناء حفظ الحزمة",
+  "errorDeletingPackage": "حدث خطأ أثناء حذف الحزمة",
+  "fieldRequired": "هذه الخانة مطلوبه",
+  "invalidEmail": "عنوان البريد الإلكتروني غير صالح",
+  "readOnlyPackage": "هذه الحزمة للقراءة فقط ولا يمكن تحريرها",
+  "purchasedPackage": "لا يمكن تحرير الحزم المشتراة",
+  "badges": "شارات",
+  "noBadges": "لم يتم الحصول على أي شارات حتى الآن",
+  "selectLanguageCode": "حدد رمز اللغة",
+  "typeToSearchLanguages": "اكتب للبحث في اللغات...",
+  "search": "يبحث...",
+  "clearCounters": "عدادات واضحة",
+  "confirmClearCounters": "هل أنت متأكد أنك تريد مسح كافة عدادات التدريب لهذه الحزمة؟ سيؤدي هذا إلى إعادة تعيين عدادات \"لا أعرف\" وإحصائيات التدريب.",
+  "clear": "واضح",
+  "countersCleared": "تم مسح العدادات بنجاح",
+  "errorClearingCounters": "خطأ في مسح العدادات",
+  "deleteAll": "حذف الحزمة",
+  "confirmDeleteAllData": "هل أنت متأكد أنك تريد حذف هذه الحزمة بكل بياناتها؟ سيؤدي هذا إلى حذف جميع الفئات والعناصر وإحصائيات التدريب نهائيًا. لا يمكن التراجع عن هذا الإجراء!",
+  "allDataDeleted": "تم حذف الحزمة وجميع البيانات بنجاح",
+  "exportPackage": "حزمة التصدير",
+  "selectExportLocation": "حدد موقع التصدير",
+  "packageExported": "تم تصدير الحزمة بنجاح",
+  "errorExportingPackage": "حدث خطأ أثناء تصدير الحزمة",
+  "importItems": "استيراد العناصر (JSON)",
+  "importItemsDialogTitle": "استيراد العناصر (JSON)",
+  "importItemsFromLocalJson": "استيراد من ملف JSON المحلي",
+  "enterItemsUrl": "عنوان URL للعناصر بتنسيق JSON (https://...)",
+  "downloadingItems": "جارٍ تنزيل العناصر…",
+  "selectImportFile": "حدد استيراد ملف",
+  "importFormat": "تنسيق الاستيراد",
+  "importFormatDescription": "استيراد العناصر من ملف نصي. يجب أن يحتوي كل سطر على عنصر بالتنسيق التالي:",
+  "importResults": "نتائج الاستيراد",
+  "successfullyImported": "تم الاستيراد بنجاح",
+  "failedToImport": "فشل الاستيراد",
+  "error": "خطأ",
+  "ok": "نعم",
+  "importPackage": "حزمة الاستيراد",
+  "importPackageTooltip": "استيراد الحزمة من ملف ZIP أو URL",
+  "importPackageDialogTitle": "استيراد حزمة اللغة",
+  "importFromLocalFile": "الاستيراد من الملف المحلي",
+  "importFromUrl": "استيراد من URL",
+  "enterPackageUrl": "عنوان URL للحزمة (https://…)",
+  "downloadingPackage": "جارٍ تنزيل الحزمة…",
+  "downloadFailed": "فشل التنزيل. يرجى التحقق من عنوان URL واتصالك بالإنترنت.",
+  "invalidUrl": "الرجاء إدخال عنوان URL صالح http:// أو https://.",
+  "orLabel": "أو",
+  "selectPackageZipFile": "حدد ملف حزمة ZIP",
+  "couldNotAccessFile": "تعذر الوصول إلى الملف المحدد.",
+  "importingPackage": "جارٍ استيراد الحزمة...",
+  "packageImportedSuccessfully": "تم استيراد الحزمة بنجاح!",
+  "packageImportedWithItems": "تم استيراد الحزمة بنجاح! ({count} العناصر)",
+  "packageImportedWithGroup": "تم استيراد الحزمة إلى مجموعة \"{groupName}\"! ({count} العناصر)",
+  "importError": "خطأ في الاستيراد",
+  "failedToImportPackage": "فشل استيراد الحزمة",
+  "packageAlreadyExists": "الحزمة موجودة بالفعل",
+  "packageExistsMessage": "توجد حزمة بنفس زوج اللغة والوصف ومعلومات المؤلف والإصدار بالفعل في المجموعة \"{groupName}\". هل ترغب في استيرادها كحزمة جديدة على أية حال؟",
+  "importAsNew": "استيراد على أي حال",
+  "zipFileNotFound": "لم يتم العثور على ملف مضغوط",
+  "invalidPackageZip": "حزمة ZIP غير صالحة: package_data.json مفقود",
+  "invalidPackageFormat": "تنسيق ملف الحزمة غير صالح",
+  "languagePackages": "حزم اللغة",
+  "loadingPackages": "جارٍ تحميل الحزم...",
+  "tapAndHoldToReorder": "انقر مع الاستمرار لإعادة ترتيب البطاقات",
+  "tapAndHoldToReorderList": "انقر مع الاستمرار على ≡ لإعادة الترتيب • انقر على ⋮ لتبديل العرض المضغوط",
+  "noPackagesYet": "لا توجد حزم حتى الآن",
+  "createFirstPackage": "قم بإنشاء حزمة اللغة الأولى الخاصة بك",
+  "versionLabel": "إصدار",
+  "purchased": "تم شراؤها",
+  "compactView": "مدمج",
+  "expand": "يوسع",
+  "allCategories": "جميع الفئات",
+  "categoriesInPackage": "الفئات في هذه الحزمة",
+  "categories": "فئات",
+  "testInterFonts": "اختبار الخطوط المشتركة",
+  "viewPackages": "عرض الحزم",
+  "simplifiedPackageView": "قائمة الحزمة",
+  "createNewPackage": "إنشاء حزمة جديدة",
+  "generateTestData": "توليد بيانات الاختبار",
+  "designSystemShowcase": "معرض تصميم النظام",
+  "badgeEarned": "تم الحصول على الشارة!",
+  "achievement": "إنجاز",
+  "awesome": "مذهل!",
+  "importFormatNotes": "ملحوظات:",
+  "importFormatLine1": "• يمثل كل سطر عنصرًا واحدًا",
+  "importFormatLine2": "• الحقول مفصولة بـ |",
+  "importFormatLine3": "• يتم فصل الفئات بواسطة ;",
+  "importFormatLine4": "• الأخير | هو اختياري",
+  "importFormatLine5": "• يتم تجاهل الأسطر الفارغة",
+  "importFormatLine6": "• يتم تخطي التكرارات",
+  "importFormatNewDescription": "استيراد العناصر من ملف نصي. يجب أن يحتوي كل سطر على عنصر به حقول مفصولة بـ ---",
+  "importFormatNewLine1": "• المحدد الرئيسي: ---",
+  "importFormatNewLine2": "• L1=<text> - النص الرئيسي للغة 1 (مطلوب إذا كان L2 مفقودًا)",
+  "importFormatNewLine3": "• L2=<text> - النص الرئيسي للغة 2 (مطلوب إذا كان L1 مفقودًا)",
+  "importFormatNewLine4": "• L1pre=<text> - بادئة اللغة 1 (اختياري)",
+  "importFormatNewLine5": "• L1post=<text> - لاحقة اللغة 1 (اختياري)",
+  "importFormatNewLine6": "• L2pre=<text> - بادئة اللغة 2 (اختياري)",
+  "importFormatNewLine7": "• L2post=<text> - لاحقة اللغة 2 (اختياري)",
+  "importFormatNewLine8": "• EX=<نص L1>:::<نص L2> - مثال (اختياري، يمكن أن يكون متعددًا)",
+  "importFormatNewLine9": "• CAT=<cat1>:::<cat2>:::<cat3> - الفئات (اختياري)",
+  "importFormatNewLine10": "• يجب حضور واحد على الأقل من L1= أو L2=",
+  "importFormatNewLine11": "• يتم تجاهل الأسطر الفارغة",
+  "importFormatNewLine12": "• يتم تخطي التكرارات",
+  "invalidImportLine": "خط غير صالح",
+  "missingRequiredFields": "مفقود \"L1=\" غامض \"L2=\"",
+  "unknownField": "بادئة حقل غير معروفة",
+  "andMore": "... و{count} أكثر",
+  "browseItems": "تصفح العناصر",
+  "itemDetails": "تفاصيل",
+  "filterItems": "تصفية العناصر",
+  "searchLanguage1": "البحث في {language}",
+  "searchLanguage2": "البحث في {language}",
+  "caseSensitive": "حساسية الموضوع",
+  "knownStatus": "الوضع معروف",
+  "filterStatusAll": "الجميع",
+  "filterStatusKnown": "معروف",
+  "filterStatusUnknown": "مجهول",
+  "allItems": "جميع العناصر",
+  "itemsIKnew": "العناصر التي عرفتها",
+  "itemsIDidNotKnow": "عناصر لم أكن أعرفها",
+  "known": "معروف",
+  "unknown": "مجهول",
+  "important": "مهم",
+  "favourite": "مفضل",
+  "badge": "شارة",
+  "position": "موضع",
+  "stepsUntilLearned": "خطوات حتى تعلمها",
+  "examples": "أمثلة",
+  "noExamples": "لا توجد أمثلة متاحة",
+  "pronounce": "نطق",
+  "ttsError": "تحويل النص إلى كلام غير متوفر",
+  "noItemsFound": "لم يتم العثور على أي عناصر",
+  "noItemsInPackage": "لا توجد عناصر في هذه الحزمة حتى الآن",
+  "addItem": "إضافة عنصر",
+  "emptyPackageHint": "أضف العناصر يدويًا أو استخدم الذكاء الاصطناعي لاستيراد العناصر بسرعة",
+  "noItemsToTrain": "لا توجد عناصر متاحة للتدريب مع الإعدادات الحالية",
+  "clearFilters": "واضح",
+  "itemCount": "{count} العناصر",
+  "filteredItemCount": "{filtered} من {total} العناصر",
+  "trainingRally": "تجمع التدريب",
+  "startTraining": "ابدأ التدريب",
+  "trainingComingSoon": "رالي التدريب - قريباً!",
+  "aiServiceNotConfigured": "لم يتم تكوين خدمة الذكاء الاصطناعي. الرجاء إضافة مفتاح OpenAI API الخاص بك.",
+  "pleaseEnterTextInLanguageFirst": "الرجاء إدخال النص في {language} أولاً",
+  "translationCompletedSuccessfully": "تمت الترجمة بنجاح باستخدام {service}!",
+  "translationFailed": "فشلت الترجمة",
+  "addedExamplesSuccessfully": "تمت إضافة {count} من الأمثلة بنجاح!",
+  "failedToGenerateExamples": "فشل في توليد الأمثلة",
+  "selectExamplesToAdd": "حدد أمثلة لإضافتها",
+  "selectWhichExamples": "حدد الأمثلة التي تريد إضافتها إلى هذا العنصر:",
+  "addSelected": "أضف المحدد",
+  "pleaseSelectAtLeastOne": "الرجاء تحديد مثال واحد على الأقل",
+  "addNewItem": "إضافة عنصر جديد",
+  "editItem": "تحرير العنصر",
+  "deleteItem": "حذف العنصر",
+  "confirmDeleteItem": "هل أنت متأكد أنك تريد حذف هذا العنصر؟",
+  "thisActionCannotBeUndone": "لا يمكن التراجع عن هذا الإجراء.",
+  "itemDeleted": "تم حذف العنصر",
+  "errorDeletingItem": "حدث خطأ أثناء حذف العنصر",
+  "errorSavingItem": "حدث خطأ أثناء حفظ العنصر",
+  "itemSaved": "تم تحديث العنصر بنجاح",
+  "itemCreated": "تم إنشاء العنصر بنجاح",
+  "preTextOptional": "نص مسبق (اختياري)",
+  "mainText": "النص الرئيسي",
+  "postTextOptional": "النص اللاحق (اختياري)",
+  "forExampleToForVerbs": "على سبيل المثال، \"إلى\" للأفعال",
+  "additionalContext": "سياق إضافي",
+  "translate": "يترجم",
+  "translateFromTo": "ترجمة {from} → {to}",
+  "aiExampleGeneration": "الذكاء الاصطناعي مثال الجيل",
+  "aiExampleSearch": "بحث عن أمثلة الذكاء الاصطناعي",
+  "searchExamplesOnInternet": "ابحث عن جمل سبيل المثال على الإنترنت باستخدام الذكاء الاصطناعي لـ '{text}'",
+  "generateExampleSentences": "قم بإنشاء جمل نموذجية بناءً على النص الرئيسي في {language}",
+  "voiceInput": "الإدخال الصوتي",
+  "settings": "إعدادات",
+  "uiLanguage": "لغة واجهة المستخدم",
+  "uiLanguageDescription": "لغة واجهة التطبيق",
+  "uiLanguageHelper": "حدد لغة القوائم والأزرار والتسميات",
+  "userLanguage": "لغة المستخدم",
+  "userLanguageDescription": "لغتك الأم المفضلة لإنشاء حزم اللغات الجديدة",
+  "apiKeys": "مفاتيح واجهة برمجة التطبيقات",
+  "deeplApiKey": "مفتاح DeepL API",
+  "deeplApiKeyDescription": "للحصول على جودة ترجمة متميزة عند تحرير عناصر اللغة. راجع https://www.deepl.com/pro-api",
+  "openaiApiKey": "مفتاح واجهة برمجة تطبيقات OpenAI",
+  "openaiApiKeyDescription": "على سبيل المثال، التوليد باستخدام الذكاء الاصطناعي عند تحرير عناصر اللغة. راجع https://platform.openai.com/api-keys",
+  "enterApiKey": "أدخل مفتاح API",
+  "optional": "خياري",
+  "required": "مطلوب",
+  "settingsSaved": "تم حفظ الإعدادات بنجاح",
+  "errorSavingSettings": "خطأ في حفظ الإعدادات",
+  "usingGoogleTranslate": "استخدام ترجمة جوجل المجانية",
+  "usingDeepL": "باستخدام DeepL (قسط)",
+  "noTranslationReceivedFromGoogle": "لم يتم تلقي أي ترجمة من جوجل",
+  "googleTranslationFailed": "فشلت ترجمة جوجل",
+  "googleTranslationError": "خطأ في ترجمة جوجل",
+  "noTranslationReceivedFromDeepL": "لم يتم تلقي أي ترجمة من DeepL",
+  "invalidDeepLApiKey": "مفتاح DeepL API غير صالح",
+  "deeplTranslationQuotaExceeded": "تم تجاوز حصة ترجمة DeepL",
+  "deeplTranslationFailed": "فشلت ترجمة DeepL",
+  "deeplTranslationError": "خطأ في ترجمة DeepL",
+  "invalidApiKeyConfigureOpenAI": "مفتاح API غير صالح. يرجى تكوين مفتاح OpenAI API الخاص بك.",
+  "apiRateLimitExceeded": "تم تجاوز الحد الأقصى لمعدل واجهة برمجة التطبيقات. يرجى المحاولة مرة أخرى في وقت لاحق.",
+  "aiRequestFailed": "فشل طلب الذكاء الاصطناعي",
+  "failedToParseAiResponse": "فشل في تحليل استجابة الذكاء الاصطناعي. يرجى المحاولة مرة أخرى.",
+  "aiGenerationError": "خطأ في إنشاء الذكاء الاصطناعي",
+  "voiceInputPlaceholder": "سيتم تنفيذ الإدخال الصوتي باستخدام حزمة الكلام_إلى_نص",
+  "improveQualityWithApiKeys": "💡 نصيحة: يمكن تحسين جودة الترجمات وأمثلة البحث بشكل كبير عن طريق إضافة مفاتيح DeepL وOpenAI API في إعدادات التطبيق.",
+  "noApiKeyFallbackMessage": "بدون مفاتيح API، يتم توفير الترجمة الأساسية وأمثلة محدودة. للحصول على أفضل النتائج، قم بتكوين مفاتيح API الخاصة بك في الإعدادات.",
+  "listeningForSpeech": "الاستماع... تحدث الآن",
+  "speechRecognitionNotAvailable": "التعرف على الكلام غير متوفر على هذا الجهاز",
+  "speechRecognitionPermissionDenied": "تم رفض إذن التعرف على الكلام",
+  "speechRecognitionError": "خطأ في التعرف على الكلام",
+  "tapToSpeak": "اضغط على الميكروفون للتحدث",
+  "tapToStop": "انقر لإيقاف التسجيل",
+  "speechNotRecognized": "لم يتم التعرف على أي خطاب. يرجى المحاولة مرة أخرى.",
+  "usingWhisperApiSlower": "استخدام الذكاء الاصطناعي السحابي للتعرف على الكلام (قد يكون أبطأ)",
+  "languageNotSupportedAddApiKey": "اللغة {languageCode} غير مدعومة أصلاً. أضف مفتاح OpenAI API في الإعدادات للتعرف على الكلام المدعوم بالذكاء الاصطناعي.",
+  "@languageNotSupportedAddApiKey": {
+    "placeholders": {
+      "languageCode": {
+        "type": "String"
+      }
+    }
+  },
+  "recordingTapToStop": "التسجيل... اضغط مرة أخرى للتوقف",
+  "speakClearlyKeepRecording": "تحدث بوضوح. سجل ثانية واحدة على الأقل.",
+  "pleaseRecordLonger": "من فضلك تحدث لمدة ثانية واحدة على الأقل ثم اضغط على إيقاف.",
+  "errorStartingRecording": "خطأ في بدء التسجيل",
+  "noAudioRecorded": "لم يتم تسجيل أي صوت",
+  "errorTranscribing": "حدث خطأ أثناء نسخ الصوت",
+  "trainingSettings": "إعدادات التدريب",
+  "trainingPresetTitle": "الإعداد السريع",
+  "trainingPresetHint": "اختر إعدادًا مسبقًا وسيتم تكوين الإعدادات أدناه تلقائيًا.",
+  "trainingPresetComboLabel": "محددة مسبقا",
+  "trainingPresetAllExamplesForeignLanguage": "جميع الأمثلة، لغة أجنبية",
+  "trainingPresetAllExamplesRandomLanguage": "جميع الأمثلة، لغة عشوائية",
+  "trainingPresetFavouriteItemsForeignLanguage": "العناصر المفضلة، لغة أجنبية",
+  "trainingPresetFavouriteItemsRandomLanguage": "العناصر المفضلة، لغة عشوائية",
+  "trainingPresetImportantItemsForeignLanguage": "بنود مهمة، لغة أجنبية",
+  "trainingPresetImportantItemsRandomLanguage": "عناصر مهمة، لغة عشوائية",
+  "trainingPresetRandomItemsRandomLanguage": "عناصر عشوائية، لغة عشوائية",
+  "trainingPresetUnknownItemsForeignLanguage": "عناصر غير معروفة، لغة أجنبية",
+  "trainingPresetUnknownItemsRandomLanguage": "عناصر غير معروفة، لغة عشوائية",
+  "trainingPresetAppliedTapStart": "تم تطبيق الإعداد المسبق. اضغط على \"{actionLabel}\" للبدء.",
+  "trainingPresetSelectPackageFirst": "الرجاء تحديد الحزمة أولاً.",
+  "@trainingPresetAppliedTapStart": {
+    "placeholders": {
+      "actionLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "itemScope": "نطاق السلعة",
+  "lastNItems": "آخر N من العناصر",
+  "onlyUnknown": "العناصر غير المعروفة فقط",
+  "onlyImportant": "العناصر المهمة فقط",
+  "onlyFavourite": "العناصر المفضلة فقط",
+  "numberOfItems": "عدد العناصر",
+  "itemOrder": "ترتيب السلعة",
+  "randomOrder": "ترتيب عشوائي",
+  "sequentialOrder": "ترتيب تسلسلي",
+  "itemType": "نوع العنصر",
+  "dictionaryItems": "عناصر القاموس",
+  "examplesType": "أمثلة",
+  "displayLanguage": "لغة العرض",
+  "motherTongue": "اللغة الأم",
+  "targetLanguage": "اللغة المستهدفة",
+  "randomLanguage": "عشوائي",
+  "categoryFilter": "مرشح الفئة",
+  "categoryFilterHint": "تحديد الفئات المراد تضمينها (فارغ = جميع الفئات)",
+  "noCategories": "لا توجد فئات متاحة",
+  "dontKnowThreshold": "لا أعرف عتبة",
+  "dontKnowThresholdHint": "عدد المرات التي يجب فيها وضع علامة \"لا أعرف\" على العنصر قبل التعامل معه بشكل خاص",
+  "startTrainingRally": "بدء تجمع التدريب",
+  "clearTrainingSettings": "مسح الإعدادات",
+  "confirmClearTrainingSettings": "هل أنت متأكد أنك تريد إعادة تعيين كافة إعدادات التدريب إلى القيم الافتراضية؟",
+  "trainingSettingsCleared": "تم مسح إعدادات التدريب",
+  "startingTraining": "البدء بالتدريب...",
+  "noMoreItemsToDisplay": "لا توجد عناصر لعرضها بناءً على إعدادات الفلتر الخاصة بك.",
+  "noItems": "لا توجد عناصر",
+  "trainingComplete": "اكتمل التدريب",
+  "allItemsCompleted": "تهانينا! لقد أكملت كافة العناصر الموجودة في هذه الدورة التدريبية.",
+  "closeTraining": "إغلاق التدريب",
+  "confirmCloseTraining": "هل أنت متأكد أنك تريد إغلاق التدريب؟ لقد تم حفظ تقدمك.",
+  "question": "سؤال",
+  "answer": "إجابة",
+  "iKnow": "أنا أعرف",
+  "iDontKnow": "لا أعرف",
+  "previousItem": "العنصر السابق",
+  "iDidNotKnowEither": "لم أكن أعرف ذلك بعد كل شيء",
+  "exportBeforeDelete": "تصدير قبل الحذف؟",
+  "aiTextAnalysis": "استخراج العناصر من نص/قائمة باستخدام الذكاء الاصطناعي",
+  "aiTextAnalysisImport": "استخرج العناصر من نص أو قائمة باستخدام أداة تحليل النص AI",
+  "knowledgeLevel": "مستوى المعرفة",
+  "a1Beginner": "A1 - مبتدئ",
+  "a2Elementary": "A2 - ابتدائي",
+  "b1Intermediate": "ب1 - متوسط",
+  "b2UpperIntermediate": "B2 - فوق المتوسط",
+  "c1Advanced": "C1 - متقدم",
+  "c2Proficient": "ج2 - متقن",
+  "pasteTextHere": "الصق النص الخاص بك هنا...",
+  "extractWords": "استخراج الكلمات",
+  "extractExpressions": "استخراج التعبيرات",
+  "maxItems": "الحد الأقصى للعناصر الجديدة",
+  "maxItemsHint": "اتركها فارغة بلا حدود",
+  "generateExamples": "توليد أمثلة",
+  "categoryName": "اسم الفئة",
+  "categoryNameHint": "اسم فئة العناصر المستوردة",
+  "analyzeText": "تحليل النص",
+  "configureAnalysis": "تكوين العناصر لاستخراجها",
+  "openaiModel": "نموذج الذكاء الاصطناعي",
+  "openaiModelDescription": "حدد نموذج ChatGPT",
+  "modelGpt55": "جي بي تي-5.5",
+  "modelGpt55Pro": "جي بي تي-5.5 برو",
+  "modelGpt54": "جي بي تي-5.4",
+  "modelGpt54Pro": "جي بي تي-5.4 برو",
+  "modelGpt54Mini": "جي بي تي-5.4 ميني",
+  "modelGpt5Mini": "جي بي تي-5 ميني",
+  "modelGpt41": "جي بي تي-4.1",
+  "modelGpt55Desc": "أحدث توازن رائد بين الجودة والسرعة للاستخدام العام",
+  "modelGpt55ProDesc": "الإصدار الأحدث من GPT-5.5 للحصول على أقوى الأسباب والجودة",
+  "modelGpt54Desc": "نموذج جيل GPT-5 قوي للأغراض العامة",
+  "modelGpt54ProDesc": "متغير GPT-5.4 ذو قدرة أعلى للمهام الصعبة",
+  "modelGpt54MiniDesc": "متغير GPT-5.4 أصغر حجمًا وأسرع للمهام اليومية منخفضة التكلفة",
+  "modelGpt5MiniDesc": "طراز عائلة GPT-5 صغير الحجم مُحسّن من حيث السرعة والتكلفة",
+  "modelGpt41Desc": "خيار GPT-4.1 الموثوق به للتوافق والجودة القوية",
+  "modelGpt4o": "جي بي تي-4o",
+  "modelGpt35Turbo": "GPT-3.5 Turbo (القديم، الميزانية)",
+  "modelGpt35Turbo16k": "جي بي تي-3.5 توربو 16 كيلو",
+  "modelGpt4": "جي بي تي-4",
+  "modelGpt4Turbo": "جي بي تي-4 توربو (ليجاسي)",
+  "modelGpt4oDesc": "أفضل خيار للأغراض العامة؛ جودة سريعة ومتعددة الوسائط وقوية",
+  "modelGpt35TurboDesc": "خيار قديم منخفض التكلفة؛ مفيد للمهام الأبسط والاستخدام الحساس للتكلفة",
+  "modelGpt35Turbo16kDesc": "مثل GPT-3.5، لكن نافذة سياق الرمز المميز تبلغ 16 كيلو بايت",
+  "modelGpt4Desc": "جودة تفكير عالية؛ عادة ما تكون أبطأ وأكثر تكلفة",
+  "modelGpt4TurboDesc": "خيار عائلة Legacy GPT-4؛ لا يزال مفيدًا عندما تريد بديلاً أقدم وأرخص",
+  "analyzing": "جارٍ التحليل...",
+  "languageDetected": "تم اكتشاف اللغة",
+  "itemsFound": "العناصر التي تم العثور عليها",
+  "selectItemsToImport": "حدد العناصر المراد استيرادها",
+  "selectAll": "حدد الكل",
+  "deselectAll": "قم بإلغاء تحديد الكل",
+  "importSelected": "استيراد المحدد",
+  "importing": "جارٍ الاستيراد...",
+  "itemsImported": "تم استيراد العناصر بنجاح",
+  "noItemsSelected": "لم يتم تحديد أي عناصر",
+  "textCannotBeEmpty": "لا يمكن أن يكون النص فارغًا",
+  "selectAtLeastOneType": "حدد نوع واحد على الأقل (كلمات أو تعبيرات)",
+  "languageNotMatching": "اللغة المكتشفة لا تتطابق مع أي لغة في الحزمة",
+  "openaiKeyRequired": "مطلوب مفتاح OpenAI API لهذه الميزة",
+  "analyzingProgress": "التحليل: {current} / {total}",
+  "translatingProgress": "الترجمة: {current} / {total}",
+  "duplicate": "ينسخ",
+  "importProgress": "استيراد {current} من {total}",
+  "detectingLanguage": "كشف اللغة...",
+  "extractingItems": "استخراج العناصر...",
+  "checkingDuplicates": "جارٍ التحقق من التكرارات...",
+  "translating": "ترجمة...",
+  "generatingExamples": "توليد الأمثلة...",
+  "errorAnalyzingText": "خطأ في تحليل النص",
+  "errorImportingItems": "حدث خطأ أثناء استيراد العناصر",
+  "warning": "تحذير",
+  "textIsVeryLarge": "النص كبير جدًا",
+  "words": "كلمات",
+  "continueAnalysis": "قد يستغرق هذا وقتًا أطول للمعالجة وسيتم تحليله على أجزاء. هل تريد الاستمرار",
+  "continueLabel": "يكمل",
+  "exportBeforeDeleteMessage": "هل ترغب في تصدير هذه الحزمة قبل حذفها؟ سيؤدي هذا إلى حفظ جميع بياناتك في ملف ZIP.",
+  "deleteWithoutExport": "حذف بدون تصدير",
+  "exportAndDelete": "تصدير وحذف",
+  "exportingPackage": "جارٍ تصدير الحزمة...",
+  "packageExportedToPath": "تم تصدير الحزمة إلى: {path}",
+  "errorLoadingItems": "خطأ في تحميل العناصر: {error}",
+  "badgeEarnedWithName": "الشارة التي تم الحصول عليها: {badgeName}!",
+  "badgeLostWithName": "الشارة المفقودة: {badgeName}",
+  "trainingSessionProgress": "إحصائيات الدورة التدريبية",
+  "total": "المجموع",
+  "lastNValue": "ن = {value}",
+  "errorLoadingSettings": "خطأ في تحميل الإعدادات: {error}",
+  "selectPackage": "حدد الحزمة",
+  "noPackagesAvailable": "لا توجد حزم متاحة",
+  "possibleSolutions": "الحلول الممكنة",
+  "technicalDetails": "التفاصيل الفنية",
+  "close": "يغلق",
+  "checkApiKey": "تحقق من مفتاح OpenAI API الخاص بك",
+  "ensureValidOpenAIKey": "تأكد من أن مفتاح API صالح ونشط",
+  "verifyKeyInSettings": "تحقق من المفتاح في الإعدادات",
+  "rateLimitExceeded": "تم تجاوز الحد الأقصى لمعدل واجهة برمجة التطبيقات",
+  "waitAndRetry": "انتظر بضع دقائق وحاول مرة أخرى",
+  "checkAccountQuota": "تحقق من حصة حساب OpenAI الخاص بك",
+  "invalidRequest": "تنسيق الطلب غير صالح",
+  "tryReducingTextLength": "حاول تقليل طول النص",
+  "checkTextFormat": "تأكد من صحة تنسيق النص",
+  "checkInternetConnection": "تحقق من اتصالك بالإنترنت",
+  "retryInMoment": "أعد المحاولة بعد قليل",
+  "checkFirewall": "تحقق من إعدادات جدار الحماية",
+  "textMayBeTooShort": "قد يكون النص قصيرًا جدًا",
+  "tryDifferentKnowledgeLevel": "جرب مستوى معرفيًا مختلفًا",
+  "ensureTextInCorrectLanguage": "تأكد من أن النص باللغة الصحيحة",
+  "requestTimedOut": "انتهت مهلة الطلب",
+  "textMayBeTooLong": "قد يكون النص طويلاً جدًا",
+  "tryAgainOrReduceSize": "حاول مرة أخرى أو قم بتقليل حجم النص",
+  "unexpectedError": "حدث خطأ غير متوقع",
+  "checkErrorDetails": "تحقق من تفاصيل الخطأ أدناه",
+  "tryAgainLater": "حاول مرة أخرى لاحقًا",
+  "translationServiceFailed": "فشلت خدمة الترجمة",
+  "checkApiKeys": "التحقق من مفاتيح API الخاصة بك (DeepL، OpenAI)",
+  "retryImport": "أعد محاولة الاستيراد",
+  "exampleGenerationFailed": "فشل إنشاء المثال",
+  "itemsStillImported": "وكانت العناصر لا تزال مستوردة",
+  "canAddExamplesManually": "يمكنك إضافة أمثلة يدويًا لاحقًا",
+  "databaseError": "حدث خطأ في قاعدة البيانات",
+  "checkStorageSpace": "تحقق من مساحة التخزين المتاحة",
+  "restartApp": "حاول إعادة تشغيل التطبيق",
+  "groupLabel": "مجموعة:",
+  "amendGroups": "يعدل",
+  "exportItemsJson": "تصدير العناصر (JSON)",
+  "exportItemsJsonTooltip": "تصدير كافة العناصر كملف JSON",
+  "noCategoriesInPackage": "لم يتم العثور على فئات في هذه الحزمة",
+  "noItemsToExport": "لم يتم العثور على عناصر للتصدير",
+  "itemsExportedSuccessfully": "تم تصدير عناصر {count} بنجاح إلى:\n{path}",
+  "@itemsExportedSuccessfully": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "errorExportingItems": "حدث خطأ أثناء تصدير العناصر",
+  "languageMismatch": "عدم تطابق اللغة",
+  "languageMismatchDescription": "اللغات الموجودة في ملف JSON لا تتطابق مع لغات الحزمة:",
+  "packageLanguages": "الحزمة: {lang1} → {lang2}",
+  "@packageLanguages": {
+    "placeholders": {
+      "lang1": {
+        "type": "String"
+      },
+      "lang2": {
+        "type": "String"
+      }
+    }
+  },
+  "jsonFileLanguages": "ملف JSON: {lang1} → {lang2}",
+  "@jsonFileLanguages": {
+    "placeholders": {
+      "lang1": {
+        "type": "String"
+      },
+      "lang2": {
+        "type": "String"
+      }
+    }
+  },
+  "continueImportQuestion": "هل تريد متابعة الاستيراد على أية حال؟",
+  "continueImport": "متابعة الاستيراد",
+  "pleaseSelectPackageGroup": "الرجاء تحديد مجموعة الحزمة",
+  "customIconLabel": "مخصص",
+  "defaultIconLabel": "تقصير",
+  "icon2Label": "كتاب مفتوح",
+  "icon3Label": "كتاب ملون",
+  "icon4Label": "محادثة",
+  "icon5Label": "تخرُّج",
+  "icon6Label": "مخ",
+  "icon7Label": "كتاب المكدس",
+  "icon8Label": "البطاقات التعليمية",
+  "icon9Label": "الكرة الأرضية",
+  "icon10Label": "قلم رصاص",
+  "icon11Label": "غنيمة",
+  "icon12Label": "يبحث",
+  "customIconFile": "أيقونة مخصصة",
+  "importedIconFile": "أيقونة مستوردة",
+  "unableToReadImageFile": "غير قادر على قراءة ملف الصورة. الرجاء تحديد صورة صالحة.",
+  "iconDimensionsTooLarge": "أبعاد الرمز كبيرة جدًا ({width}x{height}). الحد الأقصى المسموح به هو 512 × 512 بكسل.",
+  "@iconDimensionsTooLarge": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "iconFileTooLarge": "ملف الرمز كبير جدًا. الحد الأقصى للحجم هو 1 ميغابايت.",
+  "failedToUploadIcon": "فشل تحميل الرمز: {error}",
+  "@failedToUploadIcon": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectValidLanguage": "الرجاء تحديد لغة صالحة من القائمة",
+  "status": "حالة",
+  "addExample": "أضف مثالا",
+  "noExamplesYet": "لا توجد أمثلة حتى الآن. انقر فوق + للإضافة.",
+  "speakText": "تحدث النص",
+  "removeCategory": "إزالة الفئة",
+  "removeCategoryConfirm": "هل تريد إزالة الفئة \"{categoryName}\" من هذا العنصر؟",
+  "@removeCategoryConfirm": {
+    "placeholders": {
+      "categoryName": {
+        "type": "String"
+      }
+    }
+  },
+  "remove": "يزيل",
+  "extractFullItems": "استخراج العناصر الكاملة",
+  "pasteFromClipboard": "لصق من الحافظة",
+  "noItemsFoundOrAllDuplicates": "لم يتم العثور على أي عناصر في النص، أو أن كافة العناصر موجودة بالفعل في الحزمة",
+  "aboutLanguageRally": "حول رالي اللغة",
+  "welcomeTitle": "🚀 مرحبًا بك في رالي اللغات",
+  "welcomeSubtitle": "أطلق العنان للقوة المذهلة لتعلم اللغة باستخدام ما يقرب من 4000 كلمة، و4000 تعبير، والعديد من أمثلة الجمل - المنسقة بعناية لكل مستوى من مستويات الكفاءة! استخدم الذكاء الاصطناعي لاستيراد عناصر من نصوصك الخاصة، أو قم بالدردشة مع الذكاء الاصطناعي حول أي موضوع لإنشاء الكلمات والتعبيرات والأمثلة الدقيقة التي تريد تعلمها.\nارفع مستوى مهاراتك اللغوية – بالطريقة الذكية والمرحة!",
+  "welcomeIntro": "تعلم المفردات والتعبيرات بكفاءة من خلال ممارسة ما يهمك بالفعل. لا قوائم مملة. لا يوجد وقت ضائع.",
+  "sectionPlayYourGame": "🎮 العب لعبتك الخاصة",
+  "sectionPlayYourGameDesc": "إنشاء حزم المفردات الخاصة بك. تدريب فقط على الكلمات والتعبيرات التي تريد إتقانها. هل تعرف ذلك بالفعل؟ سيتم وضع علامة عليه وتخطيه!",
+  "sectionAITeammate": "🤖 الذكاء الاصطناعي كزميلك في الفريق",
+  "sectionAITeammateDesc": "الصق أي نص واترك الذكاء الاصطناعي:\n• استخراج المفردات المفيدة\n• اختر التعبيرات التي تتناسب مع مستواك\n• أنشئ حزمًا جاهزة للتدريب في ثوانٍ\n\nالدردشة مع الذكاء الاصطناعي:\n• السماح لها باقتراح الكلمات والتعبيرات لموضوعك\n• انقر لتوليد الأمثلة وحفظها في الحزمة الخاصة بك",
+  "sectionTrainSmart": "🔁 تدريب ذكي",
+  "sectionTrainSmartDesc": "يُظهر نظام التكرار الدقيق لدينا العناصر بالضبط عندما يحتاجها عقلك من أجل حفظها بشكل فعال. أقصى قدر من التقدم. الحد الأدنى من الجهد.",
+  "sectionRealExamples": "🌍 أمثلة حقيقية. ترجمات عظيمة.",
+  "sectionRealExamplesDesc": "احصل على أمثلة للاستخدام في العالم الحقيقي. ترجم بجودة متميزة عبر DeepL. ممارسة النطق والصوت واثق.",
+  "sectionTeachersWelcome": "👩‍🏫 مرحباً بالمعلمين",
+  "sectionTeachersWelcomeDesc": "أنشئ حزمة ← انسخ العناصر والصقها أو استخرج الأمثلة وترجمها وأضفها باستخدام الذكاء الاصطناعي ← تصدير ← تحميل/إرسال ← تم. يقوم طلابك باستيراده والبدء في التدريب على الفور.",
+  "sectionUnlockAI": "🔑 فتح قوة الذكاء الاصطناعي الكاملة",
+  "sectionUnlockAIDesc": "للحصول على ترجمة عالية الجودة وميزات الذكاء الاصطناعي، ما عليك سوى:\n\n1. قم بإنشاء مفتاح DeepL API الخاص بك\n   https://www.deepl.com/pro-api\n2. قم بإنشاء مفتاح OpenAI API الخاص بك\n   https://platform.openai.com/api-keys\n3. الصق كلا المفتاحين في الإعدادات\n\nيفتح الاستثمار الصغير أدوات لغوية قوية واحترافية. لماذا تفوتك هذه الفرصة؟\n(نوصي باستخدام الوصول المدفوع لواجهة برمجة التطبيقات للحصول على أفضل النتائج.)",
+  "readyToStart": "على استعداد لبدء التجمع الخاص بك؟ 🏁",
+  "welcomeDescription": "Language Rally هو رفيقك الشامل في تعلم اللغة. قم بإنشاء حزم مفردات مخصصة، وقم بتنظيم العناصر حسب الفئات، وتدرب باستخدام نظام تكرار ذكي متباعد.",
+  "browseStore": "تصفح المتجر",
+  "featureInteractiveTraining": "التدريب التفاعلي",
+  "featureInteractiveTrainingDesc": "تدرب على خوارزميات التعلم التكيفية",
+  "featureSmartOrganization": "منظمة ذكية",
+  "featureSmartOrganizationDesc": "تصنيف وتصفية المفردات الخاصة بك",
+  "featureTrackProgress": "تتبع التقدم",
+  "featureTrackProgressDesc": "مراقبة التعلم الخاص بك مع إحصائيات مفصلة",
+  "featureImportExport": "استيراد وتصدير",
+  "featureImportExportDesc": "مشاركة الحزم والمزامنة عبر الأجهزة",
+  "startAppTour": "ابدأ جولة التطبيق",
+  "quickStartGuide": "دليل البدء السريع",
+  "tourStep1Title": "إنشاء أو استيراد الحزم",
+  "tourStep1Desc": "ابدأ بإنشاء حزمة لغة جديدة أو قم باستيراد حزمة موجودة من ملف.",
+  "tourStep2Title": "إضافة عناصر المفردات",
+  "tourStep2Desc": "تصفح حزمك وأضف كلمات أو عبارات أو تعبيرات مع الأمثلة والفئات.",
+  "tourStep3Title": "تكوين التدريب",
+  "tourStep3Desc": "اختر العناصر التي تريد ممارستها، وحدد مستويات الصعوبة، وقم بتخصيص تجربة التعلم الخاصة بك.",
+  "tourStep4Title": "ابدأ التعلم",
+  "tourStep4Desc": "ابدأ جلسة التدريب الخاصة بك وقم بوضع علامة على العناصر باعتبارها معروفة أو غير معروفة لتتبع تقدمك.",
+  "tourStep5Title": "مراجعة الإحصائيات",
+  "tourStep5Desc": "تحقق من تقدمك في التعلم من خلال الإحصائيات التفصيلية وشارات الإنجاز.",
+  "gotIt": "فهمتها!",
+  "appTourTitle": "مرحبا بكم في رالي اللغة",
+  "appTourSubtitle": "رفيقك الذكي والمرح والمخصص لتعلم اللغة.",
+  "tourPage1Title": "تعلَّم ومارس ما تريد وما تحتاجه",
+  "tourPage1Desc": "يضمن لك نظام التعلم التكيفي الخاص بنا مراجعة العناصر في اللحظة المثالية - مما يزيد من معدل الاحتفاظ بالعناصر ويقلل الجهد المبذول.\n\nتعلم بمساعدة الأتمتة المضمنة.\nتوقف عن إضاعة الوقت في الكلمات التي تعرفها بالفعل.\n\nتدرب فقط على المفردات والتعبيرات التي تهمك. قم بإنشاء وتدريب العناصر الخاصة بك - مصممة بالكامل لتناسب أهدافك ومستواك.",
+  "tourPage2Title": "قم بإنشاء حزمة اللغة الخاصة بك",
+  "tourPage2Desc": "أنشئ مجموعات مفردات مخصصة تتوافق مع اهتماماتك وأهدافك التعليمية.\n\nتنظيم الكلمات والتعبيرات حسب الموضوع أو الصعوبة أو السياق.\n\nالسيطرة الكاملة على ما تتعلمه ومتى.",
+  "tourPage3Title": "إنشاء العناصر المدعومة بالذكاء الاصطناعي",
+  "tourPage3Desc": "قم ببناء حزم التعلم الخاصة بك في غمضة عين:\n\n• الصق أي نص ودع الذكاء الاصطناعي يستخرج المفردات ذات الصلة تلقائيًا\n• تحديد الكلمات والتعبيرات المناسبة تماما لمستواك\n• دع الذكاء الاصطناعي يقوم بالترجمة نيابةً عنك\n• السماح لمنظمة العفو الدولية بالبحث عن أمثلة في الوقت الحقيقي\n\nالدردشة مع الذكاء الاصطناعي:\n• السماح لها باقتراح الكلمات والتعبيرات لموضوعك\n• انقر لتوليد الأمثلة وحفظها في الحزمة الخاصة بك\n• إنشاء حزم جاهزة للتدريب بسرعة",
+  "tourPage4Title": "أمثلة واقعية مدعومة بالذكاء الاصطناعي وترجمة متميزة",
+  "tourPage4Desc": "• البحث على الفور عن أمثلة الاستخدام الحقيقية\n• ترجمة الكلمات والتعبيرات والجمل الكاملة باستخدام تكامل DeepL عالي الجودة\n• الحصول على نتائج دقيقة واعية بالسياق",
+  "tourPage5Title": "منظمة الحزمة الذكية",
+  "tourPage5Desc": "• تنظيم المفردات في فئات مخصصة\n• تصفية والتركيز على مواضيع محددة\n• حزم الاستيراد والتصدير عبر الأجهزة\n• مشاركة الحزم بسهولة مع الآخرين",
+  "tourPage6Title": "تدريب النطق الخاص بك",
+  "tourPage6Desc": "اختبر نطقك وحسّنه باستخدام أدوات التدريب التفاعلية.\n\nبناء الثقة في التحدث – وليس القراءة فقط.",
+  "tourPage7Title": "للمعلمين",
+  "tourPage7Desc": "قم بإنشاء حزم مفردات جاهزة للاستخدام لطلابك ببضع نقرات فقط.\n\nقم بتصديرها وإرسالها إلى الفصل الدراسي الخاص بك - وبمجرد استيرادها، تصبح جاهزة على الفور للتدريب على جهاز كل طالب.\n\nبسيط. سريع. فعال.",
+  "tourPage8Title": "أطلق العنان لدعم الذكاء الاصطناعي عالي الجودة",
+  "tourPage8Desc": "للحصول على ترجمات متميزة وميزات الذكاء الاصطناعي المتقدمة، ما عليك سوى:\n 1. قم بإنشاء مفتاح DeepL API الخاص بك\n 2. قم بإنشاء مفتاح OpenAI API الخاص بك\n 3. الصق كلا المفتاحين في قسم الإعدادات\n\nوهذا لا يتطلب سوى ميزانية صغيرة (بضعة دولارات)، ولكنه يتيح لك الوصول إلى أدوات لغوية قوية واحترافية.\nملاحظة: نوصي باستخدام الوصول المدفوع لواجهة برمجة التطبيقات (API) للحصول على أفضل النتائج. لا يكلف سوى بضعة دولارات.\n\n🔑 مفتاح DeepL API: https://www.deepl.com/pro-api\n\n🔑 مفتاح OpenAI API: https://platform.openai.com/api-keys",
+  "previousPage": "سابق",
+  "nextPage": "التالي",
+  "endTour": "نهاية الجولة",
+  "pageIndicator": "الصفحة {current} من {total}",
+  "@pageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "practicePronunciation": "ممارسة النطق",
+  "pronunciationPractice": "ممارسة النطق",
+  "startPractice": "ابدأ التدريب",
+  "listenToPronunciation": "استمع إلى النطق",
+  "tapToRecord": "انقر للتسجيل",
+  "recording": "تسجيل...",
+  "recorded": "مسجلة",
+  "speakNow": "تحدث الآن - تحدث بوضوح وعلى مقربة من الميكروفون",
+  "noSpeechDetected": "لم يتم اكتشاف أي كلام. يرجى المحاولة مرة أخرى.",
+  "noTextRecognized": "لم يتم التعرف على أي كلام في التسجيل. يرجى التأكد من أن الميكروفون يعمل ثم حاول مرة أخرى.",
+  "processingAudio": "معالجة الصوت بالذكاء الاصطناعي...",
+  "playbackRecording": "تشغيل التسجيل الخاص بي",
+  "playbackRecordingSubtitle": "استمع إلى تسجيلك بينما يقوم الذكاء الاصطناعي بمعالجته",
+  "recordingTooShort": "التسجيل قصير جدًا. من فضلك تحدث لمدة ثانية واحدة على الأقل.",
+  "microphonePermissionRequired": "مطلوب إذن الميكروفون لممارسة النطق",
+  "speechRecognitionNotSupported": "التعرف على الكلام غير مدعوم على هذا النظام الأساسي. يرجى استخدام تطبيق الهاتف المحمول (Android/iOS) لممارسة النطق.",
+  "speechRecognitionUnavailable": "التعرف على الكلام غير متوفر على هذا الجهاز.",
+  "pronunciationAccuracy": "النطق\nالدقة",
+  "excellent": "ممتاز!",
+  "good": "جيد",
+  "fair": "عدل",
+  "needsImprovement": "يحتاج إلى تحسين",
+  "tryAgain": "حاول ثانية",
+  "nextItem": "العنصر التالي",
+  "endPractice": "نهاية الممارسة",
+  "practiced": "تمارس",
+  "windowsAudioTestPageTitle": "اختبار صوت Windows (RTAudio)",
+  "configureWindowsAudio": "اختبار وتكوين الصوت\nالإدخال على ويندوز",
+  "configureWindowsAudioDescription": "قم بتسجيل الصوت وتشغيله ونسخه باستخدام برنامج تشغيل Windows RTAudio الأصلي",
+  "audioTestTitle": "اختبار تسجيل الصوت في ويندوز",
+  "audioTestSubtitle": "RTAudio - تسجيل صوتي أصلي لنظام Windows",
+  "audioInputDevice": "جهاز إدخال الصوت",
+  "selectMicrophone": "حدد الميكروفون",
+  "refreshDevices": "تحديث الأجهزة",
+  "noAudioDevicesFound": "لم يتم العثور على أجهزة إدخال الصوت",
+  "loadingAudioDevices": "جارٍ تحميل أجهزة الصوت...",
+  "recordingSettings": "إعدادات التسجيل",
+  "stereoRecording": "تسجيل ستيريو",
+  "stereoChannels": "2 قنوات (ستيريو)",
+  "monoChannel": "1 قناة (أحادية)",
+  "sampleRateLabel": "معدل العينة",
+  "nativeRateBadge": "محلي",
+  "microphoneGainLabel": "كسب الميكروفون",
+  "gainHint": "1x = لا يوجد تعزيز • 3x ≈ +9.5 ديسيبل • 10x ≈ +20 ديسيبل",
+  "tapToStartRec": "انقر لبدء التسجيل",
+  "tapToStopRec": "انقر لإيقاف التسجيل",
+  "recordingCompleteLabel": "اكتمل التسجيل",
+  "tapMicToStop": "اضغط على الميكروفون للتوقف",
+  "playRecordingLabel": "تشغيل التسجيل",
+  "stopPlaybackLabel": "قف",
+  "whisperSectionTitle": "OpenAI النسخ الهمس",
+  "whisperWavNote": "WAV (16 بت PCM) مدعوم أصلاً بواسطة Whisper - لا حاجة للتحويل.",
+  "sendToWhisperLabel": "أرسل إلى الهمس",
+  "transcribingLabel": "جارٍ النسخ...",
+  "transcriptionResultLabel": "نتيجة النسخ",
+  "transcriptionFailedLabel": "فشل النسخ",
+  "debugInformationLabel": "معلومة",
+  "debugConsoleHint": "تحقق من وحدة التحكم للحصول على سجلات مفصلة",
+  "debugDevicesFound": "تم العثور على الأجهزة",
+  "debugSelectedDevice": "الجهاز المحدد",
+  "debugDeviceRateNative": "معدل الجهاز (الأصلي)",
+  "debugRequestedRate": "السعر المطلوب",
+  "debugActualRate": "السعر الفعلي المستخدم",
+  "debugActualRateForced": "⚠ القسري",
+  "debugActualRateOk": "✓",
+  "debugRecordingMode": "وضع التسجيل",
+  "debugLastRecording": "التسجيل الأخير",
+  "debugFileSize": "حجم الملف",
+  "debugStereo": "ستيريو",
+  "debugMono": "كثرة الوحيدات",
+  "recordingSavedSnack": "تم حفظ التسجيل",
+  "recordingTooShortSnack": "التسجيل قصير جدًا. يرجى التسجيل لمدة ثانية واحدة على الأقل.",
+  "recordingSmallSnack": "ملف التسجيل صغير جداً ربما فشل التسجيل.",
+  "noAudioDataSnack": "لم يتم تسجيل أي بيانات صوتية",
+  "noDeviceSelectedSnack": "الرجاء تحديد جهاز صوتي",
+  "failedToInitRtAudio": "فشل في تهيئة RTAudio",
+  "envelopeScoreLabel": "ظرف",
+  "rhythmScoreLabel": "إيقاع",
+  "textScoreLabel": "نص",
+  "help": "يساعد",
+  "trainingHelpTitle": "نصائح التدريب",
+  "trainingHelpText": "لجعل التدريب الخاص بك فعالا قدر الإمكان، اتبع الخطوات التالية:\n1. انقر فوق الزر \"مسح العدادات\" بحيث يتم تمييز كافة العناصر الموجودة في هذه الحزمة على أنها معروفة.\n2. اضبط \"نطاق العنصر\" على \"جميع العناصر\"\n3. اضبط \"ترتيب العناصر\" على \"عشوائي\"\n4. اختر لغتك الأم ضمن \"لغة العرض\"\n5. ابدأ التدريب واستمر حتى تحدد حوالي 20-30 عنصرًا لا تعرفه.\n6. ارجع إلى إعدادات التدريب وقم بتغيير \"نطاق العنصر\" إلى \"العناصر غير المعروفة فقط\"\n7. استأنف التدريب واستمر حتى تتعلم جميع العناصر غير المعروفة سابقًا.",
+  "trainingProTip": "نصيحة احترافية: ابدأ بجميع العناصر؛ وفي وقت لاحق، ركز فقط على المجهول.",
+  "onboardingWelcomeTitle": "مرحبا بكم في رالي اللغة!",
+  "onboardingSetupSubtitle": "دعونا إعداد التطبيق بالنسبة لك.",
+  "onboardingSelectUiLanguage": "لغة الواجهة",
+  "onboardingUiLanguageNote": "يمكنك تغيير هذا لاحقًا في الإعدادات → لغة واجهة المستخدم.",
+  "onboardingNext": "التالي",
+  "onboardingBack": "خلف",
+  "onboardingSelectPackagesTitle": "اختر حزم اللغة",
+  "onboardingSelectPackagesSubtitle": "حدد حزم المفردات المراد استيرادها. يمكنك دائمًا إضافة المزيد لاحقًا من القائمة الرئيسية (عرض الحزم).",
+  "onboardingAnalyzingPackages": "جارٍ تحليل الحزم المتاحة…",
+  "onboardingScanningPackagesProgress": "تم مسحها ضوئيًا {scanned}/{total} • موجودة بالفعل في قاعدة البيانات {alreadyInDb}",
+  "@onboardingScanningPackagesProgress": {
+    "placeholders": {
+      "scanned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "alreadyInDb": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingImportSelected": "استيراد المحدد",
+  "onboardingSkipImport": "يتخطى",
+  "onboardingSelectAll": "حدد الكل",
+  "onboardingDeselectAll": "قم بإلغاء تحديد الكل",
+  "onboardingNPackages": "{count} الحزم",
+  "@onboardingNPackages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingGetStarted": "ابدأ",
+  "onboardingImportCompleteTitle": "اكتمل الاستيراد!",
+  "importBuiltInPkg": "حزم مجانية",
+  "importBuiltInPkgTooltip": "استيراد حزم اللغات المجمعة المجانية",
+  "globalSearch": "البحث العالمي",
+  "globalSearchTitle": "البحث عبر جميع الحزم",
+  "globalSearchSelectLanguage": "حدد رمز اللغة",
+  "globalSearchEnterWord": "الكلمة (الكلمات) للبحث",
+  "globalSearchEnterWordHint": "على سبيل المثال \"der\"، \"order\" - يجد تطابقات جزئية",
+  "globalSearchButton": "يبحث",
+  "globalSearchResults": "نتائج",
+  "globalSearchNoResults": "لم يتم العثور على أي نتائج \"{query}\"",
+  "@globalSearchNoResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "globalSearchResultsCount": "{count} تم العثور على النتيجة (النتائج).",
+  "@globalSearchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "globalSearchSearching": "البحث…",
+  "globalSearchSelectLanguageFirst": "الرجاء تحديد رمز اللغة أولاً",
+  "globalSearchEnterTermFirst": "الرجاء إدخال مصطلح البحث",
+  "globalSearchMatchInExamples": "وجدت في الأمثلة",
+  "globalSearchViewItem": "منظر",
+  "globalSearchGoToPackage": "اذهب إلى الحزمة",
+  "globalSearchLoadingPackages": "جارٍ تحميل الحزم…",
+  "globalSearchNoPackages": "لم يتم تثبيت أي حزم لغة حتى الآن",
+  "globalSearchCancelSearch": "إلغاء البحث",
+  "globalSearchProgressOf": "البحث في الحزمة {current} من {total}...",
+  "@globalSearchProgressOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "globalSearchCancelledMessage": "تم إلغاء البحث — تم العثور على {count} نتيجة (نتائج) حتى الآن",
+  "@globalSearchCancelledMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "storeTitle": "متجر حزمة اللغة",
+  "storeRestorePurchases": "استعادة المشتريات",
+  "storeRefresh": "ينعش",
+  "storeSearchHint": "بحث عن الحزم...",
+  "storeNoPackagesMatchSearch": "لا توجد حزم تطابق بحثك.",
+  "storeNoPackagesAvailable": "لا توجد حزم متاحة.",
+  "storeInstalledCount": "تم تثبيت {installed} / {total}",
+  "@storeInstalledCount": {
+    "placeholders": {
+      "installed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "storeLoadErrorTitle": "لا يمكن تحميل المتجر.",
+  "storeIapNotAvailableMessage": "عمليات الشراء داخل التطبيق غير متوفرة على هذا النظام الأساسي. قم بزيارة موقعنا على الانترنت لشراء الحزم.",
+  "storeOpenWebsite": "افتح الموقع",
+  "storePurchaseSuccess": "تم تثبيت {title} بنجاح!",
+  "@storePurchaseSuccess": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "storePurchaseCancelled": "تم إلغاء الشراء.",
+  "storePurchaseAlreadyOwned": "{title} مثبت بالفعل.",
+  "@storePurchaseAlreadyOwned": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "storePurchaseError": "حدث خطأ ما. يرجى المحاولة مرة أخرى.",
+  "storePurchasesRestored": "تمت استعادة المشتريات",
+  "storeAllLevels": "جميع المستويات",
+  "storeAllGroups": "جميع اللغات",
+  "storeFilterLevel": "مستوى",
+  "storeFilterLanguage": "لغة",
+  "storeDownload": "تحميل",
+  "storeBuy": "يشتري",
+  "storeInstalledLabel": "تم التثبيت",
+  "storeDownloading": "جارٍ التنزيل…",
+  "storeRetry": "أعد المحاولة",
+  "storeIapAndroidOnly": "المشتريات متاحة على Android وiOS فقط.",
+  "storeDismiss": "رفض",
+  "storeAddToCart": "أضف إلى السلة",
+  "storeRemoveFromCart": "يزيل",
+  "storeCartTitle": "سلة التسوق",
+  "storeCartEmpty": "سلة التسوق الخاصة بك فارغة",
+  "storeCartClearAll": "مسح الكل",
+  "storeCartCheckout": "الدفع",
+  "storeCartItemCount": "{count, plural, =1{1 item} other{{count} items}}",
+  "@storeCartItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "storePackageDuplicateTitle": "الحزمة موجودة بالفعل",
+  "storePackageDuplicateMessage": "الحزمة \"{packageName}\" موجودة بالفعل في المجموعة \"{groupName}\". هل تريد الكتابة فوقه؟ سيتم حذف الحزمة الحالية وكل تقدم التدريب الخاص بها نهائيًا.",
+  "@storePackageDuplicateMessage": {
+    "placeholders": {
+      "packageName": {
+        "type": "String"
+      },
+      "groupName": {
+        "type": "String"
+      }
+    }
+  },
+  "storePackageDuplicateOverwrite": "الكتابة فوق",
+  "storePackageDuplicateKeep": "حافظ على وجودك",
+  "splashSettingUpPackages": "إعداد الحزم: {current} / {total}",
+  "@splashSettingUpPackages": {
+    "description": "Splash screen progress label shown while seed packages are being imported",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "splashThisHappensOnce": "وهذا يحدث مرة واحدة فقط.",
+  "@splashThisHappensOnce": {
+    "description": "Subtitle shown below the progress bar on the splash screen"
+  },
+  "splashLoading": "تحميل…",
+  "@splashLoading": {
+    "description": "Indeterminate loading label on the splash screen"
+  },
+  "aiItemCreator": "منظمة العفو الدولية دردشة المعلم",
+  "aiItemCreatorAppBarHint": "اجمع الكلمات والتعبيرات واحفظها من خلال الدردشة مع الذكاء الاصطناعي",
+  "chatWithAI": "الدردشة مع منظمة العفو الدولية",
+  "enterYourPrompt": "أدخل مطالبتك...",
+  "aiItemCreatorPromptHint": "قم بوصف موضوع وسيقوم مدرب الذكاء الاصطناعي بطرح الأسئلة واقتراح مفردات مفيدة واختبار معلوماتك. على سبيل المثال: ساعدني في جمع المخاطر المتعلقة بالسفر والتدرب عليها عند المستوى المعرفي B2",
+  "send": "يرسل",
+  "sending": "إرسال...",
+  "aiResponse": "استجابة الذكاء الاصطناعي",
+  "itemInputs": "مدخلات العنصر",
+  "aiItemCreatorBothItemsRequired": "يرجى ملء حقلي اللغة قبل الحفظ.",
+  "aiItemCreatorDuplicateItemMessage": "يوجد بالفعل عنصر بنفس زوج النص في هذه الحزمة.",
+  "language1": "اللغة 1",
+  "language2": "اللغة 2",
+  "translateLang1ToLang2": "ترجم إلى لانج 2",
+  "translateLang2ToLang1": "ترجم إلى لانج 1",
+  "translateToLanguageCode": "ترجمة إلى {languageCode}",
+  "@translateToLanguageCode": {
+    "placeholders": {
+      "languageCode": {
+        "type": "String"
+      }
+    }
+  },
+  "example": "مثال",
+  "generating": "جارٍ الإنشاء...",
+  "flags": "أعلام",
+  "favorite": "مفضل",
+  "saveItems": "يحفظ",
+  "saving": "توفير...",
+  "clearItems": "مسح العناصر فقط",
+  "clearAll": "مسح كافة الحقول",
+  "itemSavedSuccessfully": "تم حفظ العنصر بنجاح",
+  "promptCannotBeEmpty": "لا يمكن أن يكون الموجه فارغًا",
+  "enterAtLeastOneItem": "الرجاء إدخال عنصر واحد على الأقل",
+  "selectPackageFirst": "الرجاء تحديد الحزمة أولاً",
+  "deeplKeyRequired": "مطلوب مفتاح DeepL API للترجمة",
+  "noNonPurchasedPackagesAvailable": "لا تتوفر أي حزم غير مشتراة",
+  "packageSelectionRemembered": "تم حفظ اختيار الحزمة",
+  "aiItemCreatorOpenAiKeyNotConfiguredDetailed": "لم يتم تكوين مفتاح OpenAI API. الرجاء إضافة مفتاح API الخاص بك في الإعدادات.",
+  "aiItemCreatorOpenAiKeyNotConfigured": "لم يتم تكوين مفتاح OpenAI API.",
+  "aiItemCreatorProcessingComplete": "اكتملت المعالجة",
+  "aiItemCreatorTranslationComingSoon": "ميزة الترجمة قريبا",
+  "aiItemCreatorDefaultCategoryName": "تم إنشاء الذكاء الاصطناعي",
+  "aiItemCreatorStartNewConversation": "ابدأ محادثة جديدة",
+  "aiItemCreatorChatHint": "قم بوصف موضوع وسيقوم مدرب الذكاء الاصطناعي بطرح الأسئلة واقتراح مفردات مفيدة واختبار معلوماتك.",
+  "aiItemCreatorConversation": "محادثة",
+  "aiItemCreatorYou": "أنت",
+  "aiItemCreatorCoach": "مدرب الذكاء الاصطناعي",
+  "aiItemCreatorAiSuggestions": "اقتراحات الذكاء الاصطناعي",
+  "aiItemCreatorTapChipToFill": "اضغط على شريحة لملء حقل العنصر والترجمة التلقائية.",
+  "aiItemCreatorNoSuggestedItems": "لا توجد كلمات أو تعبيرات بعد.",
+  "aiItemCreatorNextSteps": "كيفية الاستمرار",
+  "aiItemCreatorNoNextSteps": "لا توجد اقتراحات استمرار حتى الآن.",
+  "aiItemCreatorModelCostTip": "نصيحة احترافية: الموديلات الأحدث أكثر تكلفة، في حين أن الموديلات الأقدم والتيربو أرخص ويمكن أن تكون أسرع بشكل ملحوظ.",
+  "aiItemCreatorSelectPackageDialogTitle": "اختر حزمة اللغة",
+  "aiItemCreatorSelectPackageDialogMessage": "حدد حزمة اللغة المراد استخدامها لهذه الجلسة. تم تحديد اختيارك الأخير مسبقًا.",
+  "aiItemCreatorMissingApiKeysWarning": "مفاتيح واجهة برمجة التطبيقات المفقودة: {keys}. يمكنك المتابعة، ولكن قد تكون ميزات الذكاء الاصطناعي والترجمة المتميزة محدودة.",
+  "@aiItemCreatorMissingApiKeysWarning": {
+    "placeholders": {
+      "keys": {
+        "type": "String"
+      }
+    }
+  },
+  "about": "عن",
+  "aboutWebsite": "موقع إلكتروني",
+  "aboutSummaryVideo": "فيديو ملخص",
+  "aboutSupportEmail": "دعم عنوان البريد الإلكتروني",
+  "aboutWebsiteUrl": "https://sites.google.com/view/language-rally",
+  "aboutSummaryVideoUrl": "https://www.youtube.com/watch?v=64Pl9iNF88c",
+  "aboutSupportEmailAddress": "languagerally.support@gmail.com",
+  "aboutVersionWithValue": "الإصدار: {version}",
+  "@aboutVersionWithValue": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutCouldNotOpen": "لا يمكن فتح: {uri}",
+  "@aboutCouldNotOpen": {
+    "placeholders": {
+      "uri": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutWelcomeSplashNotFound": "لم يتم العثور على صورة البداية الترحيبية",
+  "chooseTheme": "اختر الموضوع",
+  "darkMode": "الوضع المظلم",
+  "toggleBetweenLightAndDark": "التبديل بين الضوء والظلام",
+  "colorTheme": "موضوع اللون:",
+  "toggleBrightness": "تبديل السطوع",
+  "changeTheme": "تغيير الموضوع",
+  "managePackageGroups": "إدارة مجموعات الحزم",
+  "noPackageGroups": "لا توجد مجموعات الحزمة",
+  "createFirstPackageGroup": "قم بإنشاء مجموعة الحزم الأولى الخاصة بك",
+  "addGroup": "أضف مجموعة",
+  "addPackageGroup": "إضافة مجموعة الحزمة",
+  "editPackageGroup": "تحرير مجموعة الحزمة",
+  "groupName": "اسم المجموعة",
+  "enterGroupName": "أدخل اسم المجموعة",
+  "groupNameRequired": "اسم المجموعة مطلوب",
+  "duplicateGroupName": "اسم مكرر",
+  "groupNameAlreadyExists": "توجد مجموعة بالاسم \"{name}\" بالفعل.",
+  "@groupNameAlreadyExists": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupCreatedSuccessfully": "تم إنشاء المجموعة \"{name}\" بنجاح",
+  "@groupCreatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateGroup": "فشل إنشاء المجموعة: {error}",
+  "@failedToCreateGroup": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "groupRenamedTo": "تمت إعادة تسمية المجموعة إلى \"{name}\"",
+  "@groupRenamedTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdateGroup": "فشل تحديث المجموعة: {error}",
+  "@failedToUpdateGroup": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteGroup": "حذف المجموعة",
+  "deleteGroupConfirm": "هل أنت متأكد أنك تريد حذف المجموعة \"{name}\"؟\n\nلا يمكن التراجع عن هذا الإجراء.",
+  "@deleteGroupConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cannotDeleteGroup": "لا يمكن الحذف",
+  "groupHasPackages": "لا تزال هذه المجموعة تحتوي على حزمة (حزم) {count}. يرجى نقلها أو حذفها أولاً.",
+  "@groupHasPackages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupDeleted": "تم حذف المجموعة \"{name}\".",
+  "@groupDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteGroup": "فشل حذف المجموعة: {error}",
+  "@failedToDeleteGroup": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "cannotDeleteHasPackagesTooltip": "لا يمكن الحذف (يحتوي على حزم)",
+  "nPackages": "{count, plural, =1{1 package} other{{count} packages}}",
+  "@nPackages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "manageGroups": "إدارة المجموعات",
+  "featureLangPower": "قوة اللغة",
+  "featureAiIntegration": "تكامل الذكاء الاصطناعي",
+  "featureAdaptivePractice": "الممارسة التكيفية",
+  "featureMasterAccent": "لهجة رئيسية",
+  "allBadgesEarned": "🎉 جميع الشارات المكتسبة! أنت سيد!",
+  "nextBadgeLabel": "التالي: {name}",
+  "@nextBadgeLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pointsToGo": "{percent}% للذهاب",
+  "@pointsToGo": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "progressPercent": "{percent}% تقدم",
+  "@progressPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "errorTogglingFavourite": "خطأ في تبديل المفضلة: {error}",
+  "@errorTogglingFavourite": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorTogglingImportant": "خطأ في التبديل مهم: {error}",
+  "@errorTogglingImportant": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryAdded": "تمت إضافة الفئة \"{name}\".",
+  "@categoryAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errorAddingCategory": "خطأ في إضافة الفئة: {error}",
+  "@errorAddingCategory": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryRemoved": "تمت إزالة الفئة \"{name}\".",
+  "@categoryRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errorRemovingCategory": "حدث خطأ أثناء إزالة الفئة: {error}",
+  "@errorRemovingCategory": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenUrl": "لا يمكن فتح عنوان URL: {url}",
+  "@couldNotOpenUrl": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningUrl": "خطأ في فتح عنوان URL: {error}",
+  "@errorOpeningUrl": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectLanguage": "الرجاء تحديد لغة",
+  "add": "يضيف",
+  "speak": "يتكلم",
+  "recordingFailedToStart": "فشل التسجيل في البدء!\n\nتحقق:\n1. الميكروفون متصل\n2. تم ضبط الميكروفون كجهاز افتراضي\n3. لا يوجد تطبيق آخر يستخدم الميكروفون",
+  "recordingFailedNoAudioFile": "فشل التسجيل - لم يتم إنشاء ملف صوتي!\n\nالأسباب المحتملة:\n1. الميكروفون غير متصل\n2. لم يتم اكتشاف أي إدخال صوتي\n3. مشكلة إعدادات الصوت في Windows",
+  "errorStartingRecordingDetails": "خطأ في بدء التسجيل: {error}",
+  "@errorStartingRecordingDetails": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "openaiEmptyResponse": "أعاد نموذج الذكاء الاصطناعي المحدد استجابة فارغة",
+  "tryDifferentModel": "حاول تحديد نموذج مختلف من محدد النموذج",
+  "modelMayNotBeSupported": "قد لا يكون هذا النموذج مدعومًا أو متاحًا لحسابك",
+  "reduceTextOrRetry": "قم بتقليل طول النص أو حاول مرة أخرى",
+  "openaiNullContent": "لم يُرجع نموذج الذكاء الاصطناعي المحدد أي محتوى",
+  "modelUnsupportedParameter": "النموذج المحدد لا يدعم معلمة API المطلوبة"
+}

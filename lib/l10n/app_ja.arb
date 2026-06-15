@@ -1,0 +1,1190 @@
+{
+  "helloWorld": "「こんにちは世界」",
+  "welcome": "ランゲージラリーへようこそ",
+  "appTitle": "ランゲージラリー",
+  "createPackage": "パッケージの作成",
+  "editPackage": "パッケージの編集",
+  "packageDetails": "パッケージの詳細",
+  "packageName": "パッケージ名",
+  "packageNameHint": "例: スペイン語の基礎、ドイツ語の基礎",
+  "languageCode1": "ソース言語コード",
+  "languageName1": "ソース言語名",
+  "languageCode2": "ターゲット言語コード",
+  "languageName2": "ターゲット言語名",
+  "description": "説明",
+  "descriptionHint": "この言語パッケージの簡単な説明",
+  "authorName": "著者名",
+  "authorEmail": "著者のメールアドレス",
+  "authorWebpage": "著者のウェブページ",
+  "version": "バージョン",
+  "items": "アイテム",
+  "packageIcon": "パッケージアイコン",
+  "packageGroup": "パッケージグループ",
+  "selectIcon": "アイコンを選択",
+  "defaultIcon": "デフォルトのアイコン",
+  "customIcon": "カスタムアイコン",
+  "upload": "アップロードアイコン",
+  "uploadCustomIcon": "カスタム アイコンのアップロード (最大 512x512、1MB)",
+  "customIconUploaded": "カスタムアイコンが正常にアップロードされました",
+  "save": "保存",
+  "edit": "編集",
+  "cancel": "キャンセル",
+  "delete": "消去",
+  "confirmDelete": "このパッケージを削除してもよろしいですか?",
+  "packageSaved": "パッケージは正常に保存されました",
+  "packageDeleted": "パッケージは正常に削除されました",
+  "errorSavingPackage": "パッケージの保存中にエラーが発生しました",
+  "errorDeletingPackage": "パッケージ削除エラー",
+  "fieldRequired": "この項目は必須です",
+  "invalidEmail": "無効なメールアドレス",
+  "readOnlyPackage": "このパッケージは読み取り専用で編集できません",
+  "purchasedPackage": "購入したパッケージは編集できません",
+  "badges": "バッジ",
+  "noBadges": "まだバッジを獲得していません",
+  "selectLanguageCode": "言語コードの選択",
+  "typeToSearchLanguages": "言語を検索するには入力してください...",
+  "search": "検索...",
+  "clearCounters": "カウンターをクリアする",
+  "confirmClearCounters": "このパッケージのトレーニング カウンタをすべてクリアしてもよろしいですか?これにより、「不明」カウンターとトレーニング統計がリセットされます。",
+  "clear": "クリア",
+  "countersCleared": "カウンターは正常にクリアされました",
+  "errorClearingCounters": "カウンタのクリア中にエラーが発生しました",
+  "deleteAll": "パッケージの削除",
+  "confirmDeleteAllData": "このパッケージをすべてのデータとともに削除してもよろしいですか?これにより、すべてのカテゴリ、項目、トレーニング統計が完全に削除されます。この操作は元に戻すことはできません。",
+  "allDataDeleted": "パッケージとすべてのデータが正常に削除されました",
+  "exportPackage": "エクスポートパッケージ",
+  "selectExportLocation": "エクスポート先の選択",
+  "packageExported": "パッケージは正常にエクスポートされました",
+  "errorExportingPackage": "パッケージのエクスポート中にエラーが発生しました",
+  "importItems": "アイテムのインポート(JSON)",
+  "importItemsDialogTitle": "アイテムのインポート(JSON)",
+  "importItemsFromLocalJson": "ローカルのJSONファイルからインポート",
+  "enterItemsUrl": "アイテムの JSON URL (https://…)",
+  "downloadingItems": "アイテムをダウンロード中…",
+  "selectImportFile": "インポートファイルを選択",
+  "importFormat": "インポート形式",
+  "importFormatDescription": "テキスト ファイルからアイテムをインポートします。各行には、次の形式の項目が含まれている必要があります。",
+  "importResults": "インポート結果",
+  "successfullyImported": "正常にインポートされました",
+  "failedToImport": "インポートに失敗しました",
+  "error": "エラー",
+  "ok": "わかりました",
+  "importPackage": "パッケージのインポート",
+  "importPackageTooltip": "ZIP ファイルまたは URL からパッケージをインポート",
+  "importPackageDialogTitle": "言語パッケージのインポート",
+  "importFromLocalFile": "ローカルファイルからインポート",
+  "importFromUrl": "URLからインポート",
+  "enterPackageUrl": "パッケージURL (https://…)",
+  "downloadingPackage": "パッケージをダウンロード中…",
+  "downloadFailed": "ダウンロードに失敗しました。 URL とインターネット接続を確認してください。",
+  "invalidUrl": "有効な http:// または https:// URL を入力してください。",
+  "orLabel": "または",
+  "selectPackageZipFile": "パッケージZIPファイルを選択",
+  "couldNotAccessFile": "選択したファイルにアクセスできませんでした。",
+  "importingPackage": "パッケージをインポートしています...",
+  "packageImportedSuccessfully": "パッケージは正常にインポートされました。",
+  "packageImportedWithItems": "パッケージは正常にインポートされました。 ({count} アイテム)",
+  "packageImportedWithGroup": "パッケージが「{groupName}」グループにインポートされました! ({count} アイテム)",
+  "importError": "インポートエラー",
+  "failedToImportPackage": "パッケージのインポートに失敗しました",
+  "packageAlreadyExists": "パッケージはすでに存在します",
+  "packageExistsMessage": "同じ言語ペア、説明、作成者情報、バージョンを持つパッケージが「{groupName}」グループにすでに存在します。とにかく新しいパッケージとしてインポートしますか?",
+  "importAsNew": "とにかくインポート",
+  "zipFileNotFound": "ZIPファイルが見つかりません",
+  "invalidPackageZip": "無効なパッケージ ZIP: package_data.json がありません",
+  "invalidPackageFormat": "無効なパッケージ ファイル形式です",
+  "languagePackages": "言語パッケージ",
+  "loadingPackages": "パッケージをロード中...",
+  "tapAndHoldToReorder": "タップアンドホールドしてカードを並べ替えます",
+  "tapAndHoldToReorderList": "≡ をタップして押し続けると並べ替えられます。 • ⋮ をタップしてコンパクト表示に切り替えます。",
+  "noPackagesYet": "まだパッケージがありません",
+  "createFirstPackage": "最初の言語パッケージを作成する",
+  "versionLabel": "バージョン",
+  "purchased": "購入済み",
+  "compactView": "コンパクト",
+  "expand": "拡大する",
+  "allCategories": "すべてのカテゴリ",
+  "categoriesInPackage": "このパッケージのカテゴリ",
+  "categories": "カテゴリー",
+  "testInterFonts": "インターフォントのテスト",
+  "viewPackages": "パッケージを見る",
+  "simplifiedPackageView": "パッケージリスト",
+  "createNewPackage": "新しいパッケージの作成",
+  "generateTestData": "テストデータの生成",
+  "designSystemShowcase": "デザインシステムのショーケース",
+  "badgeEarned": "バッジを獲得しました！",
+  "achievement": "成果",
+  "awesome": "素晴らしい！",
+  "importFormatNotes": "注:",
+  "importFormatLine1": "• 各行は 1 つの項目を表します",
+  "importFormatLine2": "• フィールドは | で区切られます。",
+  "importFormatLine3": "• カテゴリは ; で区切られます。",
+  "importFormatLine4": "• 最後の |はオプションです",
+  "importFormatLine5": "• 空行は無視されます。",
+  "importFormatLine6": "• 重複はスキップされます",
+  "importFormatNewDescription": "テキスト ファイルからアイテムをインポートします。各行には、--- で区切られたフィールドを持つ項目が含まれている必要があります。",
+  "importFormatNewLine1": "• メインデリミタ: ---",
+  "importFormatNewLine2": "• L1=<text> - 言語 1 のメインテキスト (L2 が欠落している場合に必要)",
+  "importFormatNewLine3": "• L2=<text> - 言語 2 のメイン テキスト (L1 が欠落している場合に必要)",
+  "importFormatNewLine4": "• L1pre=<text> - 言語 1 プレフィックス (オプション)",
+  "importFormatNewLine5": "• L1post=<text> - 言語 1 のサフィックス (オプション)",
+  "importFormatNewLine6": "• L2pre=<text> - 言語 2 プレフィックス (オプション)",
+  "importFormatNewLine7": "• L2post=<text> - 言語 2 のサフィックス (オプション)",
+  "importFormatNewLine8": "• EX=<L1 テキスト>:::<L2 テキスト> - 例 (オプション、複数可)",
+  "importFormatNewLine9": "• CAT=<cat1>:::<cat2>:::<cat3> - カテゴリ (オプション)",
+  "importFormatNewLine10": "• L1= または L2= の少なくとも 1 つが存在する必要があります",
+  "importFormatNewLine11": "• 空行は無視されます。",
+  "importFormatNewLine12": "• 重複はスキップされます",
+  "invalidImportLine": "無効な行です",
+  "missingRequiredFields": "'L1=' がありません、曖昧な 'L2='",
+  "unknownField": "不明なフィールドの接頭辞",
+  "andMore": "...そして {count} 詳細",
+  "browseItems": "アイテムを参照する",
+  "itemDetails": "詳細",
+  "filterItems": "アイテムのフィルタリング",
+  "searchLanguage1": "{language} で検索",
+  "searchLanguage2": "{language} で検索",
+  "caseSensitive": "大文字と小文字を区別",
+  "knownStatus": "既知のステータス",
+  "filterStatusAll": "全て",
+  "filterStatusKnown": "知られている",
+  "filterStatusUnknown": "未知",
+  "allItems": "すべてのアイテム",
+  "itemsIKnew": "知っていたアイテム",
+  "itemsIDidNotKnow": "知らなかった項目",
+  "known": "既知の",
+  "unknown": "未知",
+  "important": "重要",
+  "favourite": "お気に入り",
+  "badge": "バッジ",
+  "position": "位置",
+  "stepsUntilLearned": "習得までの手順",
+  "examples": "例",
+  "noExamples": "利用可能な例はありません",
+  "pronounce": "発音する",
+  "ttsError": "テキスト読み上げは利用できません",
+  "noItemsFound": "項目が見つかりませんでした",
+  "noItemsInPackage": "このパッケージにはまだアイテムがありません",
+  "addItem": "アイテムの追加",
+  "emptyPackageHint": "アイテムを手動で追加するか、AI を使用してアイテムをすばやくインポートします",
+  "noItemsToTrain": "現在の設定では練習に使用できる項目はありません",
+  "clearFilters": "クリア",
+  "itemCount": "{count} アイテム",
+  "filteredItemCount": "{filtered}/{total} 個のアイテム",
+  "trainingRally": "トレーニングラリー",
+  "startTraining": "トレーニングを開始する",
+  "trainingComingSoon": "トレーニングラリー - 近日開催予定！",
+  "aiServiceNotConfigured": "AI サービスが構成されていません。 OpenAI API キーを追加してください。",
+  "pleaseEnterTextInLanguageFirst": "最初に{language}にテキストを入力してください",
+  "translationCompletedSuccessfully": "{service} を使用して翻訳が正常に完了しました。",
+  "translationFailed": "翻訳に失敗しました",
+  "addedExamplesSuccessfully": "{count} 例が正常に追加されました。",
+  "failedToGenerateExamples": "例の生成に失敗しました",
+  "selectExamplesToAdd": "追加する例を選択してください",
+  "selectWhichExamples": "この項目に追加する例を選択してください:",
+  "addSelected": "選択したものを追加",
+  "pleaseSelectAtLeastOne": "少なくとも 1 つの例を選択してください",
+  "addNewItem": "新しいアイテムを追加",
+  "editItem": "項目の編集",
+  "deleteItem": "項目の削除",
+  "confirmDeleteItem": "この項目を削除してもよろしいですか?",
+  "thisActionCannotBeUndone": "この操作は元に戻すことができません。",
+  "itemDeleted": "アイテムが削除されました",
+  "errorDeletingItem": "アイテムの削除中にエラーが発生しました",
+  "errorSavingItem": "アイテムの保存中にエラーが発生しました",
+  "itemSaved": "アイテムは正常に更新されました",
+  "itemCreated": "アイテムが正常に作成されました",
+  "preTextOptional": "プレテキスト (オプション)",
+  "mainText": "本文",
+  "postTextOptional": "ポストテキスト (オプション)",
+  "forExampleToForVerbs": "例: 動詞の「to」",
+  "additionalContext": "追加のコンテキスト",
+  "translate": "翻訳する",
+  "translateFromTo": "{from} → {to} を翻訳",
+  "aiExampleGeneration": "AI サンプルの生成",
+  "aiExampleSearch": "AI事例検索",
+  "searchExamplesOnInternet": "AI を使用してインターネット上の例文を「{text}」で検索",
+  "generateExampleSentences": "{language}の本文に基づいて例文を生成",
+  "voiceInput": "音声入力",
+  "settings": "設定",
+  "uiLanguage": "UI言語",
+  "uiLanguageDescription": "アプリケーションインターフェース言語",
+  "uiLanguageHelper": "メニュー、ボタン、ラベルの言語を選択します",
+  "userLanguage": "ユーザー言語",
+  "userLanguageDescription": "新しい言語パッケージを作成するための優先母語",
+  "apiKeys": "APIキー",
+  "deeplApiKey": "DeepL APIキー",
+  "deeplApiKeyDescription": "言語項目を編集する際の優れた翻訳品質を実現します。 https://www.deepl.com/pro-api を参照してください。",
+  "openaiApiKey": "OpenAI APIキー",
+  "openaiApiKeyDescription": "たとえば、言語項目を編集するときに AI を使用して生成します。 https://platform.openai.com/api-keys を参照してください。",
+  "enterApiKey": "APIキーを入力してください",
+  "optional": "オプション",
+  "required": "必須",
+  "settingsSaved": "設定が正常に保存されました",
+  "errorSavingSettings": "設定の保存中にエラーが発生しました",
+  "usingGoogleTranslate": "無料のGoogle翻訳を使用する",
+  "usingDeepL": "DeepL（プレミアム）の使用",
+  "noTranslationReceivedFromGoogle": "Google から翻訳を受け取りませんでした",
+  "googleTranslationFailed": "Google翻訳が失敗しました",
+  "googleTranslationError": "Google翻訳エラー",
+  "noTranslationReceivedFromDeepL": "DeepL から翻訳を受け取りませんでした",
+  "invalidDeepLApiKey": "無効な DeepL API キー",
+  "deeplTranslationQuotaExceeded": "DeepL 翻訳の割り当てを超過しました",
+  "deeplTranslationFailed": "DeepL 翻訳に失敗しました",
+  "deeplTranslationError": "DeepL翻訳エラー",
+  "invalidApiKeyConfigureOpenAI": "API キーが無効です。 OpenAI API キーを設定してください。",
+  "apiRateLimitExceeded": "API レート制限を超えました。後でもう一度試してください。",
+  "aiRequestFailed": "AI リクエストが失敗しました",
+  "failedToParseAiResponse": "AI 応答の解析に失敗しました。もう一度試してください。",
+  "aiGenerationError": "AI生成エラー",
+  "voiceInputPlaceholder": "音声入力は speech_to_text パッケージを使用して実装されます",
+  "improveQualityWithApiKeys": "💡 ヒント: アプリケーション設定に DeepL および OpenAI API キーを追加すると、翻訳とサンプル検索の品質が大幅に向上します。",
+  "noApiKeyFallbackMessage": "API キーがない場合、基本的な翻訳と限定的な例が提供されます。最良の結果を得るには、[設定] で API キーを構成してください。",
+  "listeningForSpeech": "聞いています...今話してください",
+  "speechRecognitionNotAvailable": "このデバイスでは音声認識は利用できません",
+  "speechRecognitionPermissionDenied": "音声認識の許可が拒否されました",
+  "speechRecognitionError": "音声認識エラー",
+  "tapToSpeak": "マイクをタップして話す",
+  "tapToStop": "タップして録音を停止します",
+  "speechNotRecognized": "音声は認識されませんでした。もう一度試してください。",
+  "usingWhisperApiSlower": "音声認識にクラウド AI を使用する (速度が遅くなる可能性があります)",
+  "languageNotSupportedAddApiKey": "言語 {languageCode} はネイティブにサポートされていません。 AI を利用した音声認識の設定に OpenAI API キーを追加します。",
+  "@languageNotSupportedAddApiKey": {
+    "placeholders": {
+      "languageCode": {
+        "type": "String"
+      }
+    }
+  },
+  "recordingTapToStop": "録音...もう一度タップすると停止します",
+  "speakClearlyKeepRecording": "はっきりと話してください。少なくとも 1 秒を記録します。",
+  "pleaseRecordLonger": "1 秒以上話し、停止をタップしてください。",
+  "errorStartingRecording": "録音開始エラー",
+  "noAudioRecorded": "音声は録音されませんでした",
+  "errorTranscribing": "音声の転写中にエラーが発生しました",
+  "trainingSettings": "トレーニング設定",
+  "trainingPresetTitle": "クイックセットアップ",
+  "trainingPresetHint": "プリセットを選択すると、以下の設定が自動的に構成されます。",
+  "trainingPresetComboLabel": "プリセット",
+  "trainingPresetAllExamplesForeignLanguage": "すべての例、外国語",
+  "trainingPresetAllExamplesRandomLanguage": "すべての例、ランダムな言語",
+  "trainingPresetFavouriteItemsForeignLanguage": "好きなもの、外国語",
+  "trainingPresetFavouriteItemsRandomLanguage": "お気に入りのアイテム、ランダムな言語",
+  "trainingPresetImportantItemsForeignLanguage": "重要事項・外国語",
+  "trainingPresetImportantItemsRandomLanguage": "重要事項、ランダムな言葉遣い",
+  "trainingPresetRandomItemsRandomLanguage": "ランダムなアイテム、ランダムな言語",
+  "trainingPresetUnknownItemsForeignLanguage": "知らないもの、外国語",
+  "trainingPresetUnknownItemsRandomLanguage": "未知のアイテム、ランダムな言語",
+  "trainingPresetAppliedTapStart": "プリセットが適用されました。 「{actionLabel}」をタップして開始します。",
+  "trainingPresetSelectPackageFirst": "最初にパッケージを選択してください。",
+  "@trainingPresetAppliedTapStart": {
+    "placeholders": {
+      "actionLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "itemScope": "項目の範囲",
+  "lastNItems": "最近の N 個のアイテム",
+  "onlyUnknown": "不明な項目のみ",
+  "onlyImportant": "重要な項目のみ",
+  "onlyFavourite": "お気に入りのアイテムばかり",
+  "numberOfItems": "アイテム数",
+  "itemOrder": "アイテムの注文",
+  "randomOrder": "ランダムな順序",
+  "sequentialOrder": "順次注文",
+  "itemType": "アイテムの種類",
+  "dictionaryItems": "辞書項目",
+  "examplesType": "例",
+  "displayLanguage": "表示言語",
+  "motherTongue": "母国語",
+  "targetLanguage": "対象言語",
+  "randomLanguage": "ランダム",
+  "categoryFilter": "カテゴリフィルター",
+  "categoryFilterHint": "含めるカテゴリを選択してください (空 = すべてのカテゴリ)",
+  "noCategories": "利用可能なカテゴリがありません",
+  "dontKnowThreshold": "閾値がわからない",
+  "dontKnowThresholdHint": "特別な処理が行われる前に項目を「不明」としてマークする必要がある回数",
+  "startTrainingRally": "トレーニングラリーを開始",
+  "clearTrainingSettings": "設定をクリアする",
+  "confirmClearTrainingSettings": "すべてのトレーニング設定をデフォルト値にリセットしてもよろしいですか?",
+  "trainingSettingsCleared": "トレーニング設定がクリアされました",
+  "startingTraining": "トレーニングを開始しています...",
+  "noMoreItemsToDisplay": "フィルター設定に基づいて表示する項目はありません。",
+  "noItems": "アイテムがありません",
+  "trainingComplete": "トレーニング完了",
+  "allItemsCompleted": "おめでとう！このトレーニング セッションのすべての項目を完了しました。",
+  "closeTraining": "トレーニングを閉じる",
+  "confirmCloseTraining": "トレーニングを終了してもよろしいですか?進行状況が保存されました。",
+  "question": "質問",
+  "answer": "答え",
+  "iKnow": "知っている",
+  "iDontKnow": "わからない",
+  "previousItem": "前の項目",
+  "iDidNotKnowEither": "結局知らなかった",
+  "exportBeforeDelete": "削除する前にエクスポートしますか?",
+  "aiTextAnalysis": "AIでテキスト/リストから項目を抽出",
+  "aiTextAnalysisImport": "AIテキスト分析ツールを使用してテキストまたはリストから項目を抽出する",
+  "knowledgeLevel": "知識レベル",
+  "a1Beginner": "A1 - 初心者",
+  "a2Elementary": "A2 - 初級",
+  "b1Intermediate": "B1 - 中級",
+  "b2UpperIntermediate": "B2 - 中上級",
+  "c1Advanced": "C1 - 上級",
+  "c2Proficient": "C2 - 熟練した",
+  "pasteTextHere": "ここにテキストを貼り付けます...",
+  "extractWords": "単語を抽出する",
+  "extractExpressions": "式の抽出",
+  "maxItems": "新しいアイテムの最大数",
+  "maxItemsHint": "制限を設けない場合は空のままにします",
+  "generateExamples": "例を生成する",
+  "categoryName": "カテゴリ名",
+  "categoryNameHint": "輸入品目カテゴリ名",
+  "analyzeText": "テキストを分析する",
+  "configureAnalysis": "抽出する項目を構成する",
+  "openaiModel": "AIモデル",
+  "openaiModelDescription": "ChatGPT モデルの選択",
+  "modelGpt55": "GPT-5.5",
+  "modelGpt55Pro": "GPT-5.5プロ",
+  "modelGpt54": "GPT-5.4",
+  "modelGpt54Pro": "GPT-5.4プロ",
+  "modelGpt54Mini": "GPT-5.4ミニ",
+  "modelGpt5Mini": "GPT-5ミニ",
+  "modelGpt41": "GPT-4.1",
+  "modelGpt55Desc": "一般用途向けの品質とスピードをバランスさせた最新のフラッグシップモデル",
+  "modelGpt55ProDesc": "最強の推論と品質を実現する最上位の GPT-5.5 バリアント",
+  "modelGpt54Desc": "強力な汎用GPT-5世代モデル",
+  "modelGpt54ProDesc": "要求の厳しいタスク向けの高機能 GPT-5.4 バリアント",
+  "modelGpt54MiniDesc": "日常業務を低コストで行うための、小型で高速な GPT-5.4 バリアント",
+  "modelGpt5MiniDesc": "スピードとコストを最適化したコンパクトな GPT-5 ファミリー モデル",
+  "modelGpt41Desc": "互換性と確かな品質を実現する信頼性の高い GPT-4.1 オプション",
+  "modelGpt4o": "GPT-4o",
+  "modelGpt35Turbo": "GPT-3.5 ターボ (レガシー、バジェット)",
+  "modelGpt35Turbo16k": "GPT-3.5ターボ16K",
+  "modelGpt4": "GPT-4",
+  "modelGpt4Turbo": "GPT-4 ターボ (レガシー)",
+  "modelGpt4oDesc": "汎用に最適な選択肢。高速、マルチモーダル、強力な品質",
+  "modelGpt35TurboDesc": "従来の低コスト オプション。単純なタスクやコスト重視の使用に便利です",
+  "modelGpt35Turbo16kDesc": "GPT-3.5 と同じですが、16K トークンのコンテキスト ウィンドウ",
+  "modelGpt4Desc": "高い推論品質。通常は遅くて高価です",
+  "modelGpt4TurboDesc": "レガシー GPT-4 ファミリ オプション。古い安価な代替品が必要な場合には依然として役立ちます",
+  "analyzing": "分析中...",
+  "languageDetected": "言語が検出されました",
+  "itemsFound": "見つかったアイテム",
+  "selectItemsToImport": "インポートする項目を選択してください",
+  "selectAll": "すべて選択",
+  "deselectAll": "すべての選択を解除",
+  "importSelected": "選択したものをインポート",
+  "importing": "インポート中...",
+  "itemsImported": "アイテムは正常にインポートされました",
+  "noItemsSelected": "項目が選択されていません",
+  "textCannotBeEmpty": "テキストを空にすることはできません",
+  "selectAtLeastOneType": "少なくとも 1 つのタイプ (単語または表現) を選択してください",
+  "languageNotMatching": "検出された言語はパッケージ内のどの言語とも一致しません",
+  "openaiKeyRequired": "この機能には OpenAI API キーが必要です",
+  "analyzingProgress": "分析中: {current} / {total}",
+  "translatingProgress": "翻訳中: {current} / {total}",
+  "duplicate": "重複",
+  "importProgress": "{total} の {current} をインポートしています",
+  "detectingLanguage": "言語を検出中...",
+  "extractingItems": "アイテムを抽出中...",
+  "checkingDuplicates": "重複をチェックしています...",
+  "translating": "翻訳中...",
+  "generatingExamples": "例を生成しています...",
+  "errorAnalyzingText": "テキストの分析中にエラーが発生しました",
+  "errorImportingItems": "アイテムのインポート中にエラーが発生しました",
+  "warning": "警告",
+  "textIsVeryLarge": "テキストが非常に大きい",
+  "words": "言葉",
+  "continueAnalysis": "これは処理に時間がかかる可能性があり、分割して分析されます。続けますか?",
+  "continueLabel": "続く",
+  "exportBeforeDeleteMessage": "このパッケージを削除する前にエクスポートしますか?これにより、すべてのデータが ZIP ファイルに保存されます。",
+  "deleteWithoutExport": "エクスポートせずに削除",
+  "exportAndDelete": "エクスポートと削除",
+  "exportingPackage": "パッケージをエクスポートしています...",
+  "packageExportedToPath": "パッケージのエクスポート先: {path}",
+  "errorLoadingItems": "アイテムのロード中にエラーが発生しました: {error}",
+  "badgeEarnedWithName": "獲得したバッジ: {badgeName}!",
+  "badgeLostWithName": "バッジの紛失: {badgeName}",
+  "trainingSessionProgress": "トレーニングセッションの統計",
+  "total": "合計",
+  "lastNValue": "N = {value}",
+  "errorLoadingSettings": "設定の読み込みエラー: {error}",
+  "selectPackage": "パッケージの選択",
+  "noPackagesAvailable": "利用可能なパッケージはありません",
+  "possibleSolutions": "考えられる解決策",
+  "technicalDetails": "技術的な詳細",
+  "close": "近い",
+  "checkApiKey": "OpenAI APIキーを確認してください",
+  "ensureValidOpenAIKey": "API キーが有効でアクティブであることを確認してください",
+  "verifyKeyInSettings": "設定でキーを確認する",
+  "rateLimitExceeded": "API レート制限を超えました",
+  "waitAndRetry": "数分待ってからもう一度試してください",
+  "checkAccountQuota": "OpenAI アカウントの割り当てを確認する",
+  "invalidRequest": "無効なリクエスト形式です",
+  "tryReducingTextLength": "テキストの長さを短くしてみてください",
+  "checkTextFormat": "テキスト形式が正しいことを確認してください",
+  "checkInternetConnection": "インターネット接続を確認してください",
+  "retryInMoment": "しばらくしてから再試行してください",
+  "checkFirewall": "ファイアウォール設定を確認する",
+  "textMayBeTooShort": "テキストが短すぎる可能性があります",
+  "tryDifferentKnowledgeLevel": "別の知識レベルを試す",
+  "ensureTextInCorrectLanguage": "テキストが正しい言語であることを確認してください",
+  "requestTimedOut": "リクエストがタイムアウトしました",
+  "textMayBeTooLong": "テキストが長すぎる可能性があります",
+  "tryAgainOrReduceSize": "もう一度試すか、テキストサイズを小さくしてください",
+  "unexpectedError": "予期しないエラーが発生しました",
+  "checkErrorDetails": "以下のエラーの詳細を確認してください",
+  "tryAgainLater": "後でもう一度試してください",
+  "translationServiceFailed": "翻訳サービスが失敗しました",
+  "checkApiKeys": "API キーを確認する (DeepL、OpenAI)",
+  "retryImport": "インポートを再試行します",
+  "exampleGenerationFailed": "サンプルの生成に失敗しました",
+  "itemsStillImported": "アイテムはまだインポートされていました",
+  "canAddExamplesManually": "後で手動で例を追加できます",
+  "databaseError": "データベースエラーが発生しました",
+  "checkStorageSpace": "利用可能なストレージ容量を確認する",
+  "restartApp": "アプリを再起動してみてください",
+  "groupLabel": "グループ：",
+  "amendGroups": "修正する",
+  "exportItemsJson": "アイテムのエクスポート (JSON)",
+  "exportItemsJsonTooltip": "すべてのアイテムを JSON ファイルとしてエクスポート",
+  "noCategoriesInPackage": "このパッケージにはカテゴリが見つかりません",
+  "noItemsToExport": "エクスポートする項目が見つかりませんでした",
+  "itemsExportedSuccessfully": "{count} アイテムを次の場所に正常にエクスポートしました:\n{path}",
+  "@itemsExportedSuccessfully": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "errorExportingItems": "アイテムのエクスポート中にエラーが発生しました",
+  "languageMismatch": "言語の不一致",
+  "languageMismatchDescription": "JSON ファイル内の言語がパッケージの言語と一致しません。",
+  "packageLanguages": "パッケージ: {lang1} → {lang2}",
+  "@packageLanguages": {
+    "placeholders": {
+      "lang1": {
+        "type": "String"
+      },
+      "lang2": {
+        "type": "String"
+      }
+    }
+  },
+  "jsonFileLanguages": "JSON ファイル: {lang1} → {lang2}",
+  "@jsonFileLanguages": {
+    "placeholders": {
+      "lang1": {
+        "type": "String"
+      },
+      "lang2": {
+        "type": "String"
+      }
+    }
+  },
+  "continueImportQuestion": "それでもインポートを続行しますか?",
+  "continueImport": "インポートを続行する",
+  "pleaseSelectPackageGroup": "パッケージグループを選択してください",
+  "customIconLabel": "カスタム",
+  "defaultIconLabel": "デフォルト",
+  "icon2Label": "開いた本",
+  "icon3Label": "カラーブック",
+  "icon4Label": "会話",
+  "icon5Label": "卒業",
+  "icon6Label": "脳",
+  "icon7Label": "本の山",
+  "icon8Label": "フラッシュカード",
+  "icon9Label": "グローブ",
+  "icon10Label": "鉛筆",
+  "icon11Label": "トロフィー",
+  "icon12Label": "検索",
+  "customIconFile": "カスタムアイコン",
+  "importedIconFile": "インポートされたアイコン",
+  "unableToReadImageFile": "画像ファイルを読み取れません。有効な画像を選択してください。",
+  "iconDimensionsTooLarge": "アイコンの寸法が大きすぎます ({width}x{height})。許容される最大値は 512x512 ピクセルです。",
+  "@iconDimensionsTooLarge": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "iconFileTooLarge": "アイコンファイルが大きすぎます。最大サイズは1MBです。",
+  "failedToUploadIcon": "アイコンのアップロードに失敗しました: {error}",
+  "@failedToUploadIcon": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectValidLanguage": "リストから有効な言語を選択してください",
+  "status": "状態",
+  "addExample": "例を追加",
+  "noExamplesYet": "まだ例はありません。 +をクリックして追加します。",
+  "speakText": "テキストを読み上げる",
+  "removeCategory": "カテゴリの削除",
+  "removeCategoryConfirm": "カテゴリ「{categoryName}」をこのアイテムから削除しますか?",
+  "@removeCategoryConfirm": {
+    "placeholders": {
+      "categoryName": {
+        "type": "String"
+      }
+    }
+  },
+  "remove": "取り除く",
+  "extractFullItems": "完全なアイテムを抽出",
+  "pasteFromClipboard": "クリップボードから貼り付け",
+  "noItemsFoundOrAllDuplicates": "テキスト内にアイテムが見つからないか、すべてのアイテムがパッケージ内にすでに存在します",
+  "aboutLanguageRally": "ランゲージラリーについて",
+  "welcomeTitle": "🚀 ランゲージラリーへようこそ",
+  "welcomeSubtitle": "あらゆる熟練度レベルに合わせて厳選された、約 4,000 の単語、4,000 の表現、そして同数の例文を使って、言語学習の驚異的な力を解き放ちましょう。 AI を使用して自分のテキストから項目をインポートしたり、任意のトピックについて AI とチャットして、学習したい正確な単語、表現、例を生成したりできます。\n賢くて遊び心のある方法で語学スキルをレベルアップしましょう!",
+  "welcomeIntro": "実際に気になる部分を練習することで、効率的に語彙や表現を学びましょう。退屈なリストはありません。無駄な時間はありません。",
+  "sectionPlayYourGame": "🎮 自分のゲームをプレイする",
+  "sectionPlayYourGameDesc": "独自の語彙パッケージを作成します。マスターしたい単語や表現だけをトレーニングしてください。もうご存知ですか？マークされてスキップされます。",
+  "sectionAITeammate": "🤖 AI をチームメイトとして",
+  "sectionAITeammateDesc": "任意のテキストを貼り付けて、AI に次のことを実行させます。\n• 役立つ語彙を抽出する\n• 自分のレベルに合った表現を選ぶ\n• すぐにトレーニングできるパッケージを数秒で構築\n\nAI とチャット:\n• あなたのトピックに合わせて単語や表現を提案してもらいましょう\n• クリックしてサンプルを生成し、独自のパッケージに保存します。",
+  "sectionTrainSmart": "🔁 スマートにトレーニング",
+  "sectionTrainSmartDesc": "当社の微調整された繰り返しシステムは、効果的に記憶するために脳が必要とするときに正確に項目を表示します。最大限の進歩。最小限の努力。",
+  "sectionRealExamples": "🌍 実際の例。素晴らしい翻訳。",
+  "sectionRealExamplesDesc": "実際の使用例をご覧ください。 DeepL を介して高品質で翻訳します。発音を練習して自信を持って発音しましょう。",
+  "sectionTeachersWelcome": "👩‍🏫 先生方、ようこそ",
+  "sectionTeachersWelcomeDesc": "パッケージを作成 → アイテムをコピー＆ペーストするか、AI を使用してサンプルを抽出、翻訳、追加 → エクスポート → アップロード/送信 → 完了。生徒はそれをインポートして、すぐに練習を始めます。",
+  "sectionUnlockAI": "🔑 AI パワーを最大限に活用",
+  "sectionUnlockAIDesc": "高品質の翻訳と AI 機能を利用するには、次の手順を実行します。\n\n1. DeepL API キーを作成します\n   https://www.deepl.com/pro-api\n2. OpenAI API キーを作成します\n   https://platform.openai.com/api-keys\n3. 両方のキーを設定に貼り付けます\n\n少額の投資で、強力なプロ仕様の言語ツールが利用できるようになります。なぜそれを逃すのでしょうか?\n(最良の結果を得るには、有料 API アクセスを使用することをお勧めします。)",
+  "readyToStart": "ラリーを始める準備はできていますか? 🏁",
+  "welcomeDescription": "Language Rally は、総合的な言語学習のパートナーです。カスタム語彙パッケージを作成し、項目をカテゴリ別に整理し、インテリジェントな間隔をあけた反復システムでトレーニングします。",
+  "browseStore": "ストアを参照",
+  "featureInteractiveTraining": "インタラクティブなトレーニング",
+  "featureInteractiveTrainingDesc": "適応学習アルゴリズムを使って練習する",
+  "featureSmartOrganization": "スマートな組織",
+  "featureSmartOrganizationDesc": "語彙を分類してフィルタリングする",
+  "featureTrackProgress": "進捗状況を追跡する",
+  "featureTrackProgressDesc": "詳細な統計で学習を監視する",
+  "featureImportExport": "インポートとエクスポート",
+  "featureImportExportDesc": "パッケージを共有し、デバイス間で同期する",
+  "startAppTour": "アプリツアーを開始する",
+  "quickStartGuide": "クイックスタートガイド",
+  "tourStep1Title": "パッケージの作成またはインポート",
+  "tourStep1Desc": "新しい言語パッケージを作成することから始めるか、ファイルから既存の言語パッケージをインポートします。",
+  "tourStep2Title": "語彙項目を追加する",
+  "tourStep2Desc": "パッケージを参照し、例やカテゴリを含む単語、フレーズ、または表現を追加します。",
+  "tourStep3Title": "トレーニングの構成",
+  "tourStep3Desc": "練習する項目を選択し、難易度を設定して、学習体験をカスタマイズします。",
+  "tourStep4Title": "学習を始める",
+  "tourStep4Desc": "トレーニング セッションを開始し、項目を既知または不明としてマークして、進捗状況を追跡します。",
+  "tourStep5Title": "統計を確認する",
+  "tourStep5Desc": "詳細な統計と達成バッジで学習の進捗状況を確認します。",
+  "gotIt": "わかった！",
+  "appTourTitle": "ランゲージラリーへようこそ",
+  "appTourSubtitle": "賢く、遊び心があり、完全にパーソナライズされた言語学習のパートナーです。",
+  "tourPage1Title": "自分が望むものと必要なものを学び、実践する",
+  "tourPage1Desc": "当社の適応学習システムにより、完璧なタイミングで項目を復習できるようになり、記憶力を最大化し、労力を最小限に抑えることができます。\n\n組み込みの自動化機能を利用して学習します。\nすでに知っている単語に時間を無駄にするのはやめましょう。\n\n興味のある語彙や表現だけを練習してください。あなたの目標とレベルに合わせて完全にカスタマイズされた独自のアイテムを作成してトレーニングします。",
+  "tourPage2Title": "独自の言語パッケージを作成する",
+  "tourPage2Desc": "自分の興味や学習目標に合った、パーソナライズされた語彙コレクションを作成します。\n\nトピック、難易度、またはコンテキストごとに単語や表現を整理します。\n\n何をいつ学習するかを完全にコントロールできます。",
+  "tourPage3Title": "AIを活用したアイテムの作成",
+  "tourPage3Desc": "瞬く間に独自の学習パッケージを構築します。\n\n• 任意のテキストを貼り付けると、AI が関連する語彙を自動的に抽出します\n• 自分のレベルにぴったりの単語や表現を特定する\n• AI に翻訳してもらいましょう\n• AI にリアルタイムの例を検索させます\n\nAI とチャット:\n• あなたのトピックに合わせて単語や表現を提案してもらいましょう\n• クリックしてサンプルを生成し、独自のパッケージに保存します。\n• トレーニングの準備が整ったパッケージを迅速に作成する",
+  "tourPage4Title": "AI を活用した現実世界の例とプレミアムな翻訳",
+  "tourPage4Desc": "• 本物の使用例を即座に検索\n• 高品質の DeepL 統合により、単語、表現、全文を翻訳\n• 正確でコンテキストを認識した結果を取得する",
+  "tourPage5Title": "スマートなパッケージ構成",
+  "tourPage5Desc": "• 語彙をカスタム カテゴリに整理する\n• フィルタリングして特定のトピックに焦点を当てる\n• デバイス間でパッケージをインポートおよびエクスポートする\n• パッケージを他の人と簡単に共有",
+  "tourPage6Title": "発音をトレーニングする",
+  "tourPage6Desc": "インタラクティブな練習ツールを使用して発音をテストし、改善します。\n\n読むだけでなく話すことにも自信を持ちましょう。",
+  "tourPage7Title": "教師向け",
+  "tourPage7Desc": "数回クリックするだけで、生徒向けにすぐに使える語彙パッケージを作成できます。\n\nそれらをエクスポートしてクラスに送信し、インポートすると、すぐに各生徒のデバイスで練習できるようになります。\n\n単純。速い。効果的。",
+  "tourPage8Title": "高品質の AI サポートを利用可能",
+  "tourPage8Desc": "プレミアムな翻訳と高度な AI 機能を利用するには、次の手順を実行します。\n 1. 独自の DeepL API キーを作成する\n 2. 独自の OpenAI API キーを作成する\n 3. 両方のキーを設定セクションに貼り付けます。\n\nこれに必要な予算はわずか (数ドル) ですが、強力なプロ仕様の言語ツールにアクセスできます。\n注: 最良の結果を得るには、有料 API アクセスを使用することをお勧めします。費用はわずか数ドルです。\n\n🔑 DeepL API キー: https://www.deepl.com/pro-api\n\n🔑 OpenAI API キー: https://platform.openai.com/api-keys",
+  "previousPage": "前の",
+  "nextPage": "次",
+  "endTour": "ツアー終了",
+  "pageIndicator": "ページ {current} / {total}",
+  "@pageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "practicePronunciation": "発音の練習",
+  "pronunciationPractice": "発音の練習",
+  "startPractice": "練習を始める",
+  "listenToPronunciation": "発音を聞く",
+  "tapToRecord": "タップして録音する",
+  "recording": "録音中...",
+  "recorded": "録音済み",
+  "speakNow": "今すぐ話してください - マイクに近づいてはっきりと話してください",
+  "noSpeechDetected": "音声が検出されませんでした。もう一度試してください。",
+  "noTextRecognized": "録音では音声は認識されませんでした。マイクが機能していることを確認して、もう一度お試しください。",
+  "processingAudio": "AIで音声を処理中...",
+  "playbackRecording": "録音を再生する",
+  "playbackRecordingSubtitle": "AI が処理している間に録音を聞く",
+  "recordingTooShort": "録音が短すぎます。少なくとも 1 秒間話してください。",
+  "microphonePermissionRequired": "発音練習にはマイクの許可が必要です",
+  "speechRecognitionNotSupported": "このプラットフォームでは音声認識はサポートされていません。発音練習にはモバイルアプリ（Android/iOS）をご利用ください。",
+  "speechRecognitionUnavailable": "このデバイスでは音声認識は利用できません。",
+  "pronunciationAccuracy": "発音\n精度",
+  "excellent": "素晴らしい！",
+  "good": "良い",
+  "fair": "公平",
+  "needsImprovement": "改善が必要",
+  "tryAgain": "もう一度やり直してください",
+  "nextItem": "次の項目",
+  "endPractice": "練習終了",
+  "practiced": "練習した",
+  "windowsAudioTestPageTitle": "Windows オーディオ テスト (RTAudio)",
+  "configureWindowsAudio": "オーディオのテストと構成\nWindows での入力",
+  "configureWindowsAudioDescription": "ネイティブ Windows RTAudio ドライバーを使用してオーディオを録音、再生、転写する",
+  "audioTestTitle": "Windows オーディオ録音テスト",
+  "audioTestSubtitle": "RTAudio — ネイティブ Windows オーディオ録音",
+  "audioInputDevice": "オーディオ入力デバイス",
+  "selectMicrophone": "マイクの選択",
+  "refreshDevices": "デバイスをリフレッシュする",
+  "noAudioDevicesFound": "オーディオ入力デバイスが見つかりません",
+  "loadingAudioDevices": "オーディオデバイスを読み込んでいます...",
+  "recordingSettings": "録音設定",
+  "stereoRecording": "ステレオ録音",
+  "stereoChannels": "2チャンネル（ステレオ）",
+  "monoChannel": "1チャンネル（モノラル）",
+  "sampleRateLabel": "サンプルレート",
+  "nativeRateBadge": "ネイティブ",
+  "microphoneGainLabel": "マイクゲイン",
+  "gainHint": "1x = ブーストなし • 3x ≈ +9.5 dB • 10x ≈ +20 dB",
+  "tapToStartRec": "タップして録音を開始",
+  "tapToStopRec": "タップして録音を停止します",
+  "recordingCompleteLabel": "録音完了",
+  "tapMicToStop": "マイクをタップして停止します",
+  "playRecordingLabel": "再生録音",
+  "stopPlaybackLabel": "停止",
+  "whisperSectionTitle": "OpenAI ウィスパー文字起こし",
+  "whisperWavNote": "WAV (16 ビット PCM) は Whisper によってネイティブにサポートされており、変換は必要ありません。",
+  "sendToWhisperLabel": "ウィスパーに送信",
+  "transcribingLabel": "転記中...",
+  "transcriptionResultLabel": "文字起こし結果",
+  "transcriptionFailedLabel": "転写に失敗しました",
+  "debugInformationLabel": "情報",
+  "debugConsoleHint": "コンソールで詳細なログを確認してください",
+  "debugDevicesFound": "見つかったデバイス",
+  "debugSelectedDevice": "選択したデバイス",
+  "debugDeviceRateNative": "デバイスレート (ネイティブ)",
+  "debugRequestedRate": "要求レート",
+  "debugActualRate": "実際に使用されたレート",
+  "debugActualRateForced": "⚠強制",
+  "debugActualRateOk": "✓",
+  "debugRecordingMode": "録音モード",
+  "debugLastRecording": "最後の録音",
+  "debugFileSize": "ファイルサイズ",
+  "debugStereo": "ステレオ",
+  "debugMono": "単核症",
+  "recordingSavedSnack": "録音が保存されました",
+  "recordingTooShortSnack": "録音時間が短すぎます。少なくとも1秒以上録音してください。",
+  "recordingSmallSnack": "録音ファイルは非常に小さいです。録音に失敗している可能性があります。",
+  "noAudioDataSnack": "音声データが記録されていない",
+  "noDeviceSelectedSnack": "オーディオデバイスを選択してください",
+  "failedToInitRtAudio": "RTAudioの初期化に失敗しました",
+  "envelopeScoreLabel": "封筒",
+  "rhythmScoreLabel": "リズム",
+  "textScoreLabel": "文章",
+  "help": "ヘルプ",
+  "trainingHelpTitle": "トレーニングのヒント",
+  "trainingHelpText": "トレーニングをできるだけ効果的にするには、次の手順に従ってください。\n1. [カウンターをクリア] ボタンをクリックすると、このパッケージ内のすべてのアイテムが既知としてマークされます。\n2.「項目範囲」を「すべての項目」に設定します。\n3.「アイテムの順序」を「ランダム」に設定します。\n4. [表示言語] で母国語を選択します。\n5. トレーニングを開始し、不明な項目が約 20 ～ 30 個特定されるまで続けます。\n6. トレーニング設定に戻り、「項目の範囲」を「不明な項目のみ」に変更します。\n7. トレーニングを再開し、これまでに知らなかった項目をすべて学習するまで続けます。",
+  "trainingProTip": "プロのヒント: すべてのアイテムから始めます。後で、未知の部分のみに焦点を当てます。",
+  "onboardingWelcomeTitle": "ランゲージラリーへようこそ！",
+  "onboardingSetupSubtitle": "アプリをセットアップしましょう。",
+  "onboardingSelectUiLanguage": "インターフェース言語",
+  "onboardingUiLanguageNote": "これは後で「設定」→「UI 言語」で変更できます。",
+  "onboardingNext": "次",
+  "onboardingBack": "戻る",
+  "onboardingSelectPackagesTitle": "言語パッケージの選択",
+  "onboardingSelectPackagesSubtitle": "インポートする語彙パッケージを選択します。後でメイン メニュー ([パッケージの表示]) からいつでも追加できます。",
+  "onboardingAnalyzingPackages": "利用可能なパッケージを分析しています…",
+  "onboardingScanningPackagesProgress": "スキャン済み {scanned}/{total} • すでに DB {alreadyInDb} にあります",
+  "@onboardingScanningPackagesProgress": {
+    "placeholders": {
+      "scanned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "alreadyInDb": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingImportSelected": "選択したものをインポート",
+  "onboardingSkipImport": "スキップ",
+  "onboardingSelectAll": "すべて選択",
+  "onboardingDeselectAll": "すべての選択を解除",
+  "onboardingNPackages": "{count} パッケージ",
+  "@onboardingNPackages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingGetStarted": "始めましょう",
+  "onboardingImportCompleteTitle": "インポート完了！",
+  "importBuiltInPkg": "無料パッケージ",
+  "importBuiltInPkgTooltip": "無料のバンドル言語パッケージをインポートする",
+  "globalSearch": "グローバル検索",
+  "globalSearchTitle": "すべてのパッケージを検索",
+  "globalSearchSelectLanguage": "言語コードの選択",
+  "globalSearchEnterWord": "検索する単語",
+  "globalSearchEnterWordHint": "例えば\"der\"、\"order\" — 部分一致を検索します",
+  "globalSearchButton": "検索",
+  "globalSearchResults": "結果",
+  "globalSearchNoResults": "「{query}」に一致する結果はありませんでした",
+  "@globalSearchNoResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "globalSearchResultsCount": "{count} 件の結果が見つかりました",
+  "@globalSearchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "globalSearchSearching": "検索中…",
+  "globalSearchSelectLanguageFirst": "最初に言語コードを選択してください",
+  "globalSearchEnterTermFirst": "検索語を入力してください",
+  "globalSearchMatchInExamples": "例で見つかった",
+  "globalSearchViewItem": "ビュー",
+  "globalSearchGoToPackage": "パッケージに移動",
+  "globalSearchLoadingPackages": "パッケージをロード中…",
+  "globalSearchNoPackages": "言語パッケージがまだインストールされていません",
+  "globalSearchCancelSearch": "検索のキャンセル",
+  "globalSearchProgressOf": "{total} のパッケージ {current} を検索しています…",
+  "@globalSearchProgressOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "globalSearchCancelledMessage": "検索がキャンセルされました — これまでに {count} 件の結果が見つかりました",
+  "@globalSearchCancelledMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "storeTitle": "言語パッケージストア",
+  "storeRestorePurchases": "購入したものを復元する",
+  "storeRefresh": "リフレッシュ",
+  "storeSearchHint": "パッケージを検索…",
+  "storeNoPackagesMatchSearch": "検索に一致するパッケージはありません。",
+  "storeNoPackagesAvailable": "利用可能なパッケージはありません。",
+  "storeInstalledCount": "{installed} / {total} がインストールされています",
+  "@storeInstalledCount": {
+    "placeholders": {
+      "installed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "storeLoadErrorTitle": "ストアを読み込めませんでした。",
+  "storeIapNotAvailableMessage": "このプラットフォームではアプリ内購入は利用できません。パッケージを購入するには、当社の Web サイトにアクセスしてください。",
+  "storeOpenWebsite": "ウェブサイトを開く",
+  "storePurchaseSuccess": "{title} は正常にインストールされました。",
+  "@storePurchaseSuccess": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "storePurchaseCancelled": "購入はキャンセルされました。",
+  "storePurchaseAlreadyOwned": "{title} はすでにインストールされています。",
+  "@storePurchaseAlreadyOwned": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "storePurchaseError": "何か問題が発生しました。もう一度試してください。",
+  "storePurchasesRestored": "購入が復元されました",
+  "storeAllLevels": "すべてのレベル",
+  "storeAllGroups": "すべての言語",
+  "storeFilterLevel": "レベル",
+  "storeFilterLanguage": "言語",
+  "storeDownload": "ダウンロード",
+  "storeBuy": "買う",
+  "storeInstalledLabel": "インストール済み",
+  "storeDownloading": "ダウンロード中…",
+  "storeRetry": "リトライ",
+  "storeIapAndroidOnly": "Android と iOS でのみ購入できます。",
+  "storeDismiss": "却下する",
+  "storeAddToCart": "カートに追加",
+  "storeRemoveFromCart": "取り除く",
+  "storeCartTitle": "ショッピングカート",
+  "storeCartEmpty": "カートは空です",
+  "storeCartClearAll": "すべてクリア",
+  "storeCartCheckout": "チェックアウト",
+  "storeCartItemCount": "{count, plural, =1{1 item} other{{count} items}}",
+  "@storeCartItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "storePackageDuplicateTitle": "パッケージはすでに存在します",
+  "storePackageDuplicateMessage": "パッケージ「{packageName}」はグループ「{groupName}」にすでに存在します。上書きしますか?既存のパッケージとそのすべてのトレーニングの進行状況は完全に削除されます。",
+  "@storePackageDuplicateMessage": {
+    "placeholders": {
+      "packageName": {
+        "type": "String"
+      },
+      "groupName": {
+        "type": "String"
+      }
+    }
+  },
+  "storePackageDuplicateOverwrite": "上書き",
+  "storePackageDuplicateKeep": "存在し続ける",
+  "splashSettingUpPackages": "パッケージのセットアップ: {current} / {total}",
+  "@splashSettingUpPackages": {
+    "description": "Splash screen progress label shown while seed packages are being imported",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "splashThisHappensOnce": "これは一度だけ起こります。",
+  "@splashThisHappensOnce": {
+    "description": "Subtitle shown below the progress bar on the splash screen"
+  },
+  "splashLoading": "読み込み中…",
+  "@splashLoading": {
+    "description": "Indeterminate loading label on the splash screen"
+  },
+  "aiItemCreator": "AIチャットの達人",
+  "aiItemCreatorAppBarHint": "AIとのチャットにより単語や表現を収集・保存",
+  "chatWithAI": "AIとチャットする",
+  "enterYourPrompt": "プロンプトを入力してください...",
+  "aiItemCreatorPromptHint": "トピックについて説明すると、AI コーチが質問し、役立つ語彙を提案し、あなたの知識をテストします。例: 知識レベル B2 の旅行に関する危険を収集し、実践するのを手伝ってください。",
+  "send": "送信",
+  "sending": "送信中...",
+  "aiResponse": "AIの対応",
+  "itemInputs": "項目入力",
+  "aiItemCreatorBothItemsRequired": "保存する前に両方の言語フィールドに入力してください。",
+  "aiItemCreatorDuplicateItemMessage": "同じテキストのペアを持つアイテムがこのパッケージ内にすでに存在します。",
+  "language1": "言語 1",
+  "language2": "言語 2",
+  "translateLang1ToLang2": "ラング 2 への翻訳",
+  "translateLang2ToLang1": "ラング 1 への翻訳",
+  "translateToLanguageCode": "{languageCode} に翻訳",
+  "@translateToLanguageCode": {
+    "placeholders": {
+      "languageCode": {
+        "type": "String"
+      }
+    }
+  },
+  "example": "例",
+  "generating": "生成中...",
+  "flags": "フラグ",
+  "favorite": "お気に入り",
+  "saveItems": "保存",
+  "saving": "保存中...",
+  "clearItems": "クリアアイテムのみ",
+  "clearAll": "すべてのフィールドをクリア",
+  "itemSavedSuccessfully": "アイテムは正常に保存されました",
+  "promptCannotBeEmpty": "プロンプトを空にすることはできません",
+  "enterAtLeastOneItem": "少なくとも 1 つの項目を入力してください",
+  "selectPackageFirst": "最初にパッケージを選択してください",
+  "deeplKeyRequired": "翻訳にはDeepL APIキーが必要です",
+  "noNonPurchasedPackagesAvailable": "未購入のパッケージは利用できません",
+  "packageSelectionRemembered": "パッケージの選択が保存されました",
+  "aiItemCreatorOpenAiKeyNotConfiguredDetailed": "OpenAI API キーが設定されていません。 API キーを設定に追加してください。",
+  "aiItemCreatorOpenAiKeyNotConfigured": "OpenAI API キーが設定されていません。",
+  "aiItemCreatorProcessingComplete": "処理が完了しました",
+  "aiItemCreatorTranslationComingSoon": "翻訳機能も近日公開予定",
+  "aiItemCreatorDefaultCategoryName": "AI が作成",
+  "aiItemCreatorStartNewConversation": "新しい会話を開始する",
+  "aiItemCreatorChatHint": "トピックについて説明すると、AI コーチが質問し、役立つ語彙を提案し、あなたの知識をテストします。",
+  "aiItemCreatorConversation": "会話",
+  "aiItemCreatorYou": "あなた",
+  "aiItemCreatorCoach": "AIコーチ",
+  "aiItemCreatorAiSuggestions": "AIによる提案",
+  "aiItemCreatorTapChipToFill": "チップをタップしてアイテムフィールドを埋め、自動翻訳します。",
+  "aiItemCreatorNoSuggestedItems": "まだ言葉も表現もありません。",
+  "aiItemCreatorNextSteps": "継続方法",
+  "aiItemCreatorNoNextSteps": "継続の提案はまだありません。",
+  "aiItemCreatorModelCostTip": "プロのヒント: 新しいモデルは高価ですが、古いモデルやターボ モデルは安価で、大幅に高速になります。",
+  "aiItemCreatorSelectPackageDialogTitle": "言語パッケージを選択してください",
+  "aiItemCreatorSelectPackageDialogMessage": "このセッションに使用する言語パッケージを選択します。最後の選択は事前に選択されています。",
+  "aiItemCreatorMissingApiKeysWarning": "API キーがありません: {keys}。続行できますが、AI およびプレミアム翻訳機能が制限される場合があります。",
+  "@aiItemCreatorMissingApiKeysWarning": {
+    "placeholders": {
+      "keys": {
+        "type": "String"
+      }
+    }
+  },
+  "about": "について",
+  "aboutWebsite": "Webサイト",
+  "aboutSummaryVideo": "概要動画",
+  "aboutSupportEmail": "サポートメールアドレス",
+  "aboutWebsiteUrl": "https://sites.google.com/view/ language-rally",
+  "aboutSummaryVideoUrl": "https://www.youtube.com/watch?v=64Pl9iNF88c",
+  "aboutSupportEmailAddress": "languagerally.support@gmail.com",
+  "aboutVersionWithValue": "バージョン: {version}",
+  "@aboutVersionWithValue": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutCouldNotOpen": "開けませんでした: {uri}",
+  "@aboutCouldNotOpen": {
+    "placeholders": {
+      "uri": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutWelcomeSplashNotFound": "ウェルカム スプラッシュ画像が見つかりません",
+  "chooseTheme": "テーマの選択",
+  "darkMode": "ダークモード",
+  "toggleBetweenLightAndDark": "明暗を切り替えます",
+  "colorTheme": "カラーテーマ:",
+  "toggleBrightness": "明るさを切り替えます",
+  "changeTheme": "テーマの変更",
+  "managePackageGroups": "パッケージグループの管理",
+  "noPackageGroups": "パッケージグループがありません",
+  "createFirstPackageGroup": "最初のパッケージ グループを作成する",
+  "addGroup": "グループの追加",
+  "addPackageGroup": "パッケージグループの追加",
+  "editPackageGroup": "パッケージグループの編集",
+  "groupName": "グループ名",
+  "enterGroupName": "グループ名を入力してください",
+  "groupNameRequired": "グループ名は必​​須です",
+  "duplicateGroupName": "重複した名前",
+  "groupNameAlreadyExists": "「{name}」という名前のグループはすでに存在します。",
+  "@groupNameAlreadyExists": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupCreatedSuccessfully": "グループ「{name}」が正常に作成されました",
+  "@groupCreatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateGroup": "グループの作成に失敗しました: {error}",
+  "@failedToCreateGroup": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "groupRenamedTo": "グループ名が「{name}」に変更されました",
+  "@groupRenamedTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdateGroup": "グループを更新できませんでした: {error}",
+  "@failedToUpdateGroup": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteGroup": "グループの削除",
+  "deleteGroupConfirm": "グループ「{name}」を削除してもよろしいですか?\n\nこの操作は元に戻すことができません。",
+  "@deleteGroupConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cannotDeleteGroup": "削除できません",
+  "groupHasPackages": "このグループにはまだ {count} パッケージがあります。まず移動または削除してください。",
+  "@groupHasPackages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupDeleted": "グループ「{name}」が削除されました",
+  "@groupDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteGroup": "グループの削除に失敗しました: {error}",
+  "@failedToDeleteGroup": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "cannotDeleteHasPackagesTooltip": "削除できません（パッケージあり）",
+  "nPackages": "{count, plural, =1{1 package} other{{count} packages}}",
+  "@nPackages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "manageGroups": "グループの管理",
+  "featureLangPower": "言語力",
+  "featureAiIntegration": "AIの統合",
+  "featureAdaptivePractice": "適応的な練習",
+  "featureMasterAccent": "マスターアクセント",
+  "allBadgesEarned": "🎉 バッジをすべて獲得しました!あなたはマスターです!",
+  "nextBadgeLabel": "次へ: {name}",
+  "@nextBadgeLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pointsToGo": "あと{percent}%",
+  "@pointsToGo": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "progressPercent": "{percent}% の進捗状況",
+  "@progressPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "errorTogglingFavourite": "お気に入りの切り替えエラー: {error}",
+  "@errorTogglingFavourite": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorTogglingImportant": "重要な切り替えエラー: {error}",
+  "@errorTogglingImportant": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryAdded": "カテゴリ「{name}」を追加しました",
+  "@categoryAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errorAddingCategory": "カテゴリ追加エラー: {error}",
+  "@errorAddingCategory": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryRemoved": "カテゴリ「{name}」が削除されました",
+  "@categoryRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errorRemovingCategory": "カテゴリの削除中にエラーが発生しました: {error}",
+  "@errorRemovingCategory": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenUrl": "URLを開けませんでした: {url}",
+  "@couldNotOpenUrl": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningUrl": "URL を開くときにエラーが発生しました: {error}",
+  "@errorOpeningUrl": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectLanguage": "言語を選択してください",
+  "add": "追加",
+  "speak": "話す",
+  "recordingFailedToStart": "録音を開始できませんでした!\n\n確認してください:\n1.マイクが接続されています\n2. マイクがデフォルトのデバイスとして設定されています\n3. 他のアプリがマイクを使用していない",
+  "recordingFailedNoAudioFile": "録音に失敗しました - 音声ファイルは作成されませんでした。\n\n考えられる原因:\n1.マイクが接続されていません\n2. 音声入力が検出されませんでした\n3. Windows オーディオ設定の問題",
+  "errorStartingRecordingDetails": "記録開始エラー: {error}",
+  "@errorStartingRecordingDetails": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "openaiEmptyResponse": "選択した AI モデルは空の応答を返しました",
+  "tryDifferentModel": "モデルセレクターから別のモデルを選択してみてください",
+  "modelMayNotBeSupported": "このモデルはサポートされていない、またはお使いのアカウントでは利用できない可能性があります",
+  "reduceTextOrRetry": "テキストの長さを減らすか、もう一度試してください",
+  "openaiNullContent": "選択した AI モデルはコンテンツを返しませんでした",
+  "modelUnsupportedParameter": "選択したモデルは必要な API パラメータをサポートしていません"
+}

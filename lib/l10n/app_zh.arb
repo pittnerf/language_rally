@@ -1,0 +1,1190 @@
+{
+  "helloWorld": "你好世界！",
+  "welcome": "欢迎参加语言拉力赛",
+  "appTitle": "语言拉力赛",
+  "createPackage": "创建包",
+  "editPackage": "编辑包",
+  "packageDetails": "套餐详情",
+  "packageName": "封装名称",
+  "packageNameHint": "例如，西班牙语基础知识、德语基础知识",
+  "languageCode1": "源语言代码",
+  "languageName1": "源语言名称",
+  "languageCode2": "目标语言代码",
+  "languageName2": "目标语言名称",
+  "description": "描述",
+  "descriptionHint": "该语言包的简要说明",
+  "authorName": "作者姓名",
+  "authorEmail": "作者电子邮件",
+  "authorWebpage": "作者网页",
+  "version": "版本",
+  "items": "项目",
+  "packageIcon": "包图标",
+  "packageGroup": "套餐组",
+  "selectIcon": "选择图标",
+  "defaultIcon": "默认图标",
+  "customIcon": "自定义图标",
+  "upload": "上传图标",
+  "uploadCustomIcon": "上传自定义图标（最大 512x512，1MB）",
+  "customIconUploaded": "自定义图标上传成功",
+  "save": "节省",
+  "edit": "编辑",
+  "cancel": "取消",
+  "delete": "删除",
+  "confirmDelete": "您确定要删除这个包吗？",
+  "packageSaved": "包保存成功",
+  "packageDeleted": "包删除成功",
+  "errorSavingPackage": "保存包时出错",
+  "errorDeletingPackage": "删除包时出错",
+  "fieldRequired": "此字段是必需的",
+  "invalidEmail": "电子邮件地址无效",
+  "readOnlyPackage": "该包是只读的，无法编辑",
+  "purchasedPackage": "已购买的套餐无法编辑",
+  "badges": "徽章",
+  "noBadges": "尚未获得徽章",
+  "selectLanguageCode": "选择语言代码",
+  "typeToSearchLanguages": "输入搜索语言...",
+  "search": "搜索...",
+  "clearCounters": "清除计数器",
+  "confirmClearCounters": "您确定要清除此包的所有培训计数器吗？这将重置“不知道”计数器和训练统计数据。",
+  "clear": "清除",
+  "countersCleared": "计数器清零成功",
+  "errorClearingCounters": "清除计数器时出错",
+  "deleteAll": "删除包",
+  "confirmDeleteAllData": "您确定要删除此包及其所有数据吗？这将永久删除所有类别、项目和培训统计数据。此操作无法撤消！",
+  "allDataDeleted": "包和所有数据已成功删除",
+  "exportPackage": "出口包装",
+  "selectExportLocation": "选择导出位置",
+  "packageExported": "包导出成功",
+  "errorExportingPackage": "导出包时出错",
+  "importItems": "导入项目 (JSON)",
+  "importItemsDialogTitle": "导入项目 (JSON)",
+  "importItemsFromLocalJson": "从本地 JSON 文件导入",
+  "enterItemsUrl": "项目 JSON URL (https://...)",
+  "downloadingItems": "正在下载项目...",
+  "selectImportFile": "选择导入文件",
+  "importFormat": "导入格式",
+  "importFormatDescription": "从文本文件导入项目。每行应包含以下格式的项目：",
+  "importResults": "导入结果",
+  "successfullyImported": "导入成功",
+  "failedToImport": "导入失败",
+  "error": "错误",
+  "ok": "好的",
+  "importPackage": "导入包",
+  "importPackageTooltip": "从 ZIP 文件或 URL 导入包",
+  "importPackageDialogTitle": "导入语言包",
+  "importFromLocalFile": "从本地文件导入",
+  "importFromUrl": "从 URL 导入",
+  "enterPackageUrl": "包 URL (https://...)",
+  "downloadingPackage": "正在下载包...",
+  "downloadFailed": "下载失败。请检查 URL 和您的互联网连接。",
+  "invalidUrl": "请输入有效的 http:// 或 https:// URL。",
+  "orLabel": "或者",
+  "selectPackageZipFile": "选择包 ZIP 文件",
+  "couldNotAccessFile": "无法访问所选文件。",
+  "importingPackage": "正在导入包...",
+  "packageImportedSuccessfully": "包导入成功！",
+  "packageImportedWithItems": "包导入成功！ （{count} 项）",
+  "packageImportedWithGroup": "包导入到“{groupName}”组！ （{count} 项）",
+  "importError": "导入错误",
+  "failedToImportPackage": "导入包失败",
+  "packageAlreadyExists": "包已存在",
+  "packageExistsMessage": "“{groupName}”组中已存在具有相同语言对、描述、作者信息和版本的包。您仍然想将其作为新包导入吗？",
+  "importAsNew": "无论如何导入",
+  "zipFileNotFound": "未找到 ZIP 文件",
+  "invalidPackageZip": "包 ZIP 无效：缺少 package_data.json",
+  "invalidPackageFormat": "包文件格式无效",
+  "languagePackages": "语言包",
+  "loadingPackages": "正在加载包...",
+  "tapAndHoldToReorder": "点击并按住可重新排序卡片",
+  "tapAndHoldToReorderList": "点击并按住 ≡ 重新排序 • 点击 ⋮ 切换紧凑视图",
+  "noPackagesYet": "还没有包裹",
+  "createFirstPackage": "创建您的第一个语言包",
+  "versionLabel": "版本",
+  "purchased": "已购买",
+  "compactView": "袖珍的",
+  "expand": "扩张",
+  "allCategories": "所有类别",
+  "categoriesInPackage": "此包中的类别",
+  "categories": "类别",
+  "testInterFonts": "测试 Inter 字体",
+  "viewPackages": "查看套餐",
+  "simplifiedPackageView": "包装清单",
+  "createNewPackage": "创建新包",
+  "generateTestData": "生成测试数据",
+  "designSystemShowcase": "设计系统展示",
+  "badgeEarned": "徽章已获得！",
+  "achievement": "成就",
+  "awesome": "惊人的！",
+  "importFormatNotes": "笔记：",
+  "importFormatLine1": "• 每行代表一项",
+  "importFormatLine2": "• 字段由| 分隔。",
+  "importFormatLine3": "• 类别由; 分隔。",
+  "importFormatLine4": "• 最后|是可选的",
+  "importFormatLine5": "• 空行被忽略",
+  "importFormatLine6": "• 跳过重复项",
+  "importFormatNewDescription": "从文本文件导入项目。每行应包含一个项目，其字段由 --- 分隔",
+  "importFormatNewLine1": "• 主分隔符：---",
+  "importFormatNewLine2": "• L1=<text> - 语言 1 主要文本（如果缺少 L2，则需要）",
+  "importFormatNewLine3": "• L2=<text> - 语言 2 主要文本（如果缺少 L1，则需要）",
+  "importFormatNewLine4": "• L1pre=<文本> - 语言 1 前缀（可选）",
+  "importFormatNewLine5": "• L1post=<文本> - 语言 1 后缀（可选）",
+  "importFormatNewLine6": "• L2pre=<文本> - 语言 2 前缀（可选）",
+  "importFormatNewLine7": "• L2post=<文本> - 语言 2 后缀（可选）",
+  "importFormatNewLine8": "• EX=<L1 文本>:::<L2 文本> - 示例（可选，可以是多个）",
+  "importFormatNewLine9": "• CAT=<cat1>:::<cat2>:::<cat3> - 类别（可选）",
+  "importFormatNewLine10": "• 必须至少存在L1= 或L2= 之一",
+  "importFormatNewLine11": "• 空行被忽略",
+  "importFormatNewLine12": "• 跳过重复项",
+  "invalidImportLine": "无效行",
+  "missingRequiredFields": "缺少“L1=”和迷幻的“L2=”",
+  "unknownField": "未知字段前缀",
+  "andMore": "...以及 {count} 更多",
+  "browseItems": "浏览商品",
+  "itemDetails": "细节",
+  "filterItems": "过滤项目",
+  "searchLanguage1": "在 {language} 中搜索",
+  "searchLanguage2": "在 {language} 中搜索",
+  "caseSensitive": "区分大小写",
+  "knownStatus": "已知状态",
+  "filterStatusAll": "全部",
+  "filterStatusKnown": "已知的",
+  "filterStatusUnknown": "未知",
+  "allItems": "所有项目",
+  "itemsIKnew": "我所知道的项目",
+  "itemsIDidNotKnow": "我不知道的项目",
+  "known": "已知",
+  "unknown": "未知",
+  "important": "重要的",
+  "favourite": "最喜欢的",
+  "badge": "徽章",
+  "position": "位置",
+  "stepsUntilLearned": "直到学会为止的步骤",
+  "examples": "示例",
+  "noExamples": "没有可用的示例",
+  "pronounce": "发音",
+  "ttsError": "文本转语音不可用",
+  "noItemsFound": "没有找到物品",
+  "noItemsInPackage": "该包裹中还没有物品",
+  "addItem": "添加项目",
+  "emptyPackageHint": "手动添加物品或使用AI快速导入物品",
+  "noItemsToTrain": "当前设置没有可用于练习的项目",
+  "clearFilters": "清除",
+  "itemCount": "{count} 项目",
+  "filteredItemCount": "{filtered} 项（共 {total} 项）",
+  "trainingRally": "训练拉力赛",
+  "startTraining": "开始训练",
+  "trainingComingSoon": "训练集会 - 即将推出！",
+  "aiServiceNotConfigured": "AI服务未配置。请添加您的 OpenAI API 密钥。",
+  "pleaseEnterTextInLanguageFirst": "请先在 {language} 中输入文字",
+  "translationCompletedSuccessfully": "使用 {service} 成功完成翻译！",
+  "translationFailed": "翻译失败",
+  "addedExamplesSuccessfully": "已成功添加 {count} 示例！",
+  "failedToGenerateExamples": "无法生成示例",
+  "selectExamplesToAdd": "选择要添加的示例",
+  "selectWhichExamples": "选择要添加到此项目的示例：",
+  "addSelected": "添加所选内容",
+  "pleaseSelectAtLeastOne": "请至少选择一个示例",
+  "addNewItem": "添加新项目",
+  "editItem": "编辑项目",
+  "deleteItem": "删除项目",
+  "confirmDeleteItem": "您确定要删除该项目吗？",
+  "thisActionCannotBeUndone": "此操作无法撤消。",
+  "itemDeleted": "项目已删除",
+  "errorDeletingItem": "删除项目时出错",
+  "errorSavingItem": "保存项目时出错",
+  "itemSaved": "项目更新成功",
+  "itemCreated": "项目创建成功",
+  "preTextOptional": "前置文本（可选）",
+  "mainText": "正文",
+  "postTextOptional": "后文（可选）",
+  "forExampleToForVerbs": "例如，动词“to”",
+  "additionalContext": "额外的背景信息",
+  "translate": "翻译",
+  "translateFromTo": "翻译 {from} → {to}",
+  "aiExampleGeneration": "人工智能示例生成",
+  "aiExampleSearch": "人工智能示例搜索",
+  "searchExamplesOnInternet": "使用 AI 在互联网上搜索“{text}”的例句",
+  "generateExampleSentences": "根据{language}中的正文生成例句",
+  "voiceInput": "语音输入",
+  "settings": "设置",
+  "uiLanguage": "用户界面语言",
+  "uiLanguageDescription": "应用程序界面语言",
+  "uiLanguageHelper": "选择菜单、按钮和标签的语言",
+  "userLanguage": "用户语言",
+  "userLanguageDescription": "您创建新语言包的首选母语",
+  "apiKeys": "API 密钥",
+  "deeplApiKey": "DeepL API 密钥",
+  "deeplApiKeyDescription": "编辑语言项目时获得优质翻译质量。请参阅 https://www.deepl.com/pro-api",
+  "openaiApiKey": "OpenAI API 密钥",
+  "openaiApiKeyDescription": "例如，编辑语言项目时使用 AI 生成。请参阅 https://platform.openai.com/api-keys",
+  "enterApiKey": "输入 API 密钥",
+  "optional": "选修的",
+  "required": "必需的",
+  "settingsSaved": "设置保存成功",
+  "errorSavingSettings": "保存设置时出错",
+  "usingGoogleTranslate": "使用免费的谷歌翻译",
+  "usingDeepL": "使用 DeepL（高级）",
+  "noTranslationReceivedFromGoogle": "没有收到来自 Google 的翻译",
+  "googleTranslationFailed": "谷歌翻译失败",
+  "googleTranslationError": "谷歌翻译错误",
+  "noTranslationReceivedFromDeepL": "未收到 DeepL 的翻译",
+  "invalidDeepLApiKey": "DeepL API 密钥无效",
+  "deeplTranslationQuotaExceeded": "DeepL 翻译配额超出",
+  "deeplTranslationFailed": "DeepL 翻译失败",
+  "deeplTranslationError": "DeepL 翻译错误",
+  "invalidApiKeyConfigureOpenAI": "API 密钥无效。请配置您的 OpenAI API 密钥。",
+  "apiRateLimitExceeded": "超出 API 速率限制。请稍后重试。",
+  "aiRequestFailed": "AI请求失败",
+  "failedToParseAiResponse": "无法解析 AI 响应。请再试一次。",
+  "aiGenerationError": "AI生成错误",
+  "voiceInputPlaceholder": "语音输入将使用speech_to_text包来实现",
+  "improveQualityWithApiKeys": "💡 提示：通过在应用程序设置中添加 DeepL 和 OpenAI API 密钥，可以显着提高翻译和示例搜索的质量。",
+  "noApiKeyFallbackMessage": "如果没有 API 密钥，则提供基本翻译和有限示例。为了获得最佳结果，请在“设置”中配置您的 API 密钥。",
+  "listeningForSpeech": "正在听……现在说话",
+  "speechRecognitionNotAvailable": "此设备不支持语音识别",
+  "speechRecognitionPermissionDenied": "语音识别权限被拒绝",
+  "speechRecognitionError": "语音识别错误",
+  "tapToSpeak": "点击麦克风即可说话",
+  "tapToStop": "点击停止录音",
+  "speechNotRecognized": "没有语音被识别。请再试一次。",
+  "usingWhisperApiSlower": "使用云AI进行语音识别（可能会慢一些）",
+  "languageNotSupportedAddApiKey": "本机不支持语言 {languageCode}。在“设置”中添加 OpenAI API 密钥，以实现 AI 驱动的语音识别。",
+  "@languageNotSupportedAddApiKey": {
+    "placeholders": {
+      "languageCode": {
+        "type": "String"
+      }
+    }
+  },
+  "recordingTapToStop": "正在录音...再次点击即可停止",
+  "speakClearlyKeepRecording": "说清楚。记录至少 1 秒。",
+  "pleaseRecordLonger": "请讲话至少 1 秒，然后点击停止。",
+  "errorStartingRecording": "开始录制时出错",
+  "noAudioRecorded": "没有录制任何音频",
+  "errorTranscribing": "转录音频时出错",
+  "trainingSettings": "训练设置",
+  "trainingPresetTitle": "快速设置",
+  "trainingPresetHint": "选择一个预设，下面的设置将自动配置。",
+  "trainingPresetComboLabel": "预设",
+  "trainingPresetAllExamplesForeignLanguage": "所有示例，外语",
+  "trainingPresetAllExamplesRandomLanguage": "所有示例，随机语言",
+  "trainingPresetFavouriteItemsForeignLanguage": "最喜欢的物品，外语",
+  "trainingPresetFavouriteItemsRandomLanguage": "最喜欢的项目，随机语言",
+  "trainingPresetImportantItemsForeignLanguage": "重要事项，外语",
+  "trainingPresetImportantItemsRandomLanguage": "重要事项、随机语言",
+  "trainingPresetRandomItemsRandomLanguage": "随机物品，随机语言",
+  "trainingPresetUnknownItemsForeignLanguage": "未知项目，外语",
+  "trainingPresetUnknownItemsRandomLanguage": "未知项目、随机语言",
+  "trainingPresetAppliedTapStart": "应用预设。点击“{actionLabel}”开始。",
+  "trainingPresetSelectPackageFirst": "请先选择套餐。",
+  "@trainingPresetAppliedTapStart": {
+    "placeholders": {
+      "actionLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "itemScope": "项目范围",
+  "lastNItems": "最后 N 项",
+  "onlyUnknown": "只有未知的物品",
+  "onlyImportant": "仅重要项目",
+  "onlyFavourite": "只收藏最喜欢的物品",
+  "numberOfItems": "商品数量",
+  "itemOrder": "商品订单",
+  "randomOrder": "随机顺序",
+  "sequentialOrder": "顺序",
+  "itemType": "项目类型",
+  "dictionaryItems": "词典项目",
+  "examplesType": "示例",
+  "displayLanguage": "显示语言",
+  "motherTongue": "母语",
+  "targetLanguage": "目标语言",
+  "randomLanguage": "随机的",
+  "categoryFilter": "类别过滤器",
+  "categoryFilterHint": "选择要包含的类别（空=所有类别）",
+  "noCategories": "没有可用的类别",
+  "dontKnowThreshold": "不知道门槛",
+  "dontKnowThresholdHint": "在特殊处理之前需要将项目标记为“不知道”的次数",
+  "startTrainingRally": "开始训练拉力赛",
+  "clearTrainingSettings": "清除设置",
+  "confirmClearTrainingSettings": "您确定要将所有训练设置重置为默认值吗？",
+  "trainingSettingsCleared": "训练设置已被清除",
+  "startingTraining": "开始训练...",
+  "noMoreItemsToDisplay": "根据您的过滤器设置，没有可显示的项目。",
+  "noItems": "没有商品",
+  "trainingComplete": "培训完成",
+  "allItemsCompleted": "恭喜！您已完成本次培训课程中的所有项目。",
+  "closeTraining": "近距离训练",
+  "confirmCloseTraining": "您确定要结束培训吗？您的进度已保存。",
+  "question": "问题",
+  "answer": "回答",
+  "iKnow": "我知道",
+  "iDontKnow": "我不知道",
+  "previousItem": "上一个项目",
+  "iDidNotKnowEither": "我毕竟不知道",
+  "exportBeforeDelete": "先导出再删除？",
+  "aiTextAnalysis": "使用 AI 从文本/列表中提取项目",
+  "aiTextAnalysisImport": "使用 AI 文本分析工具从文本或列表中提取项目",
+  "knowledgeLevel": "知识水平",
+  "a1Beginner": "A1 - 初级",
+  "a2Elementary": "A2 - 初级",
+  "b1Intermediate": "B1 - 中级",
+  "b2UpperIntermediate": "B2 - 中高级",
+  "c1Advanced": "C1 - 高级",
+  "c2Proficient": "C2 - 精通",
+  "pasteTextHere": "将您的文字粘贴到此处...",
+  "extractWords": "提取单词",
+  "extractExpressions": "提取表达式",
+  "maxItems": "最大新商品数",
+  "maxItemsHint": "留空则无限制",
+  "generateExamples": "生成示例",
+  "categoryName": "类别名称",
+  "categoryNameHint": "进口商品类别名称",
+  "analyzeText": "分析文本",
+  "configureAnalysis": "配置要提取的项目",
+  "openaiModel": "人工智能模型",
+  "openaiModelDescription": "选择ChatGPT型号",
+  "modelGpt55": "GPT-5.5",
+  "modelGpt55Pro": "GPT-5.5专业版",
+  "modelGpt54": "GPT-5.4",
+  "modelGpt54Pro": "GPT-5.4 专业版",
+  "modelGpt54Mini": "GPT-5.4迷你型",
+  "modelGpt5Mini": "GPT-5迷你型",
+  "modelGpt41": "GPT-4.1",
+  "modelGpt55Desc": "质量与速度平衡的最新旗舰产品，适合一般用途",
+  "modelGpt55ProDesc": "最高端的 GPT-5.5 变体，具有最强的推理能力和质量",
+  "modelGpt54Desc": "强通用型GPT-5代型号",
+  "modelGpt54ProDesc": "适用于高要求任务的高性能 GPT-5.4 变体",
+  "modelGpt54MiniDesc": "更小、更快的 GPT-5.4 变体，适用于成本更低的日常任务",
+  "modelGpt5MiniDesc": "紧凑型 GPT-5 系列型号针对速度和成本进行了优化",
+  "modelGpt41Desc": "可靠的 GPT-4.1 选项，具有兼容性和稳定的质量",
+  "modelGpt4o": "GPT-4o",
+  "modelGpt35Turbo": "GPT-3.5 Turbo（传统型，预算型）",
+  "modelGpt35Turbo16k": "GPT-3.5涡轮16K",
+  "modelGpt4": "GPT-4",
+  "modelGpt4Turbo": "GPT-4 Turbo（旧版）",
+  "modelGpt4oDesc": "最佳通用选择；快速、多式联运、质量过硬",
+  "modelGpt35TurboDesc": "传统的低成本选项；对于更简单的任务和成本敏感的使用很有用",
+  "modelGpt35Turbo16kDesc": "与 GPT-3.5 相同，但 16K 令牌上下文窗口",
+  "modelGpt4Desc": "推理质量高；通常更慢且更昂贵",
+  "modelGpt4TurboDesc": "旧版 GPT-4 系列选项；当您想要更旧的更便宜的替代品时仍然有用",
+  "analyzing": "正在分析...",
+  "languageDetected": "检测到语言",
+  "itemsFound": "找到的物品",
+  "selectItemsToImport": "选择要导入的项目",
+  "selectAll": "选择全部",
+  "deselectAll": "取消全选",
+  "importSelected": "导入所选内容",
+  "importing": "输入...",
+  "itemsImported": "项目导入成功",
+  "noItemsSelected": "没有选择任何项目",
+  "textCannotBeEmpty": "文字不能为空",
+  "selectAtLeastOneType": "选择至少一种类型（单词或表达方式）",
+  "languageNotMatching": "检测到的语言与包中的任何语言都不匹配",
+  "openaiKeyRequired": "此功能需要 OpenAI API 密钥",
+  "analyzingProgress": "分析：{current} / {total}",
+  "translatingProgress": "翻译：{current} / {total}",
+  "duplicate": "复制",
+  "importProgress": "导入 {total} 的 {current}",
+  "detectingLanguage": "检测语言...",
+  "extractingItems": "正在提取项目...",
+  "checkingDuplicates": "检查重复项...",
+  "translating": "翻译...",
+  "generatingExamples": "生成示例...",
+  "errorAnalyzingText": "分析文本时出错",
+  "errorImportingItems": "导入项目时出错",
+  "warning": "警告",
+  "textIsVeryLarge": "文字很大",
+  "words": "字",
+  "continueAnalysis": "这可能需要更长的时间来处理，并且将分块进行分析。你想继续吗",
+  "continueLabel": "继续",
+  "exportBeforeDeleteMessage": "您想在删除此包之前导出它吗？这会将您的所有数据保存到 ZIP 文件中。",
+  "deleteWithoutExport": "删除而不导出",
+  "exportAndDelete": "导出和删除",
+  "exportingPackage": "正在导出包...",
+  "packageExportedToPath": "包导出到：{path}",
+  "errorLoadingItems": "加载项目时出错：{error}",
+  "badgeEarnedWithName": "获得徽章：{badgeName}！",
+  "badgeLostWithName": "徽章丢失：{badgeName}",
+  "trainingSessionProgress": "培训课程统计",
+  "total": "全部的",
+  "lastNValue": "N = {value}",
+  "errorLoadingSettings": "加载设置时出错：{error}",
+  "selectPackage": "选择套餐",
+  "noPackagesAvailable": "没有可用的套餐",
+  "possibleSolutions": "可能的解决方案",
+  "technicalDetails": "技术细节",
+  "close": "关闭",
+  "checkApiKey": "检查您的 OpenAI API 密钥",
+  "ensureValidOpenAIKey": "确保 API 密钥有效且处于活动状态",
+  "verifyKeyInSettings": "验证设置中的密钥",
+  "rateLimitExceeded": "超出 API 速率限制",
+  "waitAndRetry": "等待几分钟，然后重试",
+  "checkAccountQuota": "检查您的 OpenAI 账户配额",
+  "invalidRequest": "请求格式无效",
+  "tryReducingTextLength": "尝试减少文本长度",
+  "checkTextFormat": "检查文本格式是否正确",
+  "checkInternetConnection": "检查您的互联网连接",
+  "retryInMoment": "稍后重试",
+  "checkFirewall": "检查防火墙设置",
+  "textMayBeTooShort": "文字可能太短",
+  "tryDifferentKnowledgeLevel": "尝试不同的知识水平",
+  "ensureTextInCorrectLanguage": "确保文本使用正确的语言",
+  "requestTimedOut": "请求超时",
+  "textMayBeTooLong": "文字可能太长",
+  "tryAgainOrReduceSize": "再试一次或减小文字大小",
+  "unexpectedError": "发生意外错误",
+  "checkErrorDetails": "检查下面的错误详细信息",
+  "tryAgainLater": "稍后再试",
+  "translationServiceFailed": "翻译服务失败",
+  "checkApiKeys": "检查您的 API 密钥（DeepL、OpenAI）",
+  "retryImport": "重试导入",
+  "exampleGenerationFailed": "示例生成失败",
+  "itemsStillImported": "物品仍然进口",
+  "canAddExamplesManually": "您可以稍后手动添加示例",
+  "databaseError": "数据库发生错误",
+  "checkStorageSpace": "检查可用存储空间",
+  "restartApp": "尝试重新启动应用程序",
+  "groupLabel": "团体：",
+  "amendGroups": "修正",
+  "exportItemsJson": "导出项目 (JSON)",
+  "exportItemsJsonTooltip": "将所有项目导出为 JSON 文件",
+  "noCategoriesInPackage": "在此包中找不到类别",
+  "noItemsToExport": "未找到可导出的项目",
+  "itemsExportedSuccessfully": "已成功将 {count} 项目导出到：\n{path}",
+  "@itemsExportedSuccessfully": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "errorExportingItems": "导出项目时出错",
+  "languageMismatch": "语言不匹配",
+  "languageMismatchDescription": "JSON 文件中的语言与包语言不匹配：",
+  "packageLanguages": "封装：{lang1} → {lang2}",
+  "@packageLanguages": {
+    "placeholders": {
+      "lang1": {
+        "type": "String"
+      },
+      "lang2": {
+        "type": "String"
+      }
+    }
+  },
+  "jsonFileLanguages": "JSON 文件：{lang1} → {lang2}",
+  "@jsonFileLanguages": {
+    "placeholders": {
+      "lang1": {
+        "type": "String"
+      },
+      "lang2": {
+        "type": "String"
+      }
+    }
+  },
+  "continueImportQuestion": "您还想继续导入吗？",
+  "continueImport": "继续导入",
+  "pleaseSelectPackageGroup": "请选择套餐组",
+  "customIconLabel": "风俗",
+  "defaultIconLabel": "默认",
+  "icon2Label": "打开书本",
+  "icon3Label": "彩色书",
+  "icon4Label": "对话",
+  "icon5Label": "毕业",
+  "icon6Label": "脑",
+  "icon7Label": "书架",
+  "icon8Label": "抽认卡",
+  "icon9Label": "地球",
+  "icon10Label": "铅笔",
+  "icon11Label": "杯",
+  "icon12Label": "搜索",
+  "customIconFile": "自定义图标",
+  "importedIconFile": "导入的图标",
+  "unableToReadImageFile": "无法读取图像文件。请选择有效的图像。",
+  "iconDimensionsTooLarge": "图标尺寸太大 ({width}x{height})。允许的最大尺寸为 512x512 像素。",
+  "@iconDimensionsTooLarge": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "iconFileTooLarge": "图标文件太大。最大大小为 1MB。",
+  "failedToUploadIcon": "上传图标失败：{error}",
+  "@failedToUploadIcon": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectValidLanguage": "请从列表中选择有效的语言",
+  "status": "地位",
+  "addExample": "添加示例",
+  "noExamplesYet": "还没有例子。单击+进行添加。",
+  "speakText": "讲文字",
+  "removeCategory": "删除类别",
+  "removeCategoryConfirm": "从此项目中删除类别“{categoryName}”吗？",
+  "@removeCategoryConfirm": {
+    "placeholders": {
+      "categoryName": {
+        "type": "String"
+      }
+    }
+  },
+  "remove": "消除",
+  "extractFullItems": "提取完整项目",
+  "pasteFromClipboard": "从剪贴板粘贴",
+  "noItemsFoundOrAllDuplicates": "文本中未找到任何项目，或包中已存在所有项目",
+  "aboutLanguageRally": "关于语言拉力赛",
+  "welcomeTitle": "🚀 欢迎参加语言拉力赛",
+  "welcomeSubtitle": "通过大约 4,000 个单词、4,000 个表达方式和同样多的例句来释放语言学习的不可思议的力量——针对每个熟练程度精心策划！使用 AI 从您自己的文本中导入项目，或与 AI 就任何主题进行聊天，以生成您想要学习的确切单词、表达方式和示例。\n提高您的语言技能——以聪明而有趣的方式！",
+  "welcomeIntro": "通过练习您真正关心的内容来有效地学习词汇和表达。没有无聊的清单。没有浪费时间。",
+  "sectionPlayYourGame": "🎮 玩你自己的游戏",
+  "sectionPlayYourGameDesc": "创建您自己的词汇包。只训练您想要掌握的单词和表达方式。已经知道了吗？它将被标记并跳过！",
+  "sectionAITeammate": "🤖 AI 作为你的队友",
+  "sectionAITeammateDesc": "粘贴任意文本并让 AI：\n• 提取有用的词汇\n• 选择符合您水平的表达方式\n• 在几秒钟内构建可立即训练的包\n\n与AI聊天：\n• 让它为您的主题建议单词和表达方式\n• 单击生成示例并将其保存到您自己的包中",
+  "sectionTrainSmart": "🔁 智能训练",
+  "sectionTrainSmartDesc": "我们经过微调的重复系统会在您的大脑需要时准确地显示项目，以便有效地记住它们。最大进度。最小的努力。",
+  "sectionRealExamples": "🌍真实例子。很棒的翻译。",
+  "sectionRealExamplesDesc": "获取真实世界的使用示例。通过 DeepL 进行优质翻译。练习发音并听起来自信。",
+  "sectionTeachersWelcome": "👩‍🏫欢迎老师们",
+  "sectionTeachersWelcomeDesc": "创建包 → 复制和粘贴项目或使用 AI 提取、翻译、添加示例 → 导出 → 上传/发送 → 完成。您的学生导入它并立即开始练习。",
+  "sectionUnlockAI": "🔑 释放全部人工智能力量",
+  "sectionUnlockAIDesc": "要获得高质量翻译和 AI 功能，只需：\n\n1. 创建您的 DeepL API 密钥\n   https://www.deepl.com/pro-api\n2. 创建您的 OpenAI API 密钥\n   https://platform.openai.com/api-keys\n3. 将两个密钥粘贴到“设置”中\n\n少量投资即可解锁强大的专业级语言工具。您为什么会错过呢？\n（我们建议使用付费 API 访问以获得最佳结果。）",
+  "readyToStart": "准备好开始你的集会了吗？ 🏁",
+  "welcomeDescription": "Language Rally 是您全面的语言学习伴侣。创建自定义词汇包，按类别组织项目，并使用智能间隔重复系统进行训练。",
+  "browseStore": "浏览商店",
+  "featureInteractiveTraining": "互动培训",
+  "featureInteractiveTrainingDesc": "练习自适应学习算法",
+  "featureSmartOrganization": "智能组织",
+  "featureSmartOrganizationDesc": "对词汇进行分类和过滤",
+  "featureTrackProgress": "追踪进度",
+  "featureTrackProgressDesc": "通过详细的统计数据监控您的学习情况",
+  "featureImportExport": "进出口",
+  "featureImportExportDesc": "共享包并跨设备同步",
+  "startAppTour": "开始应用之旅",
+  "quickStartGuide": "快速入门指南",
+  "tourStep1Title": "创建或导入包",
+  "tourStep1Desc": "首先创建一个新的语言包或从文件导入现有语言包。",
+  "tourStep2Title": "添加词汇项",
+  "tourStep2Desc": "浏览您的包并添加带有示例和类别的单词、短语或表达式。",
+  "tourStep3Title": "配置训练",
+  "tourStep3Desc": "选择要练习的项目、设置难度级别并定制您的学习体验。",
+  "tourStep4Title": "开始学习",
+  "tourStep4Desc": "开始训练并将项目标记为已知或未知以跟踪您的进度。",
+  "tourStep5Title": "回顾统计数据",
+  "tourStep5Desc": "通过详细的统计数据和成就徽章检查您的学习进度。",
+  "gotIt": "知道了！",
+  "appTourTitle": "欢迎参加语言拉力赛",
+  "appTourSubtitle": "您聪明、有趣且完全个性化的语言学习伴侣。",
+  "tourPage1Title": "学习和实践您想要和需要的内容",
+  "tourPage1Desc": "我们的自适应学习系统可确保您在完美的时刻复习项目 - 最大限度地提高记忆力并最大限度地减少工作量。\n\n在内置自动化的帮助下学习。\n不要把时间浪费在你已经知道的单词上。\n\n只练习您感兴趣的词汇和表达方式。创建和训练您自己的项目 - 完全根据您的目标和水平量身定制。",
+  "tourPage2Title": "创建您自己的语言包",
+  "tourPage2Desc": "构建符合您的兴趣和学习目标的个性化词汇库。\n\n按主题、难度或上下文组织单词和表达。\n\n完全控制您学习的内容和时间。",
+  "tourPage3Title": "人工智能支持的物品创建",
+  "tourPage3Desc": "瞬间构建您自己的学习包：\n\n• 粘贴任意文本，让 AI 自动提取相关词汇\n• 找出最适合您水平的单词和表达方式\n• 让人工智能为您翻译\n• 让人工智能搜索实时示例\n\n与AI聊天：\n• 让它为您的主题建议单词和表达方式\n• 单击生成示例并将其保存到您自己的包中\n• 快速创建准备培训的包",
+  "tourPage4Title": "人工智能驱动的真实示例和优质翻译",
+  "tourPage4Desc": "• 即时搜索真实的使用示例\n• 通过高质量 DeepL 集成翻译单词、表达方式和完整句子\n• 获得准确、情境感知的结果",
+  "tourPage5Title": "智能包装组织",
+  "tourPage5Desc": "• 将词汇组织成自定义类别\n• 过滤并关注特定主题\n• 跨设备导入和导出包\n• 与他人轻松共享包",
+  "tourPage6Title": "训练你的发音",
+  "tourPage6Desc": "使用交互式练习工具测试和提高您的发音。\n\n建立口语的信心——而不仅仅是阅读。",
+  "tourPage7Title": "对于教师",
+  "tourPage7Desc": "只需点击几下即可为您的学生创建即用型词汇包。\n\n将它们导出，发送到您的班级 - 一旦导入，它们就可以立即在每个学生的设备上进行练习。\n\n简单的。快速地。有效的。",
+  "tourPage8Title": "解锁高质量的人工智能支持",
+  "tourPage8Desc": "要获得优质翻译和高级 AI 功能，只需：\n 1. 创建您自己的 DeepL API 密钥\n 2. 创建您自己的 OpenAI API 密钥\n 3. 将两个密钥粘贴到“设置”部分\n\n这仅需要很少的预算（几美元），但可以让您获得强大的、专业级的语言工具。\n注意：我们建议使用付费 API 访问以获得最佳结果。只需几美元。\n\n🔑 DeepL API 密钥：https://www.deepl.com/pro-api\n\n🔑 OpenAI API 密钥：https://platform.openai.com/api-keys",
+  "previousPage": "以前的",
+  "nextPage": "下一个",
+  "endTour": "结束游览",
+  "pageIndicator": "第 {current} 页（共 {total}）",
+  "@pageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "practicePronunciation": "练习发音",
+  "pronunciationPractice": "发音练习",
+  "startPractice": "开始练习",
+  "listenToPronunciation": "听发音",
+  "tapToRecord": "点击即可录音",
+  "recording": "记录...",
+  "recorded": "已录制",
+  "speakNow": "现在说话 - 靠近麦克风清晰说话",
+  "noSpeechDetected": "未检测到语音。请再试一次。",
+  "noTextRecognized": "录音中没有识别出任何语音。请确保您的麦克风正常工作，然后重试。",
+  "processingAudio": "使用 AI 处理音频...",
+  "playbackRecording": "播放我的录音",
+  "playbackRecordingSubtitle": "在人工智能处理录音的同时聆听您的录音",
+  "recordingTooShort": "录音太短。请发言至少 1 秒钟。",
+  "microphonePermissionRequired": "发音练习需要麦克风许可",
+  "speechRecognitionNotSupported": "该平台不支持语音识别。请使用移动应用程序（Android/iOS）进行发音练习。",
+  "speechRecognitionUnavailable": "此设备不支持语音识别。",
+  "pronunciationAccuracy": "发音\n准确度",
+  "excellent": "出色的！",
+  "good": "好的",
+  "fair": "公平的",
+  "needsImprovement": "需要改进",
+  "tryAgain": "再试一次",
+  "nextItem": "下一个项目",
+  "endPractice": "结束练习",
+  "practiced": "练习过",
+  "windowsAudioTestPageTitle": "Windows 音频测试 (RTAudio)",
+  "configureWindowsAudio": "测试和配置音频\n在 Windows 上输入",
+  "configureWindowsAudioDescription": "使用本机 Windows RTAudio 驱动程序录制、播放和转录音频",
+  "audioTestTitle": "Windows 录音测试",
+  "audioTestSubtitle": "RTAudio — 本机 Windows 音频录制",
+  "audioInputDevice": "音频输入设备",
+  "selectMicrophone": "选择麦克风",
+  "refreshDevices": "刷新设备",
+  "noAudioDevicesFound": "未找到音频输入设备",
+  "loadingAudioDevices": "正在加载音频设备...",
+  "recordingSettings": "录音设置",
+  "stereoRecording": "立体声录音",
+  "stereoChannels": "2 通道（立体声）",
+  "monoChannel": "1 通道（单声道）",
+  "sampleRateLabel": "采样率",
+  "nativeRateBadge": "本国的",
+  "microphoneGainLabel": "麦克风增益",
+  "gainHint": "1x = 无增强 • 3x ≈ +9.5 dB • 10x ≈ +20 dB",
+  "tapToStartRec": "点击开始录音",
+  "tapToStopRec": "点击停止录音",
+  "recordingCompleteLabel": "录音完成",
+  "tapMicToStop": "点击麦克风即可停止",
+  "playRecordingLabel": "播放录音",
+  "stopPlaybackLabel": "停止",
+  "whisperSectionTitle": "OpenAI 耳语转录",
+  "whisperWavNote": "Whisper 原生支持 WAV（16 位 PCM）——无需转换。",
+  "sendToWhisperLabel": "发送至 耳语",
+  "transcribingLabel": "正在抄写...",
+  "transcriptionResultLabel": "转录结果",
+  "transcriptionFailedLabel": "转录失败",
+  "debugInformationLabel": "信息",
+  "debugConsoleHint": "检查控制台的详细日志",
+  "debugDevicesFound": "找到设备",
+  "debugSelectedDevice": "选定的设备",
+  "debugDeviceRateNative": "设备速率（本机）",
+  "debugRequestedRate": "要求的价格",
+  "debugActualRate": "实际使用率",
+  "debugActualRateForced": "⚠ 被迫",
+  "debugActualRateOk": "✓",
+  "debugRecordingMode": "录音模式",
+  "debugLastRecording": "最后录音",
+  "debugFileSize": "文件大小",
+  "debugStereo": "立体声",
+  "debugMono": "单核细胞增多症",
+  "recordingSavedSnack": "录音已保存",
+  "recordingTooShortSnack": "录音时间太短。请录制至少 1 秒。",
+  "recordingSmallSnack": "录音文件很小。录音可能失败。",
+  "noAudioDataSnack": "没有记录音频数据",
+  "noDeviceSelectedSnack": "请选择音频设备",
+  "failedToInitRtAudio": "初始化 RTAudio 失败",
+  "envelopeScoreLabel": "信封",
+  "rhythmScoreLabel": "韵律",
+  "textScoreLabel": "文本",
+  "help": "帮助",
+  "trainingHelpTitle": "培训技巧",
+  "trainingHelpText": "为了使您的培训尽可能有效，请按照下列步骤操作：\n1. 单击“清除计数器”按钮，以便该包中的所有项目都标记为已知。\n2. 将“项目范围”设置为“所有项目”\n3. 将“项目顺序”设置为“随机”\n4. 在“显示语言”下选择您的母语\n5. 开始训练并继续，直到您识别出大约 20-30 个您不知道的项目。\n6.返回训练设置并将“项目范围”更改为“仅未知项目”\n7. 恢复训练并继续，直到您学会了所有以前未知的项目。",
+  "trainingProTip": "专业提示：从所有项目开始；之后，只关注未知数。",
+  "onboardingWelcomeTitle": "欢迎来到语言拉力赛！",
+  "onboardingSetupSubtitle": "让我们为您设置该应用程序。",
+  "onboardingSelectUiLanguage": "界面语言",
+  "onboardingUiLanguageNote": "您可以稍后在“设置”→“用户界面语言”中更改此设置。",
+  "onboardingNext": "下一个",
+  "onboardingBack": "后退",
+  "onboardingSelectPackagesTitle": "选择语言包",
+  "onboardingSelectPackagesSubtitle": "选择要导入的词汇包。您以后随时可以从主菜单（查看包）添加更多内容。",
+  "onboardingAnalyzingPackages": "正在分析可用的包...",
+  "onboardingScanningPackagesProgress": "已扫描 {scanned}/{total} • 已在数据库 {alreadyInDb} 中",
+  "@onboardingScanningPackagesProgress": {
+    "placeholders": {
+      "scanned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "alreadyInDb": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingImportSelected": "导入所选内容",
+  "onboardingSkipImport": "跳过",
+  "onboardingSelectAll": "选择全部",
+  "onboardingDeselectAll": "取消全选",
+  "onboardingNPackages": "{count} 包",
+  "@onboardingNPackages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingGetStarted": "开始使用",
+  "onboardingImportCompleteTitle": "导入完成！",
+  "importBuiltInPkg": "免费套餐",
+  "importBuiltInPkgTooltip": "导入免费捆绑语言包",
+  "globalSearch": "全球搜索",
+  "globalSearchTitle": "搜索所有包",
+  "globalSearchSelectLanguage": "选择语言代码",
+  "globalSearchEnterWord": "要搜索的单词",
+  "globalSearchEnterWordHint": "例如\"der\", \"order\" — 查找部分匹配",
+  "globalSearchButton": "搜索",
+  "globalSearchResults": "结果",
+  "globalSearchNoResults": "未找到“{query}”的结果",
+  "@globalSearchNoResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "globalSearchResultsCount": "找到 {count} 结果",
+  "@globalSearchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "globalSearchSearching": "正在寻找...",
+  "globalSearchSelectLanguageFirst": "请先选择语言代码",
+  "globalSearchEnterTermFirst": "请输入搜索词",
+  "globalSearchMatchInExamples": "在示例中找到",
+  "globalSearchViewItem": "看法",
+  "globalSearchGoToPackage": "前往套餐",
+  "globalSearchLoadingPackages": "正在加载包...",
+  "globalSearchNoPackages": "尚未安装语言包",
+  "globalSearchCancelSearch": "取消搜索",
+  "globalSearchProgressOf": "正在搜索 {total} 的包 {current}...",
+  "@globalSearchProgressOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "globalSearchCancelledMessage": "搜索已取消 — 目前已找到 {count} 个结果",
+  "@globalSearchCancelledMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "storeTitle": "语言包商店",
+  "storeRestorePurchases": "恢复购买",
+  "storeRefresh": "刷新",
+  "storeSearchHint": "搜索包...",
+  "storeNoPackagesMatchSearch": "没有与您的搜索匹配的软件包。",
+  "storeNoPackagesAvailable": "没有可用的包。",
+  "storeInstalledCount": "已安装 {installed} / {total}",
+  "@storeInstalledCount": {
+    "placeholders": {
+      "installed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "storeLoadErrorTitle": "无法加载商店。",
+  "storeIapNotAvailableMessage": "此平台不支持应用内购买。请访问我们的网站购买套餐。",
+  "storeOpenWebsite": "打开网站",
+  "storePurchaseSuccess": "{title} 安装成功！",
+  "@storePurchaseSuccess": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "storePurchaseCancelled": "购买已取消。",
+  "storePurchaseAlreadyOwned": "{title} 已安装。",
+  "@storePurchaseAlreadyOwned": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "storePurchaseError": "出了点问题。请再试一次。",
+  "storePurchasesRestored": "恢复购买",
+  "storeAllLevels": "所有级别",
+  "storeAllGroups": "所有语言",
+  "storeFilterLevel": "等级",
+  "storeFilterLanguage": "语言",
+  "storeDownload": "下载",
+  "storeBuy": "买",
+  "storeInstalledLabel": "已安装",
+  "storeDownloading": "正在下载...",
+  "storeRetry": "重试",
+  "storeIapAndroidOnly": "购买仅适用于 Android 和 iOS。",
+  "storeDismiss": "解雇",
+  "storeAddToCart": "添加到购物车",
+  "storeRemoveFromCart": "消除",
+  "storeCartTitle": "购物车",
+  "storeCartEmpty": "您的购物车是空的",
+  "storeCartClearAll": "全部清除",
+  "storeCartCheckout": "查看",
+  "storeCartItemCount": "{count, plural, =1{1 item} other{{count} items}}",
+  "@storeCartItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "storePackageDuplicateTitle": "包已存在",
+  "storePackageDuplicateMessage": "包“{packageName}”已存在于组“{groupName}”中。您想覆盖它吗？现有包及其所有训练进度将被永久删除。",
+  "@storePackageDuplicateMessage": {
+    "placeholders": {
+      "packageName": {
+        "type": "String"
+      },
+      "groupName": {
+        "type": "String"
+      }
+    }
+  },
+  "storePackageDuplicateOverwrite": "覆盖",
+  "storePackageDuplicateKeep": "保持现有",
+  "splashSettingUpPackages": "设置包：{current} / {total}",
+  "@splashSettingUpPackages": {
+    "description": "Splash screen progress label shown while seed packages are being imported",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "splashThisHappensOnce": "这只会发生一次。",
+  "@splashThisHappensOnce": {
+    "description": "Subtitle shown below the progress bar on the splash screen"
+  },
+  "splashLoading": "加载中…",
+  "@splashLoading": {
+    "description": "Indeterminate loading label on the splash screen"
+  },
+  "aiItemCreator": "人工智能聊天大师",
+  "aiItemCreatorAppBarHint": "通过与人工智能聊天收集并保存单词和表达方式",
+  "chatWithAI": "与人工智能聊天",
+  "enterYourPrompt": "输入您的提示...",
+  "aiItemCreatorPromptHint": "描述一个主题，人工智能教练会提出问题，建议有用的词汇，并测试您的知识。例如：帮助我收集和练习B2级知识中旅行的危险",
+  "send": "发送",
+  "sending": "正在发送...",
+  "aiResponse": "人工智能响应",
+  "itemInputs": "项目输入",
+  "aiItemCreatorBothItemsRequired": "请在保存前填写两种语言字段。",
+  "aiItemCreatorDuplicateItemMessage": "此包中已存在具有相同文本对的项目。",
+  "language1": "语言1",
+  "language2": "语言2",
+  "translateLang1ToLang2": "翻译成语言2",
+  "translateLang2ToLang1": "翻译为语言 1",
+  "translateToLanguageCode": "翻译为 {languageCode}",
+  "@translateToLanguageCode": {
+    "placeholders": {
+      "languageCode": {
+        "type": "String"
+      }
+    }
+  },
+  "example": "例子",
+  "generating": "生成...",
+  "flags": "旗帜",
+  "favorite": "最喜欢的",
+  "saveItems": "节省",
+  "saving": "保存...",
+  "clearItems": "仅清除物品",
+  "clearAll": "清除所有字段",
+  "itemSavedSuccessfully": "项目保存成功",
+  "promptCannotBeEmpty": "提示不能为空",
+  "enterAtLeastOneItem": "请输入至少一项",
+  "selectPackageFirst": "请先选择套餐",
+  "deeplKeyRequired": "翻译需要 DeepL API 密钥",
+  "noNonPurchasedPackagesAvailable": "没有可用的非购买套餐",
+  "packageSelectionRemembered": "已保存套餐选择",
+  "aiItemCreatorOpenAiKeyNotConfiguredDetailed": "未配置 OpenAI API 密钥。请在“设置”中添加您的 API 密钥。",
+  "aiItemCreatorOpenAiKeyNotConfigured": "未配置 OpenAI API 密钥。",
+  "aiItemCreatorProcessingComplete": "加工完成",
+  "aiItemCreatorTranslationComingSoon": "翻译功能即将推出",
+  "aiItemCreatorDefaultCategoryName": "人工智能创造",
+  "aiItemCreatorStartNewConversation": "开始新的对话",
+  "aiItemCreatorChatHint": "描述一个主题，人工智能教练会提出问题，建议有用的词汇，并测试您的知识。",
+  "aiItemCreatorConversation": "对话",
+  "aiItemCreatorYou": "你",
+  "aiItemCreatorCoach": "人工智能教练",
+  "aiItemCreatorAiSuggestions": "人工智能建议",
+  "aiItemCreatorTapChipToFill": "点击一个芯片即可填充项目字段并自动翻译。",
+  "aiItemCreatorNoSuggestedItems": "还没有任何言语或表达。",
+  "aiItemCreatorNextSteps": "如何继续",
+  "aiItemCreatorNoNextSteps": "尚无继续建议。",
+  "aiItemCreatorModelCostTip": "专业提示：较新的型号更昂贵，而较旧的型号和涡轮增压型号则更便宜，并且速度明显更快。",
+  "aiItemCreatorSelectPackageDialogTitle": "选择语言包",
+  "aiItemCreatorSelectPackageDialogMessage": "选择用于此会话的语言包。您的最后选择是预先选择的。",
+  "aiItemCreatorMissingApiKeysWarning": "缺少 API 密钥：{keys}。您可以继续，但人工智能和高级翻译功能可能会受到限制。",
+  "@aiItemCreatorMissingApiKeysWarning": {
+    "placeholders": {
+      "keys": {
+        "type": "String"
+      }
+    }
+  },
+  "about": "关于",
+  "aboutWebsite": "网站",
+  "aboutSummaryVideo": "摘要视频",
+  "aboutSupportEmail": "支持电子邮件地址",
+  "aboutWebsiteUrl": "https://sites.google.com/view/language-rally",
+  "aboutSummaryVideoUrl": "https://www.youtube.com/watch?v=64Pl9iNF88c",
+  "aboutSupportEmailAddress": "languagerally.support@gmail.com",
+  "aboutVersionWithValue": "版本：{version}",
+  "@aboutVersionWithValue": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutCouldNotOpen": "无法打开：{uri}",
+  "@aboutCouldNotOpen": {
+    "placeholders": {
+      "uri": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutWelcomeSplashNotFound": "未找到欢迎启动画面",
+  "chooseTheme": "选择主题",
+  "darkMode": "深色模式",
+  "toggleBetweenLightAndDark": "在浅色和深色之间切换",
+  "colorTheme": "颜色主题：",
+  "toggleBrightness": "切换亮度",
+  "changeTheme": "更改主题",
+  "managePackageGroups": "管理包组",
+  "noPackageGroups": "没有包组",
+  "createFirstPackageGroup": "创建您的第一个包组",
+  "addGroup": "添加组",
+  "addPackageGroup": "添加套餐组",
+  "editPackageGroup": "编辑套餐组",
+  "groupName": "群组名称",
+  "enterGroupName": "输入群组名称",
+  "groupNameRequired": "群组名称为必填项",
+  "duplicateGroupName": "重复名称",
+  "groupNameAlreadyExists": "名称为“{name}”的组已存在。",
+  "@groupNameAlreadyExists": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupCreatedSuccessfully": "组“{name}”创建成功",
+  "@groupCreatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateGroup": "创建组失败：{error}",
+  "@failedToCreateGroup": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "groupRenamedTo": "组重命名为“{name}”",
+  "@groupRenamedTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdateGroup": "无法更新组：{error}",
+  "@failedToUpdateGroup": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteGroup": "删除组",
+  "deleteGroupConfirm": "您确定要删除组“{name}”吗？\n\n此操作无法撤消。",
+  "@deleteGroupConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cannotDeleteGroup": "无法删除",
+  "groupHasPackages": "该组仍然有 {count} 包。请先移动或删除它们。",
+  "@groupHasPackages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupDeleted": "组“{name}”已删除",
+  "@groupDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteGroup": "删除组失败：{error}",
+  "@failedToDeleteGroup": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "cannotDeleteHasPackagesTooltip": "无法删除（有包）",
+  "nPackages": "{count, plural, =1{1 package} other{{count} packages}}",
+  "@nPackages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "manageGroups": "管理群组",
+  "featureLangPower": "语言力量",
+  "featureAiIntegration": "人工智能整合",
+  "featureAdaptivePractice": "适应性练习",
+  "featureMasterAccent": "大师口音",
+  "allBadgesEarned": "🎉 所有徽章均已获得！你是大师！",
+  "nextBadgeLabel": "下一页： {name}",
+  "@nextBadgeLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pointsToGo": "{percent}% 还剩 {percent}%",
+  "@pointsToGo": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "progressPercent": "{percent}% 进度",
+  "@progressPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "errorTogglingFavourite": "切换收藏夹时出错：{error}",
+  "@errorTogglingFavourite": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorTogglingImportant": "切换重要错误：{error}",
+  "@errorTogglingImportant": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryAdded": "添加了类别“{name}”",
+  "@categoryAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errorAddingCategory": "添加类别时出错：{error}",
+  "@errorAddingCategory": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryRemoved": "类别“{name}”已删除",
+  "@categoryRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errorRemovingCategory": "删除类别时出错：{error}",
+  "@errorRemovingCategory": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenUrl": "无法打开网址：{url}",
+  "@couldNotOpenUrl": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningUrl": "打开 URL 时出错：{error}",
+  "@errorOpeningUrl": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectLanguage": "请选择语言",
+  "add": "添加",
+  "speak": "说话",
+  "recordingFailedToStart": "录音开始失败！\n\n检查：\n1. 麦克风已连接\n2.麦克风设置为默认设备\n3.没有其他应用程序正在使用麦克风",
+  "recordingFailedNoAudioFile": "录音失败 - 未创建音频文件！\n\n可能的原因：\n1. 麦克风未连接\n2. 未检测到音频输入\n3.Windows音频设置问题",
+  "errorStartingRecordingDetails": "开始录制时出错：{error}",
+  "@errorStartingRecordingDetails": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "openaiEmptyResponse": "所选的 AI 模型返回空响应",
+  "tryDifferentModel": "尝试从模型选择器中选择不同的模型",
+  "modelMayNotBeSupported": "您的帐户可能不支持或不支持此型号",
+  "reduceTextOrRetry": "缩短文本长度或重试",
+  "openaiNullContent": "所选的AI模型没有返回内容",
+  "modelUnsupportedParameter": "所选型号不支持所需的 API 参数"
+}

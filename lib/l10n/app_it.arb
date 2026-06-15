@@ -1,0 +1,1190 @@
+{
+  "helloWorld": "Ciao mondo!",
+  "welcome": "Benvenuti al Rally delle Lingue",
+  "appTitle": "Raduno linguistico",
+  "createPackage": "Crea pacchetto",
+  "editPackage": "Modifica pacchetto",
+  "packageDetails": "Dettagli del pacchetto",
+  "packageName": "Nome del pacchetto",
+  "packageNameHint": "ad esempio, elementi essenziali di spagnolo, elementi di base di tedesco",
+  "languageCode1": "Codice della lingua di origine",
+  "languageName1": "Nome della lingua di origine",
+  "languageCode2": "Codice della lingua di destinazione",
+  "languageName2": "Nome della lingua di destinazione",
+  "description": "Descrizione",
+  "descriptionHint": "Breve descrizione di questo pacchetto linguistico",
+  "authorName": "Nome dell'autore",
+  "authorEmail": "E-mail dell'autore",
+  "authorWebpage": "Pagina web dell'autore",
+  "version": "Versione",
+  "items": "elementi",
+  "packageIcon": "Icona del pacchetto",
+  "packageGroup": "Gruppo di pacchetti",
+  "selectIcon": "Seleziona l'icona",
+  "defaultIcon": "Icona predefinita",
+  "customIcon": "Icona personalizzata",
+  "upload": "Icona Carica",
+  "uploadCustomIcon": "Carica icona personalizzata (max 512x512, 1 MB)",
+  "customIconUploaded": "Icona personalizzata caricata correttamente",
+  "save": "Salva",
+  "edit": "Modificare",
+  "cancel": "Cancellare",
+  "delete": "Eliminare",
+  "confirmDelete": "Sei sicuro di voler eliminare questo pacchetto?",
+  "packageSaved": "Pacchetto salvato con successo",
+  "packageDeleted": "Pacchetto eliminato con successo",
+  "errorSavingPackage": "Errore durante il salvataggio del pacchetto",
+  "errorDeletingPackage": "Errore durante l'eliminazione del pacchetto",
+  "fieldRequired": "Questo campo è obbligatorio",
+  "invalidEmail": "Indirizzo e-mail non valido",
+  "readOnlyPackage": "Questo pacchetto è di sola lettura e non può essere modificato",
+  "purchasedPackage": "I pacchetti acquistati non possono essere modificati",
+  "badges": "Distintivi",
+  "noBadges": "Nessun badge ancora guadagnato",
+  "selectLanguageCode": "Seleziona il codice della lingua",
+  "typeToSearchLanguages": "Digita per cercare le lingue...",
+  "search": "Ricerca...",
+  "clearCounters": "Cancella contatori",
+  "confirmClearCounters": "Sei sicuro di voler cancellare tutti i contatori di formazione per questo pacchetto? Ciò azzererà i contatori \"non so\" e le statistiche di allenamento.",
+  "clear": "Chiaro",
+  "countersCleared": "I contatori sono stati cancellati con successo",
+  "errorClearingCounters": "Errore durante la cancellazione dei contatori",
+  "deleteAll": "Elimina pacchetto",
+  "confirmDeleteAllData": "Sei sicuro di voler eliminare questo pacchetto con TUTTI i suoi dati? Ciò eliminerà permanentemente tutte le categorie, gli elementi e le statistiche di allenamento. Questa azione non può essere annullata!",
+  "allDataDeleted": "Pacchetto e tutti i dati eliminati correttamente",
+  "exportPackage": "Pacchetto di esportazione",
+  "selectExportLocation": "Seleziona la posizione di esportazione",
+  "packageExported": "Pacchetto esportato con successo",
+  "errorExportingPackage": "Errore durante l'esportazione del pacchetto",
+  "importItems": "Importa elementi (JSON)",
+  "importItemsDialogTitle": "Importa elementi (JSON)",
+  "importItemsFromLocalJson": "Importa dal file JSON locale",
+  "enterItemsUrl": "URL JSON degli elementi (https://…)",
+  "downloadingItems": "Download degli elementi…",
+  "selectImportFile": "Seleziona Importa file",
+  "importFormat": "Formato di importazione",
+  "importFormatDescription": "Importa elementi da un file di testo. Ogni riga deve contenere un elemento nel seguente formato:",
+  "importResults": "Importa risultati",
+  "successfullyImported": "Importazione riuscita",
+  "failedToImport": "Impossibile importare",
+  "error": "Errore",
+  "ok": "OK",
+  "importPackage": "Importa pacchetto",
+  "importPackageTooltip": "Importa il pacchetto da file ZIP o URL",
+  "importPackageDialogTitle": "Importa pacchetto lingue",
+  "importFromLocalFile": "Importa da file locale",
+  "importFromUrl": "Importa dall'URL",
+  "enterPackageUrl": "URL del pacchetto (https://…)",
+  "downloadingPackage": "Download del pacchetto…",
+  "downloadFailed": "Download non riuscito. Controlla l'URL e la tua connessione Internet.",
+  "invalidUrl": "Inserisci un URL http:// o https:// valido.",
+  "orLabel": "O",
+  "selectPackageZipFile": "Seleziona Pacchetto file ZIP",
+  "couldNotAccessFile": "Impossibile accedere al file selezionato.",
+  "importingPackage": "Importazione pacchetto...",
+  "packageImportedSuccessfully": "Pacchetto importato con successo!",
+  "packageImportedWithItems": "Pacchetto importato con successo! ({count} elementi)",
+  "packageImportedWithGroup": "Pacchetto importato nel gruppo \"{groupName}\"! ({count} elementi)",
+  "importError": "Errore di importazione",
+  "failedToImportPackage": "Impossibile importare il pacchetto",
+  "packageAlreadyExists": "Il pacchetto esiste già",
+  "packageExistsMessage": "Nel gruppo \"{groupName}\" esiste già un pacchetto con la stessa combinazione di lingue, descrizione, informazioni sull'autore e versione. Desideri importarlo comunque come nuovo pacchetto?",
+  "importAsNew": "Importa comunque",
+  "zipFileNotFound": "File ZIP non trovato",
+  "invalidPackageZip": "ZIP del pacchetto non valido: pacchetto_data.json mancante",
+  "invalidPackageFormat": "Formato file del pacchetto non valido",
+  "languagePackages": "Pacchetti linguistici",
+  "loadingPackages": "Caricamento pacchetti...",
+  "tapAndHoldToReorder": "Tocca e tieni premuto per riordinare le carte",
+  "tapAndHoldToReorderList": "Tocca e tieni premuto ≡ per riordinare • Tocca ⋮ per attivare/disattivare la visualizzazione compatta",
+  "noPackagesYet": "Nessun pacchetto ancora",
+  "createFirstPackage": "Crea il tuo primo pacchetto linguistico",
+  "versionLabel": "Versione",
+  "purchased": "Acquistato",
+  "compactView": "compatto",
+  "expand": "Espandere",
+  "allCategories": "Tutte le categorie",
+  "categoriesInPackage": "Categorie in questo pacchetto",
+  "categories": "Categorie",
+  "testInterFonts": "Prova i caratteri dell'Inter",
+  "viewPackages": "Visualizza pacchetti",
+  "simplifiedPackageView": "Elenco dei pacchetti",
+  "createNewPackage": "Crea nuovo pacchetto",
+  "generateTestData": "Genera dati di prova",
+  "designSystemShowcase": "Vetrina del sistema di progettazione",
+  "badgeEarned": "Distintivo guadagnato!",
+  "achievement": "Risultato",
+  "awesome": "Eccezionale!",
+  "importFormatNotes": "Note:",
+  "importFormatLine1": "• Ogni riga rappresenta un articolo",
+  "importFormatLine2": "• I campi sono separati da |",
+  "importFormatLine3": "• Le categorie sono separate da ;",
+  "importFormatLine4": "• L'ultimo | è facoltativo",
+  "importFormatLine5": "• Le righe vuote vengono ignorate",
+  "importFormatLine6": "• I duplicati vengono saltati",
+  "importFormatNewDescription": "Importa elementi da un file di testo. Ogni riga deve contenere un elemento con campi separati da ---",
+  "importFormatNewLine1": "• Delimitatore principale: ---",
+  "importFormatNewLine2": "• L1=<testo> - Testo principale lingua 1 (richiesto se manca L2)",
+  "importFormatNewLine3": "• L2=<testo> - Testo principale lingua 2 (richiesto se manca L1)",
+  "importFormatNewLine4": "• L1pre=<testo> - Prefisso lingua 1 (opzionale)",
+  "importFormatNewLine5": "• L1post=<testo> - Suffisso lingua 1 (opzionale)",
+  "importFormatNewLine6": "• L2pre=<testo> - Prefisso lingua 2 (opzionale)",
+  "importFormatNewLine7": "• L2post=<testo> - Suffisso lingua 2 (opzionale)",
+  "importFormatNewLine8": "• EX=<testo L1>:::<testo L2> - Esempio (facoltativo, possono essere multipli)",
+  "importFormatNewLine9": "• CAT=<cat1>:::<cat2>:::<cat3> - Categorie (opzionale)",
+  "importFormatNewLine10": "• Deve essere presente almeno uno tra L1= o L2=",
+  "importFormatNewLine11": "• Le righe vuote vengono ignorate",
+  "importFormatNewLine12": "• I duplicati vengono saltati",
+  "invalidImportLine": "Riga non valida",
+  "missingRequiredFields": "Manca 'L1=' vagy 'L2='",
+  "unknownField": "Prefisso campo sconosciuto",
+  "andMore": "... e {count} altro",
+  "browseItems": "Sfoglia elementi",
+  "itemDetails": "Dettagli",
+  "filterItems": "Filtra elementi",
+  "searchLanguage1": "Cerca in {language}",
+  "searchLanguage2": "Cerca in {language}",
+  "caseSensitive": "Maiuscole e minuscole",
+  "knownStatus": "Stato noto",
+  "filterStatusAll": "Tutto",
+  "filterStatusKnown": "conosciuto",
+  "filterStatusUnknown": "sconosciuto",
+  "allItems": "Tutti gli articoli",
+  "itemsIKnew": "Oggetti che conoscevo",
+  "itemsIDidNotKnow": "Articoli che non conoscevo",
+  "known": "Conosciuto",
+  "unknown": "Sconosciuto",
+  "important": "Importante",
+  "favourite": "Preferito",
+  "badge": "Distintivo",
+  "position": "Posizione",
+  "stepsUntilLearned": "Passi fino all'apprendimento",
+  "examples": "Esempi",
+  "noExamples": "Nessun esempio disponibile",
+  "pronounce": "Pronunciare",
+  "ttsError": "Sintesi vocale non disponibile",
+  "noItemsFound": "Nessun articolo trovato",
+  "noItemsInPackage": "Nessun articolo in questo pacchetto ancora",
+  "addItem": "Aggiungi elemento",
+  "emptyPackageHint": "Aggiungi elementi manualmente o utilizza l'intelligenza artificiale per importare rapidamente elementi",
+  "noItemsToTrain": "Nessun elemento disponibile per esercitarsi con le impostazioni attuali",
+  "clearFilters": "Chiaro",
+  "itemCount": "{count} elementi",
+  "filteredItemCount": "{filtered} di {total} elementi",
+  "trainingRally": "Raduno di allenamento",
+  "startTraining": "Inizia la formazione",
+  "trainingComingSoon": "Rally di allenamento - Prossimamente!",
+  "aiServiceNotConfigured": "Servizio AI non configurato. Aggiungi la tua chiave API OpenAI.",
+  "pleaseEnterTextInLanguageFirst": "Inserisci prima il testo in {language}",
+  "translationCompletedSuccessfully": "Traduzione completata con successo utilizzando {service}!",
+  "translationFailed": "Traduzione fallita",
+  "addedExamplesSuccessfully": "Aggiunti {count} esempi con successo!",
+  "failedToGenerateExamples": "Impossibile generare esempi",
+  "selectExamplesToAdd": "Seleziona Esempi da aggiungere",
+  "selectWhichExamples": "Seleziona quali esempi vuoi aggiungere a questo articolo:",
+  "addSelected": "Aggiungi selezionato",
+  "pleaseSelectAtLeastOne": "Seleziona almeno un esempio",
+  "addNewItem": "Aggiungi nuovo elemento",
+  "editItem": "Modifica elemento",
+  "deleteItem": "Elimina elemento",
+  "confirmDeleteItem": "Sei sicuro di voler eliminare questo elemento?",
+  "thisActionCannotBeUndone": "Questa azione non può essere annullata.",
+  "itemDeleted": "Elemento eliminato",
+  "errorDeletingItem": "Errore durante l'eliminazione dell'elemento",
+  "errorSavingItem": "Errore durante il salvataggio dell'articolo",
+  "itemSaved": "Articolo aggiornato con successo",
+  "itemCreated": "Articolo creato con successo",
+  "preTextOptional": "Pre-testo (facoltativo)",
+  "mainText": "Testo principale",
+  "postTextOptional": "Post-testo (facoltativo)",
+  "forExampleToForVerbs": "ad esempio, \"a\" per i verbi",
+  "additionalContext": "Contesto aggiuntivo",
+  "translate": "Tradurre",
+  "translateFromTo": "Traduci {from} → {to}",
+  "aiExampleGeneration": "Generazione di esempi di intelligenza artificiale",
+  "aiExampleSearch": "Ricerca di esempi di intelligenza artificiale",
+  "searchExamplesOnInternet": "Cerca frasi di esempio su Internet utilizzando l'intelligenza artificiale per \"{text}\"",
+  "generateExampleSentences": "Genera frasi di esempio basate sul testo principale in {language}",
+  "voiceInput": "Ingresso vocale",
+  "settings": "Impostazioni",
+  "uiLanguage": "Lingua dell'interfaccia utente",
+  "uiLanguageDescription": "Lingua dell'interfaccia dell'applicazione",
+  "uiLanguageHelper": "Seleziona la lingua per menu, pulsanti ed etichette",
+  "userLanguage": "Lingua dell'utente",
+  "userLanguageDescription": "La tua lingua madre preferita per creare nuovi pacchetti linguistici",
+  "apiKeys": "Chiavi API",
+  "deeplApiKey": "Chiave API DeepL",
+  "deeplApiKeyDescription": "Per una qualità di traduzione premium durante la modifica di elementi linguistici. Vedi https://www.deepl.com/pro-api",
+  "openaiApiKey": "Chiave API OpenAI",
+  "openaiApiKeyDescription": "Ad esempio la generazione con l'intelligenza artificiale durante la modifica di elementi linguistici. Vedi https://platform.openai.com/api-keys",
+  "enterApiKey": "Inserisci la chiave API",
+  "optional": "opzionale",
+  "required": "necessario",
+  "settingsSaved": "Impostazioni salvate con successo",
+  "errorSavingSettings": "Errore durante il salvataggio delle impostazioni",
+  "usingGoogleTranslate": "Utilizzo di Google Traduttore gratuito",
+  "usingDeepL": "Utilizzo di DeepL (premium)",
+  "noTranslationReceivedFromGoogle": "Nessuna traduzione ricevuta da Google",
+  "googleTranslationFailed": "La traduzione di Google non è riuscita",
+  "googleTranslationError": "Errore di traduzione di Google",
+  "noTranslationReceivedFromDeepL": "Nessuna traduzione ricevuta da DeepL",
+  "invalidDeepLApiKey": "Chiave API DeepL non valida",
+  "deeplTranslationQuotaExceeded": "Quota di traduzione DeepL superata",
+  "deeplTranslationFailed": "La traduzione di DeepL non è riuscita",
+  "deeplTranslationError": "Errore di traduzione di DeepL",
+  "invalidApiKeyConfigureOpenAI": "Chiave API non valida. Configura la tua chiave API OpenAI.",
+  "apiRateLimitExceeded": "Limite di velocità API superato. Per favore riprova più tardi.",
+  "aiRequestFailed": "Richiesta AI non riuscita",
+  "failedToParseAiResponse": "Impossibile analizzare la risposta dell'IA. Per favore riprova.",
+  "aiGenerationError": "Errore di generazione dell'IA",
+  "voiceInputPlaceholder": "L'input vocale verrà implementato utilizzando il pacchetto spell_to_text",
+  "improveQualityWithApiKeys": "💡 Suggerimento: la qualità delle traduzioni e delle ricerche di esempio può essere notevolmente migliorata aggiungendo le chiavi API DeepL e OpenAI nelle impostazioni dell'applicazione.",
+  "noApiKeyFallbackMessage": "Senza chiavi API, vengono forniti traduzione di base ed esempi limitati. Per ottenere i migliori risultati, configura le tue chiavi API in Impostazioni.",
+  "listeningForSpeech": "Ascolto... Parla adesso",
+  "speechRecognitionNotAvailable": "Il riconoscimento vocale non è disponibile su questo dispositivo",
+  "speechRecognitionPermissionDenied": "L'autorizzazione al riconoscimento vocale è stata negata",
+  "speechRecognitionError": "Errore di riconoscimento vocale",
+  "tapToSpeak": "Tocca il microfono per parlare",
+  "tapToStop": "Tocca per interrompere la registrazione",
+  "speechNotRecognized": "Nessun discorso è stato riconosciuto. Per favore riprova.",
+  "usingWhisperApiSlower": "Utilizzo dell'intelligenza artificiale cloud per il riconoscimento vocale (potrebbe essere più lento)",
+  "languageNotSupportedAddApiKey": "Lingua {languageCode} non supportata in modo nativo. Aggiungi la chiave API OpenAI nelle Impostazioni per il riconoscimento vocale basato sull'intelligenza artificiale.",
+  "@languageNotSupportedAddApiKey": {
+    "placeholders": {
+      "languageCode": {
+        "type": "String"
+      }
+    }
+  },
+  "recordingTapToStop": "Registrazione... Tocca di nuovo per interrompere",
+  "speakClearlyKeepRecording": "Parla chiaramente. Registra almeno 1 secondo.",
+  "pleaseRecordLonger": "Si prega di parlare per almeno 1 secondo e toccare Interrompi.",
+  "errorStartingRecording": "Errore durante l'avvio della registrazione",
+  "noAudioRecorded": "Non è stato registrato alcun audio",
+  "errorTranscribing": "Errore durante la trascrizione dell'audio",
+  "trainingSettings": "Impostazioni di allenamento",
+  "trainingPresetTitle": "Configurazione rapida",
+  "trainingPresetHint": "Scegli una preimpostazione e le impostazioni seguenti verranno configurate automaticamente.",
+  "trainingPresetComboLabel": "Preimpostato",
+  "trainingPresetAllExamplesForeignLanguage": "Tutti gli esempi, lingua straniera",
+  "trainingPresetAllExamplesRandomLanguage": "Tutti gli esempi, linguaggio casuale",
+  "trainingPresetFavouriteItemsForeignLanguage": "Articoli preferiti, lingua straniera",
+  "trainingPresetFavouriteItemsRandomLanguage": "Articoli preferiti, lingua casuale",
+  "trainingPresetImportantItemsForeignLanguage": "Articoli importanti, lingua straniera",
+  "trainingPresetImportantItemsRandomLanguage": "Elementi importanti, linguaggio casuale",
+  "trainingPresetRandomItemsRandomLanguage": "Oggetti casuali, linguaggio casuale",
+  "trainingPresetUnknownItemsForeignLanguage": "Oggetti sconosciuti, lingua straniera",
+  "trainingPresetUnknownItemsRandomLanguage": "Elementi sconosciuti, linguaggio casuale",
+  "trainingPresetAppliedTapStart": "Preimpostazione applicata. Tocca \"{actionLabel}\" per iniziare.",
+  "trainingPresetSelectPackageFirst": "Seleziona prima un pacchetto.",
+  "@trainingPresetAppliedTapStart": {
+    "placeholders": {
+      "actionLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "itemScope": "Ambito dell'articolo",
+  "lastNItems": "Ultimi N articoli",
+  "onlyUnknown": "Solo oggetti sconosciuti",
+  "onlyImportant": "Solo oggetti importanti",
+  "onlyFavourite": "Solo articoli preferiti",
+  "numberOfItems": "Numero di articoli",
+  "itemOrder": "Ordine dell'articolo",
+  "randomOrder": "Ordine casuale",
+  "sequentialOrder": "Ordine sequenziale",
+  "itemType": "Tipo di articolo",
+  "dictionaryItems": "Voci del dizionario",
+  "examplesType": "Esempi",
+  "displayLanguage": "Lingua di visualizzazione",
+  "motherTongue": "Madrelingua",
+  "targetLanguage": "Lingua di destinazione",
+  "randomLanguage": "Casuale",
+  "categoryFilter": "Filtro categoria",
+  "categoryFilterHint": "Seleziona le categorie da includere (vuoto = tutte le categorie)",
+  "noCategories": "Nessuna categoria disponibile",
+  "dontKnowThreshold": "Non conosco la soglia",
+  "dontKnowThresholdHint": "Numero di volte in cui un articolo deve essere contrassegnato come \"non so\" prima di una gestione speciale",
+  "startTrainingRally": "Inizia il rally di allenamento",
+  "clearTrainingSettings": "Cancella impostazioni",
+  "confirmClearTrainingSettings": "Sei sicuro di voler ripristinare tutte le impostazioni di allenamento sui valori predefiniti?",
+  "trainingSettingsCleared": "Le impostazioni dell'allenamento sono state cancellate",
+  "startingTraining": "Inizio allenamento...",
+  "noMoreItemsToDisplay": "Nessun elemento da visualizzare in base alle impostazioni del filtro.",
+  "noItems": "Nessun articolo",
+  "trainingComplete": "Formazione completata",
+  "allItemsCompleted": "Congratulazioni! Hai completato tutti gli elementi di questa sessione di formazione.",
+  "closeTraining": "Chiudi Formazione",
+  "confirmCloseTraining": "Sei sicuro di voler chiudere la formazione? I tuoi progressi sono stati salvati.",
+  "question": "Domanda",
+  "answer": "Risposta",
+  "iKnow": "Lo so",
+  "iDontKnow": "Non lo so",
+  "previousItem": "Articolo precedente",
+  "iDidNotKnowEither": "Dopotutto non lo sapevo",
+  "exportBeforeDelete": "Esportare prima di eliminare?",
+  "aiTextAnalysis": "Estrai elementi da un testo/elenco con l'intelligenza artificiale",
+  "aiTextAnalysisImport": "Estrai elementi da un testo o da un elenco con lo strumento di analisi del testo AI",
+  "knowledgeLevel": "Livello di conoscenza",
+  "a1Beginner": "A1 – Principiante",
+  "a2Elementary": "A2 - Elementare",
+  "b1Intermediate": "B1 – Intermedio",
+  "b2UpperIntermediate": "B2 - Intermedio superiore",
+  "c1Advanced": "C1 - Avanzato",
+  "c2Proficient": "C2 – Esperto",
+  "pasteTextHere": "Incolla qui il tuo testo...",
+  "extractWords": "Estrai parole",
+  "extractExpressions": "Estrai espressioni",
+  "maxItems": "Numero massimo di nuovi articoli",
+  "maxItemsHint": "Lascia vuoto per nessun limite",
+  "generateExamples": "Genera esempi",
+  "categoryName": "Nome della categoria",
+  "categoryNameHint": "Nome per la categoria degli articoli importati",
+  "analyzeText": "Analizzare il testo",
+  "configureAnalysis": "Configura gli elementi da estrarre",
+  "openaiModel": "Modello di intelligenza artificiale",
+  "openaiModelDescription": "Seleziona il modello ChatGPT",
+  "modelGpt55": "GPT-5.5",
+  "modelGpt55Pro": "GPT-5.5 Pro",
+  "modelGpt54": "GPT-5.4",
+  "modelGpt54Pro": "GPT-5.4Pro",
+  "modelGpt54Mini": "GPT-5.4 Mini",
+  "modelGpt5Mini": "GPT-5 Mini",
+  "modelGpt41": "GPT-4.1",
+  "modelGpt55Desc": "Il nuovissimo equilibrio di punta tra qualità e velocità per uso generale",
+  "modelGpt55ProDesc": "Variante GPT-5.5 di fascia alta per il ragionamento e la qualità più forti",
+  "modelGpt54Desc": "Robusto modello di generazione GPT-5 per uso generale",
+  "modelGpt54ProDesc": "Variante GPT-5.4 ad alta capacità per attività impegnative",
+  "modelGpt54MiniDesc": "Variante GPT-5.4 più piccola e più veloce per attività quotidiane a basso costo",
+  "modelGpt5MiniDesc": "Modello compatto della famiglia GPT-5 ottimizzato per velocità e costi",
+  "modelGpt41Desc": "Opzione GPT-4.1 affidabile per compatibilità e qualità solida",
+  "modelGpt4o": "GPT-4o",
+  "modelGpt35Turbo": "GPT-3.5 Turbo (precedente, economico)",
+  "modelGpt35Turbo16k": "GPT-3.5 Turbo 16K",
+  "modelGpt4": "GPT-4",
+  "modelGpt4Turbo": "GPT-4 Turbo (precedente)",
+  "modelGpt4oDesc": "La migliore scelta per scopi generali; qualità veloce, multimodale e forte",
+  "modelGpt35TurboDesc": "Opzione legacy a basso costo; utile per attività più semplici e per un utilizzo sensibile ai costi",
+  "modelGpt35Turbo16kDesc": "Come GPT-3.5, ma finestra di contesto del token da 16K",
+  "modelGpt4Desc": "Elevata qualità del ragionamento; tipicamente più lento e più costoso",
+  "modelGpt4TurboDesc": "Opzione famiglia GPT-4 legacy; ancora utile quando desideri un'alternativa più vecchia e più economica",
+  "analyzing": "Analizzando...",
+  "languageDetected": "Lingua rilevata",
+  "itemsFound": "Elementi trovati",
+  "selectItemsToImport": "Seleziona Elementi da importare",
+  "selectAll": "Seleziona tutto",
+  "deselectAll": "Deseleziona tutto",
+  "importSelected": "Importa selezionato",
+  "importing": "Importazione...",
+  "itemsImported": "Elementi importati correttamente",
+  "noItemsSelected": "Nessun elemento selezionato",
+  "textCannotBeEmpty": "Il testo non può essere vuoto",
+  "selectAtLeastOneType": "Seleziona almeno un tipo (parole o espressioni)",
+  "languageNotMatching": "La lingua rilevata non corrisponde ad alcuna lingua nel pacchetto",
+  "openaiKeyRequired": "Per questa funzionalità è richiesta la chiave API OpenAI",
+  "analyzingProgress": "Analisi in corso: {current} / {total}",
+  "translatingProgress": "Traduzione in corso: {current} / {total}",
+  "duplicate": "Duplicato",
+  "importProgress": "Importazione di {current} di {total}",
+  "detectingLanguage": "Rilevamento della lingua...",
+  "extractingItems": "Estrazione elementi...",
+  "checkingDuplicates": "Controllo dei duplicati...",
+  "translating": "Traduzione...",
+  "generatingExamples": "Generazione di esempi...",
+  "errorAnalyzingText": "Errore nell'analisi del testo",
+  "errorImportingItems": "Errore durante l'importazione degli articoli",
+  "warning": "Avvertimento",
+  "textIsVeryLarge": "Il testo è molto grande",
+  "words": "parole",
+  "continueAnalysis": "L'elaborazione potrebbe richiedere più tempo e verrà analizzata in blocchi. Vuoi continuare?",
+  "continueLabel": "Continuare",
+  "exportBeforeDeleteMessage": "Vuoi esportare questo pacchetto prima di eliminarlo? Ciò salverà tutti i tuoi dati in un file ZIP.",
+  "deleteWithoutExport": "Elimina senza esportare",
+  "exportAndDelete": "Esporta ed elimina",
+  "exportingPackage": "Esportazione pacchetto...",
+  "packageExportedToPath": "Pacchetto esportato in: {path}",
+  "errorLoadingItems": "Errore durante il caricamento degli articoli: {error}",
+  "badgeEarnedWithName": "Distintivo ottenuto: {badgeName}!",
+  "badgeLostWithName": "Badge smarrito: {badgeName}",
+  "trainingSessionProgress": "Statistiche della sessione di allenamento",
+  "total": "Totale",
+  "lastNValue": "N = {value}",
+  "errorLoadingSettings": "Errore durante il caricamento delle impostazioni: {error}",
+  "selectPackage": "Seleziona Pacchetto",
+  "noPackagesAvailable": "Nessun pacchetto disponibile",
+  "possibleSolutions": "Possibili soluzioni",
+  "technicalDetails": "Dettagli tecnici",
+  "close": "Vicino",
+  "checkApiKey": "Controlla la tua chiave API OpenAI",
+  "ensureValidOpenAIKey": "Assicurati che la chiave API sia valida e attiva",
+  "verifyKeyInSettings": "Verifica la chiave in Impostazioni",
+  "rateLimitExceeded": "Limite di velocità API superato",
+  "waitAndRetry": "Attendi qualche minuto e riprova",
+  "checkAccountQuota": "Controlla la quota del tuo account OpenAI",
+  "invalidRequest": "Formato della richiesta non valido",
+  "tryReducingTextLength": "Prova a ridurre la lunghezza del testo",
+  "checkTextFormat": "Controlla che il formato del testo sia corretto",
+  "checkInternetConnection": "Controlla la tua connessione Internet",
+  "retryInMoment": "Riprova tra un attimo",
+  "checkFirewall": "Controlla le impostazioni del firewall",
+  "textMayBeTooShort": "Il testo potrebbe essere troppo corto",
+  "tryDifferentKnowledgeLevel": "Prova un livello di conoscenza diverso",
+  "ensureTextInCorrectLanguage": "Assicurati che il testo sia nella lingua corretta",
+  "requestTimedOut": "Richiesta scaduta",
+  "textMayBeTooLong": "Il testo potrebbe essere troppo lungo",
+  "tryAgainOrReduceSize": "Riprova o riduci la dimensione del testo",
+  "unexpectedError": "Si è verificato un errore imprevisto",
+  "checkErrorDetails": "Controlla i dettagli dell'errore di seguito",
+  "tryAgainLater": "Riprova più tardi",
+  "translationServiceFailed": "Il servizio di traduzione non è riuscito",
+  "checkApiKeys": "Controlla le tue chiavi API (DeepL, OpenAI)",
+  "retryImport": "Riprovare l'importazione",
+  "exampleGenerationFailed": "La generazione dell'esempio non è riuscita",
+  "itemsStillImported": "Gli articoli venivano ancora importati",
+  "canAddExamplesManually": "Puoi aggiungere esempi manualmente in seguito",
+  "databaseError": "Si è verificato un errore nel database",
+  "checkStorageSpace": "Controlla lo spazio di archiviazione disponibile",
+  "restartApp": "Prova a riavviare l'app",
+  "groupLabel": "Gruppo:",
+  "amendGroups": "Modificare",
+  "exportItemsJson": "Esporta elementi (JSON)",
+  "exportItemsJsonTooltip": "Esporta tutti gli elementi come file JSON",
+  "noCategoriesInPackage": "Nessuna categoria trovata in questo pacchetto",
+  "noItemsToExport": "Nessun articolo trovato da esportare",
+  "itemsExportedSuccessfully": "Elementi {count} esportati correttamente in:\n{path}",
+  "@itemsExportedSuccessfully": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "errorExportingItems": "Errore durante l'esportazione degli elementi",
+  "languageMismatch": "Mancata corrispondenza linguistica",
+  "languageMismatchDescription": "Le lingue nel file JSON non corrispondono alle lingue del pacchetto:",
+  "packageLanguages": "Pacchetto: {lang1} → {lang2}",
+  "@packageLanguages": {
+    "placeholders": {
+      "lang1": {
+        "type": "String"
+      },
+      "lang2": {
+        "type": "String"
+      }
+    }
+  },
+  "jsonFileLanguages": "File JSON: {lang1} → {lang2}",
+  "@jsonFileLanguages": {
+    "placeholders": {
+      "lang1": {
+        "type": "String"
+      },
+      "lang2": {
+        "type": "String"
+      }
+    }
+  },
+  "continueImportQuestion": "Vuoi continuare comunque l'importazione?",
+  "continueImport": "Continua l'importazione",
+  "pleaseSelectPackageGroup": "Seleziona un gruppo di pacchetti",
+  "customIconLabel": "Costume",
+  "defaultIconLabel": "Predefinito",
+  "icon2Label": "Libro aperto",
+  "icon3Label": "Libro colorato",
+  "icon4Label": "Conversazione",
+  "icon5Label": "Laurea",
+  "icon6Label": "Cervello",
+  "icon7Label": "Pila di libri",
+  "icon8Label": "Scheda flash",
+  "icon9Label": "Globo",
+  "icon10Label": "Matita",
+  "icon11Label": "Trofeo",
+  "icon12Label": "Ricerca",
+  "customIconFile": "Icona personalizzata",
+  "importedIconFile": "Icona importata",
+  "unableToReadImageFile": "Impossibile leggere il file immagine. Seleziona un'immagine valida.",
+  "iconDimensionsTooLarge": "Le dimensioni dell'icona sono troppo grandi ({width}x{height}). Il massimo consentito è 512x512 pixel.",
+  "@iconDimensionsTooLarge": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "iconFileTooLarge": "Il file dell'icona è troppo grande. La dimensione massima è 1 MB.",
+  "failedToUploadIcon": "Impossibile caricare l'icona: {error}",
+  "@failedToUploadIcon": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectValidLanguage": "Seleziona una lingua valida dall'elenco",
+  "status": "Stato",
+  "addExample": "Aggiungi esempio",
+  "noExamplesYet": "Nessun esempio ancora. Fare clic su + per aggiungere.",
+  "speakText": "Pronuncia il testo",
+  "removeCategory": "Rimuovi categoria",
+  "removeCategoryConfirm": "Rimuovere la categoria \"{categoryName}\" da questo articolo?",
+  "@removeCategoryConfirm": {
+    "placeholders": {
+      "categoryName": {
+        "type": "String"
+      }
+    }
+  },
+  "remove": "Rimuovere",
+  "extractFullItems": "Estrai elementi completi",
+  "pasteFromClipboard": "Incolla dagli appunti",
+  "noItemsFoundOrAllDuplicates": "Nessun articolo trovato nel testo oppure tutti gli articoli sono già presenti nel pacchetto",
+  "aboutLanguageRally": "Informazioni sul raduno linguistico",
+  "welcomeTitle": "🚀 Benvenuti al Rally delle Lingue",
+  "welcomeSubtitle": "Sblocca l'incredibile potere dell'apprendimento delle lingue con circa 4.000 parole, 4.000 espressioni e altrettante frasi di esempio, accuratamente selezionate per ogni livello di competenza! Usa l'intelligenza artificiale per importare elementi dai tuoi testi o chatta con l'intelligenza artificiale su qualsiasi argomento per generare le parole, le espressioni e gli esempi esatti che desideri imparare.\nMigliora le tue abilità linguistiche in modo intelligente e giocoso!",
+  "welcomeIntro": "Impara il vocabolario e le espressioni in modo efficiente mettendo in pratica ciò che ti interessa veramente. Nessuna lista noiosa. Nessuna perdita di tempo.",
+  "sectionPlayYourGame": "🎮 Gioca al tuo gioco",
+  "sectionPlayYourGameDesc": "Crea i tuoi pacchetti di vocaboli. Allena solo le parole e le espressioni che vuoi padroneggiare. Lo sai già? Verrà contrassegnato e saltato!",
+  "sectionAITeammate": "🤖 L'intelligenza artificiale come compagna di squadra",
+  "sectionAITeammateDesc": "Incolla qualsiasi testo e lascia che AI:\n• Estrarre vocabolario utile\n• Scegli le espressioni che corrispondono al tuo livello\n• Realizza pacchetti pronti per la formazione in pochi secondi\n\nChatta con l'IA:\n• Lascia che suggerisca parole ed espressioni per il tuo argomento\n• Fare clic per generare esempi e salvarli nel PROPRIO pacchetto",
+  "sectionTrainSmart": "🔁 Allenati in modo intelligente",
+  "sectionTrainSmartDesc": "Il nostro sistema di ripetizione ottimizzato mostra gli elementi esattamente quando il tuo cervello ne ha bisogno per memorizzarli in modo efficace. Massimo progresso. Sforzo minimo.",
+  "sectionRealExamples": "🌍 Esempi reali. Grandi traduzioni.",
+  "sectionRealExamplesDesc": "Ottieni esempi di utilizzo nel mondo reale. Traduci con qualità premium tramite DeepL. Esercitati nella pronuncia e sembra sicuro.",
+  "sectionTeachersWelcome": "👩‍🏫 Insegnanti Benvenuti",
+  "sectionTeachersWelcomeDesc": "Crea un pacchetto → Copia e incolla elementi oppure estrai, traduci, aggiungi esempi con l'intelligenza artificiale → Esporta → Carica/Invia → Fine. I tuoi studenti lo importano e iniziano a esercitarsi immediatamente.",
+  "sectionUnlockAI": "🔑 Sblocca la piena potenza dell'IA",
+  "sectionUnlockAIDesc": "Per traduzioni di alta qualità e funzionalità di intelligenza artificiale, è sufficiente:\n\n1. Crea la tua chiave API DeepL\n   https://www.deepl.com/pro-api\n2. Crea la tua chiave API OpenAI\n   https://platform.openai.com/api-keys\n3. Incolla entrambe le chiavi in Impostazioni\n\nUn piccolo investimento sblocca strumenti linguistici potenti e di livello professionale. Perché dovresti perdertelo?\n(Ti consigliamo di utilizzare l'accesso API a pagamento per ottenere i migliori risultati.)",
+  "readyToStart": "Pronto per iniziare il tuo rally? 🏁",
+  "welcomeDescription": "Language Rally è il tuo compagno completo per l'apprendimento delle lingue. Crea pacchetti di vocaboli personalizzati, organizza gli elementi per categorie e allenati con un sistema di ripetizione spaziata intelligente.",
+  "browseStore": "Sfoglia il negozio",
+  "featureInteractiveTraining": "Formazione interattiva",
+  "featureInteractiveTrainingDesc": "Esercitati con algoritmi di apprendimento adattivo",
+  "featureSmartOrganization": "Organizzazione intelligente",
+  "featureSmartOrganizationDesc": "Categorizza e filtra il tuo vocabolario",
+  "featureTrackProgress": "Tieni traccia dei progressi",
+  "featureTrackProgressDesc": "Monitora il tuo apprendimento con statistiche dettagliate",
+  "featureImportExport": "Importa ed esporta",
+  "featureImportExportDesc": "Condividi pacchetti e sincronizza tra dispositivi",
+  "startAppTour": "Avvia la presentazione dell'app",
+  "quickStartGuide": "Guida rapida",
+  "tourStep1Title": "Crea o importa pacchetti",
+  "tourStep1Desc": "Inizia creando un nuovo pacchetto di lingue o importane uno esistente da un file.",
+  "tourStep2Title": "Aggiungi elementi di vocabolario",
+  "tourStep2Desc": "Sfoglia i tuoi pacchetti e aggiungi parole, frasi o espressioni con esempi e categorie.",
+  "tourStep3Title": "Configura la formazione",
+  "tourStep3Desc": "Scegli con quali elementi esercitarti, imposta i livelli di difficoltà e personalizza la tua esperienza di apprendimento.",
+  "tourStep4Title": "Inizia a imparare",
+  "tourStep4Desc": "Inizia la sessione di allenamento e contrassegna gli elementi come noti o sconosciuti per monitorare i tuoi progressi.",
+  "tourStep5Title": "Revisione delle statistiche",
+  "tourStep5Desc": "Controlla i tuoi progressi nell'apprendimento con statistiche dettagliate e badge sui risultati.",
+  "gotIt": "Fatto!",
+  "appTourTitle": "Benvenuti al Rally delle Lingue",
+  "appTourSubtitle": "Il tuo compagno di apprendimento delle lingue intelligente, giocoso e completamente personalizzato.",
+  "tourPage1Title": "Impara e pratica ciò che vuoi e ciò di cui hai bisogno",
+  "tourPage1Desc": "Il nostro sistema di apprendimento adattivo ti garantisce di rivedere gli articoli al momento perfetto, massimizzando la fidelizzazione e riducendo al minimo lo sforzo.\n\nImpara con l'aiuto dell'automazione integrata.\nSmetti di perdere tempo con parole che già conosci.\n\nEsercitati solo con il vocabolario e le espressioni che ti interessano. Crea e allena i tuoi oggetti, completamente personalizzati in base ai tuoi obiettivi e al tuo livello.",
+  "tourPage2Title": "Crea il tuo pacchetto linguistico",
+  "tourPage2Desc": "Crea raccolte di vocaboli personalizzate che corrispondono ai tuoi interessi e ai tuoi obiettivi di apprendimento.\n\nOrganizza parole ed espressioni per argomento, difficoltà o contesto.\n\nControllo completo su cosa impari e quando.",
+  "tourPage3Title": "Creazione di oggetti basati sull'intelligenza artificiale",
+  "tourPage3Desc": "Costruisci i tuoi pacchetti di apprendimento in un batter d'occhio:\n\n• Incolla qualsiasi testo e lascia che l'IA estragga automaticamente il vocabolario pertinente\n• Identificare parole ed espressioni perfettamente adatte al tuo livello\n• Lascia che l'intelligenza artificiale faccia la traduzione per te\n• Lascia che sia l'IA a cercare esempi in tempo reale\n\nChatta con l'IA:\n• Lascia che suggerisca parole ed espressioni per il tuo argomento\n• Fare clic per generare esempi e salvarli nel PROPRIO pacchetto\n• Creare rapidamente pacchetti pronti per la formazione",
+  "tourPage4Title": "Esempi dal mondo reale basati sull'intelligenza artificiale e traduzione premium",
+  "tourPage4Desc": "• Cerca istantaneamente esempi di utilizzo autentici\n• Traduci parole, espressioni e frasi complete con l'integrazione DeepL di alta qualità\n• Ottieni risultati accurati e sensibili al contesto",
+  "tourPage5Title": "Organizzazione intelligente dei pacchetti",
+  "tourPage5Desc": "• Organizzare il vocabolario in categorie personalizzate\n• Filtra e concentrati su argomenti specifici\n• Importa ed esporta pacchetti su più dispositivi\n• Condividere facilmente i pacchetti con gli altri",
+  "tourPage6Title": "Allenare la tua pronuncia",
+  "tourPage6Desc": "Metti alla prova e migliora la tua pronuncia con strumenti di pratica interattivi.\n\nAcquisisci sicurezza nel parlare, non solo nel leggere.",
+  "tourPage7Title": "Per gli insegnanti",
+  "tourPage7Desc": "Crea pacchetti di vocaboli pronti all'uso per i tuoi studenti in pochi clic.\n\nEsportali, inviali alla tua classe e, una volta importati, sono immediatamente pronti per la pratica sul dispositivo di ogni studente.\n\nSemplice. Veloce. Efficace.",
+  "tourPage8Title": "Sblocca supporto AI di alta qualità",
+  "tourPage8Desc": "Per traduzioni premium e funzionalità avanzate di intelligenza artificiale, semplicemente:\n 1. Crea la tua chiave API DeepL\n 2. Crea la tua chiave API OpenAI\n 3. Incolla entrambe le chiavi nella sezione Impostazioni\n\nCiò richiede solo un budget limitato (pochi dollari), ma ti dà accesso a strumenti linguistici potenti e di livello professionale.\nNota: ti consigliamo di utilizzare l'accesso API a pagamento per ottenere i migliori risultati. Costa solo pochi dollari.\n\n🔑 Chiave API DeepL: https://www.deepl.com/pro-api\n\n🔑 Chiave API OpenAI: https://platform.openai.com/api-keys",
+  "previousPage": "Precedente",
+  "nextPage": "Prossimo",
+  "endTour": "Fine Giro",
+  "pageIndicator": "Pagina {current} di {total}",
+  "@pageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "practicePronunciation": "Pratica di pronuncia",
+  "pronunciationPractice": "Pratica di pronuncia",
+  "startPractice": "Inizia la pratica",
+  "listenToPronunciation": "Ascolta la pronuncia",
+  "tapToRecord": "Tocca per registrare",
+  "recording": "Registrazione...",
+  "recorded": "Registrato",
+  "speakNow": "Parla ora: parla chiaramente e vicino al microfono",
+  "noSpeechDetected": "Nessun parlato rilevato. Per favore riprova.",
+  "noTextRecognized": "Nessun discorso è stato riconosciuto nella registrazione. Assicurati che il microfono funzioni e riprova.",
+  "processingAudio": "Elaborazione dell'audio con l'intelligenza artificiale...",
+  "playbackRecording": "Riproduci la mia registrazione",
+  "playbackRecordingSubtitle": "Ascolta la tua registrazione mentre l'intelligenza artificiale la elabora",
+  "recordingTooShort": "Registrazione troppo breve. Si prega di parlare per almeno 1 secondo.",
+  "microphonePermissionRequired": "Per esercitarsi nella pronuncia è necessaria l'autorizzazione al microfono",
+  "speechRecognitionNotSupported": "Il riconoscimento vocale non è supportato su questa piattaforma. Utilizza l'app mobile (Android/iOS) per esercitarti sulla pronuncia.",
+  "speechRecognitionUnavailable": "Il riconoscimento vocale non è disponibile su questo dispositivo.",
+  "pronunciationAccuracy": "Pronuncia\nPrecisione",
+  "excellent": "Eccellente!",
+  "good": "Bene",
+  "fair": "Giusto",
+  "needsImprovement": "Ha bisogno di miglioramenti",
+  "tryAgain": "Riprova",
+  "nextItem": "Articolo successivo",
+  "endPractice": "Fine della pratica",
+  "practiced": "Praticato",
+  "windowsAudioTestPageTitle": "Test audio di Windows (RTAudio)",
+  "configureWindowsAudio": "Testare e configurare l'audio\ningresso su Windows",
+  "configureWindowsAudioDescription": "Registra, riproduci e trascrivi l'audio utilizzando il driver nativo di Windows RTAudio",
+  "audioTestTitle": "Prova di registrazione audio di Windows",
+  "audioTestSubtitle": "RTAudio: registrazione audio nativa di Windows",
+  "audioInputDevice": "Dispositivo di ingresso audio",
+  "selectMicrophone": "Seleziona Microfono",
+  "refreshDevices": "Aggiorna dispositivi",
+  "noAudioDevicesFound": "Nessun dispositivo di input audio trovato",
+  "loadingAudioDevices": "Caricamento dispositivi audio...",
+  "recordingSettings": "Impostazioni di registrazione",
+  "stereoRecording": "Registrazione stereo",
+  "stereoChannels": "2 canali (stereo)",
+  "monoChannel": "1 canale (mono)",
+  "sampleRateLabel": "Frequenza di campionamento",
+  "nativeRateBadge": "nativo",
+  "microphoneGainLabel": "Guadagno del microfono",
+  "gainHint": "1x = nessun aumento • 3x ≈ +9,5 dB • 10x ≈ +20 dB",
+  "tapToStartRec": "Tocca per avviare la registrazione",
+  "tapToStopRec": "Tocca per interrompere la registrazione",
+  "recordingCompleteLabel": "Registrazione completata",
+  "tapMicToStop": "Tocca il microfono per interrompere",
+  "playRecordingLabel": "Riproduci la registrazione",
+  "stopPlaybackLabel": "Fermare",
+  "whisperSectionTitle": "Trascrizione Whisper OpenAI",
+  "whisperWavNote": "WAV (PCM a 16 bit) è supportato nativamente da Whisper: non è necessaria alcuna conversione.",
+  "sendToWhisperLabel": "Invia a Sussurro",
+  "transcribingLabel": "Trascrizione...",
+  "transcriptionResultLabel": "Risultato della trascrizione",
+  "transcriptionFailedLabel": "Trascrizione non riuscita",
+  "debugInformationLabel": "Informazioni",
+  "debugConsoleHint": "Controlla la console per i registri dettagliati",
+  "debugDevicesFound": "Dispositivi trovati",
+  "debugSelectedDevice": "Dispositivo selezionato",
+  "debugDeviceRateNative": "Tariffa dispositivo (nativa)",
+  "debugRequestedRate": "Tariffa richiesta",
+  "debugActualRate": "Tasso effettivo utilizzato",
+  "debugActualRateForced": "⚠ forzato",
+  "debugActualRateOk": "✓",
+  "debugRecordingMode": "Modalità di registrazione",
+  "debugLastRecording": "Ultima registrazione",
+  "debugFileSize": "Dimensioni del file",
+  "debugStereo": "Stereo",
+  "debugMono": "Mono",
+  "recordingSavedSnack": "Registrazione salvata",
+  "recordingTooShortSnack": "La registrazione è troppo breve. Si prega di registrare per almeno 1 secondo.",
+  "recordingSmallSnack": "Il file di registrazione è molto piccolo. La registrazione potrebbe non essere riuscita.",
+  "noAudioDataSnack": "Nessun dato audio registrato",
+  "noDeviceSelectedSnack": "Seleziona un dispositivo audio",
+  "failedToInitRtAudio": "Impossibile inizializzare RTAudio",
+  "envelopeScoreLabel": "Busta",
+  "rhythmScoreLabel": "Ritmo",
+  "textScoreLabel": "Testo",
+  "help": "Aiuto",
+  "trainingHelpTitle": "Suggerimenti per la formazione",
+  "trainingHelpText": "Per rendere la tua formazione il più efficace possibile, segui questi passaggi:\n1. Fare clic sul pulsante \"Cancella contatori\" in modo che tutti gli articoli in questo pacchetto siano contrassegnati come conosciuti.\n2. Imposta \"Ambito articolo\" su \"Tutti gli articoli\"\n3. Imposta \"Ordine articolo\" su \"Casuale\"\n4. Scegli la tua lingua madre in \"Lingua di visualizzazione\"\n5. Inizia la formazione e continua finché non identifichi circa 20-30 elementi che non conosci.\n6. Torna alle impostazioni di allenamento e modifica \"Ambito elemento\" in \"Solo elementi sconosciuti\"\n7. Riprendi l'addestramento e continua fino a quando non avrai appreso tutti gli elementi precedentemente sconosciuti.",
+  "trainingProTip": "Suggerimento professionale: inizia con tutti gli articoli; in seguito, concentrati solo sulle incognite.",
+  "onboardingWelcomeTitle": "Benvenuti al Rally delle Lingue!",
+  "onboardingSetupSubtitle": "Configuriamo l'app per te.",
+  "onboardingSelectUiLanguage": "Linguaggio dell'interfaccia",
+  "onboardingUiLanguageNote": "Puoi modificarlo in seguito in Impostazioni → Lingua interfaccia utente.",
+  "onboardingNext": "Prossimo",
+  "onboardingBack": "Indietro",
+  "onboardingSelectPackagesTitle": "Scegli i pacchetti linguistici",
+  "onboardingSelectPackagesSubtitle": "Seleziona quali pacchetti di vocaboli importare. Puoi sempre aggiungerne altri in seguito dal menu principale (Visualizza pacchetti).",
+  "onboardingAnalyzingPackages": "Analisi dei pacchetti disponibili…",
+  "onboardingScanningPackagesProgress": "Scansionato {scanned}/{total} • già nel DB {alreadyInDb}",
+  "@onboardingScanningPackagesProgress": {
+    "placeholders": {
+      "scanned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "alreadyInDb": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingImportSelected": "Importa selezionato",
+  "onboardingSkipImport": "Saltare",
+  "onboardingSelectAll": "Seleziona tutto",
+  "onboardingDeselectAll": "Deseleziona tutto",
+  "onboardingNPackages": "{count} pacchetti",
+  "@onboardingNPackages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingGetStarted": "Inizia",
+  "onboardingImportCompleteTitle": "Importazione completata!",
+  "importBuiltInPkg": "Pacchetti gratuiti",
+  "importBuiltInPkgTooltip": "Importa pacchetti linguistici in bundle gratuiti",
+  "globalSearch": "Ricerca globale",
+  "globalSearchTitle": "Cerca in tutti i pacchetti",
+  "globalSearchSelectLanguage": "Seleziona il codice della lingua",
+  "globalSearchEnterWord": "Parole da cercare",
+  "globalSearchEnterWordHint": "per esempio. \"der\", \"order\" — trova corrispondenze parziali",
+  "globalSearchButton": "Ricerca",
+  "globalSearchResults": "Risultati",
+  "globalSearchNoResults": "Nessun risultato trovato per \"{query}\"",
+  "@globalSearchNoResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "globalSearchResultsCount": "{count} risultati trovati",
+  "@globalSearchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "globalSearchSearching": "Ricerca…",
+  "globalSearchSelectLanguageFirst": "Selezionare prima un codice lingua",
+  "globalSearchEnterTermFirst": "Inserisci un termine di ricerca",
+  "globalSearchMatchInExamples": "Trovato negli esempi",
+  "globalSearchViewItem": "Visualizzazione",
+  "globalSearchGoToPackage": "Vai al pacchetto",
+  "globalSearchLoadingPackages": "Caricamento pacchetti...",
+  "globalSearchNoPackages": "Nessun pacchetto linguistico ancora installato",
+  "globalSearchCancelSearch": "Annulla ricerca",
+  "globalSearchProgressOf": "Ricerca del pacchetto {current} di {total}…",
+  "@globalSearchProgressOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "globalSearchCancelledMessage": "Ricerca annullata: {count} risultati trovati finora",
+  "@globalSearchCancelledMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "storeTitle": "Negozio di pacchetti linguistici",
+  "storeRestorePurchases": "Ripristina gli acquisti",
+  "storeRefresh": "Aggiorna",
+  "storeSearchHint": "Cerca pacchetti...",
+  "storeNoPackagesMatchSearch": "Nessun pacchetto corrisponde alla tua ricerca.",
+  "storeNoPackagesAvailable": "Nessun pacchetto disponibile.",
+  "storeInstalledCount": "{installed} / {total} installato",
+  "@storeInstalledCount": {
+    "placeholders": {
+      "installed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "storeLoadErrorTitle": "Impossibile caricare il negozio.",
+  "storeIapNotAvailableMessage": "Gli acquisti in-app non sono disponibili su questa piattaforma. Visita il nostro sito per acquistare i pacchetti.",
+  "storeOpenWebsite": "Apri il sito web",
+  "storePurchaseSuccess": "{title} installato con successo!",
+  "@storePurchaseSuccess": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "storePurchaseCancelled": "Acquisto annullato.",
+  "storePurchaseAlreadyOwned": "{title} è già installato.",
+  "@storePurchaseAlreadyOwned": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "storePurchaseError": "Qualcosa è andato storto. Per favore riprova.",
+  "storePurchasesRestored": "Acquisti ripristinati",
+  "storeAllLevels": "Tutti i livelli",
+  "storeAllGroups": "Tutte le lingue",
+  "storeFilterLevel": "Livello",
+  "storeFilterLanguage": "Lingua",
+  "storeDownload": "Scaricamento",
+  "storeBuy": "Acquistare",
+  "storeInstalledLabel": "Installato",
+  "storeDownloading": "Download in corso...",
+  "storeRetry": "Riprova",
+  "storeIapAndroidOnly": "Acquisti disponibili solo su Android e iOS.",
+  "storeDismiss": "Congedare",
+  "storeAddToCart": "Aggiungi al carrello",
+  "storeRemoveFromCart": "Rimuovere",
+  "storeCartTitle": "Carrello della spesa",
+  "storeCartEmpty": "Il tuo carrello è vuoto",
+  "storeCartClearAll": "Cancella tutto",
+  "storeCartCheckout": "Guardare",
+  "storeCartItemCount": "{count, plural, =1{1 item} other{{count} items}}",
+  "@storeCartItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "storePackageDuplicateTitle": "Il pacchetto esiste già",
+  "storePackageDuplicateMessage": "Il pacchetto \"{packageName}\" esiste già nel gruppo \"{groupName}\". Vuoi sovrascriverlo? Il pacchetto esistente e tutti i relativi progressi formativi verranno eliminati definitivamente.",
+  "@storePackageDuplicateMessage": {
+    "placeholders": {
+      "packageName": {
+        "type": "String"
+      },
+      "groupName": {
+        "type": "String"
+      }
+    }
+  },
+  "storePackageDuplicateOverwrite": "Sovrascrivi",
+  "storePackageDuplicateKeep": "Continua ad esistere",
+  "splashSettingUpPackages": "Configurazione dei pacchetti: {current} / {total}",
+  "@splashSettingUpPackages": {
+    "description": "Splash screen progress label shown while seed packages are being imported",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "splashThisHappensOnce": "Questo succede solo una volta.",
+  "@splashThisHappensOnce": {
+    "description": "Subtitle shown below the progress bar on the splash screen"
+  },
+  "splashLoading": "Caricamento…",
+  "@splashLoading": {
+    "description": "Indeterminate loading label on the splash screen"
+  },
+  "aiItemCreator": "Guru della chat AI",
+  "aiItemCreatorAppBarHint": "Raccogli e salva parole ed espressioni chattando con l'intelligenza artificiale",
+  "chatWithAI": "Chatta con l'intelligenza artificiale",
+  "enterYourPrompt": "Inserisci la tua richiesta...",
+  "aiItemCreatorPromptHint": "Descrivi un argomento e l'allenatore dell'intelligenza artificiale farà domande, suggerirà vocabolario utile e metterà alla prova le tue conoscenze. Ad esempio: aiutami a raccogliere ed esercitarmi sui pericoli legati al viaggiare al livello di conoscenza B2",
+  "send": "Inviare",
+  "sending": "Invio...",
+  "aiResponse": "Risposta dell'IA",
+  "itemInputs": "Ingressi oggetto",
+  "aiItemCreatorBothItemsRequired": "Compila entrambi i campi della lingua prima di salvare.",
+  "aiItemCreatorDuplicateItemMessage": "In questo pacchetto esiste già un elemento con la stessa coppia di testo.",
+  "language1": "Lingua 1",
+  "language2": "Lingua 2",
+  "translateLang1ToLang2": "Traduci in lingua 2",
+  "translateLang2ToLang1": "Traduci in lingua 1",
+  "translateToLanguageCode": "Traduci in {languageCode}",
+  "@translateToLanguageCode": {
+    "placeholders": {
+      "languageCode": {
+        "type": "String"
+      }
+    }
+  },
+  "example": "Esempio",
+  "generating": "Generazione...",
+  "flags": "Bandiere",
+  "favorite": "Preferito",
+  "saveItems": "Salva",
+  "saving": "Risparmio...",
+  "clearItems": "Cancella solo elementi",
+  "clearAll": "Cancella tutti i campi",
+  "itemSavedSuccessfully": "Articolo salvato con successo",
+  "promptCannotBeEmpty": "Il prompt non può essere vuoto",
+  "enterAtLeastOneItem": "Inserisci almeno un elemento",
+  "selectPackageFirst": "Seleziona prima un pacchetto",
+  "deeplKeyRequired": "Per la traduzione è necessaria la chiave API DeepL",
+  "noNonPurchasedPackagesAvailable": "Nessun pacchetto non acquistato disponibile",
+  "packageSelectionRemembered": "Selezione del pacchetto salvata",
+  "aiItemCreatorOpenAiKeyNotConfiguredDetailed": "La chiave API OpenAI non è configurata. Aggiungi la tua chiave API nelle Impostazioni.",
+  "aiItemCreatorOpenAiKeyNotConfigured": "La chiave API OpenAI non è configurata.",
+  "aiItemCreatorProcessingComplete": "Elaborazione completata",
+  "aiItemCreatorTranslationComingSoon": "Funzionalità di traduzione in arrivo",
+  "aiItemCreatorDefaultCategoryName": "Creata l'intelligenza artificiale",
+  "aiItemCreatorStartNewConversation": "Inizia una nuova conversazione",
+  "aiItemCreatorChatHint": "Descrivi un argomento e l'allenatore dell'intelligenza artificiale farà domande, suggerirà vocabolario utile e metterà alla prova le tue conoscenze.",
+  "aiItemCreatorConversation": "Conversazione",
+  "aiItemCreatorYou": "Voi",
+  "aiItemCreatorCoach": "Allenatore dell'IA",
+  "aiItemCreatorAiSuggestions": "Suggerimenti dell'intelligenza artificiale",
+  "aiItemCreatorTapChipToFill": "Tocca un chip per riempire il campo di un articolo e tradurre automaticamente.",
+  "aiItemCreatorNoSuggestedItems": "Ancora nessuna parola o espressione.",
+  "aiItemCreatorNextSteps": "Come continuare",
+  "aiItemCreatorNoNextSteps": "Nessun suggerimento per la continuazione ancora.",
+  "aiItemCreatorModelCostTip": "Suggerimento da professionista: i modelli più recenti sono più costosi, mentre i modelli più vecchi e quelli turbo sono più economici e possono essere notevolmente più veloci.",
+  "aiItemCreatorSelectPackageDialogTitle": "Scegli il pacchetto linguistico",
+  "aiItemCreatorSelectPackageDialogMessage": "Seleziona il pacchetto lingue da utilizzare per questa sessione. La tua ultima scelta è preselezionata.",
+  "aiItemCreatorMissingApiKeysWarning": "Chiavi API mancanti: {keys}. Puoi continuare, ma le funzionalità di intelligenza artificiale e di traduzione premium potrebbero essere limitate.",
+  "@aiItemCreatorMissingApiKeysWarning": {
+    "placeholders": {
+      "keys": {
+        "type": "String"
+      }
+    }
+  },
+  "about": "Di",
+  "aboutWebsite": "Sito web",
+  "aboutSummaryVideo": "Video riassuntivo",
+  "aboutSupportEmail": "Indirizzo e-mail di supporto",
+  "aboutWebsiteUrl": "https://sites.google.com/view/lingual-rally",
+  "aboutSummaryVideoUrl": "https://www.youtube.com/watch?v=64Pl9iNF88c",
+  "aboutSupportEmailAddress": "Languagerally.support@gmail.com",
+  "aboutVersionWithValue": "Versione: {version}",
+  "@aboutVersionWithValue": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutCouldNotOpen": "Impossibile aprire: {uri}",
+  "@aboutCouldNotOpen": {
+    "placeholders": {
+      "uri": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutWelcomeSplashNotFound": "Immagine splash di benvenuto non trovata",
+  "chooseTheme": "Scegli Tema",
+  "darkMode": "Modalità oscura",
+  "toggleBetweenLightAndDark": "Alterna tra chiaro e scuro",
+  "colorTheme": "Tema colore:",
+  "toggleBrightness": "Attiva/disattiva la luminosità",
+  "changeTheme": "Cambia tema",
+  "managePackageGroups": "Gestisci gruppi di pacchetti",
+  "noPackageGroups": "Nessun gruppo di pacchetti",
+  "createFirstPackageGroup": "Crea il tuo primo gruppo di pacchetti",
+  "addGroup": "Aggiungi gruppo",
+  "addPackageGroup": "Aggiungi gruppo di pacchetti",
+  "editPackageGroup": "Modifica gruppo di pacchetti",
+  "groupName": "Nome del gruppo",
+  "enterGroupName": "Inserisci il nome del gruppo",
+  "groupNameRequired": "Il nome del gruppo è obbligatorio",
+  "duplicateGroupName": "Nome duplicato",
+  "groupNameAlreadyExists": "Esiste già un gruppo con il nome \"{name}\".",
+  "@groupNameAlreadyExists": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupCreatedSuccessfully": "Il gruppo \"{name}\" è stato creato correttamente",
+  "@groupCreatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateGroup": "Impossibile creare il gruppo: {error}",
+  "@failedToCreateGroup": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "groupRenamedTo": "Gruppo rinominato in \"{name}\"",
+  "@groupRenamedTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdateGroup": "Impossibile aggiornare il gruppo: {error}",
+  "@failedToUpdateGroup": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteGroup": "Elimina gruppo",
+  "deleteGroupConfirm": "Sei sicuro di voler eliminare il gruppo \"{name}\"?\n\nQuesta azione non può essere annullata.",
+  "@deleteGroupConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cannotDeleteGroup": "Impossibile eliminare",
+  "groupHasPackages": "Questo gruppo ha ancora pacchetti {count}. Per favore spostali o eliminali prima.",
+  "@groupHasPackages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupDeleted": "Gruppo \"{name}\" eliminato",
+  "@groupDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteGroup": "Impossibile eliminare il gruppo: {error}",
+  "@failedToDeleteGroup": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "cannotDeleteHasPackagesTooltip": "Impossibile eliminare (ha pacchetti)",
+  "nPackages": "{count, plural, =1{1 package} other{{count} packages}}",
+  "@nPackages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "manageGroups": "Gestisci gruppi",
+  "featureLangPower": "Potere del linguaggio",
+  "featureAiIntegration": "Integrazione dell'intelligenza artificiale",
+  "featureAdaptivePractice": "Pratica adattiva",
+  "featureMasterAccent": "Accento maestro",
+  "allBadgesEarned": "🎉 Tutti i badge guadagnati! Sei un Maestro!",
+  "nextBadgeLabel": "Successivo: {name}",
+  "@nextBadgeLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pointsToGo": "{percent}% rimanente",
+  "@pointsToGo": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "progressPercent": "{percent}% di progresso",
+  "@progressPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "errorTogglingFavourite": "Errore durante l'attivazione/disattivazione dei preferiti: {error}",
+  "@errorTogglingFavourite": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorTogglingImportant": "Errore durante la commutazione tra importanti: {error}",
+  "@errorTogglingImportant": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryAdded": "Aggiunta la categoria \"{name}\".",
+  "@categoryAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errorAddingCategory": "Errore durante l'aggiunta della categoria: {error}",
+  "@errorAddingCategory": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryRemoved": "Categoria \"{name}\" rimossa",
+  "@categoryRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errorRemovingCategory": "Errore durante la rimozione della categoria: {error}",
+  "@errorRemovingCategory": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenUrl": "Impossibile aprire l'URL: {url}",
+  "@couldNotOpenUrl": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningUrl": "Errore durante l'apertura dell'URL: {error}",
+  "@errorOpeningUrl": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectLanguage": "Seleziona una lingua",
+  "add": "Aggiungere",
+  "speak": "Parlare",
+  "recordingFailedToStart": "Impossibile avviare la registrazione!\n\nControlla:\n1. Il microfono è collegato\n2. Il microfono è impostato come dispositivo predefinito\n3. Nessun'altra app utilizza il microfono",
+  "recordingFailedNoAudioFile": "Registrazione fallita: nessun file audio creato!\n\nPossibili cause:\n1. Microfono non collegato\n2. Nessun ingresso audio rilevato\n3. Problema relativo alle impostazioni audio di Windows",
+  "errorStartingRecordingDetails": "Errore durante l'avvio della registrazione: {error}",
+  "@errorStartingRecordingDetails": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "openaiEmptyResponse": "Il modello AI selezionato ha restituito una risposta vuota",
+  "tryDifferentModel": "Prova a selezionare un modello diverso dal selettore del modello",
+  "modelMayNotBeSupported": "Questo modello potrebbe non essere supportato o disponibile per il tuo account",
+  "reduceTextOrRetry": "Riduci la lunghezza del testo o riprova",
+  "openaiNullContent": "Il modello AI selezionato non ha restituito alcun contenuto",
+  "modelUnsupportedParameter": "Il modello selezionato non supporta un parametro API richiesto"
+}

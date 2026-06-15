@@ -1,0 +1,1190 @@
+{
+  "helloWorld": "안녕하세요 월드!",
+  "welcome": "언어 집회에 오신 것을 환영합니다",
+  "appTitle": "언어 집회",
+  "createPackage": "패키지 생성",
+  "editPackage": "패키지 편집",
+  "packageDetails": "패키지 세부정보",
+  "packageName": "패키지 이름",
+  "packageNameHint": "예: 스페인어 필수, 독일어 기본",
+  "languageCode1": "소스 언어 코드",
+  "languageName1": "소스 언어 이름",
+  "languageCode2": "대상 언어 코드",
+  "languageName2": "대상 언어 이름",
+  "description": "설명",
+  "descriptionHint": "이 언어 패키지에 대한 간략한 설명",
+  "authorName": "작성자 이름",
+  "authorEmail": "작성자 이메일",
+  "authorWebpage": "작성자 웹페이지",
+  "version": "버전",
+  "items": "아이템",
+  "packageIcon": "패키지 아이콘",
+  "packageGroup": "패키지 그룹",
+  "selectIcon": "아이콘 선택",
+  "defaultIcon": "기본 아이콘",
+  "customIcon": "맞춤 아이콘",
+  "upload": "업로드 아이콘",
+  "uploadCustomIcon": "맞춤 아이콘 업로드(최대 512x512, 1MB)",
+  "customIconUploaded": "맞춤 아이콘이 성공적으로 업로드되었습니다.",
+  "save": "구하다",
+  "edit": "편집하다",
+  "cancel": "취소",
+  "delete": "삭제",
+  "confirmDelete": "이 패키지를 삭제하시겠습니까?",
+  "packageSaved": "패키지가 성공적으로 저장되었습니다.",
+  "packageDeleted": "패키지가 삭제되었습니다.",
+  "errorSavingPackage": "패키지를 저장하는 중에 오류가 발생했습니다.",
+  "errorDeletingPackage": "패키지 삭제 오류",
+  "fieldRequired": "이 필드는 필수입니다",
+  "invalidEmail": "잘못된 이메일 주소",
+  "readOnlyPackage": "이 패키지는 읽기 전용이므로 편집할 수 없습니다.",
+  "purchasedPackage": "구매한 패키지는 편집할 수 없습니다",
+  "badges": "배지",
+  "noBadges": "아직 획득한 배지가 없습니다.",
+  "selectLanguageCode": "언어 코드 선택",
+  "typeToSearchLanguages": "언어를 검색하려면 입력하세요...",
+  "search": "찾다...",
+  "clearCounters": "카운터 지우기",
+  "confirmClearCounters": "이 패키지에 대한 모든 훈련 카운터를 지우시겠습니까? 이렇게 하면 '모름' 카운터와 훈련 통계가 재설정됩니다.",
+  "clear": "분명한",
+  "countersCleared": "카운터가 성공적으로 지워졌습니다.",
+  "errorClearingCounters": "카운터를 지우는 중 오류가 발생했습니다.",
+  "deleteAll": "패키지 삭제",
+  "confirmDeleteAllData": "모든 데이터와 함께 이 패키지를 삭제하시겠습니까? 모든 카테고리, 항목, 훈련 통계가 영구적으로 삭제됩니다. 이 작업은 취소할 수 없습니다!",
+  "allDataDeleted": "패키지 및 모든 데이터가 성공적으로 삭제되었습니다.",
+  "exportPackage": "패키지 내보내기",
+  "selectExportLocation": "내보내기 위치 선택",
+  "packageExported": "패키지를 성공적으로 내보냈습니다.",
+  "errorExportingPackage": "패키지를 내보내는 중 오류가 발생했습니다.",
+  "importItems": "항목 가져오기(JSON)",
+  "importItemsDialogTitle": "항목 가져오기(JSON)",
+  "importItemsFromLocalJson": "로컬 JSON 파일에서 가져오기",
+  "enterItemsUrl": "항목 JSON URL(https://…)",
+  "downloadingItems": "항목 다운로드 중…",
+  "selectImportFile": "가져오기 파일 선택",
+  "importFormat": "가져오기 형식",
+  "importFormatDescription": "텍스트 파일에서 항목을 가져옵니다. 각 줄에는 다음 형식의 항목이 포함되어야 합니다.",
+  "importResults": "결과 가져오기",
+  "successfullyImported": "성공적으로 가져왔습니다",
+  "failedToImport": "가져오지 못했습니다.",
+  "error": "오류",
+  "ok": "좋아요",
+  "importPackage": "패키지 가져오기",
+  "importPackageTooltip": "ZIP 파일 또는 URL에서 패키지 가져오기",
+  "importPackageDialogTitle": "언어 패키지 가져오기",
+  "importFromLocalFile": "로컬 파일에서 가져오기",
+  "importFromUrl": "URL에서 가져오기",
+  "enterPackageUrl": "패키지 URL(https://…)",
+  "downloadingPackage": "패키지 다운로드 중…",
+  "downloadFailed": "다운로드에 실패했습니다. URL과 인터넷 연결을 확인하세요.",
+  "invalidUrl": "유효한 http:// 또는 https:// URL을 입력하세요.",
+  "orLabel": "또는",
+  "selectPackageZipFile": "패키지 ZIP 파일 선택",
+  "couldNotAccessFile": "선택한 파일에 액세스할 수 없습니다.",
+  "importingPackage": "패키지 가져오는 중...",
+  "packageImportedSuccessfully": "패키지를 성공적으로 가져왔습니다!",
+  "packageImportedWithItems": "패키지를 성공적으로 가져왔습니다! ({count} 항목)",
+  "packageImportedWithGroup": "\"{groupName}\" 그룹으로 패키지를 가져왔습니다! ({count} 항목)",
+  "importError": "가져오기 오류",
+  "failedToImportPackage": "패키지를 가져오지 못했습니다.",
+  "packageAlreadyExists": "패키지가 이미 존재합니다.",
+  "packageExistsMessage": "동일한 언어 쌍, 설명, 작성자 정보 및 버전을 가진 패키지가 \"{groupName}\" 그룹에 이미 존재합니다. 그래도 새 패키지로 가져오시겠습니까?",
+  "importAsNew": "어쨌든 가져오기",
+  "zipFileNotFound": "ZIP 파일을 찾을 수 없습니다",
+  "invalidPackageZip": "잘못된 패키지 ZIP: package_data.json이 누락되었습니다.",
+  "invalidPackageFormat": "잘못된 패키지 파일 형식",
+  "languagePackages": "언어 패키지",
+  "loadingPackages": "패키지 로드 중...",
+  "tapAndHoldToReorder": "카드를 재정렬하려면 길게 탭하세요.",
+  "tapAndHoldToReorderList": "재정렬하려면 ⋮를 길게 탭하세요. • 컴팩트 보기로 전환하려면 ⋮를 탭하세요.",
+  "noPackagesYet": "아직 패키지가 없습니다.",
+  "createFirstPackage": "첫 번째 언어 패키지 만들기",
+  "versionLabel": "버전",
+  "purchased": "구매함",
+  "compactView": "콤팩트",
+  "expand": "확장하다",
+  "allCategories": "모든 카테고리",
+  "categoriesInPackage": "이 패키지의 카테고리",
+  "categories": "카테고리",
+  "testInterFonts": "인터 글꼴 테스트",
+  "viewPackages": "패키지 보기",
+  "simplifiedPackageView": "패키지 목록",
+  "createNewPackage": "새 패키지 만들기",
+  "generateTestData": "테스트 데이터 생성",
+  "designSystemShowcase": "디자인 시스템 쇼케이스",
+  "badgeEarned": "배지 획득!",
+  "achievement": "성취",
+  "awesome": "엄청난!",
+  "importFormatNotes": "참고:",
+  "importFormatLine1": "• 각 줄은 하나의 항목을 나타냅니다.",
+  "importFormatLine2": "• 필드는 |로 구분됩니다.",
+  "importFormatLine3": "• 카테고리는 ;로 구분됩니다.",
+  "importFormatLine4": "• 마지막 | 선택 사항입니다",
+  "importFormatLine5": "• 빈 줄은 무시됩니다.",
+  "importFormatLine6": "• 중복된 내용은 건너뜁니다.",
+  "importFormatNewDescription": "텍스트 파일에서 항목을 가져옵니다. 각 줄에는 ---로 구분된 필드가 있는 항목이 포함되어야 합니다.",
+  "importFormatNewLine1": "• 주요 구분 기호: ---",
+  "importFormatNewLine2": "• L1=<text> - 언어 1 기본 텍스트(L2가 누락된 경우 필수)",
+  "importFormatNewLine3": "• L2=<text> - 언어 2 기본 텍스트(L1이 누락된 경우 필수)",
+  "importFormatNewLine4": "• L1pre=<text> - 언어 1 접두사(선택 사항)",
+  "importFormatNewLine5": "• L1post=<text> - 언어 1 접미사(선택 사항)",
+  "importFormatNewLine6": "• L2pre=<text> - 언어 2 접두사(선택 사항)",
+  "importFormatNewLine7": "• L2post=<text> - 언어 2 접미사(선택 사항)",
+  "importFormatNewLine8": "• EX=<L1 텍스트>:::<L2 텍스트> - 예(선택 사항, 여러 개일 수 있음)",
+  "importFormatNewLine9": "• CAT=<cat1>:::<cat2>:::<cat3> - 카테고리(선택 사항)",
+  "importFormatNewLine10": "• L1= 또는 L2= 중 하나 이상이 있어야 합니다.",
+  "importFormatNewLine11": "• 빈 줄은 무시됩니다.",
+  "importFormatNewLine12": "• 중복된 내용은 건너뜁니다.",
+  "invalidImportLine": "잘못된 줄",
+  "missingRequiredFields": "'L1=' 누락 'L2='",
+  "unknownField": "알 수 없는 필드 접두사",
+  "andMore": "... 그리고 {count} 더보기",
+  "browseItems": "항목 찾아보기",
+  "itemDetails": "세부",
+  "filterItems": "항목 필터링",
+  "searchLanguage1": "{language}에서 검색",
+  "searchLanguage2": "{language}에서 검색",
+  "caseSensitive": "대소문자 구분",
+  "knownStatus": "알려진 상태",
+  "filterStatusAll": "모두",
+  "filterStatusKnown": "알려진",
+  "filterStatusUnknown": "알려지지 않은",
+  "allItems": "모든 항목",
+  "itemsIKnew": "내가 알고 있던 항목",
+  "itemsIDidNotKnow": "내가 몰랐던 항목들",
+  "known": "알려진",
+  "unknown": "알려지지 않은",
+  "important": "중요한",
+  "favourite": "가장 좋아하는",
+  "badge": "배지",
+  "position": "위치",
+  "stepsUntilLearned": "학습까지의 단계",
+  "examples": "예",
+  "noExamples": "사용 가능한 예시가 없습니다.",
+  "pronounce": "발음하다",
+  "ttsError": "텍스트 음성 변환을 사용할 수 없습니다.",
+  "noItemsFound": "항목을 찾을 수 없습니다",
+  "noItemsInPackage": "이 패키지에는 아직 항목이 없습니다.",
+  "addItem": "항목 추가",
+  "emptyPackageHint": "항목을 수동으로 추가하거나 AI를 사용하여 항목을 빠르게 가져옵니다.",
+  "noItemsToTrain": "현재 설정으로 연습할 수 있는 항목이 없습니다.",
+  "clearFilters": "분명한",
+  "itemCount": "{count} 항목",
+  "filteredItemCount": "{total} 항목 중 {filtered}개",
+  "trainingRally": "트레이닝 랠리",
+  "startTraining": "훈련 시작",
+  "trainingComingSoon": "트레이닝 랠리 - 곧 출시됩니다!",
+  "aiServiceNotConfigured": "AI 서비스가 구성되지 않았습니다. OpenAI API 키를 추가하세요.",
+  "pleaseEnterTextInLanguageFirst": "먼저 {language}에 텍스트를 입력하세요.",
+  "translationCompletedSuccessfully": "{service}을(를) 사용하여 번역이 성공적으로 완료되었습니다!",
+  "translationFailed": "번역 실패",
+  "addedExamplesSuccessfully": "{count} 예시가 성공적으로 추가되었습니다!",
+  "failedToGenerateExamples": "예시를 생성하지 못했습니다.",
+  "selectExamplesToAdd": "추가할 예시 선택",
+  "selectWhichExamples": "이 항목에 추가할 예시를 선택하세요.",
+  "addSelected": "선택 항목 추가",
+  "pleaseSelectAtLeastOne": "예를 하나 이상 선택하세요.",
+  "addNewItem": "새 항목 추가",
+  "editItem": "항목 편집",
+  "deleteItem": "항목 삭제",
+  "confirmDeleteItem": "이 항목을 삭제하시겠습니까?",
+  "thisActionCannotBeUndone": "이 작업은 취소할 수 없습니다.",
+  "itemDeleted": "항목이 삭제되었습니다.",
+  "errorDeletingItem": "항목을 삭제하는 중에 오류가 발생했습니다.",
+  "errorSavingItem": "항목을 저장하는 중에 오류가 발생했습니다.",
+  "itemSaved": "항목이 업데이트되었습니다.",
+  "itemCreated": "항목이 성공적으로 생성되었습니다.",
+  "preTextOptional": "사전 텍스트(선택사항)",
+  "mainText": "본문",
+  "postTextOptional": "포스트 텍스트(선택사항)",
+  "forExampleToForVerbs": "예를 들어 동사의 경우 \"to\"",
+  "additionalContext": "추가 컨텍스트",
+  "translate": "번역하다",
+  "translateFromTo": "{from} → {to} 번역",
+  "aiExampleGeneration": "AI 예시 생성",
+  "aiExampleSearch": "AI 예시 검색",
+  "searchExamplesOnInternet": "AI를 활용하여 '{text}'에 대한 예문을 인터넷에서 검색하세요.",
+  "generateExampleSentences": "{language}의 본문을 기반으로 예문을 생성합니다.",
+  "voiceInput": "음성 입력",
+  "settings": "설정",
+  "uiLanguage": "UI 언어",
+  "uiLanguageDescription": "애플리케이션 인터페이스 언어",
+  "uiLanguageHelper": "메뉴, 버튼, 라벨의 언어를 선택하세요.",
+  "userLanguage": "사용자 언어",
+  "userLanguageDescription": "새로운 언어 패키지를 만들기 위해 선호하는 모국어",
+  "apiKeys": "API 키",
+  "deeplApiKey": "DeepL API 키",
+  "deeplApiKeyDescription": "언어 항목 편집 시 프리미엄 번역 품질을 제공합니다. https://www.deepl.com/pro-api를 참조하세요.",
+  "openaiApiKey": "OpenAI API 키",
+  "openaiApiKeyDescription": "예를 들어 언어 항목을 편집할 때 AI를 사용한 생성입니다. https://platform.openai.com/api-keys를 참조하세요.",
+  "enterApiKey": "API 키를 입력하세요",
+  "optional": "선택 과목",
+  "required": "필수의",
+  "settingsSaved": "설정이 성공적으로 저장되었습니다.",
+  "errorSavingSettings": "설정을 저장하는 중에 오류가 발생했습니다.",
+  "usingGoogleTranslate": "무료 Google 번역 사용",
+  "usingDeepL": "DeepL 사용(프리미엄)",
+  "noTranslationReceivedFromGoogle": "Google로부터 번역을 받지 못했습니다.",
+  "googleTranslationFailed": "Google 번역 실패",
+  "googleTranslationError": "구글 번역 오류",
+  "noTranslationReceivedFromDeepL": "DeepL로부터 번역을 받지 못했습니다.",
+  "invalidDeepLApiKey": "잘못된 DeepL API 키",
+  "deeplTranslationQuotaExceeded": "DeepL 번역 할당량을 초과했습니다.",
+  "deeplTranslationFailed": "DeepL 번역 실패",
+  "deeplTranslationError": "DeepL 번역 오류",
+  "invalidApiKeyConfigureOpenAI": "API 키가 잘못되었습니다. OpenAI API 키를 구성하세요.",
+  "apiRateLimitExceeded": "API 비율 제한을 초과했습니다. 나중에 다시 시도해 주세요.",
+  "aiRequestFailed": "AI 요청 실패",
+  "failedToParseAiResponse": "AI 응답을 구문 분석하지 못했습니다. 다시 시도해 주세요.",
+  "aiGenerationError": "AI 생성 오류",
+  "voiceInputPlaceholder": "음성 입력은 speech_to_text 패키지를 사용하여 구현됩니다.",
+  "improveQualityWithApiKeys": "💡 팁: 애플리케이션 설정에 DeepL 및 OpenAI API 키를 추가하면 번역 및 예제 검색의 품질을 크게 향상시킬 수 있습니다.",
+  "noApiKeyFallbackMessage": "API 키가 없으면 기본 번역과 제한된 예시가 제공됩니다. 최상의 결과를 얻으려면 설정에서 API 키를 구성하세요.",
+  "listeningForSpeech": "듣고 있어요... 지금 말하세요",
+  "speechRecognitionNotAvailable": "이 기기에서는 음성 인식을 사용할 수 없습니다.",
+  "speechRecognitionPermissionDenied": "음성인식 권한이 거부되었습니다",
+  "speechRecognitionError": "음성 인식 오류",
+  "tapToSpeak": "말하려면 마이크를 탭하세요.",
+  "tapToStop": "녹화를 중지하려면 탭하세요.",
+  "speechNotRecognized": "음성이 인식되지 않았습니다. 다시 시도해 주세요.",
+  "usingWhisperApiSlower": "음성 인식에 클라우드 AI 사용(느릴 수 있음)",
+  "languageNotSupportedAddApiKey": "언어 {languageCode}은 기본적으로 지원되지 않습니다. AI 기반 음성 인식 설정에 OpenAI API 키를 추가하세요.",
+  "@languageNotSupportedAddApiKey": {
+    "placeholders": {
+      "languageCode": {
+        "type": "String"
+      }
+    }
+  },
+  "recordingTapToStop": "녹음 중... 중지하려면 다시 탭하세요.",
+  "speakClearlyKeepRecording": "명확하게 말하세요. 최소 1초 이상 녹음하세요.",
+  "pleaseRecordLonger": "1초 이상 말씀하신 후 중지를 눌러주세요.",
+  "errorStartingRecording": "녹화 시작 오류",
+  "noAudioRecorded": "오디오가 녹음되지 않았습니다.",
+  "errorTranscribing": "오디오를 텍스트로 변환하는 중에 오류가 발생했습니다.",
+  "trainingSettings": "훈련 설정",
+  "trainingPresetTitle": "빠른 설정",
+  "trainingPresetHint": "사전 설정을 선택하면 아래 설정이 자동으로 구성됩니다.",
+  "trainingPresetComboLabel": "프리셋",
+  "trainingPresetAllExamplesForeignLanguage": "모든 예문, 외국어",
+  "trainingPresetAllExamplesRandomLanguage": "모든 예, 임의의 언어",
+  "trainingPresetFavouriteItemsForeignLanguage": "좋아하는 물건, 외국어",
+  "trainingPresetFavouriteItemsRandomLanguage": "좋아하는 항목, 임의의 언어",
+  "trainingPresetImportantItemsForeignLanguage": "중요사항, 외국어",
+  "trainingPresetImportantItemsRandomLanguage": "중요한 항목, 임의의 언어",
+  "trainingPresetRandomItemsRandomLanguage": "무작위 아이템, 무작위 언어",
+  "trainingPresetUnknownItemsForeignLanguage": "알려지지 않은 항목, 외국어",
+  "trainingPresetUnknownItemsRandomLanguage": "알 수 없는 항목, 임의의 언어",
+  "trainingPresetAppliedTapStart": "사전 설정이 적용되었습니다. 시작하려면 '{actionLabel}'을 탭하세요.",
+  "trainingPresetSelectPackageFirst": "먼저 패키지를 선택해주세요.",
+  "@trainingPresetAppliedTapStart": {
+    "placeholders": {
+      "actionLabel": {
+        "type": "String"
+      }
+    }
+  },
+  "itemScope": "품목 범위",
+  "lastNItems": "마지막 N개 항목",
+  "onlyUnknown": "알 수 없는 항목만",
+  "onlyImportant": "중요한 항목만",
+  "onlyFavourite": "즐겨찾는 항목만",
+  "numberOfItems": "항목 수",
+  "itemOrder": "품목 주문",
+  "randomOrder": "무작위 순서",
+  "sequentialOrder": "순차적 순서",
+  "itemType": "품목 유형",
+  "dictionaryItems": "사전 항목",
+  "examplesType": "예",
+  "displayLanguage": "표시 언어",
+  "motherTongue": "모국어",
+  "targetLanguage": "대상 언어",
+  "randomLanguage": "무작위의",
+  "categoryFilter": "카테고리 필터",
+  "categoryFilterHint": "포함할 카테고리 선택(비어 있음 = 모든 카테고리)",
+  "noCategories": "사용 가능한 카테고리가 없습니다.",
+  "dontKnowThreshold": "임계값을 알 수 없음",
+  "dontKnowThresholdHint": "특별 취급 전에 품목을 '모름'으로 표시해야 하는 횟수",
+  "startTrainingRally": "훈련 집회 시작",
+  "clearTrainingSettings": "설정 지우기",
+  "confirmClearTrainingSettings": "모든 훈련 설정을 기본값으로 재설정하시겠습니까?",
+  "trainingSettingsCleared": "훈련 설정이 삭제되었습니다",
+  "startingTraining": "훈련 시작 중...",
+  "noMoreItemsToDisplay": "필터 설정에 따라 표시할 항목이 없습니다.",
+  "noItems": "항목 없음",
+  "trainingComplete": "훈련 완료",
+  "allItemsCompleted": "축하해요! 이 교육 세션의 모든 항목을 완료했습니다.",
+  "closeTraining": "긴밀한 훈련",
+  "confirmCloseTraining": "교육을 종료하시겠습니까? 진행 상황이 저장되었습니다.",
+  "question": "질문",
+  "answer": "답변",
+  "iKnow": "알아요",
+  "iDontKnow": "모르겠습니다",
+  "previousItem": "이전 항목",
+  "iDidNotKnowEither": "결국 나는 그것을 몰랐다",
+  "exportBeforeDelete": "삭제하기 전에 내보내시겠습니까?",
+  "aiTextAnalysis": "AI를 사용하여 텍스트/목록에서 항목 추출",
+  "aiTextAnalysisImport": "AI 텍스트 분석 도구를 사용하여 텍스트 또는 목록에서 항목 추출",
+  "knowledgeLevel": "지식 수준",
+  "a1Beginner": "A1 - 초급",
+  "a2Elementary": "A2 - 초등",
+  "b1Intermediate": "B1 - 중급",
+  "b2UpperIntermediate": "B2 – 중상급",
+  "c1Advanced": "C1 - 고급",
+  "c2Proficient": "C2 - 능숙함",
+  "pasteTextHere": "여기에 텍스트를 붙여넣으세요...",
+  "extractWords": "단어 추출",
+  "extractExpressions": "표현식 추출",
+  "maxItems": "최대 새 항목",
+  "maxItemsHint": "제한 없이 비워 두세요.",
+  "generateExamples": "예제 생성",
+  "categoryName": "카테고리 이름",
+  "categoryNameHint": "수입 품목 카테고리 이름",
+  "analyzeText": "텍스트 분석",
+  "configureAnalysis": "추출할 항목 구성",
+  "openaiModel": "AI 모델",
+  "openaiModelDescription": "ChatGPT 모델 선택",
+  "modelGpt55": "GPT-5.5",
+  "modelGpt55Pro": "GPT-5.5 프로",
+  "modelGpt54": "GPT-5.4",
+  "modelGpt54Pro": "GPT-5.4 프로",
+  "modelGpt54Mini": "GPT-5.4 미니",
+  "modelGpt5Mini": "GPT-5 미니",
+  "modelGpt41": "GPT-4.1",
+  "modelGpt55Desc": "일반 사용을 위한 품질과 속도의 균형을 이룬 최신 플래그십",
+  "modelGpt55ProDesc": "가장 강력한 추론과 품질을 위한 최고급 GPT-5.5 변형",
+  "modelGpt54Desc": "강력한 범용 GPT-5 세대 모델",
+  "modelGpt54ProDesc": "까다로운 작업을 위한 고성능 GPT-5.4 변형",
+  "modelGpt54MiniDesc": "더 저렴한 일상 작업을 위한 더 작고 빠른 GPT-5.4 변형",
+  "modelGpt5MiniDesc": "속도와 비용에 최적화된 컴팩트한 GPT-5 제품군 모델",
+  "modelGpt41Desc": "호환성과 견고한 품질을 위한 안정적인 GPT-4.1 옵션",
+  "modelGpt4o": "GPT-4o",
+  "modelGpt35Turbo": "GPT-3.5 Turbo(레거시, 예산)",
+  "modelGpt35Turbo16k": "GPT-3.5 터보 16K",
+  "modelGpt4": "GPT-4",
+  "modelGpt4Turbo": "GPT-4 터보(레거시)",
+  "modelGpt4oDesc": "최고의 범용 선택; 빠르고, 다중 모드이며, 강력한 품질",
+  "modelGpt35TurboDesc": "레거시 저비용 옵션; 더 간단한 작업과 비용에 민감한 사용에 유용합니다.",
+  "modelGpt35Turbo16kDesc": "GPT-3.5와 동일하지만 16K 토큰 컨텍스트 창",
+  "modelGpt4Desc": "높은 추론 품질; 일반적으로 속도가 느리고 비용이 더 많이 듭니다.",
+  "modelGpt4TurboDesc": "레거시 GPT-4 제품군 옵션; 더 오래되고 저렴한 대안을 원할 때 여전히 유용합니다.",
+  "analyzing": "분석 중...",
+  "languageDetected": "감지된 언어",
+  "itemsFound": "발견된 항목",
+  "selectItemsToImport": "가져올 항목 선택",
+  "selectAll": "모두 선택",
+  "deselectAll": "모두 선택 취소",
+  "importSelected": "선택 항목 가져오기",
+  "importing": "가져오는 중...",
+  "itemsImported": "항목을 성공적으로 가져왔습니다.",
+  "noItemsSelected": "선택한 항목이 없습니다.",
+  "textCannotBeEmpty": "텍스트는 비워둘 수 없습니다.",
+  "selectAtLeastOneType": "유형(단어 또는 표현)을 하나 이상 선택하세요.",
+  "languageNotMatching": "감지된 언어가 패키지의 언어와 일치하지 않습니다.",
+  "openaiKeyRequired": "이 기능에는 OpenAI API 키가 필요합니다",
+  "analyzingProgress": "분석 중: {current} / {total}",
+  "translatingProgress": "번역: {current} / {total}",
+  "duplicate": "복제하다",
+  "importProgress": "{total} 중 {current} 가져오기",
+  "detectingLanguage": "언어 감지 중...",
+  "extractingItems": "항목 추출 중...",
+  "checkingDuplicates": "중복 확인 중...",
+  "translating": "번역 중...",
+  "generatingExamples": "예제 생성 중...",
+  "errorAnalyzingText": "텍스트 분석 오류",
+  "errorImportingItems": "항목을 가져오는 중에 오류가 발생했습니다.",
+  "warning": "경고",
+  "textIsVeryLarge": "텍스트가 매우 큼",
+  "words": "단어",
+  "continueAnalysis": "처리하는 데 시간이 더 오래 걸릴 수 있으며 청크로 분석됩니다. 계속하시겠습니까?",
+  "continueLabel": "계속하다",
+  "exportBeforeDeleteMessage": "이 패키지를 삭제하기 전에 내보내시겠습니까? 이렇게 하면 모든 데이터가 ZIP 파일로 저장됩니다.",
+  "deleteWithoutExport": "내보내지 않고 삭제",
+  "exportAndDelete": "내보내기 및 삭제",
+  "exportingPackage": "패키지를 내보내는 중...",
+  "packageExportedToPath": "다음으로 내보낸 패키지: {path}",
+  "errorLoadingItems": "항목 로드 중 오류 발생: {error}",
+  "badgeEarnedWithName": "획득한 배지: {badgeName}!",
+  "badgeLostWithName": "배지 분실: {badgeName}",
+  "trainingSessionProgress": "교육 세션 통계",
+  "total": "총",
+  "lastNValue": "아니요 = {value}",
+  "errorLoadingSettings": "설정 로드 중 오류 발생: {error}",
+  "selectPackage": "패키지 선택",
+  "noPackagesAvailable": "사용 가능한 패키지가 없습니다.",
+  "possibleSolutions": "가능한 해결책",
+  "technicalDetails": "기술적인 세부사항",
+  "close": "닫다",
+  "checkApiKey": "OpenAI API 키 확인",
+  "ensureValidOpenAIKey": "API 키가 유효하고 활성 상태인지 확인하세요.",
+  "verifyKeyInSettings": "설정에서 키를 확인하세요",
+  "rateLimitExceeded": "API 비율 제한을 초과했습니다.",
+  "waitAndRetry": "몇 분 정도 기다렸다가 다시 시도해 보세요.",
+  "checkAccountQuota": "OpenAI 계정 할당량을 확인하세요",
+  "invalidRequest": "잘못된 요청 형식",
+  "tryReducingTextLength": "텍스트 길이를 줄여보세요",
+  "checkTextFormat": "텍스트 형식이 올바른지 확인하세요.",
+  "checkInternetConnection": "인터넷 연결을 확인하세요",
+  "retryInMoment": "잠시 후 다시 시도하세요",
+  "checkFirewall": "방화벽 설정 확인",
+  "textMayBeTooShort": "텍스트가 너무 짧을 수 있습니다.",
+  "tryDifferentKnowledgeLevel": "다른 지식 수준을 시도해 보세요",
+  "ensureTextInCorrectLanguage": "텍스트가 올바른 언어로 되어 있는지 확인하세요.",
+  "requestTimedOut": "요청 시간이 초과되었습니다.",
+  "textMayBeTooLong": "텍스트가 너무 길 수 있습니다.",
+  "tryAgainOrReduceSize": "다시 시도하거나 텍스트 크기를 줄이세요.",
+  "unexpectedError": "예상치 못한 오류가 발생했습니다.",
+  "checkErrorDetails": "아래에서 오류 내용을 확인하세요.",
+  "tryAgainLater": "나중에 다시 시도하세요",
+  "translationServiceFailed": "번역 서비스 실패",
+  "checkApiKeys": "API 키 확인(DeepL, OpenAI)",
+  "retryImport": "가져오기를 다시 시도하세요.",
+  "exampleGenerationFailed": "예시 생성 실패",
+  "itemsStillImported": "항목이 여전히 수입되었습니다.",
+  "canAddExamplesManually": "나중에 수동으로 예시를 추가할 수 있습니다.",
+  "databaseError": "데이터베이스 오류가 발생했습니다.",
+  "checkStorageSpace": "사용 가능한 저장 공간 확인",
+  "restartApp": "앱을 다시 시작해 보세요",
+  "groupLabel": "그룹:",
+  "amendGroups": "개정하다",
+  "exportItemsJson": "항목 내보내기(JSON)",
+  "exportItemsJsonTooltip": "모든 항목을 JSON 파일로 내보내기",
+  "noCategoriesInPackage": "이 패키지에는 카테고리가 없습니다.",
+  "noItemsToExport": "내보낼 항목이 없습니다.",
+  "itemsExportedSuccessfully": "{count} 항목을 다음 위치로 성공적으로 내보냈습니다.\n{path}",
+  "@itemsExportedSuccessfully": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "path": {
+        "type": "String"
+      }
+    }
+  },
+  "errorExportingItems": "항목을 내보내는 중에 오류가 발생했습니다.",
+  "languageMismatch": "언어 불일치",
+  "languageMismatchDescription": "JSON 파일의 언어가 패키지 언어와 일치하지 않습니다.",
+  "packageLanguages": "패키지: {lang1} → {lang2}",
+  "@packageLanguages": {
+    "placeholders": {
+      "lang1": {
+        "type": "String"
+      },
+      "lang2": {
+        "type": "String"
+      }
+    }
+  },
+  "jsonFileLanguages": "JSON 파일: {lang1} → {lang2}",
+  "@jsonFileLanguages": {
+    "placeholders": {
+      "lang1": {
+        "type": "String"
+      },
+      "lang2": {
+        "type": "String"
+      }
+    }
+  },
+  "continueImportQuestion": "그래도 계속 가져오시겠습니까?",
+  "continueImport": "계속 가져오기",
+  "pleaseSelectPackageGroup": "패키지 그룹을 선택하세요.",
+  "customIconLabel": "관습",
+  "defaultIconLabel": "기본",
+  "icon2Label": "오픈북",
+  "icon3Label": "컬러북",
+  "icon4Label": "대화",
+  "icon5Label": "눈금",
+  "icon6Label": "뇌",
+  "icon7Label": "책더미",
+  "icon8Label": "플래시카드",
+  "icon9Label": "지구",
+  "icon10Label": "연필",
+  "icon11Label": "트로피",
+  "icon12Label": "찾다",
+  "customIconFile": "맞춤 아이콘",
+  "importedIconFile": "가져온 아이콘",
+  "unableToReadImageFile": "이미지 파일을 읽을 수 없습니다. 유효한 이미지를 선택하세요.",
+  "iconDimensionsTooLarge": "아이콘 크기가 너무 큽니다({width}x{height}). 허용되는 최대값은 512x512픽셀입니다.",
+  "@iconDimensionsTooLarge": {
+    "placeholders": {
+      "width": {
+        "type": "int"
+      },
+      "height": {
+        "type": "int"
+      }
+    }
+  },
+  "iconFileTooLarge": "아이콘 파일이 너무 큽니다. 최대 크기는 1MB입니다.",
+  "failedToUploadIcon": "아이콘 업로드 실패: {error}",
+  "@failedToUploadIcon": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectValidLanguage": "목록에서 유효한 언어를 선택하세요.",
+  "status": "상태",
+  "addExample": "예시 추가",
+  "noExamplesYet": "아직 예시가 없습니다. 추가하려면 +를 클릭하세요.",
+  "speakText": "텍스트 말하기",
+  "removeCategory": "카테고리 삭제",
+  "removeCategoryConfirm": "이 항목에서 '{categoryName}' 카테고리를 삭제하시겠습니까?",
+  "@removeCategoryConfirm": {
+    "placeholders": {
+      "categoryName": {
+        "type": "String"
+      }
+    }
+  },
+  "remove": "제거하다",
+  "extractFullItems": "전체 항목 추출",
+  "pasteFromClipboard": "클립보드에서 붙여넣기",
+  "noItemsFoundOrAllDuplicates": "텍스트에 항목이 없거나 패키지에 모든 항목이 이미 존재합니다.",
+  "aboutLanguageRally": "언어 랠리 소개",
+  "welcomeTitle": "🚀 언어 집회에 오신 것을 환영합니다",
+  "welcomeSubtitle": "모든 숙련도 수준에 맞춰 세심하게 선별된 약 4,000개의 단어, 4,000개의 표현, 그리고 많은 예문을 통해 언어 학습의 놀라운 힘을 느껴보세요! AI를 사용하여 자신의 텍스트에서 항목을 가져오거나 어떤 주제에 대해서도 AI와 채팅하여 배우고 싶은 정확한 단어, 표현 및 예를 생성하세요.\n스마트하고 재미있는 방법으로 언어 능력을 레벨업하세요!",
+  "welcomeIntro": "실제로 관심 있는 내용을 연습함으로써 효율적으로 어휘와 표현을 익힐 수 있습니다. 지루한 목록이 없습니다. 낭비되는 시간이 없습니다.",
+  "sectionPlayYourGame": "🎮 나만의 게임을 플레이하세요",
+  "sectionPlayYourGameDesc": "나만의 어휘 패키지를 만들어 보세요. 마스터하고 싶은 단어와 표현만 훈련하세요. 이미 알고 계시나요? 표시되고 건너뛰게 됩니다!",
+  "sectionAITeammate": "🤖 AI를 팀원으로 활용",
+  "sectionAITeammateDesc": "텍스트를 붙여넣고 AI가 다음을 수행하도록 하세요.\n• 유용한 어휘 추출\n• 자신의 수준에 맞는 표현을 선택하세요\n• 학습 준비가 완료된 패키지를 몇 초 만에 구축\n\nAI와 채팅:\n• 주제에 맞는 단어와 표현을 제안해 보세요.\n• 예제를 생성하고 이를 OWN 패키지에 저장하려면 클릭하세요.",
+  "sectionTrainSmart": "🔁 스마트하게 훈련하세요",
+  "sectionTrainSmartDesc": "우리의 미세 조정된 반복 시스템은 항목을 효과적으로 기억하기 위해 두뇌가 필요할 때 정확하게 항목을 보여줍니다. 최대 진행. 최소한의 노력.",
+  "sectionRealExamples": "🌍 실제 사례. 훌륭한 번역.",
+  "sectionRealExamplesDesc": "실제 사용 사례를 확인하세요. DeepL을 통해 프리미엄 품질로 번역하세요. 발음을 연습하고 자신감 있게 말해보세요.",
+  "sectionTeachersWelcome": "👩‍🏫 선생님 환영합니다",
+  "sectionTeachersWelcomeDesc": "패키지 생성 → 항목 복사 및 붙여넣기 또는 AI → 내보내기 → 업로드/보내기 → 완료를 통해 예제 추출, 번역, 추가를 수행합니다. 학생들은 이를 가져와 즉시 연습을 시작합니다.",
+  "sectionUnlockAI": "🔑 전체 AI 성능 잠금 해제",
+  "sectionUnlockAIDesc": "고품질 번역 및 AI 기능을 이용하려면 다음을 수행하세요.\n\n1. DeepL API 키 생성\n   https://www.deepl.com/pro-api\n2. OpenAI API 키 생성\n   https://platform.openai.com/api-keys\n3. 두 키를 모두 설정에 붙여넣습니다.\n\n적은 투자로 강력하고 전문가 수준의 언어 도구를 얻을 수 있습니다. 왜 놓치시겠습니까?\n(최상의 결과를 얻으려면 유료 API 액세스를 사용하는 것이 좋습니다.)",
+  "readyToStart": "집회를 시작할 준비가 되셨나요? 🏁",
+  "welcomeDescription": "Language Rally는 포괄적인 언어 학습 동반자입니다. 맞춤형 어휘 패키지를 만들고, 항목을 카테고리별로 정리하고, 지능적인 간격 반복 시스템으로 훈련하세요.",
+  "browseStore": "매장 찾아보기",
+  "featureInteractiveTraining": "대화형 교육",
+  "featureInteractiveTrainingDesc": "적응형 학습 알고리즘 연습",
+  "featureSmartOrganization": "스마트한 조직",
+  "featureSmartOrganizationDesc": "어휘를 분류하고 필터링하세요",
+  "featureTrackProgress": "진행 상황 추적",
+  "featureTrackProgressDesc": "자세한 통계로 학습을 모니터링하세요",
+  "featureImportExport": "가져오기 및 내보내기",
+  "featureImportExportDesc": "패키지 공유 및 장치 간 동기화",
+  "startAppTour": "앱 둘러보기 시작",
+  "quickStartGuide": "빠른 시작 가이드",
+  "tourStep1Title": "패키지 생성 또는 가져오기",
+  "tourStep1Desc": "새 언어 패키지를 생성하여 시작하거나 파일에서 기존 언어 패키지를 가져옵니다.",
+  "tourStep2Title": "어휘 항목 추가",
+  "tourStep2Desc": "패키지를 탐색하고 예와 카테고리가 포함된 단어, 문구 또는 표현을 추가하세요.",
+  "tourStep3Title": "교육 구성",
+  "tourStep3Desc": "연습할 항목을 선택하고, 난이도를 설정하고, 학습 경험을 맞춤화하세요.",
+  "tourStep4Title": "학습 시작",
+  "tourStep4Desc": "훈련 세션을 시작하고 항목을 알려짐 또는 알 수 없음으로 표시하여 진행 상황을 추적하세요.",
+  "tourStep5Title": "통계 검토",
+  "tourStep5Desc": "자세한 통계와 성취 배지를 통해 학습 진행 상황을 확인하세요.",
+  "gotIt": "알았어요!",
+  "appTourTitle": "언어 집회에 오신 것을 환영합니다",
+  "appTourSubtitle": "똑똑하고, 재미있고, 완전히 개인화된 언어 학습 동반자입니다.",
+  "tourPage1Title": "원하는 것과 필요한 것을 배우고 실천하십시오.",
+  "tourPage1Desc": "당사의 적응형 학습 시스템은 완벽한 순간에 항목을 검토하여 유지율을 최대화하고 노력을 최소화하도록 보장합니다.\n\n내장된 자동화의 도움으로 배워보세요.\n이미 알고 있는 단어에 시간을 낭비하지 마세요.\n\n관심 있는 어휘와 표현만 연습하세요. 귀하의 목표와 레벨에 완벽하게 맞춰진 나만의 아이템을 만들고 훈련하세요.",
+  "tourPage2Title": "나만의 언어 패키지 만들기",
+  "tourPage2Desc": "귀하의 관심사와 학습 목표에 맞는 맞춤형 어휘 컬렉션을 구축하세요.\n\n주제, 난이도, 문맥별로 단어와 표현을 정리하세요.\n\n학습 내용과 시기를 완벽하게 제어할 수 있습니다.",
+  "tourPage3Title": "AI 기반 아이템 생성",
+  "tourPage3Desc": "눈 깜짝할 사이에 나만의 학습 패키지를 구축하세요.\n\n• 텍스트를 붙여넣고 AI가 자동으로 관련 어휘를 추출하도록 합니다.\n• 자신의 수준에 딱 맞는 단어와 표현을 찾아보세요.\n• AI가 번역해 드립니다.\n• AI가 실시간 예시를 검색하도록 하세요.\n\nAI와 채팅:\n• 주제에 맞는 단어와 표현을 제안해 보세요.\n• 예제를 생성하고 이를 OWN 패키지에 저장하려면 클릭하세요.\n• 교육용 패키지를 신속하게 생성",
+  "tourPage4Title": "AI 기반 실제 사례 및 프리미엄 번역",
+  "tourPage4Desc": "• 실제 사용 사례를 즉시 검색\n• 고품질 DeepL 통합을 통해 단어, 표현 및 전체 문장을 번역합니다.\n• 정확한 상황 인식 결과 얻기",
+  "tourPage5Title": "스마트 패키지 구성",
+  "tourPage5Desc": "• 어휘를 맞춤 카테고리로 구성\n• 특정 주제에 대한 필터링 및 집중\n• 여러 기기에서 패키지 가져오기 및 내보내기\n• 다른 사람들과 패키지를 쉽게 공유",
+  "tourPage6Title": "발음 훈련",
+  "tourPage6Desc": "대화형 연습 도구를 사용하여 발음을 테스트하고 향상시키세요.\n\n읽기뿐만 아니라 말하기에도 자신감을 키워보세요.",
+  "tourPage7Title": "교사용",
+  "tourPage7Desc": "단 몇 번의 클릭만으로 학생들을 위해 바로 사용할 수 있는 어휘 패키지를 만드세요.\n\n내보내고 수업에 보내세요. 가져온 후에는 각 학생의 기기에서 즉시 연습할 수 있습니다.\n\n단순한. 빠른. 효과적인.",
+  "tourPage8Title": "고품질 AI 지원 잠금 해제",
+  "tourPage8Desc": "프리미엄 번역 및 고급 AI 기능을 이용하려면 다음을 수행하세요.\n 1. 나만의 DeepL API 키 만들기\n 2. 나만의 OpenAI API 키 만들기\n 3. 두 키를 모두 설정 섹션에 붙여넣습니다.\n\n이를 위해서는 적은 예산(몇 달러)만 필요하지만 강력하고 전문가 수준의 언어 도구에 액세스할 수 있습니다.\n참고: 최상의 결과를 얻으려면 유료 API 액세스를 사용하는 것이 좋습니다. 비용은 단지 몇 달러에 불과합니다.\n\n🔑 DeepL API 키: https://www.deepl.com/pro-api\n\n🔑 OpenAI API 키: https://platform.openai.com/api-keys",
+  "previousPage": "이전의",
+  "nextPage": "다음",
+  "endTour": "투어 종료",
+  "pageIndicator": "{total} 중 {current} 페이지",
+  "@pageIndicator": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "practicePronunciation": "발음 연습",
+  "pronunciationPractice": "발음연습",
+  "startPractice": "연습 시작",
+  "listenToPronunciation": "발음 듣기",
+  "tapToRecord": "녹음하려면 탭하세요.",
+  "recording": "녹음...",
+  "recorded": "녹음됨",
+  "speakNow": "지금 말하세요 - 마이크 가까이에서 명확하게 말하세요.",
+  "noSpeechDetected": "음성이 감지되지 않았습니다. 다시 시도해 주세요.",
+  "noTextRecognized": "녹음에서 음성이 인식되지 않았습니다. 마이크가 작동하는지 확인한 후 다시 시도해 주세요.",
+  "processingAudio": "AI로 오디오 처리…",
+  "playbackRecording": "내 녹음을 재생해 보세요",
+  "playbackRecordingSubtitle": "AI가 처리하는 동안 녹음 내용 듣기",
+  "recordingTooShort": "녹화가 너무 짧습니다. 1초 이상 말씀해주세요.",
+  "microphonePermissionRequired": "발음 연습을 위해 마이크 권한이 필요합니다",
+  "speechRecognitionNotSupported": "이 플랫폼에서는 음성 인식이 지원되지 않습니다. 발음 연습은 모바일 앱(Android/iOS)을 이용해 주세요.",
+  "speechRecognitionUnavailable": "이 장치에서는 음성 인식을 사용할 수 없습니다.",
+  "pronunciationAccuracy": "발음\n정확도",
+  "excellent": "훌륭한!",
+  "good": "좋은",
+  "fair": "공정한",
+  "needsImprovement": "개선이 필요함",
+  "tryAgain": "다시 시도",
+  "nextItem": "다음 항목",
+  "endPractice": "연습 종료",
+  "practiced": "연습함",
+  "windowsAudioTestPageTitle": "Windows 오디오 테스트(RTAudio)",
+  "configureWindowsAudio": "오디오 테스트 및 구성\nWindows에서의 입력",
+  "configureWindowsAudioDescription": "기본 Windows RTAudio 드라이버를 사용하여 오디오 녹음, 재생 및 전사",
+  "audioTestTitle": "Windows 오디오 녹음 테스트",
+  "audioTestSubtitle": "RTAudio — 기본 Windows 오디오 녹음",
+  "audioInputDevice": "오디오 입력 장치",
+  "selectMicrophone": "마이크 선택",
+  "refreshDevices": "장치 새로 고침",
+  "noAudioDevicesFound": "오디오 입력 장치를 찾을 수 없습니다.",
+  "loadingAudioDevices": "오디오 장치 로드 중...",
+  "recordingSettings": "녹화 설정",
+  "stereoRecording": "스테레오 녹음",
+  "stereoChannels": "2채널(스테레오)",
+  "monoChannel": "1채널(모노)",
+  "sampleRateLabel": "샘플링 속도",
+  "nativeRateBadge": "토종의",
+  "microphoneGainLabel": "마이크 게인",
+  "gainHint": "1x = 부스트 없음 • 3x ≒ +9.5dB • 10x ≒ +20dB",
+  "tapToStartRec": "녹화를 시작하려면 탭하세요.",
+  "tapToStopRec": "녹화를 중지하려면 탭하세요.",
+  "recordingCompleteLabel": "녹화 완료",
+  "tapMicToStop": "중지하려면 마이크를 탭하세요.",
+  "playRecordingLabel": "녹음 재생",
+  "stopPlaybackLabel": "멈추다",
+  "whisperSectionTitle": "OpenAI 속삭임 전사",
+  "whisperWavNote": "WAV(16비트 PCM)는 Whisper에서 기본적으로 지원되므로 변환이 필요하지 않습니다.",
+  "sendToWhisperLabel": "속삭임으로 보내기",
+  "transcribingLabel": "스크립트 작성 중...",
+  "transcriptionResultLabel": "전사 결과",
+  "transcriptionFailedLabel": "전사 실패",
+  "debugInformationLabel": "정보",
+  "debugConsoleHint": "자세한 로그는 콘솔을 확인하세요.",
+  "debugDevicesFound": "장치 발견",
+  "debugSelectedDevice": "선택한 장치",
+  "debugDeviceRateNative": "장치 속도(기본)",
+  "debugRequestedRate": "요청 요금",
+  "debugActualRate": "실제 사용된 환율",
+  "debugActualRateForced": "⚠ 강제",
+  "debugActualRateOk": "✓",
+  "debugRecordingMode": "녹화 모드",
+  "debugLastRecording": "마지막 녹음",
+  "debugFileSize": "파일 크기",
+  "debugStereo": "스테레오 재생",
+  "debugMono": "단핵증",
+  "recordingSavedSnack": "녹음이 저장되었습니다",
+  "recordingTooShortSnack": "녹음 시간이 너무 짧습니다. 1초 이상 녹음해주세요.",
+  "recordingSmallSnack": "녹음 파일이 매우 작습니다. 녹음에 실패했을 수 있습니다.",
+  "noAudioDataSnack": "녹음된 오디오 데이터가 없습니다.",
+  "noDeviceSelectedSnack": "오디오 장치를 선택해주세요",
+  "failedToInitRtAudio": "RTAudio를 초기화하지 못했습니다.",
+  "envelopeScoreLabel": "봉투",
+  "rhythmScoreLabel": "율",
+  "textScoreLabel": "텍스트",
+  "help": "돕다",
+  "trainingHelpTitle": "훈련 팁",
+  "trainingHelpText": "훈련을 최대한 효과적으로 진행하려면 다음 단계를 따르십시오.\n1. 이 패키지의 모든 항목이 알려진 항목으로 표시되도록 '카운터 지우기' 버튼을 클릭하세요.\n2. '항목 범위'를 '모든 항목'으로 설정하세요.\n3. '아이템 순서'를 '랜덤'으로 설정하세요.\n4. '표시 언어'에서 모국어를 선택하세요.\n5. 훈련을 시작하고 자신이 모르는 항목이 약 20~30개 정도 식별될 때까지 계속합니다.\n6. 훈련 설정으로 돌아가서 '항목 범위'를 '알 수 없는 항목만'으로 변경하세요.\n7. 훈련을 재개하고 이전에 알려지지 않은 항목을 모두 배울 때까지 계속하십시오.",
+  "trainingProTip": "전문가 팁: 모든 항목부터 시작하세요. 나중에는 알려지지 않은 부분에만 집중하세요.",
+  "onboardingWelcomeTitle": "언어 집회에 오신 것을 환영합니다!",
+  "onboardingSetupSubtitle": "당신을 위해 앱을 설정해 보겠습니다.",
+  "onboardingSelectUiLanguage": "인터페이스 언어",
+  "onboardingUiLanguageNote": "나중에 설정 → UI 언어에서 변경할 수 있습니다.",
+  "onboardingNext": "다음",
+  "onboardingBack": "뒤쪽에",
+  "onboardingSelectPackagesTitle": "언어 패키지 선택",
+  "onboardingSelectPackagesSubtitle": "가져올 어휘 패키지를 선택하세요. 나중에 언제든지 메인 메뉴(패키지 보기)에서 더 추가할 수 있습니다.",
+  "onboardingAnalyzingPackages": "사용 가능한 패키지 분석 중…",
+  "onboardingScanningPackagesProgress": "스캔됨 {scanned}/{total} • 이미 DB {alreadyInDb}에 있음",
+  "@onboardingScanningPackagesProgress": {
+    "placeholders": {
+      "scanned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "alreadyInDb": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingImportSelected": "선택 항목 가져오기",
+  "onboardingSkipImport": "건너뛰다",
+  "onboardingSelectAll": "모두 선택",
+  "onboardingDeselectAll": "모두 선택 취소",
+  "onboardingNPackages": "{count} 패키지",
+  "@onboardingNPackages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "onboardingGetStarted": "시작하기",
+  "onboardingImportCompleteTitle": "가져오기 완료!",
+  "importBuiltInPkg": "무료 패키지",
+  "importBuiltInPkgTooltip": "무료 번들 언어 패키지 가져오기",
+  "globalSearch": "글로벌 검색",
+  "globalSearchTitle": "모든 패키지 검색",
+  "globalSearchSelectLanguage": "언어 코드 선택",
+  "globalSearchEnterWord": "검색할 단어",
+  "globalSearchEnterWordHint": "예를 들어 \"der\", \"order\" — 부분적으로 일치하는 항목을 찾습니다.",
+  "globalSearchButton": "찾다",
+  "globalSearchResults": "결과",
+  "globalSearchNoResults": "\"{query}\"에 대한 검색 결과가 없습니다.",
+  "@globalSearchNoResults": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "globalSearchResultsCount": "{count} 결과를 찾았습니다.",
+  "@globalSearchResultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "globalSearchSearching": "수색…",
+  "globalSearchSelectLanguageFirst": "먼저 언어 코드를 선택하세요.",
+  "globalSearchEnterTermFirst": "검색어를 입력해주세요",
+  "globalSearchMatchInExamples": "예제에서 발견됨",
+  "globalSearchViewItem": "보다",
+  "globalSearchGoToPackage": "패키지로 이동",
+  "globalSearchLoadingPackages": "패키지 로드 중…",
+  "globalSearchNoPackages": "아직 설치된 언어 패키지가 없습니다.",
+  "globalSearchCancelSearch": "검색 취소",
+  "globalSearchProgressOf": "{total} 중 {current} 패키지 검색 중…",
+  "@globalSearchProgressOf": {
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "globalSearchCancelledMessage": "검색이 취소되었습니다 — 지금까지 {count}개의 결과를 찾았습니다.",
+  "@globalSearchCancelledMessage": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "storeTitle": "언어 패키지 저장소",
+  "storeRestorePurchases": "구매 복원",
+  "storeRefresh": "새로 고치다",
+  "storeSearchHint": "패키지 검색…",
+  "storeNoPackagesMatchSearch": "검색과 일치하는 패키지가 없습니다.",
+  "storeNoPackagesAvailable": "사용 가능한 패키지가 없습니다.",
+  "storeInstalledCount": "{installed} / {total} 설치됨",
+  "@storeInstalledCount": {
+    "placeholders": {
+      "installed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "storeLoadErrorTitle": "매장을 로드할 수 없습니다.",
+  "storeIapNotAvailableMessage": "이 플랫폼에서는 인앱 구매를 사용할 수 없습니다. 패키지를 구매하려면 당사 웹사이트를 방문하세요.",
+  "storeOpenWebsite": "웹사이트 열기",
+  "storePurchaseSuccess": "{title}이(가) 성공적으로 설치되었습니다!",
+  "@storePurchaseSuccess": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "storePurchaseCancelled": "구매가 취소되었습니다.",
+  "storePurchaseAlreadyOwned": "{title}은(는) 이미 설치되어 있습니다.",
+  "@storePurchaseAlreadyOwned": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "storePurchaseError": "문제가 발생했습니다. 다시 시도해 주세요.",
+  "storePurchasesRestored": "구매가 복원되었습니다.",
+  "storeAllLevels": "모든 레벨",
+  "storeAllGroups": "모든 언어",
+  "storeFilterLevel": "수준",
+  "storeFilterLanguage": "언어",
+  "storeDownload": "다운로드",
+  "storeBuy": "구입하다",
+  "storeInstalledLabel": "설치됨",
+  "storeDownloading": "다운로드 중…",
+  "storeRetry": "다시 해 보다",
+  "storeIapAndroidOnly": "구매는 Android 및 iOS에서만 가능합니다.",
+  "storeDismiss": "해고하다",
+  "storeAddToCart": "장바구니에 추가",
+  "storeRemoveFromCart": "제거하다",
+  "storeCartTitle": "장바구니",
+  "storeCartEmpty": "장바구니가 비어 있습니다.",
+  "storeCartClearAll": "모두 지우기",
+  "storeCartCheckout": "점검",
+  "storeCartItemCount": "{count, plural, =1{1 item} other{{count} items}}",
+  "@storeCartItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "storePackageDuplicateTitle": "패키지가 이미 존재합니다.",
+  "storePackageDuplicateMessage": "\"{packageName}\" 패키지가 \"{groupName}\" 그룹에 이미 존재합니다. 덮어쓰시겠습니까? 기존 패키지와 모든 학습 진행 상황이 영구적으로 삭제됩니다.",
+  "@storePackageDuplicateMessage": {
+    "placeholders": {
+      "packageName": {
+        "type": "String"
+      },
+      "groupName": {
+        "type": "String"
+      }
+    }
+  },
+  "storePackageDuplicateOverwrite": "덮어쓰기",
+  "storePackageDuplicateKeep": "기존 유지",
+  "splashSettingUpPackages": "패키지 설정: {current} / {total}",
+  "@splashSettingUpPackages": {
+    "description": "Splash screen progress label shown while seed packages are being imported",
+    "placeholders": {
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "splashThisHappensOnce": "이것은 한 번만 발생합니다.",
+  "@splashThisHappensOnce": {
+    "description": "Subtitle shown below the progress bar on the splash screen"
+  },
+  "splashLoading": "로드 중…",
+  "@splashLoading": {
+    "description": "Indeterminate loading label on the splash screen"
+  },
+  "aiItemCreator": "AI 채팅 전문가",
+  "aiItemCreatorAppBarHint": "AI와 채팅을 통해 단어와 표현을 수집하고 저장하세요",
+  "chatWithAI": "AI와 채팅",
+  "enterYourPrompt": "프롬프트를 입력하세요...",
+  "aiItemCreatorPromptHint": "주제를 설명하면 AI 코치가 질문하고 유용한 어휘를 제안하며 지식을 테스트합니다. 예: 지식 수준 B2에서 여행과 관련된 위험을 수집하고 연습하도록 도와주세요.",
+  "send": "보내다",
+  "sending": "배상...",
+  "aiResponse": "AI 응답",
+  "itemInputs": "아이템 입력",
+  "aiItemCreatorBothItemsRequired": "저장하기 전에 두 언어 필드를 모두 입력하세요.",
+  "aiItemCreatorDuplicateItemMessage": "동일한 텍스트 쌍을 가진 항목이 이 패키지에 이미 존재합니다.",
+  "language1": "언어 1",
+  "language2": "언어 2",
+  "translateLang1ToLang2": "언어 2로 번역",
+  "translateLang2ToLang1": "언어 1로 번역",
+  "translateToLanguageCode": "{languageCode}로 번역",
+  "@translateToLanguageCode": {
+    "placeholders": {
+      "languageCode": {
+        "type": "String"
+      }
+    }
+  },
+  "example": "예",
+  "generating": "생성 중...",
+  "flags": "플래그",
+  "favorite": "가장 좋아하는",
+  "saveItems": "구하다",
+  "saving": "절약...",
+  "clearItems": "항목만 지우기",
+  "clearAll": "모든 필드 지우기",
+  "itemSavedSuccessfully": "항목이 성공적으로 저장되었습니다.",
+  "promptCannotBeEmpty": "프롬프트는 비워둘 수 없습니다.",
+  "enterAtLeastOneItem": "항목을 하나 이상 입력하세요.",
+  "selectPackageFirst": "먼저 패키지를 선택해주세요",
+  "deeplKeyRequired": "번역을 위해서는 DeepL API 키가 필요합니다",
+  "noNonPurchasedPackagesAvailable": "구매하지 않은 패키지는 사용할 수 없습니다.",
+  "packageSelectionRemembered": "패키지 선택이 저장되었습니다.",
+  "aiItemCreatorOpenAiKeyNotConfiguredDetailed": "OpenAI API 키가 구성되지 않았습니다. 설정에서 API 키를 추가하세요.",
+  "aiItemCreatorOpenAiKeyNotConfigured": "OpenAI API 키가 구성되지 않았습니다.",
+  "aiItemCreatorProcessingComplete": "처리 완료",
+  "aiItemCreatorTranslationComingSoon": "번역 기능이 곧 제공될 예정입니다.",
+  "aiItemCreatorDefaultCategoryName": "AI가 생성됨",
+  "aiItemCreatorStartNewConversation": "새로운 대화 시작",
+  "aiItemCreatorChatHint": "주제를 설명하면 AI 코치가 질문하고 유용한 어휘를 제안하며 지식을 테스트합니다.",
+  "aiItemCreatorConversation": "대화",
+  "aiItemCreatorYou": "너",
+  "aiItemCreatorCoach": "AI 코치",
+  "aiItemCreatorAiSuggestions": "AI 제안",
+  "aiItemCreatorTapChipToFill": "칩을 탭하여 항목 필드를 채우고 자동 번역하세요.",
+  "aiItemCreatorNoSuggestedItems": "아직 단어나 표현이 없습니다.",
+  "aiItemCreatorNextSteps": "계속하는 방법",
+  "aiItemCreatorNoNextSteps": "아직 계속 추천사항이 없습니다.",
+  "aiItemCreatorModelCostTip": "전문가 팁: 최신 모델은 더 비싸지만, 구형 및 터보 모델은 더 저렴하고 훨씬 더 빠를 수 있습니다.",
+  "aiItemCreatorSelectPackageDialogTitle": "언어 패키지 선택",
+  "aiItemCreatorSelectPackageDialogMessage": "이 세션에 사용할 언어 패키지를 선택하세요. 마지막 선택이 미리 선택되어 있습니다.",
+  "aiItemCreatorMissingApiKeysWarning": "누락된 API 키: {keys}. 계속할 수 있지만 AI 및 프리미엄 번역 기능이 제한될 수 있습니다.",
+  "@aiItemCreatorMissingApiKeysWarning": {
+    "placeholders": {
+      "keys": {
+        "type": "String"
+      }
+    }
+  },
+  "about": "에 대한",
+  "aboutWebsite": "웹사이트",
+  "aboutSummaryVideo": "요약 동영상",
+  "aboutSupportEmail": "지원 이메일 주소",
+  "aboutWebsiteUrl": "https://sites.google.com/view/언어-rally",
+  "aboutSummaryVideoUrl": "https://www.youtube.com/watch?v=64Pl9iNF88c",
+  "aboutSupportEmailAddress": "Languagerally.support@gmail.com",
+  "aboutVersionWithValue": "버전: {version}",
+  "@aboutVersionWithValue": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutCouldNotOpen": "열 수 없음: {uri}",
+  "@aboutCouldNotOpen": {
+    "placeholders": {
+      "uri": {
+        "type": "String"
+      }
+    }
+  },
+  "aboutWelcomeSplashNotFound": "환영 스플래시 이미지를 찾을 수 없습니다.",
+  "chooseTheme": "테마 선택",
+  "darkMode": "다크 모드",
+  "toggleBetweenLightAndDark": "밝은 것과 어두운 것 사이를 전환하세요",
+  "colorTheme": "색상 테마:",
+  "toggleBrightness": "밝기 전환",
+  "changeTheme": "테마 변경",
+  "managePackageGroups": "패키지 그룹 관리",
+  "noPackageGroups": "패키지 그룹 없음",
+  "createFirstPackageGroup": "첫 번째 패키지 그룹 만들기",
+  "addGroup": "그룹 추가",
+  "addPackageGroup": "패키지 그룹 추가",
+  "editPackageGroup": "패키지 그룹 편집",
+  "groupName": "그룹 이름",
+  "enterGroupName": "그룹 이름을 입력하세요",
+  "groupNameRequired": "그룹 이름은 필수 항목입니다.",
+  "duplicateGroupName": "중복된 이름",
+  "groupNameAlreadyExists": "이름이 \"{name}\"인 그룹이 이미 존재합니다.",
+  "@groupNameAlreadyExists": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "groupCreatedSuccessfully": "그룹 \"{name}\"이(가) 성공적으로 생성되었습니다.",
+  "@groupCreatedSuccessfully": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToCreateGroup": "그룹 생성 실패: {error}",
+  "@failedToCreateGroup": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "groupRenamedTo": "그룹 이름이 \"{name}\"(으)로 변경되었습니다.",
+  "@groupRenamedTo": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdateGroup": "그룹 업데이트 실패: {error}",
+  "@failedToUpdateGroup": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "deleteGroup": "그룹 삭제",
+  "deleteGroupConfirm": "\"{name}\" 그룹을 삭제하시겠습니까?\n\n이 작업은 취소할 수 없습니다.",
+  "@deleteGroupConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cannotDeleteGroup": "삭제할 수 없습니다",
+  "groupHasPackages": "이 그룹에는 아직 {count} 패키지가 있습니다. 먼저 이동하거나 삭제해 주세요.",
+  "@groupHasPackages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupDeleted": "'{name}' 그룹이 삭제되었습니다.",
+  "@groupDeleted": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToDeleteGroup": "그룹 삭제 실패: {error}",
+  "@failedToDeleteGroup": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "cannotDeleteHasPackagesTooltip": "삭제할 수 없습니다(패키지 있음).",
+  "nPackages": "{count, plural, =1{1 package} other{{count} packages}}",
+  "@nPackages": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "manageGroups": "그룹 관리",
+  "featureLangPower": "언어력",
+  "featureAiIntegration": "AI 통합",
+  "featureAdaptivePractice": "적응 연습",
+  "featureMasterAccent": "마스터 악센트",
+  "allBadgesEarned": "🎉 모든 배지를 획득했습니다! 당신은 마스터입니다!",
+  "nextBadgeLabel": "다음: {name}",
+  "@nextBadgeLabel": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "pointsToGo": "{percent}% 남았습니다",
+  "@pointsToGo": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "progressPercent": "{percent}% 진행",
+  "@progressPercent": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "errorTogglingFavourite": "즐겨찾기를 전환하는 중에 오류가 발생했습니다: {error}",
+  "@errorTogglingFavourite": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "errorTogglingImportant": "중요 전환 오류: {error}",
+  "@errorTogglingImportant": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryAdded": "카테고리 \"{name}\"이(가) 추가되었습니다",
+  "@categoryAdded": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errorAddingCategory": "카테고리 추가 오류: {error}",
+  "@errorAddingCategory": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "categoryRemoved": "카테고리 \"{name}\"이(가) 삭제되었습니다.",
+  "@categoryRemoved": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "errorRemovingCategory": "카테고리 삭제 오류: {error}",
+  "@errorRemovingCategory": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "couldNotOpenUrl": "URL을 열 수 없습니다: {url}",
+  "@couldNotOpenUrl": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "errorOpeningUrl": "URL을 여는 중 오류 발생: {error}",
+  "@errorOpeningUrl": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseSelectLanguage": "언어를 선택하세요",
+  "add": "추가하다",
+  "speak": "말하다",
+  "recordingFailedToStart": "녹화를 시작하지 못했습니다.\n\n확인:\n1. 마이크가 연결되었습니다\n2. 마이크가 기본 장치로 설정되어 있습니다.\n3. 마이크를 사용하는 다른 앱이 없습니다.",
+  "recordingFailedNoAudioFile": "녹음 실패 - 오디오 파일이 생성되지 않았습니다!\n\n가능한 원인:\n1. 마이크가 연결되지 않음\n2. 오디오 입력이 감지되지 않습니다.\n3. Windows 오디오 설정 문제",
+  "errorStartingRecordingDetails": "녹화 시작 오류: {error}",
+  "@errorStartingRecordingDetails": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "openaiEmptyResponse": "선택한 AI 모델이 빈 응답을 반환했습니다.",
+  "tryDifferentModel": "모델 선택기에서 다른 모델을 선택해 보세요.",
+  "modelMayNotBeSupported": "이 모델은 귀하의 계정에서 지원되지 않거나 사용 가능하지 않을 수 있습니다.",
+  "reduceTextOrRetry": "텍스트 길이를 줄이거나 다시 시도하세요.",
+  "openaiNullContent": "선택한 AI 모델이 콘텐츠를 반환하지 않았습니다.",
+  "modelUnsupportedParameter": "선택한 모델은 필수 API 매개변수를 지원하지 않습니다."
+}

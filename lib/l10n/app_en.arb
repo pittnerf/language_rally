@@ -37,7 +37,6 @@
   "errorDeletingPackage": "Error deleting package",
   "fieldRequired": "This field is required",
   "invalidEmail": "Invalid email address",
-
   "readOnlyPackage": "This package is read-only and cannot be edited",
   "purchasedPackage": "Purchased packages cannot be edited",
   "badges": "Badges",
@@ -68,17 +67,14 @@
   "importResults": "Import Results",
   "successfullyImported": "Successfully imported",
   "failedToImport": "Failed to import",
-
   "error": "Error",
   "ok": "OK",
-
   "importPackage": "Import Package",
   "importPackageTooltip": "Import package from ZIP file or URL",
   "importPackageDialogTitle": "Import Language Package",
   "importFromLocalFile": "Import from local file",
   "importFromUrl": "Import from URL",
   "enterPackageUrl": "Package URL (https://…)",
-
   "downloadingPackage": "Downloading package…",
   "downloadFailed": "Download failed. Please check the URL and your internet connection.",
   "invalidUrl": "Please enter a valid http:// or https:// URL.",
@@ -126,7 +122,6 @@
   "importFormatLine4": "• The last | is optional",
   "importFormatLine5": "• Empty lines are ignored",
   "importFormatLine6": "• Duplicates are skipped",
-
   "importFormatNewDescription": "Import items from a text file. Each line should contain an item with fields separated by ---",
   "importFormatNewLine1": "• Main delimiter: ---",
   "importFormatNewLine2": "• L1=<text> - Language 1 main text (required if L2 is missing)",
@@ -165,7 +160,6 @@
   "position": "Position",
   "stepsUntilLearned": "Steps until learned",
   "examples": "Examples",
-
   "noExamples": "No examples available",
   "pronounce": "Pronounce",
   "ttsError": "Text-to-speech not available",
@@ -188,7 +182,6 @@
   "failedToGenerateExamples": "Failed to generate examples",
   "selectExamplesToAdd": "Select Examples to Add",
   "selectWhichExamples": "Select which examples you want to add to this item:",
-
   "addSelected": "Add Selected",
   "pleaseSelectAtLeastOne": "Please select at least one example",
   "addNewItem": "Add New Item",
@@ -212,7 +205,6 @@
   "aiExampleSearch": "AI Example Search",
   "searchExamplesOnInternet": "Search for example sentences on the internet using AI for '{text}'",
   "generateExampleSentences": "Generate example sentences based on the main text in {language}",
-
   "voiceInput": "Voice input",
   "settings": "Settings",
   "uiLanguage": "UI Language",
@@ -232,12 +224,11 @@
   "errorSavingSettings": "Error saving settings",
   "usingGoogleTranslate": "Using free Google Translate",
   "usingDeepL": "Using DeepL (premium)",
-
   "noTranslationReceivedFromGoogle": "No translation received from Google",
   "googleTranslationFailed": "Google translation failed",
   "googleTranslationError": "Google translation error",
   "noTranslationReceivedFromDeepL": "No translation received from DeepL",
-   "invalidDeepLApiKey": "Invalid DeepL API key",
+  "invalidDeepLApiKey": "Invalid DeepL API key",
   "deeplTranslationQuotaExceeded": "DeepL translation quota exceeded",
   "deeplTranslationFailed": "DeepL translation failed",
   "deeplTranslationError": "DeepL translation error",
@@ -267,11 +258,9 @@
   },
   "recordingTapToStop": "Recording... Tap again to stop",
   "speakClearlyKeepRecording": "Speak clearly. Record at least 1 second.",
-
   "pleaseRecordLonger": "Please speak for at least 1 second and tap stop.",
   "errorStartingRecording": "Error starting recording",
   "noAudioRecorded": "No audio was recorded",
-
   "errorTranscribing": "Error transcribing audio",
   "trainingSettings": "Training Settings",
   "trainingPresetTitle": "Quick Setup",
@@ -331,7 +320,6 @@
   "answer": "Answer",
   "iKnow": "I Know",
   "iDontKnow": "I Don't Know",
-
   "previousItem": "Previous Item",
   "iDidNotKnowEither": "I Didn't Know It After All",
   "exportBeforeDelete": "Export Before Deleting?",
@@ -418,7 +406,6 @@
   "errorLoadingItems": "Error loading items: {error}",
   "badgeEarnedWithName": "Badge Earned: {badgeName}!",
   "badgeLostWithName": "Badge Lost: {badgeName}",
-
   "trainingSessionProgress": "Training Session Stats",
   "total": "Total",
   "lastNValue": "N = {value}",
@@ -505,7 +492,6 @@
   "pleaseSelectPackageGroup": "Please select a package group",
   "customIconLabel": "Custom",
   "defaultIconLabel": "Default",
-
   "icon2Label": "Open Book",
   "icon3Label": "Colored Book",
   "icon4Label": "Conversation",
@@ -656,7 +642,6 @@
   "nextItem": "Next Item",
   "endPractice": "End Practice",
   "practiced": "Practiced",
-
   "windowsAudioTestPageTitle": "Windows Audio Test (RTAudio)",
   "configureWindowsAudio": "Test and configure audio\ninput on Windows",
   "configureWindowsAudioDescription": "Record, play back and transcribe audio using the native Windows RTAudio driver",
@@ -710,12 +695,10 @@
   "envelopeScoreLabel": "Envelope",
   "rhythmScoreLabel": "Rhythm",
   "textScoreLabel": "Text",
-
   "help": "Help",
   "trainingHelpTitle": "Training Tips",
   "trainingHelpText": "To make your training as effective as possible, follow these steps:\n1. Click the 'Clear counters' button so that all items in this package are marked as known.\n2. Set 'Item scope' to 'All items'\n3. Set 'Item order' to 'Random'\n4. Choose your native language under 'Display language'\n5. Start the training and continue until you identify approximately 20–30 items you do not know.\n6. Return to the training settings and change 'Item scope' to 'Only unknown items'\n7. Resume training and continue until you have learned all previously unknown items.",
   "trainingProTip": "Pro tip: Start with all items; later, focus only on the unknowns.",
-
   "onboardingWelcomeTitle": "Welcome to Language Rally!",
   "onboardingSetupSubtitle": "Let's set up the app for you.",
   "onboardingSelectUiLanguage": "Interface Language",
@@ -728,9 +711,15 @@
   "onboardingScanningPackagesProgress": "Scanned {scanned}/{total} • already in DB {alreadyInDb}",
   "@onboardingScanningPackagesProgress": {
     "placeholders": {
-      "scanned": { "type": "int" },
-      "total": { "type": "int" },
-      "alreadyInDb": { "type": "int" }
+      "scanned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      },
+      "alreadyInDb": {
+        "type": "int"
+      }
     }
   },
   "onboardingImportSelected": "Import Selected",
@@ -740,15 +729,15 @@
   "onboardingNPackages": "{count} packages",
   "@onboardingNPackages": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "onboardingGetStarted": "Get Started",
   "onboardingImportCompleteTitle": "Import Complete!",
-
   "importBuiltInPkg": "Free packages",
   "importBuiltInPkgTooltip": "Import free bundled language packages",
-
   "globalSearch": "Global Search",
   "globalSearchTitle": "Search Across All Packages",
   "globalSearchSelectLanguage": "Select Language Code",
@@ -759,13 +748,17 @@
   "globalSearchNoResults": "No results found for \"{query}\"",
   "@globalSearchNoResults": {
     "placeholders": {
-      "query": { "type": "String" }
+      "query": {
+        "type": "String"
+      }
     }
   },
   "globalSearchResultsCount": "{count} result(s) found",
   "@globalSearchResultsCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "globalSearchSearching": "Searching…",
@@ -780,17 +773,22 @@
   "globalSearchProgressOf": "Searching package {current} of {total}…",
   "@globalSearchProgressOf": {
     "placeholders": {
-      "current": { "type": "int" },
-      "total":   { "type": "int" }
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "globalSearchCancelledMessage": "Search cancelled — {count} result(s) found so far",
   "@globalSearchCancelledMessage": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "storeTitle": "Language Package Store",
   "storeRestorePurchases": "Restore purchases",
   "storeRefresh": "Refresh",
@@ -800,8 +798,12 @@
   "storeInstalledCount": "{installed} / {total} installed",
   "@storeInstalledCount": {
     "placeholders": {
-      "installed": { "type": "int" },
-      "total": { "type": "int" }
+      "installed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "storeLoadErrorTitle": "Could not load the store.",
@@ -810,14 +812,18 @@
   "storePurchaseSuccess": "{title} installed successfully!",
   "@storePurchaseSuccess": {
     "placeholders": {
-      "title": { "type": "String" }
+      "title": {
+        "type": "String"
+      }
     }
   },
   "storePurchaseCancelled": "Purchase cancelled.",
   "storePurchaseAlreadyOwned": "{title} is already installed.",
   "@storePurchaseAlreadyOwned": {
     "placeholders": {
-      "title": { "type": "String" }
+      "title": {
+        "type": "String"
+      }
     }
   },
   "storePurchaseError": "Something went wrong. Please try again.",
@@ -842,27 +848,35 @@
   "storeCartItemCount": "{count, plural, =1{1 item} other{{count} items}}",
   "@storeCartItemCount": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
-
   "storePackageDuplicateTitle": "Package Already Exists",
   "storePackageDuplicateMessage": "The package \"{packageName}\" already exists in group \"{groupName}\". Do you want to overwrite it? The existing package and all its training progress will be permanently deleted.",
   "@storePackageDuplicateMessage": {
     "placeholders": {
-      "packageName": { "type": "String" },
-      "groupName": { "type": "String" }
+      "packageName": {
+        "type": "String"
+      },
+      "groupName": {
+        "type": "String"
+      }
     }
   },
   "storePackageDuplicateOverwrite": "Overwrite",
   "storePackageDuplicateKeep": "Keep existing",
-
   "splashSettingUpPackages": "Setting up packages: {current} / {total}",
   "@splashSettingUpPackages": {
     "description": "Splash screen progress label shown while seed packages are being imported",
     "placeholders": {
-      "current": { "type": "int" },
-      "total": { "type": "int" }
+      "current": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "splashThisHappensOnce": "This only happens once.",
@@ -873,10 +887,8 @@
   "@splashLoading": {
     "description": "Indeterminate loading label on the splash screen"
   },
-
   "aiItemCreator": "AI Chat Guru",
   "aiItemCreatorAppBarHint": "Collect and save words and expressions by chatting with the AI",
-
   "chatWithAI": "Chat with AI",
   "enterYourPrompt": "Enter your prompt...",
   "aiItemCreatorPromptHint": "Describe a topic and the AI coach will ask questions, suggest useful vocabulary, and test your knowledge. For example: help me gather and practice dangers regarding travelling at knowledge level B2",
@@ -898,12 +910,9 @@
       }
     }
   },
-
   "example": "Example",
-
   "generating": "Generating...",
   "flags": "Flags",
-
   "favorite": "Favorite",
   "saveItems": "Save",
   "saving": "Saving...",
@@ -944,8 +953,10 @@
   },
   "about": "About",
   "aboutWebsite": "Website",
+  "aboutSummaryVideo": "Summary video",
   "aboutSupportEmail": "Support email address",
   "aboutWebsiteUrl": "https://sites.google.com/view/language-rally",
+  "aboutSummaryVideoUrl": "https://www.youtube.com/watch?v=64Pl9iNF88c",
   "aboutSupportEmailAddress": "languagerally.support@gmail.com",
   "aboutVersionWithValue": "Version: {version}",
   "@aboutVersionWithValue": {
@@ -964,14 +975,12 @@
     }
   },
   "aboutWelcomeSplashNotFound": "Welcome splash image not found",
-
   "chooseTheme": "Choose Theme",
   "darkMode": "Dark Mode",
   "toggleBetweenLightAndDark": "Toggle between light and dark",
   "colorTheme": "Color Theme:",
   "toggleBrightness": "Toggle brightness",
   "changeTheme": "Change theme",
-
   "managePackageGroups": "Manage Package Groups",
   "noPackageGroups": "No package groups",
   "createFirstPackageGroup": "Create your first package group",
@@ -984,113 +993,194 @@
   "duplicateGroupName": "Duplicate Name",
   "groupNameAlreadyExists": "A group with the name \"{name}\" already exists.",
   "@groupNameAlreadyExists": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "groupCreatedSuccessfully": "Group \"{name}\" created successfully",
   "@groupCreatedSuccessfully": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "failedToCreateGroup": "Failed to create group: {error}",
   "@failedToCreateGroup": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "groupRenamedTo": "Group renamed to \"{name}\"",
   "@groupRenamedTo": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "failedToUpdateGroup": "Failed to update group: {error}",
   "@failedToUpdateGroup": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "deleteGroup": "Delete Group",
   "deleteGroupConfirm": "Are you sure you want to delete the group \"{name}\"?\n\nThis action cannot be undone.",
   "@deleteGroupConfirm": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "cannotDeleteGroup": "Cannot Delete",
   "groupHasPackages": "This group still has {count} package(s). Please move or delete them first.",
   "@groupHasPackages": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "groupDeleted": "Group \"{name}\" deleted",
   "@groupDeleted": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "failedToDeleteGroup": "Failed to delete group: {error}",
   "@failedToDeleteGroup": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "cannotDeleteHasPackagesTooltip": "Cannot delete (has packages)",
   "nPackages": "{count, plural, =1{1 package} other{{count} packages}}",
   "@nPackages": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "manageGroups": "Manage groups",
-
   "featureLangPower": "Language power",
   "featureAiIntegration": "AI integration",
   "featureAdaptivePractice": "Adaptive practice",
   "featureMasterAccent": "Master accent",
-
   "allBadgesEarned": "🎉 All badges earned! You are a Master!",
   "nextBadgeLabel": "Next: {name}",
   "@nextBadgeLabel": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "pointsToGo": "{percent}% to go",
   "@pointsToGo": {
-    "placeholders": { "percent": { "type": "String" } }
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
   },
   "progressPercent": "{percent}% progress",
   "@progressPercent": {
-    "placeholders": { "percent": { "type": "String" } }
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
   },
-
   "errorTogglingFavourite": "Error toggling favourite: {error}",
   "@errorTogglingFavourite": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "errorTogglingImportant": "Error toggling important: {error}",
   "@errorTogglingImportant": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "categoryAdded": "Category \"{name}\" added",
   "@categoryAdded": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "errorAddingCategory": "Error adding category: {error}",
   "@errorAddingCategory": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
   "categoryRemoved": "Category \"{name}\" removed",
   "@categoryRemoved": {
-    "placeholders": { "name": { "type": "String" } }
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "errorRemovingCategory": "Error removing category: {error}",
   "@errorRemovingCategory": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
-
   "couldNotOpenUrl": "Could not open URL: {url}",
   "@couldNotOpenUrl": {
-    "placeholders": { "url": { "type": "String" } }
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
   },
   "errorOpeningUrl": "Error opening URL: {error}",
   "@errorOpeningUrl": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
-
   "pleaseSelectLanguage": "Please select a language",
   "add": "Add",
   "speak": "Speak",
-
   "recordingFailedToStart": "Recording failed to start!\n\nCheck:\n1. Microphone is connected\n2. Microphone is set as default device\n3. No other app is using microphone",
   "recordingFailedNoAudioFile": "Recording failed - no audio file created!\n\nPossible causes:\n1. Microphone not connected\n2. No audio input detected\n3. Windows audio settings issue",
   "errorStartingRecordingDetails": "Error starting recording: {error}",
   "@errorStartingRecordingDetails": {
-    "placeholders": { "error": { "type": "String" } }
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
   },
-
   "openaiEmptyResponse": "The selected AI model returned an empty response",
   "tryDifferentModel": "Try selecting a different model from the model selector",
   "modelMayNotBeSupported": "This model may not be supported or available for your account",

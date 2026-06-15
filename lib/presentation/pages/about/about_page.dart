@@ -70,6 +70,7 @@ class _AboutPageState extends State<AboutPage> {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final l10n = AppLocalizations.of(context)!;
+    final summaryVideoUrl = l10n.aboutSummaryVideoUrl;
     final websiteUrl = l10n.aboutWebsiteUrl;
     final supportEmail = l10n.aboutSupportEmailAddress;
 
@@ -104,11 +105,11 @@ class _AboutPageState extends State<AboutPage> {
                       _SectionCard(
                         backgroundColor: colors.primaryContainer,
                         titleColor: colors.onPrimaryContainer,
-                        title: l10n.aboutWebsite,
+                        title: l10n.aboutSummaryVideo,
                         child: InkWell(
-                          onTap: () => _openWebsite(websiteUrl, l10n),
+                          onTap: () => _openWebsite(summaryVideoUrl, l10n),
                           child: Text(
-                            websiteUrl,
+                            summaryVideoUrl,
                             style: theme.textTheme.bodyLarge?.copyWith(
                               color: colors.primary,
                               decoration: TextDecoration.underline,
@@ -119,17 +120,17 @@ class _AboutPageState extends State<AboutPage> {
                       ),
                       const SizedBox(height: AppTheme.spacing12),
                       _SectionCard(
-                        backgroundColor: colors.secondaryContainer,
-                        titleColor: colors.onSecondaryContainer,
-                        title: l10n.aboutSupportEmail,
+                        backgroundColor: colors.primaryContainer,
+                        titleColor: colors.onPrimaryContainer,
+                        title: l10n.aboutWebsite,
                         child: InkWell(
-                          onTap: () => _sendEmail(supportEmail, l10n),
+                          onTap: () => _openWebsite(websiteUrl, l10n),
                           child: Text(
-                            supportEmail,
+                            websiteUrl,
                             style: theme.textTheme.bodyLarge?.copyWith(
-                              color: colors.secondary,
+                              color: colors.primary,
                               decoration: TextDecoration.underline,
-                              decorationColor: colors.secondary,
+                              decorationColor: colors.primary,
                             ),
                           ),
                         ),
@@ -164,6 +165,23 @@ class _AboutPageState extends State<AboutPage> {
                               },
                             );
                           },
+                        ),
+                      ),
+                      const SizedBox(height: AppTheme.spacing12),
+                      _SectionCard(
+                        backgroundColor: colors.secondaryContainer,
+                        titleColor: colors.onSecondaryContainer,
+                        title: l10n.aboutSupportEmail,
+                        child: InkWell(
+                          onTap: () => _sendEmail(supportEmail, l10n),
+                          child: Text(
+                            supportEmail,
+                            style: theme.textTheme.bodyLarge?.copyWith(
+                              color: colors.secondary,
+                              decoration: TextDecoration.underline,
+                              decorationColor: colors.secondary,
+                            ),
+                          ),
                         ),
                       ),
                     ],
