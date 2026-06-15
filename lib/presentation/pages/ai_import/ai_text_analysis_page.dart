@@ -1462,7 +1462,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
 
     // If no maxItems specified, extract with a reasonable limit and filter duplicates
     if (maxItems == null) {
-      final extracted = await analysisService.extractItems(
+      final extractedRaw = await analysisService.extractItems(
         text: text,
         knowledgeLevel: knowledgeLevel,
         extractWords: extractWords,
@@ -1470,6 +1470,11 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
         extractFullItems: extractFullItems,
         sourceLanguage: sourceLanguage,
         maxItems: null,
+      );
+
+      final extracted = _normalizeLeadingArticlesInExtractedWords(
+        items: extractedRaw,
+        languageCode: detectedLang,
       );
 
       // Filter out duplicates
@@ -1488,7 +1493,7 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
 
     logDebug('  Requesting $initialRequest items initially (target: $maxItems unique)');
 
-    final extracted = await analysisService.extractItems(
+    final extractedRaw = await analysisService.extractItems(
       text: text,
       knowledgeLevel: knowledgeLevel,
       extractWords: extractWords,
@@ -1496,6 +1501,11 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
       extractFullItems: extractFullItems,
       sourceLanguage: sourceLanguage,
       maxItems: initialRequest,
+    );
+
+    final extracted = _normalizeLeadingArticlesInExtractedWords(
+      items: extractedRaw,
+      languageCode: detectedLang,
     );
 
     logDebug('  Extracted: ${extracted.length} items');
@@ -1524,5 +1534,76 @@ class _AITextAnalysisPageState extends ConsumerState<AITextAnalysisPage> {
 
     return uniqueItems;
   }
-}
 
+  List<ExtractedItem> _normalizeLeadingArticlesInExtractedWords({
+    required List<ExtractedItem> items,
+    required String languageCode,
+  }) {
+    final articles = _leadingArticlesByLanguage[languageCode.toLowerCase()];
+    if (articles == null || articles.isEmpty) {
+      return items;
+    }
+
+    // Longest-first prevents partial matches (e.g. "una" before "un").
+    final sortedArticles = [...articles]..sort((a, b) => b.length.compareTo(a.length));
+
+    return items.map((item) {
+      if (item.type.toLowerCase() != 'word') {
+        return item;
+      }
+
+      final originalText = item.text.trim();
+      if (originalText.isEmpty) {
+        return item;
+      }
+
+      final lowerText = originalText.toLowerCase();
+
+      for (final article in sortedArticles) {
+        final lowerArticle = article.toLowerCase();
+        final hasApostrophe = article.endsWith("'");
+
+        if (!hasApostrophe && !lowerText.startsWith('$lowerArticle ')) {
+          continue;
+        }
+
+        if (hasApostrophe && !lowerText.startsWith(lowerArticle)) {
+          continue;
+        }
+
+        final strippedText = hasApostrophe
+            ? originalText.substring(article.length).trim()
+            : originalText.substring(article.length + 1).trim();
+        if (strippedText.isEmpty) {
+          return item;
+        }
+
+        final existingPre = (item.preItem ?? '').trim();
+        final normalizedPre = existingPre.isEmpty
+            ? article
+            : existingPre.toLowerCase() == article.toLowerCase()
+                ? existingPre
+                : '$article $existingPre';
+
+        return item.copyWith(text: strippedText, preItem: normalizedPre);
+      }
+
+      return item;
+    }).toList();
+  }
+
+  static const Map<String, List<String>> _leadingArticlesByLanguage = {
+    // German
+    'de': ['der', 'die', 'das', 'den', 'dem', 'des', 'ein', 'eine', 'einen', 'einem', 'einer', 'eines'],
+    // French
+    'fr': ['les', 'des', 'une', 'un', 'la', 'le', "l'"],
+    // Spanish
+    'es': ['los', 'las', 'unos', 'unas', 'el', 'la', 'un', 'una'],
+    // Italian
+    'it': ['gli', 'le', 'il', 'lo', 'la', 'i', 'un', 'uno', 'una'],
+    // Portuguese
+    'pt': ['os', 'as', 'uns', 'umas', 'o', 'a', 'um', 'uma'],
+    // Dutch
+    'nl': ['de', 'het', 'een'],
+  };
+}

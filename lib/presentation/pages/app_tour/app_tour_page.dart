@@ -134,11 +134,10 @@ class _AppTourPageState extends State<AppTourPage> {
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
+        // Avoid explicit system bar colors on Android 15+; rely on edge-to-edge and theme.
         statusBarIconBrightness: theme.brightness == Brightness.dark
             ? Brightness.light
             : Brightness.dark,
-        systemNavigationBarColor: theme.colorScheme.surface,
         systemNavigationBarIconBrightness: theme.brightness == Brightness.dark
             ? Brightness.light
             : Brightness.dark,
@@ -768,4 +767,3 @@ class _ArrowButton extends StatelessWidget {
     );
   }
 }
-

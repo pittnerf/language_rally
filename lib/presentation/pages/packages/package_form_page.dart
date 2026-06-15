@@ -2535,6 +2535,11 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
             .toList();
         jsonItem['categories'] = itemCategories;
 
+        // Preserve study-state flags for round-trip export/import.
+        jsonItem['is_known'] = item.isKnown;
+        jsonItem['is_favourite'] = item.isFavourite;
+        jsonItem['is_important'] = item.isImportant;
+
         jsonItems.add(jsonItem);
       }
 
@@ -2679,6 +2684,21 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
     List<Map<String, dynamic>> jsonItems, {
     void Function(int current, int total)? onProgress,
   }) async {
+    bool parseBoolFlag(dynamic value, {bool defaultValue = false}) {
+      if (value is bool) return value;
+      if (value is num) return value != 0;
+      if (value is String) {
+        final normalized = value.trim().toLowerCase();
+        if (normalized == 'true' || normalized == '1' || normalized == 'yes') {
+          return true;
+        }
+        if (normalized == 'false' || normalized == '0' || normalized == 'no') {
+          return false;
+        }
+      }
+      return defaultValue;
+    }
+
     final successfulItems = <String>[];
     final failedItems = <String>[];
     final package = widget.package!;
@@ -2768,6 +2788,22 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
         // Use empty string for target if not provided
         final targetText = targetExpression ?? '';
 
+        // Optional state flags (supports snake_case + camelCase + legacy names).
+        final isKnown = parseBoolFlag(
+          jsonItem['is_known'] ?? jsonItem['isKnown'] ?? jsonItem['known'],
+        );
+        final isFavourite = parseBoolFlag(
+          jsonItem['is_favourite'] ??
+              jsonItem['isFavourite'] ??
+              jsonItem['favourite'] ??
+              jsonItem['favorite'],
+        );
+        final isImportant = parseBoolFlag(
+          jsonItem['is_important'] ??
+              jsonItem['isImportant'] ??
+              jsonItem['important'],
+        );
+
         // Check for duplicate
         final itemKey = '${sourceExpression.toLowerCase()}|${targetText.toLowerCase()}';
         if (existingItemKeys.contains(itemKey)) {
@@ -2815,10 +2851,10 @@ class _PackageFormPageState extends ConsumerState<PackageFormPage> {
             postItem: targetPost?.isNotEmpty == true ? targetPost : null,
           ),
           examples: examples,
-          isKnown: false,
-          isFavourite: false,
-          isImportant: false,
-          dontKnowCounter: 1,
+          isKnown: isKnown,
+          isFavourite: isFavourite,
+          isImportant: isImportant,
+          dontKnowCounter: isKnown ? 0 : 1,
           lastReviewedAt: null,
         );
 

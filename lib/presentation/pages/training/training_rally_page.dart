@@ -844,35 +844,51 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
               ),
             ),
             const SizedBox(width: 8),
-            // Current item counter
-            Column(
+            Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
+                if (!widget.package.isPurchased) ...[
+                  IconButton(
+                    onPressed: _openItemEditPage,
+                    icon: const Icon(Icons.edit, size: 20),
+                    tooltip: l10n.editItem,
+                    visualDensity: VisualDensity.compact,
+                    constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                    splashRadius: 18,
                   ),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Text(
-                    '${_currentItemIndex + 1}/${_filteredItems.length}',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onPrimaryContainer,
-                      fontSize: 11,
+                  const SizedBox(width: 6),
+                ],
+                // Current item counter
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Text(
+                        '${_currentItemIndex + 1}/${_filteredItems.length}',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onPrimaryContainer,
+                          fontSize: 11,
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  l10n.position,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    fontSize: 8,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.position,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontSize: 8,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -1768,7 +1784,7 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
         : '0.0';
 
     final appSettings = ref.watch(appSettingsProvider);
-    final showStatistics = appSettings.showTrainingStatistics;
+    final showStatistics = false; // appSettings.showTrainingStatistics;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1967,32 +1983,6 @@ class _TrainingRallyPageState extends ConsumerState<TrainingRallyPage> {
             ),
           ),
         ),
-        // Edit item button (only for non-purchased packages)
-        if (!widget.package.isPurchased) ...[
-          const SizedBox(height: AppTheme.spacing8),
-          Padding(
-            padding: const EdgeInsets.only(right: 0),
-            child: Align(
-              alignment: Alignment.centerRight,
-              child: ElevatedButton.icon(
-                onPressed: _openItemEditPage,
-                icon: const Icon(Icons.edit, size: 20),
-                label: Text(l10n.editItem),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: theme.colorScheme.primary,
-                  foregroundColor: theme.colorScheme.onPrimary,
-                  padding: const EdgeInsets.symmetric(
-                    vertical: AppTheme.spacing8,
-                    horizontal: AppTheme.spacing8,
-                  ),
-                  minimumSize: const Size.fromHeight(48),
-                  elevation: 4,
-                ),
-              ),
-            ),
-          ),
-
-        ],
       ],
     );
   }

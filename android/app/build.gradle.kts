@@ -71,4 +71,3 @@ tasks.configureEach {
         doNotTrackState("Flutter assets are generated and can disappear between task snapshots.")
     }
 }
-
